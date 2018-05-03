@@ -1,10 +1,11 @@
 # k8s
 Kubernetes/Helm configs for ReportPortal
 
+**Do note that this is a Beta version**
+
+
 This Helm project is created to setup ReportPortal with only one commando.  
 The help chart is tested on Minikube and creates a fully working ReportPortal project
-
-**Do note that this is a Beta version**
 
 The chart installs all mandatory services to run ReportPortal
 
@@ -34,5 +35,5 @@ Also make sure that the vm.max_map_count is setup
 
 The url to reach ReportPortal is http://reportportal.k8.com
 Make sure that the url is added in the host file and the ip is the K8 ip address
-# For example:
-`192.1.1.1	reportportal.k8.com`
+Example:
+- `192.1.1.1	reportportal.k8.com`
