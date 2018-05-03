@@ -1,0 +1,43 @@
+# docker registry in which the images are hosted
+registry: "" # docker-registry.com
+
+# ingress configuration for the ui
+ingress:
+  hosts:
+    - reportportal.k8.com
+
+# node selector for all components, if any
+nodeSelector:
+  enabled: false
+  selector:
+    reportportal: true
+
+# persistence configuration for elasticsearch, mongodb & consul
+persistence:
+  elasticsearch:
+    enabled: true
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      capacity:
+        storage: 10Gi
+      hostPath:
+        path: /mnt/data/elastic
+  mongodb:
+    enabled: true
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      capacity:
+        storage: 10Gi
+      hostPath:
+        path: /mnt/data/db
+  registry:
+    enabled: true
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      capacity:
+        storage: 10Gi
+      hostPath:
+        path: /mnt/data/console

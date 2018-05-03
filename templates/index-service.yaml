@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: index-0
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  ports:
+  - name: headless
+    port: 8090
+    protocol: TCP
+    targetPort: 8090
+  selector:
+    component: reportportal-index
+  type: ClusterIP

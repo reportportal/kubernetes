@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: uat
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-uat
+  serviceName: uat-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-uat
+    spec:
+      containers:
+      - env:
+        - name: RP_PROFILES
+          value: docker
+        - name: RP_SESSION_LIVE
+          value: "86400"
+#        image: "{{ .Values.registry }}/reportportal/service-authorization:4.1.0"
+        image: "{{ .Values.registry }}reportportal/service-authorization:4.1.0"
+        name: uat
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}

@@ -1,0 +1,14 @@
+{{- if .Values.persistence.mongodb.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: reportportal-mongodb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistence.mongodb.spec.capacity.storage }}
+  volumeName: reportportal-mongodb
+{{- end -}}

@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-elasticsearch
+  serviceName: elasticsearch
+  template:
+    metadata:
+      labels:
+        component: reportportal-elasticsearch
+    spec:
+      containers:
+      - image: "{{ .Values.registry }}docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.1"
+        name: elasticsearch
+        {{ if .Values.persistence.elasticsearchenabled -}}
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: reportportal-elasticsearch
+      volumes:
+      - name: reportportal-elasticsearch
+        persistentVolumeClaim:
+          claimName: reportportal-elasticsearch
+{{- end }}
+{{ include "nodeSelector" . | indent 8 }}

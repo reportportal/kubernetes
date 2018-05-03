@@ -1,0 +1,30 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: mongodb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        component: reportportal-mongodb
+  template:
+    metadata:
+      labels:
+        component: reportportal-mongodb
+    spec:
+      containers:
+      - image: "{{ .Values.registry }}mongo:3.4"
+        name: mongodb
+        resources: {}
+        {{ if .Values.persistence.mongodb.enabled -}}
+
+        volumeMounts:
+        - mountPath: /data/db
+          name: reportportal-mongodb
+      volumes:
+      - name: reportportal-mongodb
+        persistentVolumeClaim:
+          claimName: reportportal-mongodb
+{{- end }}
+{{ include "nodeSelector" . | indent 8 }}
