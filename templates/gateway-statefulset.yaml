@@ -1,0 +1,33 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: gateway
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-gateway
+  serviceName: gateway
+  template:
+    metadata:
+      labels:
+        component: reportportal-gateway
+    spec:
+      containers:
+      - env:
+        - name: FABIO_PROXY_ADDR
+          value: :9999;rt=300s;wt=300s
+        - name: FABIO_REGISTRY_CONSUL_ADDR
+          value: registry:8500
+        - name: FABIO_REGISTRY_CONSUL_REGISTER_NAME
+          value: gateway
+#        image: "{{ .Values.registry }}/fabiolb/fabio:1.5.8-go1.10"
+        image: "{{ .Values.registry }}fabiolb/fabio:1.5.8-go1.10"
+        name: gateway
+        ports:
+        - containerPort: 9998
+          protocol: TCP
+        - containerPort: 9999
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}

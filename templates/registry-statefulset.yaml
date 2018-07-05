@@ -1,0 +1,43 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: registry
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-registry
+  serviceName: registry
+  template:
+    metadata:
+      labels:
+        component: reportportal-registry
+    spec:
+      containers:
+      - args:
+        - agent
+        - -server
+        - -bootstrap-expect=1
+        - -ui
+        - -client
+        - 0.0.0.0
+        env:
+        - name: CONSUL_LOCAL_CONFIG
+          value: '{"leave_on_terminate": true}'
+        image: "{{ .Values.registry }}consul:1.0.6"
+        name: registry
+        ports:
+        - containerPort: 8500
+          protocol: TCP
+        resources: {}
+        {{ if .Values.persistence.registry.enabled -}}
+        volumeMounts:
+        - mountPath: /consul/data
+          name: reportportal-registry
+      volumes:
+      - name: reportportal-registry
+        persistentVolumeClaim:
+          claimName: reportportal-registry
+{{- end }}
+{{ include "nodeSelector" . | indent 8 }}

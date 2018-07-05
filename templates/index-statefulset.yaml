@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: index
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-index
+  serviceName: index-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-index
+    spec:
+      containers:
+      - env:
+        - name: RP_PROXY_CONSUL
+          value: "true"
+        - name: RP_SERVER_PORT
+          value: "8090"
+#        image: "{{ .Values.registry }}/reportportal/service-index:4.0.0"
+        image: "{{ .Values.registry }}reportportal/service-index:4.0.0"
+        name: index
+        ports:
+        - containerPort: 8090
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}

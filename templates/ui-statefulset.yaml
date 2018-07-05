@@ -1,0 +1,31 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: ui
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-ui
+  serviceName: ui
+  template:
+    metadata:
+      labels:
+        component: reportportal-ui
+    spec:
+      containers:
+      - env:
+        - name: RP_CONSUL.ADDRESS
+          value: registry:8500
+        - name: RP_CONSUL.TAGS
+          value: urlprefix-/ui opts strip=/ui
+        - name: RP_SERVER.PORT
+          value: "8080"
+#        image: "{{ .Values.registry }}/reportportal/service-ui:4.1.0"
+        image: "{{ .Values.registry }}reportportal/service-ui:4.1.0"
+        name: ui
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}

@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: api
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-api
+  serviceName: api-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-api
+    spec:
+      containers:
+      - env:
+        - name: "JAVA_OPTS"
+          value: "-Xmx1g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+        - name: "RP_PROFILES"
+          value: "docker"
+        #image: "{{ .Values.registry }}/reportportal/service-api:4.1.0"
+        image: "{{ .Values.registry }}reportportal/service-api:4.1.0"
+        name: api
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}

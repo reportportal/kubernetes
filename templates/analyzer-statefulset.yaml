@@ -1,0 +1,24 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: analyzer
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-analyzer
+  serviceName: analyzer-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-analyzer
+    spec:
+      containers:
+#      - image: "{{ .Values.registry }}/reportportal/service-analyzer:4.1.0"
+      - image: "{{ .Values.registry }}reportportal/service-analyzer:4.1.0"
+        name: analyzer
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+{{ include "nodeSelector" . | indent 8 }}
