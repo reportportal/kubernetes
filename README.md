@@ -25,9 +25,9 @@ Once it's installed please make sure that the PersistentVolumes directories are 
 
 Commando to create those folders:
 - `minikube ssh`
-- `sudo mkdir -p /mnt/data/db`
-- `sudo mkdir -p /mnt/data/console`
-- `sudo mkdir -p /mnt/data/elastic`
+- `sudo mkdir /mnt/data/db`
+- `sudo mkdir /mnt/data/console`
+- `sudo mkdir /mnt/data/elastic`
 
 Also make sure that the vm.max_map_count is setup
 - `minikube ssh`
@@ -37,16 +37,3 @@ The url to reach ReportPortal is http://reportportal.k8.com
 Make sure that the url is added in the host file and the ip is the K8 ip address
 Example:
 - `192.1.1.1	reportportal.k8.com`
-
-Variables is presents in value.yml. Report Portal use next images in variables:
-
-- fabio: fabiolb/fabio 1.5.8-go1.10 
-- serviceindex:  reportportal/service-index 4.0.0
-- mongodb: mongodb 3.4
-- consul: consul 1.0.6
-- serviceauthorization: reportportal/service-authorization 4.1.0
-- serviceui: reportportal/service-ui 4.1.0
-- serviceanalyzer: reportportal/service-analyzer 4.1.0
-- serviceapi:  reportportal/service-api 4.1.0
-- elasticsearchoss: docker.elastic.co/elasticsearch/elasticsearch-oss  6.1.1
-  
