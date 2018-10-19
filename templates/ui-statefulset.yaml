@@ -23,7 +23,7 @@ spec:
         - name: RP_SERVER.PORT
           value: "8080"
 #        image: "{{ .Values.registry }}/reportportal/service-ui:4.1.0"
-        image: "{{ .Values.registry }}reportportal/service-ui:4.1.0"
+        image: "{{ .Values.serviceui.repository }}:{{ .Values.serviceui.tag }}"
         name: ui
         ports:
         - containerPort: 8080

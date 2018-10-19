@@ -23,7 +23,7 @@ spec:
         - name: FABIO_REGISTRY_CONSUL_REGISTER_NAME
           value: gateway
 #        image: "{{ .Values.registry }}/fabiolb/fabio:1.5.8-go1.10"
-        image: "{{ .Values.registry }}fabiolb/fabio:1.5.8-go1.10"
+        image: "{{ .Values.fabio.repository }}:{{ .Values.fabio.tag }}"
         name: gateway
         ports:
         - containerPort: 9998
