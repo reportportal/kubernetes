@@ -25,7 +25,7 @@ spec:
         env:
         - name: CONSUL_LOCAL_CONFIG
           value: '{"leave_on_terminate": true}'
-        image: "{{ .Values.registry }}consul:1.0.6"
+        image: "{{ .Values.consul.repository }}:{{ .Values.consul.tag }}"
         name: registry
         ports:
         - containerPort: 8500

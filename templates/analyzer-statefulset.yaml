@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
 #      - image: "{{ .Values.registry }}/reportportal/service-analyzer:4.1.0"
-      - image: "{{ .Values.registry }}reportportal/service-analyzer:4.1.0"
+      - image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
         - containerPort: 8080

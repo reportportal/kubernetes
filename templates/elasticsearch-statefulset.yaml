@@ -15,7 +15,7 @@ spec:
         component: reportportal-elasticsearch
     spec:
       containers:
-      - image: "{{ .Values.registry }}docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.1"
+      - image: "{{ .Values.elasticsearchoss.repository }}:{{ .Values.elasticsearchoss.tag }}"
         name: elasticsearch
         {{ if .Values.persistence.elasticsearchenabled -}}
         volumeMounts:

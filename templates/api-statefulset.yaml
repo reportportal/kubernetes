@@ -21,7 +21,7 @@ spec:
         - name: "RP_PROFILES"
           value: "docker"
         #image: "{{ .Values.registry }}/reportportal/service-api:4.1.0"
-        image: "{{ .Values.registry }}reportportal/service-api:4.1.0"
+        image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
         - containerPort: 8080
