@@ -14,7 +14,7 @@ serviceindex:
   pullPolicy: IfNotPresent
   
 mongodb:
-  repository: mongodb
+  repository: mongo
   tag: 3.4
   pullPolicy: IfNotPresent
 
@@ -69,8 +69,6 @@ persistence:
       - ReadWriteOnce
       capacity:
         storage: 10Gi
-      hostPath:
-        path: /mnt/data/elastic
   mongodb:
     enabled: true
     spec:
@@ -78,8 +76,6 @@ persistence:
       - ReadWriteOnce
       capacity:
         storage: 10Gi
-      hostPath:
-        path: /mnt/data/db
   registry:
     enabled: true
     spec:
@@ -87,5 +83,3 @@ persistence:
       - ReadWriteOnce
       capacity:
         storage: 10Gi
-      hostPath:
-        path: /mnt/data/console
