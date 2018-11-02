@@ -10,5 +10,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.elasticsearch.spec.capacity.storage }}
-  volumeName: reportportal-elasticsearch
 {{- end -}}

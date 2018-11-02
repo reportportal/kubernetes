@@ -25,5 +25,9 @@ spec:
       - name: reportportal-elasticsearch
         persistentVolumeClaim:
           claimName: reportportal-elasticsearch
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
 {{- end }}
 {{ include "nodeSelector" . | indent 8 }}

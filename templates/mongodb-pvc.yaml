@@ -10,5 +10,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.mongodb.spec.capacity.storage }}
-  volumeName: reportportal-mongodb
 {{- end -}}

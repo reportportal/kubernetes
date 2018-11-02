@@ -39,5 +39,9 @@ spec:
       - name: reportportal-registry
         persistentVolumeClaim:
           claimName: reportportal-registry
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
 {{- end }}
 {{ include "nodeSelector" . | indent 8 }}

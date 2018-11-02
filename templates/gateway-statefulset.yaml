@@ -30,4 +30,8 @@ spec:
           protocol: TCP
         - containerPort: 9999
           protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
 {{ include "nodeSelector" . | indent 8 }}

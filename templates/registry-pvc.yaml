@@ -10,5 +10,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistence.registry.spec.capacity.storage }}
-  volumeName: reportportal-registry
 {{- end -}}
