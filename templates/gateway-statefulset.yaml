@@ -30,4 +30,11 @@ spec:
           protocol: TCP
         - containerPort: 9999
           protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.fabio.resources.requests.cpu }}
+            memory: {{ .Values.fabio.resources.requests.cpu }}
+          limits:
+            cpu: {{ .Values.elasticsearchoss.resources.limits.cpu }}
+            memory: {{ .Values.elasticsearchoss.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

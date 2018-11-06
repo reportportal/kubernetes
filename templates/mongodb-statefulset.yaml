@@ -26,5 +26,12 @@ spec:
       - name: reportportal-mongodb
         persistentVolumeClaim:
           claimName: reportportal-mongodb
+        resources:
+          requests:
+            cpu: {{ .Values.mongodb.resources.requests.cpu }}
+            memory: {{ .Values.mongodb.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.mongodb.resources.limits.cpu }}
+            memory: {{ .Values.mongodb.resources.limits.memory }}
 {{- end }}
 {{ include "nodeSelector" . | indent 8 }}
