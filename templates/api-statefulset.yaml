@@ -26,4 +26,11 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
+            memory: {{ .Values.serviceapi.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
+            memory: {{ .Values.serviceapi.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

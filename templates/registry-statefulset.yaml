@@ -41,7 +41,10 @@ spec:
           claimName: reportportal-registry
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.consul.resources.requests.cpu }}
+            memory: {{ .Values.consul.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.consul.resources.limits.cpu }}
+            memory: {{ .Values.consul.resources.limits.memory }}
 {{- end }}
 {{ include "nodeSelector" . | indent 8 }}

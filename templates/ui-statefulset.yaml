@@ -30,6 +30,9 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.serviceui.resources.requests.cpu }}
+            memory: {{ .Values.serviceui.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceui.resources.limits.cpu }}
+            memory: {{ .Values.serviceui.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

@@ -27,6 +27,9 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.serviceauthorization.resources.requests.cpu }}
+            memory: {{ .Values.serviceauthorization.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceauthorization.resources.limits.cpu }}
+            memory: {{ .Values.serviceauthorization.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

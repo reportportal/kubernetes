@@ -32,6 +32,9 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.fabio.resources.requests.cpu }}
+            memory: {{ .Values.fabio.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.fabio.resources.limits.cpu }}
+            cpu: {{ .Values.fabio.resources.limits.cpu }}
 {{ include "nodeSelector" . | indent 8 }}
