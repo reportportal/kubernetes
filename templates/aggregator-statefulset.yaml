@@ -17,25 +17,25 @@ spec:
       containers:
       - env:
         - name: "PORT"
-          value: "8080"
+          value: "{{ .Values.landing.port }}"
         - name: "TWITTER_CONSUMER"
-          value:
+          value: "{{ .Values.landing.twitter_consumer }}"
         - name: "TWITTER_CONSUMER_SECRET"
-          value:
+          value: "{{ .Values.landing.twitter_consumer_secret }}"
         - name: "TWITTER_TOKEN"
-          value: "123123123"
+          value: "{{ .Values.landing.twitter_token }}"
         - name: "TWITTER_TOKEN_SECRET"
-          value: "123123123"
+          value: "{{ .Values.landing.twitter_token_secret }}"
         - name: "TWITTER_BUFFER_SIZE"
-          value:
+          value: "{{ .Values.landing.twitter_buffer_size }}"
         - name: "TWITTER_SEARCH_TERM"
-          value:
+          value: "{{ .Values.landing.twitter_search_term }}"
         - name: "GITHUB_INCLUDE_BETA"
-          value:
+          value: "{{ .Values.landing.github_include_beta }}"
         - name: "GITHUB_TOKEN"
-          value: "123123123"
+          value: "{{ .Values.landing.github_token }}"
         - name: "YOUTUBE_CHANNEL_ID"
-          value:
+          value: "{{ .Values.aggregator.port }}"
         image: "{{ .Values.aggregator.repository }}:{{ .Values.aggregator.tag }}"
         name: aggregator
         ports:
@@ -43,9 +43,9 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
-            memory: {{ .Values.serviceapi.resources.requests.memory }}
+            cpu: {{ .Values.aggregator.resources.requests.cpu }}
+            memory: {{ .Values.aggregator.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
-            memory: {{ .Values.serviceapi.resources.limits.memory }}
+            cpu: {{ .Values.aggregator.resources.limits.cpu }}
+            memory: {{ .Values.aggregator.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
