@@ -3,6 +3,17 @@ registry: "" # docker-registry.com
 
 # list of images
 
+aggregator:
+  repository: reportportal/landing-aggregator
+  tag: 1.41
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 150m
+      memory: 128Mi
 fabio:
   repository: fabiolb/fabio
   tag: 1.5.8-go1.10

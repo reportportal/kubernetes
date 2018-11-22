@@ -1,0 +1,51 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: aggregator
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-aggregator
+  serviceName: aggregator-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-aggregator
+    spec:
+      containers:
+      - env:
+        - name: "PORT"
+          value: "8080"
+        - name: "TWITTER_CONSUMER"
+          value:
+        - name: "TWITTER_CONSUMER_SECRET"
+          value:
+        - name: "TWITTER_TOKEN"
+          value: "123123123"
+        - name: "TWITTER_TOKEN_SECRET"
+          value: "123123123"
+        - name: "TWITTER_BUFFER_SIZE"
+          value:
+        - name: "TWITTER_SEARCH_TERM"
+          value:
+        - name: "GITHUB_INCLUDE_BETA"
+          value:
+        - name: "GITHUB_TOKEN"
+          value: "123123123"
+        - name: "YOUTUBE_CHANNEL_ID"
+          value:
+        image: "{{ .Values.aggregator.repository }}:{{ .Values.aggregator.tag }}"
+        name: aggregator
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
+            memory: {{ .Values.serviceapi.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
+            memory: {{ .Values.serviceapi.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}
