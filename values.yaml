@@ -127,17 +127,18 @@ nodeSelector:
     reportportal: true
 
 # aggregator settings
-
 landing:
-  port: 8080
-  twitter_consumer:
-  twitter_consumer_secret:
-  twitter_token:
-  twitter_token_secret:
-  twitter_buffer_size: 
-  twitter_search_term: 
-  github_include_beta: 
-  github_token:
+  PORT: "8080"
+  TWITTER_CONSUMER:
+  TWITTER_CONSUMER_SECRET:
+  TWITTER_TOKEN:
+  TWITTER_TOKEN_SECRET:
+  TWITTER_BUFFER_SIZE:
+  TWITTER_SEARCH_TERM:
+  GITHUB_INCLUDE_BETA:
+  GITHUB_TOKEN:
+  YOUTUBE_CHANNEL_ID: 
+  GOOGLE_API_KEY: 
 
 # persistence configuration for elasticsearch, mongodb & consul
 persistence:

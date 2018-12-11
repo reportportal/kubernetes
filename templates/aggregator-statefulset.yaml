@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       component: reportportal-aggregator
-  serviceName: aggregator-0
+  serviceName: aggregator
   template:
     metadata:
       labels:
@@ -16,32 +16,28 @@ spec:
     spec:
       containers:
       - env:
-        - name: RP_CONSUL.ADDRESS
-          value: registry:8500
-        - name: RP_CONSUL.TAGS
-          value: urlprefix-/aggregator opts strip=/aggregator
-        - name: RP_SERVER.PORT
-          value: "8080"
         - name: "PORT"
-          value: "{{ .Values.landing.port }}"
+          value: 
         - name: "TWITTER_CONSUMER"
-          value: "{{ .Values.landing.twitter_consumer }}"
+          value: 
         - name: "TWITTER_CONSUMER_SECRET"
-          value: "{{ .Values.landing.twitter_consumer_secret }}"
+          value: 
         - name: "TWITTER_TOKEN"
-          value: "{{ .Values.landing.twitter_token }}"
+          value: 
         - name: "TWITTER_TOKEN_SECRET"
-          value: "{{ .Values.landing.twitter_token_secret }}"
+          value: 
         - name: "TWITTER_BUFFER_SIZE"
-          value: "{{ .Values.landing.twitter_buffer_size }}"
+          value: 
         - name: "TWITTER_SEARCH_TERM"
-          value: "{{ .Values.landing.twitter_search_term }}"
+          value: 
         - name: "GITHUB_INCLUDE_BETA"
-          value: "{{ .Values.landing.github_include_beta }}"
+          value: 
         - name: "GITHUB_TOKEN"
-          value: "{{ .Values.landing.github_token }}"
+          value: 
         - name: "YOUTUBE_CHANNEL_ID"
-          value: "{{ .Values.aggregator.port }}"
+          value: 
+        - name: "GOOGLE_API_KEY"
+          value: 
         image: "{{ .Values.aggregator.repository }}:{{ .Values.aggregator.tag }}"
         name: aggregator
         ports:
