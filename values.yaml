@@ -3,17 +3,6 @@ registry: "" # docker-registry.com
 
 # list of images
 
-aggregator:
-  repository: reportportal/landing-aggregator
-  tag: 1.41
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 150m
-      memory: 128Mi
 fabio:
   repository: fabiolb/fabio
   tag: 1.5.8-go1.10
@@ -125,20 +114,6 @@ nodeSelector:
   enabled: false
   selector:
     reportportal: true
-
-# aggregator settings
-landing:
-  PORT: "8080"
-  TWITTER_CONSUMER:
-  TWITTER_CONSUMER_SECRET:
-  TWITTER_TOKEN:
-  TWITTER_TOKEN_SECRET:
-  TWITTER_BUFFER_SIZE:
-  TWITTER_SEARCH_TERM:
-  GITHUB_INCLUDE_BETA:
-  GITHUB_TOKEN:
-  YOUTUBE_CHANNEL_ID: 
-  GOOGLE_API_KEY: 
 
 # persistence configuration for elasticsearch, mongodb & consul
 persistence:
