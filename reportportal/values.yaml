@@ -17,7 +17,7 @@ fabio:
 
 serviceindex:
   repository: reportportal/service-index
-  tag: 4.0.0
+  tag: 4.2.0
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -50,7 +50,7 @@ consul:
       memory: 128Mi
 serviceauthorization:
   repository: reportportal/service-authorization
-  tag: 4.1.0
+  tag: 4.2.0
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -59,9 +59,10 @@ serviceauthorization:
     limits:
       cpu: 250m
       memory: 512Mi
+  sessionLiveTime: 86400
 serviceui:
   repository: reportportal/service-ui
-  tag: 4.1.0
+  tag: 4.3.6
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -72,7 +73,7 @@ serviceui:
       memory: 128Mi
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 4.1.0
+  tag: 4.3.0
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -83,7 +84,7 @@ serviceanalyzer:
       memory: 128Mi
 serviceapi:
   repository: reportportal/service-api
-  tag: 4.1.0
+  tag: 4.3.4
   pullPolicy: IfNotPresent
   resources:
     requests:

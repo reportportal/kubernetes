@@ -1,5 +1,5 @@
 apiVersion: apps/v1beta2
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: api
   labels: {{ include "labels" . | indent 4 }}
@@ -8,7 +8,6 @@ spec:
   selector:
     matchLabels:
       component: reportportal-api
-  serviceName: api-0
   template:
     metadata:
       labels:
@@ -20,6 +19,10 @@ spec:
           value: "-Xmx1g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
         - name: "RP_PROFILES"
           value: "docker"
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
