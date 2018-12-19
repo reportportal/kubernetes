@@ -15,26 +15,24 @@ spec:
         component: reportportal-gateway
     spec:
       containers:
-      - env:
-        - name: FABIO_PROXY_ADDR
-          value: :9999;rt=300s;wt=300s
-        - name: FABIO_REGISTRY_CONSUL_ADDR
-          value: registry:8500
-        - name: FABIO_REGISTRY_CONSUL_REGISTER_NAME
-          value: gateway
-#        image: "{{ .Values.registry }}/fabiolb/fabio:1.5.8-go1.10"
-        image: "{{ .Values.fabio.repository }}:{{ .Values.fabio.tag }}"
+      - image: "{{ .Values.traefik.repository }}:{{ .Values.traefik.tag }}"
         name: gateway
         ports:
-        - containerPort: 9998
-          protocol: TCP
-        - containerPort: 9999
-          protocol: TCP
+        - name: http
+          containerPort: 80
+        - name: admin
+          containerPort: 8080
+        args:
+        - --consulcatalog.endpoint=registry:8500
+        - --defaultEntryPoints=http
+        - --entryPoints=Name:http Address::8080
+        - --web
+        - --web.address=:8081
         resources:
           requests:
-            cpu: {{ .Values.fabio.resources.requests.cpu }}
-            memory: {{ .Values.fabio.resources.requests.cpu }}
+            cpu: {{ .Values.traefik.resources.requests.cpu }}
+            memory: {{ .Values.traefik.resources.requests.cpu }}
           limits:
-            cpu: {{ .Values.fabio.resources.limits.cpu }}
-            memory: {{ .Values.fabio.resources.limits.memory }}
+            cpu: {{ .Values.traefik.resources.limits.cpu }}
+            memory: {{ .Values.traefik.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

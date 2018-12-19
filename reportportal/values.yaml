@@ -3,9 +3,9 @@ registry: "" # docker-registry.com
 
 # list of images
 
-fabio:
-  repository: fabiolb/fabio
-  tag: 1.5.8-go1.10
+traefik:
+  repository: traefik
+  tag: 1.6
   pullPolicy: IfNotPresent
   resources:
     requests:
