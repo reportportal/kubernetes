@@ -3,10 +3,10 @@ description: ReportPortal.io AI-powered Test Automation Dashboard
 name: reportportal
 version: 1.0.0
 sources:
-- https://github.com/reportportal/k8s
+  - https://github.com/reportportal/k8s/reportportal
 keywords:
-- reportportal
+  - reportportal
 maintainers:
   - name: reportportal
-    email:
+    email: support@reportportal.io
 engine: gotpl
