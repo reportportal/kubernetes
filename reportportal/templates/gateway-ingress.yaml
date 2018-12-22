@@ -15,7 +15,7 @@ spec:
       paths:
       - backend:
           serviceName: gateway
-          servicePort: 9999
+          servicePort: 8080
     {{- end -}}
 {{- if .Values.ingress.tls }}
   tls:

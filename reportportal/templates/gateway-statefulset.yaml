@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gateway
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-gateway
+  serviceName: gateway
+  template:
+    metadata:
+      labels:
+        component: reportportal-gateway
+    spec:
+      containers:
+      - image: "{{ .Values.traefik.repository }}:{{ .Values.traefik.tag }}"
+        name: gateway
+        ports:
+        - name: http
+          containerPort: 80
+        - name: admin
+          containerPort: 8080
+        args:
+        - --consulcatalog.endpoint=registry:8500
+        - --defaultEntryPoints=http
+        - --entryPoints=Name:http Address::8080
+        - --web
+        - --web.address=:8081
+        resources:
+          requests:
+            cpu: {{ .Values.traefik.resources.requests.cpu }}
+            memory: {{ .Values.traefik.resources.requests.cpu }}
+          limits:
+            cpu: {{ .Values.traefik.resources.limits.cpu }}
+            memory: {{ .Values.traefik.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}

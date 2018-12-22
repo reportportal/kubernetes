@@ -1,5 +1,5 @@
-apiVersion: apps/v1beta2
-kind: StatefulSet
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: ui
   labels: {{ include "labels" . | indent 4 }}
@@ -8,7 +8,6 @@ spec:
   selector:
     matchLabels:
       component: reportportal-ui
-  serviceName: ui
   template:
     metadata:
       labels:
@@ -22,7 +21,10 @@ spec:
           value: urlprefix-/ui opts strip=/ui
         - name: RP_SERVER.PORT
           value: "8080"
-#        image: "{{ .Values.registry }}/reportportal/service-ui:4.1.0"
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         image: "{{ .Values.serviceui.repository }}:{{ .Values.serviceui.tag }}"
         name: ui
         ports:

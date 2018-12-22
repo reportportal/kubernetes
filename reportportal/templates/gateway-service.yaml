@@ -5,14 +5,12 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   ports:
-  - name: "9998"
-    port: 9998
-    protocol: TCP
-    targetPort: 9998
-  - name: "9999"
-    port: 9999
-    protocol: TCP
-    targetPort: 9999
+    - protocol: TCP
+      port: 80
+      name: web
+    - protocol: TCP
+      port: 8080
+      name: admin
   selector:
     component: reportportal-gateway
-  type: ClusterIP
+  type: NodePort

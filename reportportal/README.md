@@ -18,6 +18,14 @@ The Helm chart installation consist of the following .yaml files:
 charts.
 - A `templates/_helpers.tpl` file which contains helper templates. 
 
+Start to minikube with options:
+- `minikube --memory 4096 --cpus 2 start`
+
+Installation of ingress plugin:
+- `minikube addons enable ingress`
+
+For deploy Helm Chart, need to initialization Helm:
+- `helm init`
 
 You can deploy this chart with `helm install ./<project folder>`. 
 
@@ -35,12 +43,14 @@ Also make sure that the vm.max_map_count is setup
 
 The url to reach ReportPortal is http://reportportal.k8.com
 Make sure that the url is added in the host file and the ip is the K8 ip address
-Example:
-- `192.1.1.1	reportportal.k8.com`
+Commando to get ip adress of minikube:
+- `minikube ip`
+Example for host file:
+- `192.168.99.100	reportportal.k8.com`
 
 Variables is presents in value.yml. Report Portal use next images in variables:
 
-- fabio: fabiolb/fabio 1.5.8-go1.10 
+- traefik: traefik 1.6 
 - serviceindex:  reportportal/service-index 4.0.0
 - mongodb: mongodb 3.4
 - consul: consul 1.0.6
