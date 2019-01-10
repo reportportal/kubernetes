@@ -17,15 +17,17 @@ spec:
       - image: "{{ .Values.mongodb.repository }}:{{ .Values.mongodb.tag }}"
         name: mongodb
         resources: {}
-        {{ if .Values.persistence.mongodb.enabled -}}
-
         volumeMounts:
         - mountPath: /data/db
           name: reportportal-mongodb
       volumes:
       - name: reportportal-mongodb
+      {{- if .Values.persistence.mongodb.enabled }}
         persistentVolumeClaim:
           claimName: reportportal-mongodb
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
         resources:
           requests:
             cpu: {{ .Values.mongodb.resources.requests.cpu }}
@@ -33,5 +35,4 @@ spec:
           limits:
             cpu: {{ .Values.mongodb.resources.limits.cpu }}
             memory: {{ .Values.mongodb.resources.limits.memory }}
-{{- end }}
 {{ include "nodeSelector" . | indent 8 }}

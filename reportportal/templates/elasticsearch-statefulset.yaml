@@ -17,14 +17,17 @@ spec:
       containers:
       - image: "{{ .Values.elasticsearchoss.repository }}:{{ .Values.elasticsearchoss.tag }}"
         name: elasticsearch
-        {{ if .Values.persistence.elasticsearchenabled -}}
         volumeMounts:
         - mountPath: /usr/share/elasticsearch/data
           name: reportportal-elasticsearch
       volumes:
       - name: reportportal-elasticsearch
+      {{- if .Values.persistence.elasticsearch.enabled }}
         persistentVolumeClaim:
           claimName: reportportal-elasticsearch
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
         resources:
           requests:
             cpu: {{ .Values.elasticsearchoss.resources.requests.cpu }}
@@ -32,5 +35,4 @@ spec:
           limits:
             cpu: {{ .Values.elasticsearchoss.resources.limits.cpu }}
             memory: {{ .Values.elasticsearchoss.resources.limits.memory }}
-{{- end }}
 {{ include "nodeSelector" . | indent 8 }}

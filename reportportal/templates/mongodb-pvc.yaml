@@ -1,4 +1,4 @@
-{{- if .Values.persistence.mongodb.enabled -}}
+{{- if and (.Values.persistence.mongodb.enabled) (not .Values.persistence.mongodb.useExisting) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -6,8 +6,15 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   accessModes:
-  - ReadWriteOnce
+  - {{ .Values.persistence.mongodb.spec.accessMode | quote }}
   resources:
     requests:
-      storage: {{ .Values.persistence.mongodb.spec.capacity.storage }}
-{{- end -}}
+      storage: {{ .Values.persistence.mongodb.spec.capacity.storage | quote }}
+{{- if .Values.persistence.mongodb.spec.storageClass }}
+{{- if (eq "-" .Values.persistence.mongodb.spec.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.mongodb.spec.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
