@@ -28,7 +28,7 @@ serviceindex:
       memory: 256Mi
 mongodb:
   installdep:
-    enable: true
+    enable: false
 consul:
   repository: consul
   tag: 1.0.6
@@ -85,9 +85,9 @@ serviceapi:
     limits:
       cpu: 300m
       memory: 1500Mi
-elasticsearchoss:
+elasticsearch:
   installdep:
-    enable: true
+    enable: false
 
 # ingress configuration for the ui
 ingress:

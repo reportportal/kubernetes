@@ -1,9 +1,9 @@
 dependencies:
-  - name: stable/mongodb
+  - name: mongodb
     version: 0.4.18
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: mongodb.installdep.enable
-  - name: stabele/elasticsearch
+  - name: elasticsearch
     version: 1.17.0
     repository: https://kubernetes-charts.storage.googleapis.com/
-    condition: elasticsearchoss.installdep.enable
+    condition: elasticsearch.installdep.enable
