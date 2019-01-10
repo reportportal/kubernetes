@@ -27,16 +27,8 @@ serviceindex:
       cpu: 200m
       memory: 256Mi
 mongodb:
-  repository: mongo
-  tag: 3.4
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 200m
-      memory: 512Mi
-    limits:
-      cpu: 256m
-      memory: 576Mi
+  installdep:
+    enable: true
 consul:
   repository: consul
   tag: 1.0.6
@@ -94,16 +86,8 @@ serviceapi:
       cpu: 300m
       memory: 1500Mi
 elasticsearchoss:
-  repository: docker.elastic.co/elasticsearch/elasticsearch-oss
-  tag: 6.1.1
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 64Mi
-    limits:
-      cpu: 200m
-      memory: 128Mi
+  installdep:
+    enable: true
 
 # ingress configuration for the ui
 ingress:
@@ -118,39 +102,6 @@ nodeSelector:
 
 # persistence configuration for elasticsearch, mongodb & consul
 persistence:
-  elasticsearch:
-    enabled: false
-    ## If true will use an existing PVC instead of creating one
-    # useExisting: false
-    spec:
-      ## elasticsearch data Persistent Volume Storage Class
-      ## If defined, storageClassName: <storageClass>
-      ## If set to "-", storageClassName: "", which disables dynamic provisioning
-      ## If undefined (the default) or set to null, no storageClassName spec is
-      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-      ##   GKE, AWS & OpenStack)
-      ##
-      # storageClass: "-"
-      accessMode: ReadWriteOnce
-      capacity:
-        storage: 2Gi
-  mongodb:
-    enabled: false
-    ## If true will use an existing PVC instead of creating one
-    # useExisting: false
-    spec:
-      ## mongodb data Persistent Volume Storage Class
-      ## If defined, storageClassName: <storageClass>
-      ## If set to "-", storageClassName: "", which disables dynamic provisioning
-      ## If undefined (the default) or set to null, no storageClassName spec is
-      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-      ##   GKE, AWS & OpenStack)
-      ##
-      # storageClass: "-"
-      accessMode:
-        - ReadWriteOnce
-      capacity:
-        storage: 2Gi
   registry:
     enabled: false
     ## If true will use an existing PVC instead of creating one
