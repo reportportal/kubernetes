@@ -19,6 +19,10 @@ spec:
           value: docker
         - name: RP_SESSION_LIVE
           value: "{{ .Values.serviceauthorization.sessionLiveTime }}"
+        {{ if .Values.mongodb.endpoint.external }}
+        - name: "RP_MONGO_URI"
+          value: "{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
+        {{- end }}
         - name: HOSTNAME
           valueFrom:
             fieldRef:

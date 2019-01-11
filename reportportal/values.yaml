@@ -26,9 +26,6 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
-mongodb:
-  installdep:
-    enable: false
 consul:
   repository: consul
   tag: 1.0.6
@@ -88,11 +85,22 @@ serviceapi:
 elasticsearch:
   installdep:
     enable: false
+  endpoint:
+    external: true
+    address: elasticsearch-client.default.svc
+    port: 9200
+mongodb:
+  installdep:
+    enable: false
+  endpoint: 
+    external: true
+    address: mongodb://mongodb.default.svc.cluster.local
+    port: 27017
 
 # ingress configuration for the ui
 ingress:
   hosts:
-    - reportportal.k8.com
+    - reportportal
 
 # node selector for all components, if any
 nodeSelector:

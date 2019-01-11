@@ -19,6 +19,10 @@ spec:
           value: "-Xmx1g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
         - name: "RP_PROFILES"
           value: "docker"
+        {{ if .Values.mongodb.endpoint.external }}
+        - name: "RP_MONGO_URI"
+          value: "{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
+        {{- end }}
         - name: HOSTNAME
           valueFrom:
             fieldRef:
