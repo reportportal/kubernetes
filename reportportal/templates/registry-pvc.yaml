@@ -6,10 +6,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   accessModes:
-  - {{ .Values.persistence.registry.spec.accessMode | quote }}
+  - {{ .Values.persistence.registry.spec.accessMode }}
   resources:
     requests:
-      storage: {{ .Values.persistence.registry.spec.capacity.storage | quote }}
+      storage: {{ .Values.persistence.registry.spec.capacity.storage }}
 {{- if .Values.persistence.registry.spec.storageClass }}
 {{- if (eq "-" .Values.persistence.registry.spec.storageClass) }}
   storageClassName: ""
