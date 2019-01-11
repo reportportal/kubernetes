@@ -61,8 +61,8 @@ Variables is presents in value.yml. Report Portal use next images in variables:
 - elasticsearchoss: docker.elastic.co/elasticsearch/elasticsearch-oss  6.1.1
 
 Requirements:
-- mongodb
-- elasticsearch
+- `mongodb`
+- `elasticsearch`
 
 Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
 Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
