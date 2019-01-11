@@ -100,7 +100,7 @@ mongodb:
 # ingress configuration for the ui
 ingress:
   hosts:
-    - reportportal
+    - reportportal.k8.com
 
 # node selector for all components, if any
 nodeSelector:
@@ -111,7 +111,7 @@ nodeSelector:
 # persistence configuration for elasticsearch, mongodb & consul
 persistence:
   registry:
-    enabled: false
+    enabled: true
     ## If true will use an existing PVC instead of creating one
     # useExisting: false
     spec:
@@ -126,4 +126,4 @@ persistence:
       accessMode:
         - ReadWriteOnce
       capacity:
-        storage: 2Gi
+        storage: 10Gi
