@@ -66,7 +66,8 @@ Requirements:
 
 Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
 Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
-`elasticsearch:
+```
+elasticsearch:
   installdep:
     enable: false
   endpoint:
@@ -79,4 +80,5 @@ mongodb:
   endpoint:
     external: true
     address: mongodb://mongodb.default.svc.cluster.local
-    port: 27017`
+    port: 27017
+```
