@@ -63,6 +63,7 @@ Variables is presents in value.yml. Report Portal use next images in variables:
 Requirements:
 - mongodb
 - elasticsearch
+
 Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
 Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
 `elasticsearch:
