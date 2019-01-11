@@ -6,7 +6,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   accessModes:
-  - {{ .Values.persistence.registry.spec.accessMode }}
+  - {{ .Values.persistence.registry.spec.accessMode | quote }}
   resources:
     requests:
       storage: {{ .Values.persistence.registry.spec.capacity.storage }}
