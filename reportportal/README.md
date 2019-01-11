@@ -52,13 +52,11 @@ Variables is presents in value.yml. Report Portal use next images in variables:
 
 - traefik: traefik 1.6 
 - serviceindex:  reportportal/service-index 4.0.0
-- mongodb: mongodb 3.4
 - consul: consul 1.0.6
 - serviceauthorization: reportportal/service-authorization 4.1.0
 - serviceui: reportportal/service-ui 4.1.0
 - serviceanalyzer: reportportal/service-analyzer 4.1.0
 - serviceapi:  reportportal/service-api 4.1.0
-- elasticsearchoss: docker.elastic.co/elasticsearch/elasticsearch-oss  6.1.1
 
 Requirements:
 - `mongodb`
