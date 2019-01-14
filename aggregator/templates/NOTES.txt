@@ -1,0 +1,2 @@
+Aggregator is now available at:
+{{ toYaml .Values.ingress.hosts | indent 4 }}
