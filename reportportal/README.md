@@ -97,12 +97,12 @@ NOTES:
 MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
 <chart_name>-mongodb.default.svc.cluster.local
 ```
-Elasticsearch chart should be installed in the same manner:
+Elasticsearch chart can be installed in the same manner:
 ```sh
 helm install --name <chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
 
-3. After mongodb and elasticsearch up and running you should edit values.yaml to adjust reportportal settings.
+3. After mongodb and elasticsearch are up and running, edit values.yaml to adjust ReportPortal settings.
 Insert real values of mongodb and elasticsearch addresses and ports:
 ```
 elasticsearch:
@@ -144,12 +144,12 @@ ingress:
   hosts:
     - reportportal.k8.com
 ```
-4. After you edited and reviewed values.yaml with appropriate values you could create helm package and deploy it:
+4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
 helm install ./reportportal-4.3.6.tgz
 ```
-When it up and running you can access application from your browser with NodePort or ingress address.
+Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example
 gateway     NodePort   10.233.48.187  <none>       80:31826/TCP,8080:31135/TCP  2s
 ```
