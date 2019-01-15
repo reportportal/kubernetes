@@ -80,3 +80,82 @@ mongodb:
     address: mongodb://mongodb.default.svc.cluster.local
     port: 27017
 ```
+
+### Installation notes
+1. Make sure you have Kubernetes up and running
+2. Reportportal requires installed [mongodb](https://github.com/helm/charts/tree/master/stable/mongodb) and [elasticsearch](https://github.com/helm/charts/tree/master/stable/elasticsearch) to run. Required versions of helm charts are described in requirements.yaml
+If you don't have your own mongodb and elasticsearch you can install them from helm charts. 
+
+For example to install mongodb please use this commands:
+```sh
+helm dependency build ./reportportal/
+helm install ./reportportal/charts/mongodb-0.4.18.tgz
+```
+After deploying mongodb please copy address and port from output notes. Should be something like this:
+```
+NOTES:
+MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
+ill-vulture-mongodb.default.svc.cluster.local
+```
+Elasticsearch chart should be installed in the same manner:
+```sh
+helm install ./reportportal/charts/elasticsearch-1.17.0.tgz
+```
+
+3. After mongodb and elasticsearch up and running you should edit values.yaml to adjust reportportal settings.
+Insert real values of mongodb and elasticsearch addresses and ports:
+```
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: elasticsearch-client.default.svc
+    port: 9200
+mongodb:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: mongodb://ill-vulture-mongodb.default.svc.cluster.local
+    port: 27017
+```
+Adjust resources for each pod if needed:
+```
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+```
+Set persistence configuration and storage capacity for registry:
+```
+persistence:
+  registry:
+    enabled: true
+...
+```
+Set ingress controller configuration for UI like this:
+```
+# ingress configuration for the ui
+ingress:
+  hosts:
+    - reportportal.k8.com
+```
+4. After you edited and reviewed values.yaml with appropriate values you could create helm package and deploy it:
+```sh
+helm package ./reportportal/
+helm install ./reportportal-4.3.6.tgz
+```
+When it up and running you can access application from your browser with NodePort or ingress address.
+```example
+gateway     NodePort   10.233.48.187  <none>       80:31826/TCP,8080:31135/TCP  2s
+```
+5. Open in browser http://10.233.48.187:8080 page. Defalut login and password is:
+```
+default
+1q2w3e
+```
+P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize.
