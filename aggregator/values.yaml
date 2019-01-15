@@ -1,0 +1,41 @@
+# docker registry in which the images are hosted
+registry: "" # docker-registry.com
+
+# list of images
+
+aggregator:
+  repository: reportportal/aggregator-chart
+  tag: 1.41
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 80m
+      memory: 96Mi
+
+# aggregator settings
+
+landing:
+  port: 8080
+  twitter_consumer:
+  twitter_consumer_secret:
+  twitter_token:
+  twitter_token_secret:
+  twitter_buffer_size: 
+  twitter_search_term: 
+  github_include_beta: 
+  github_token:
+  youtube_channel_id:
+  google_api_key:
+  
+ingress:
+  hosts:
+    - status.reportportal.com
+    
+# node selector for all components, if any
+nodeSelector:
+  enabled: false
+  selector:
+    reportportal: true

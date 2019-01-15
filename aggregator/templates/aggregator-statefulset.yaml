@@ -1,0 +1,52 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: aggregator
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-aggregator
+  serviceName: aggregator
+  template:
+    metadata:
+      labels:
+        component: reportportal-aggregator
+    spec:
+      containers:
+      - env:
+        - name: "PORT"
+          value: "8080"
+        - name: "TWITTER_CONSUMER"
+          value: {{ .Values.landing.twitter_consumer }}
+        - name: "TWITTER_CONSUMER_SECRET"
+          value: {{ .Values.landing.twitter_consumer_secret }}
+        - name: "TWITTER_TOKEN"
+          value: {{ .Values.landing.twitter_token }}
+        - name: "TWITTER_TOKEN_SECRET"
+          value: {{ .Values.landing.twitter_token_secret }}
+        - name: "TWITTER_BUFFER_SIZE"
+          value: {{ .Values.landing.twitter_buffer_size }}
+        - name: "TWITTER_SEARCH_TERM"
+          value: {{ .Values.landing.twitter_search_term}}
+        - name: "GITHUB_INCLUDE_BETA"
+          value: {{ .Values.landing.github_include_beta }}
+        - name: "GITHUB_TOKEN"
+          value: {{ .Values.landing.github_token }}
+        - name: "YOUTUBE_CHANNEL_ID"
+          value: {{ .Values.landing.youtube_channel_id }}
+        - name: "GOOGLE_API_KEY"
+          value: {{ .Values.landing.google_api_key }}
+        image: "{{ .Values.aggregator.repository }}:{{ .Values.aggregator.tag }}"
+        name: aggregator
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.aggregator.resources.requests.cpu }}
+            memory: {{ .Values.aggregator.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.aggregator.resources.limits.cpu }}
+            memory: {{ .Values.aggregator.resources.limits.memory }}

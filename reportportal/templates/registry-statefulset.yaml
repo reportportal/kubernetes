@@ -37,8 +37,12 @@ spec:
           name: reportportal-registry
       volumes:
       - name: reportportal-registry
+      {{- if .Values.persistence.registry.enabled }}
         persistentVolumeClaim:
           claimName: reportportal-registry
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
         resources:
           requests:
             cpu: {{ .Values.consul.resources.requests.cpu }}
