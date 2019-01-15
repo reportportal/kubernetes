@@ -89,17 +89,17 @@ If you don't have your own mongodb and elasticsearch instances, they can be inst
 For example to install mongodb please use this commands:
 ```sh
 helm dependency build ./reportportal/
-helm install ./reportportal/charts/mongodb-0.4.18.tgz
+helm install --name <chart_name> ./reportportal/charts/mongodb-0.4.18.tgz
 ```
 Once MongoDB has been deployed, copy address and port from output notes. Should be something like this:
 ```
 NOTES:
 MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
-ill-vulture-mongodb.default.svc.cluster.local
+<chart_name>-mongodb.default.svc.cluster.local
 ```
 Elasticsearch chart should be installed in the same manner:
 ```sh
-helm install ./reportportal/charts/elasticsearch-1.17.0.tgz
+helm install --name <chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
 
 3. After mongodb and elasticsearch up and running you should edit values.yaml to adjust reportportal settings.
@@ -110,14 +110,14 @@ elasticsearch:
     enable: false
   endpoint:
     external: true
-    address: elasticsearch-client.default.svc
+    address: <chart_name>-elasticsearch-client.default.svc
     port: 9200
 mongodb:
   installdep:
     enable: false
   endpoint:
     external: true
-    address: mongodb://ill-vulture-mongodb.default.svc.cluster.local
+    address: mongodb://<chart_name>-mongodb.default.svc
     port: 27017
 ```
 Adjust resources for each pod if needed:
