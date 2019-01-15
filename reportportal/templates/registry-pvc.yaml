@@ -1,4 +1,4 @@
-{{- if .Values.persistence.registry.enabled -}}
+{{- if and (.Values.persistence.registry.enabled) (not .Values.persistence.registry.useExisting) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -6,8 +6,15 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   accessModes:
-  - ReadWriteOnce
+  - {{ .Values.persistence.registry.spec.accessMode | quote }}
   resources:
     requests:
       storage: {{ .Values.persistence.registry.spec.capacity.storage }}
-{{- end -}}
+{{- if .Values.persistence.registry.spec.storageClass }}
+{{- if (eq "-" .Values.persistence.registry.spec.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.registry.spec.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
