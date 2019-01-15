@@ -84,14 +84,14 @@ mongodb:
 ### Installation notes
 1. Make sure you have Kubernetes up and running
 2. Reportportal requires installed [mongodb](https://github.com/helm/charts/tree/master/stable/mongodb) and [elasticsearch](https://github.com/helm/charts/tree/master/stable/elasticsearch) to run. Required versions of helm charts are described in requirements.yaml
-If you don't have your own mongodb and elasticsearch you can install them from helm charts. 
+If you don't have your own mongodb and elasticsearch instances, they can be installed from official helm charts. 
 
 For example to install mongodb please use this commands:
 ```sh
 helm dependency build ./reportportal/
 helm install ./reportportal/charts/mongodb-0.4.18.tgz
 ```
-After deploying mongodb please copy address and port from output notes. Should be something like this:
+Once MongoDB has been deployed, copy address and port from output notes. Should be something like this:
 ```
 NOTES:
 MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
