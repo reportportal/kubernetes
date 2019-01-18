@@ -63,7 +63,8 @@ Requirements:
 - `PostgreSQL`
 
 Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
-Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
+
+Also you should specify correct postgresql and rabbitmq addresses and ports in values.yaml. Also it could be an external existing installation:
 ```
 postgresql:
   SecretName: ""
@@ -91,12 +92,12 @@ rabbitmq:
 ### Installation notes
 1. Make sure you have Kubernetes up and running
 2. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
-If you don't have your own mongodb and elasticsearch instances, they can be installed from official helm charts. 
+If you don't have your own postgresql and rabbitmq instances, they can be installed from official helm charts. 
 
 For example to install postgresql please use this commands:
 ```sh
 helm dependency build ./reportportal/
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<db_password> ./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlDatabase=reportportal./reportportal/charts/postgresql-3.9.1.tgz
 ```
 Once PostgreSql has been deployed, copy address and port from output notes. Should be something like this:
 ```
