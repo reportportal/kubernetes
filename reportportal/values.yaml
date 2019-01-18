@@ -98,7 +98,7 @@ rabbitmq:
     port: 5672
     user: rabbitmq
     apiport: 15672
-    apiuser: rabbitmq
+    apiuser: management
 
 # ingress configuration for the ui
 ingress:

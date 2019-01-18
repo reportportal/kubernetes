@@ -33,7 +33,7 @@ spec:
         - name: RP_AMQP_APIPORT
           value: "{{ .Values.rabbitmq.endpoint.apiport }}"
         - name: RP_AMQP_APIUSER
-          value: "{{ .Values.rabbitmq.endpoint.user }}"
+          value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
           valueFrom:
             secretKeyRef:
