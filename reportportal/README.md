@@ -66,21 +66,26 @@ Before you deploy reportportal you should have installed requirements. Versions 
 Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
 ```
 postgresql:
-  SeacretName: ""
+  SecretName: ""
   installdep:
     enable: false
   endpoint:
     external: true
     address: db-postgresql.default.svc.cluster.local
     port: 5432
+    user: postgres
 
 rabbitmq:
+  SecretName: ""
   installdep:
     enable: false
-  endpoint:
+  endpoint: 
     external: true
     address: mq-rabbitmq-ha.default.svc.cluster.local
     port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
 ```
 
 ### Installation notes
@@ -152,21 +157,26 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
 Insert real values of postgresql and rabbitmq addresses and ports:
 ```
 postgresql:
-  SeacretName: ""
+  SecretName: ""
   installdep:
     enable: false
   endpoint:
     external: true
-    address: <db_chart_name>-postgresql.default.svc.cluster.local
+    address: db-postgresql.default.svc.cluster.local
     port: 5432
+    user: postgres
 
 rabbitmq:
+  SecretName: ""
   installdep:
     enable: false
-  endpoint:
+  endpoint: 
     external: true
-    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
+    address: mq-rabbitmq-ha.default.svc.cluster.local
     port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
 ```
 Adjust resources for each pod if needed:
 ```
@@ -195,7 +205,7 @@ ingress:
 4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
-helm install --name <reportportal_chart_name> --set postgresql.SeacretName=<db_chart_name>-postgresql ./reportportal-4.3.6.tgz
+helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-4.3.6.tgz
 ```
 Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example

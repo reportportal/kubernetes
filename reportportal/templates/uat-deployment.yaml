@@ -26,7 +26,7 @@ spec:
         - name: RP_DB_PASS
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.postgresql.SeacretName }}"
+              name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"

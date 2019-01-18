@@ -78,7 +78,7 @@ migrations:
 
 
 postgresql:
-  SeacretName: ""
+  SecretName: ""
   installdep:
     enable: false
   endpoint:
@@ -86,9 +86,10 @@ postgresql:
     address: db-postgresql.default.svc.cluster.local
     port: 5432
     user: postgres
+    dbName: reportportal
 
 rabbitmq:
-  SeacretName: ""
+  SecretName: ""
   installdep:
     enable: false
   endpoint: 
@@ -109,22 +110,3 @@ nodeSelector:
   enabled: false
   selector:
     reportportal: true
-
-# persistence configuration for elasticsearch, mongodb & consul
-persistence:
-  registry:
-    enabled: true
-    ## If true will use an existing PVC instead of creating one
-    # useExisting: false
-    spec:
-      ## consul data Persistent Volume Storage Class
-      ## If defined, storageClassName: <storageClass>
-      ## If set to "-", storageClassName: "", which disables dynamic provisioning
-      ## If undefined (the default) or set to null, no storageClassName spec is
-      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-      ##   GKE, AWS & OpenStack)
-      ##
-      # storageClass: "-"
-      accessMode: ReadWriteOnce
-      capacity:
-        storage: 10Gi

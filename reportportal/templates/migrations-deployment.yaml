@@ -15,16 +15,18 @@ spec:
     spec:
       containers:
       - env:
-        - name: RP_DB_HOST
+        - name: POSTGRES_SERVER
           value: "{{ .Values.postgresql.endpoint.address }}"
-        - name: RP_DB_PORT
+        - name: POSTGRES_DB
+          value: "{{ .Values.postgresql.endpoint.dbName }}"
+        - name: POSTGRES_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
-        - name: RP_DB_USER
+        - name: POSTGRES_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
-        - name: RP_DB_PASS
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.postgresql.SeacretName }}"
+              name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
         image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
         name: migrations
