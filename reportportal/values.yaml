@@ -5,7 +5,7 @@ registry: "" # docker-registry.com
 
 traefik:
   repository: traefik
-  tag: 1.7.6
+  tag: 1.6
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -16,8 +16,8 @@ traefik:
       memory: 256Mi
 
 serviceindex:
-  repository: reportportal/service-index
-  tag: 4.2.0
+  repository: pbortnik/rp5-index
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -26,20 +26,10 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
-consul:
-  repository: consul
-  tag: 1.0.6
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 64Mi
-    limits:
-      cpu: 200m
-      memory: 128Mi
-serviceauthorization:
-  repository: reportportal/service-authorization
-  tag: 4.2.0
+
+uat:
+  repository: pbortnik/rp5-uat
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -49,9 +39,10 @@ serviceauthorization:
       cpu: 250m
       memory: 512Mi
   sessionLiveTime: 86400
+
 serviceui:
-  repository: reportportal/service-ui
-  tag: 4.3.6
+  repository: pbortnik/rp5-ui
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -60,20 +51,10 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
-serviceanalyzer:
-  repository: reportportal/service-analyzer
-  tag: 4.3.0
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
+
 serviceapi:
-  repository: reportportal/service-api
-  tag: 4.3.4
+  repository: pbortnik/rp5-api
+  tag: latest
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -82,20 +63,41 @@ serviceapi:
     limits:
       cpu: 300m
       memory: 1500Mi
-elasticsearch:
+
+migrations:
+  repository: pbortnik/rp5-migrations
+  tag: latest
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+
+postgresql:
+  SeacretName: ""
   installdep:
     enable: false
   endpoint:
     external: true
-    address: elasticsearch-client.default.svc
-    port: 9200
-mongodb:
+    address: db-postgresql.default.svc.cluster.local
+    port: 5432
+    user: postgres
+
+rabbitmq:
+  SeacretName: ""
   installdep:
     enable: false
   endpoint: 
     external: true
-    address: mongodb://mongodb.default.svc.cluster.local
-    port: 27017
+    address: mq-rabbitmq-ha.default.svc.cluster.local
+    port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
 
 # ingress configuration for the ui
 ingress:

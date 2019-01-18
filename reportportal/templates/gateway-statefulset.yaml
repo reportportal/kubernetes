@@ -19,15 +19,20 @@ spec:
         name: gateway
         ports:
         - name: http
-          containerPort: 80
-        - name: admin
           containerPort: 8080
+        - name: admin
+          containerPort: 8081
         args:
-        - --consulcatalog.endpoint=registry:8500
+        - --docker
+        - --docker.watch
+        - --docker.constraints=tag==v5
         - --defaultEntryPoints=http
         - --entryPoints=Name:http Address::8080
+        - --logLevel=DEBUG
         - --web
         - --web.address=:8081
+        - --web.metrics=true
+        - --web.metrics.prometheus=true
         resources:
           requests:
             cpu: {{ .Values.traefik.resources.requests.cpu }}

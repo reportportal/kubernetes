@@ -6,10 +6,10 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       name: web
     - protocol: TCP
-      port: 8080
+      port: 8081
       name: admin
   selector:
     component: reportportal-gateway

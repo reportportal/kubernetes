@@ -1,22 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: uat
+  name: migrations
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: reportportal-uat
+      component: reportportal-migrations
   template:
     metadata:
       labels:
-        component: reportportal-uat
+        component: reportportal-migrations
     spec:
       containers:
       - env:
-        - name: RP_SESSION_LIVE
-          value: "3600"
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
@@ -28,16 +26,13 @@ spec:
             secretKeyRef:
               name: "{{ .Values.postgresql.SeacretName }}"
               key: "postgresql-password"
-        name: uat
-        image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
-        ports:
-        - containerPort: 9999
-          protocol: TCP
+        image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
+        name: migrations
         resources:
           requests:
-            cpu: {{ .Values.uat.resources.requests.cpu }}
-            memory: {{ .Values.uat.resources.requests.memory }}
+            cpu: {{ .Values.migrations.resources.requests.cpu }}
+            memory: {{ .Values.migrations.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.uat.resources.limits.cpu }}
-            memory: {{ .Values.uat.resources.limits.memory }}
+            cpu: {{ .Values.migrations.resources.limits.cpu }}
+            memory: {{ .Values.migrations.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}

@@ -16,15 +16,12 @@ spec:
     spec:
       containers:
       - env:
-        - name: RP_PROXY_CONSUL
-          value: "true"
-        - name: RP_SERVER_PORT
-          value: "8090"
-#        image: "{{ .Values.registry }}/reportportal/service-index:4.0.0"
+        - name: LB_URL
+          value: "http://gateway:8081"
         image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
         name: index
         ports:
-        - containerPort: 8090
+        - containerPort: 8080
           protocol: TCP
         resources:
           requests:
