@@ -97,7 +97,7 @@ If you don't have your own postgresql and rabbitmq instances, they can be instal
 For example to install postgresql please use this commands:
 ```sh
 helm dependency build ./reportportal/
-helm install --name <postgresql_chart_name> --set postgresqlDatabase=reportportal./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
 ```
 Once PostgreSql has been deployed, copy address and port from output notes. Should be something like this:
 ```
