@@ -35,10 +35,7 @@ spec:
         - name: RP_AMQP_APIUSER
           value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.rabbitmq.SecretName }}"
-              key: "rabbitmq-password"
+          value: "{{ .Values.rabbitmq.endpoint.apipass }}"
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT

@@ -30,6 +30,10 @@ spec:
               key: "postgresql-password"
         image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
         name: migrations
+        volumeMounts:
+          - name: migrations
+            mountPath: /entrypoint.sh
+            subPath: entrypoint.sh
         resources:
           requests:
             cpu: {{ .Values.migrations.resources.requests.cpu }}
@@ -38,3 +42,8 @@ spec:
             cpu: {{ .Values.migrations.resources.limits.cpu }}
             memory: {{ .Values.migrations.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
+      volumes:
+        - name: migrations
+          configMap:
+            name: migrations
+            defaultMode: 0755
