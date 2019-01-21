@@ -1,12 +1,7 @@
-# docker registry in which the images are hosted
-registry: "" # docker-registry.com
-
-# list of images
-
 traefik:
   repository: traefik
   tag: 1.6
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 150m
@@ -18,7 +13,7 @@ traefik:
 serviceindex:
   repository: pbortnik/rp5-index
   tag: latest
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 150m
@@ -30,7 +25,7 @@ serviceindex:
 uat:
   repository: pbortnik/rp5-uat
   tag: latest
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 100m
@@ -43,7 +38,7 @@ uat:
 serviceui:
   repository: pbortnik/rp5-ui
   tag: latest
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 100m
@@ -55,7 +50,7 @@ serviceui:
 serviceapi:
   repository: pbortnik/rp5-api
   tag: latest
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 200m
@@ -67,7 +62,7 @@ serviceapi:
 migrations:
   repository: pbortnik/rp5-migrations
   tag: latest
-  pullPolicy: Alvays
+  pullPolicy: Always
   resources:
     requests:
       cpu: 100m
