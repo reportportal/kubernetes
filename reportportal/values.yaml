@@ -81,7 +81,7 @@ postgresql:
     address: db-postgresql.default.svc.cluster.local
     port: 5432
     user: postgres
-    dbName: postgres
+    dbName: reportportal
 
 rabbitmq:
   SecretName: ""
@@ -93,8 +93,7 @@ rabbitmq:
     port: 5672
     user: rabbitmq
     apiport: 15672
-    apiuser: management
-    apipass: ""
+    apiuser: rabbitmq
 
 # ingress configuration for the ui
 ingress:
