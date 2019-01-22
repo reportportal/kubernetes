@@ -37,7 +37,7 @@ spec:
         - name: RP_AMQP_APIPASS
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.rabbitmq.SeacretName }}"
+              name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
