@@ -20,8 +20,15 @@ spec:
         - name: "RP_PROFILES"
           value: "docker"
         {{ if .Values.mongodb.endpoint.external }}
+        - name: SPRING_DATA_MONGODB_USERNAME
+          value: user
+        - name: SPRING_DATA_MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.mongoSecretName }}"
+              key: "mongodb-password"
         - name: "RP_MONGO_URI"
-          value: "{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
+          value: "mongodb://{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
         {{- end }}
         - name: HOSTNAME
           valueFrom:

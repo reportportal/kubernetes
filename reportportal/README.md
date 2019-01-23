@@ -89,17 +89,17 @@ If you don't have your own mongodb and elasticsearch instances, they can be inst
 For example to install mongodb please use this commands:
 ```sh
 helm dependency build ./reportportal/
-helm install --name <chart_name> ./reportportal/charts/mongodb-0.4.18.tgz
+helm install --name <chart_name> --set mongodbUsername=<mongo_user_pass>,mongodbPassword=<user_password> ./reportportal/charts/mongodb-0.4.18.tgz
 ```
 Once MongoDB has been deployed, copy address and port from output notes. Should be something like this:
 ```
 NOTES:
 MongoDB can be accessed via port 27017 on the following DNS name from within your cluster:
-<chart_name>-mongodb.default.svc.cluster.local
+<db_chart_name>-mongodb.default.svc.cluster.local
 ```
 Elasticsearch chart can be installed in the same manner:
 ```sh
-helm install --name <chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
 
 3. After mongodb and elasticsearch are up and running, edit values.yaml to adjust ReportPortal settings.
@@ -130,13 +130,6 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-Set persistence configuration and storage capacity for registry:
-```
-persistence:
-  registry:
-    enabled: true
-...
-```
 Set ingress controller configuration for UI like this:
 ```
 # ingress configuration for the ui
@@ -147,7 +140,7 @@ ingress:
 4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
-helm install ./reportportal-4.3.6.tgz
+helm install --name <app_chart_name> --set mongoSecretName=<mongo_chart_name>-mongodb,mongodb.endpoint.address=<db_chart_name>-mongodb.default.svc.cluster.local ./reportportal-4.3.6.tgz
 ```
 Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example

@@ -87,15 +87,17 @@ elasticsearch:
     enable: false
   endpoint:
     external: true
-    address: elasticsearch-client.default.svc
+    address: <es_chart_name>-elasticsearch-client.default.svc
     port: 9200
 mongodb:
   installdep:
     enable: false
   endpoint: 
     external: true
-    address: mongodb://mongodb.default.svc.cluster.local
+    address: ""
     port: 27017
+
+mongoSecretName: ""
 
 # ingress configuration for the ui
 ingress:
