@@ -11,7 +11,7 @@ The chart installs all mandatory services to run ReportPortal
 
 The Helm chart installation consist of the following .yaml files:
 
-- Statefulset and Service files of: `Migrations, Api, Gateway, Index, UAT, UI, RabbitMq, PostgreSQL` that are used for deployment and communication between services.
+- Statefulset and Service files of: `Migrations, Api, Index, UAT, UI, RabbitMq, PostgreSQL` that are used for deployment and communication between services.
 - PersistentVolume files: `PostgreSQL`
 - A `Ingress` to access the UI
 - A `values.yaml` which exposes a few of the configuration options in the
@@ -188,13 +188,6 @@ Adjust resources for each pod if needed:
     limits:
       cpu: 250m
       memory: 512Mi
-```
-Set persistence configuration and storage capacity for registry:
-```
-persistence:
-  registry:
-    enabled: true
-...
 ```
 Set ingress controller configuration for UI like this:
 ```
