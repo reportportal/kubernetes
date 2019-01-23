@@ -15,8 +15,8 @@ spec:
       paths:
       - path: /uat
         backend:
-          serviceName: headless
-          servicePort: 9999
+          serviceName: uat-0
+          servicePort: headless
     {{- end -}}
 {{- if .Values.ingress.tls }}
   tls:

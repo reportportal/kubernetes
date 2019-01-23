@@ -15,8 +15,8 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: headless
-          servicePort: 8080
+          serviceName: index-0
+          servicePort: headless
     {{- end -}}
 {{- if .Values.ingress.tls }}
   tls:

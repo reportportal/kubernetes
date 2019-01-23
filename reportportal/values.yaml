@@ -96,6 +96,8 @@ rabbitmq:
     apiuser: rabbitmq
 
 # ingress configuration for the ui
+host: "reportportal.k8.com"
+
 ingress:
   hosts:
     - reportportal.k8.com

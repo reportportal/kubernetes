@@ -15,8 +15,8 @@ spec:
       paths:
       - path: /api/v1
         backend:
-          serviceName: headless
-          servicePort: 8585
+          serviceName: api-0
+          servicePort: headless
     {{- end -}}
 {{- if .Values.ingress.tls }}
   tls:

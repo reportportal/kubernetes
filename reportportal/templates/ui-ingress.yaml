@@ -9,16 +9,10 @@ metadata:
     {{- end }}
 spec:
   rules:
-  {{- range $host := .Values.ingress.hosts }}
-  - host: {{ $host }}
+  - host: "{{ .Values.host }}"
     http:
       paths:
-      - path: /ui/
-        backend:
-          serviceName: headless
-          servicePort: 8080
-    {{- end -}}
-{{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end -}}
+        - path: /ui/
+          backend:
+            serviceName: ui-0
+            servicePort: headless
