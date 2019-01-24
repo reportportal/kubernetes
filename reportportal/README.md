@@ -19,7 +19,7 @@ charts.
 - A `templates/_helpers.tpl` file which contains helper templates. 
 
 Start to minikube with options:
-- `minikube --memory 4096 --cpus 2 start`
+- `minikube --memory 12228 --cpus 2 start`
 
 Installation of ingress plugin:
 - `minikube addons enable ingress`
@@ -140,7 +140,7 @@ ingress:
 4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
-helm install --name <app_chart_name> --set mongoSecretName=<mongo_chart_name>-mongodb,mongodb.endpoint.address=<db_chart_name>-mongodb.default.svc.cluster.local,mongodb.endpoint.username=<mongo_user_name> ./reportportal-4.3.6.tgz
+helm install --name <app_chart_name> --set mongoSecretName=<mongo_chart_name>-mongodb,mongodb.endpoint.address=<db_chart_name>-mongodb.default.svc.cluster.local,mongodb.endpoint.username=<mongo_user_name>,mongodb.endpoint.dbname=<mongodb_reportportal_dbname> ./reportportal-4.3.6.tgz
 ```
 Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example

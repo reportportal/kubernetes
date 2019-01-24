@@ -97,6 +97,7 @@ mongodb:
     address: ""
     port: 27017
     username: ""
+    dbname: ""
 
 mongoSecretName: ""
 

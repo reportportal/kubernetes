@@ -20,6 +20,8 @@ spec:
         - name: RP_SESSION_LIVE
           value: "{{ .Values.serviceauthorization.sessionLiveTime }}"
         {{ if .Values.mongodb.endpoint.external }}
+        - name: RP_MONGO_DBNAME
+          value: "{{ .Values.mongodb.endpoint.dbname }}"
         - name: SPRING_DATA_MONGODB_USERNAME
           value: "{{ .Values.mongodb.endpoint.username }}"
         - name: SPRING_DATA_MONGODB_PASSWORD
