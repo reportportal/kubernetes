@@ -96,6 +96,7 @@ mongodb:
     external: true
     address: ""
     port: 27017
+    username: ""
 
 mongoSecretName: ""
 

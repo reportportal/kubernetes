@@ -89,7 +89,7 @@ If you don't have your own mongodb and elasticsearch instances, they can be inst
 For example to install mongodb please use this commands:
 ```sh
 helm dependency build ./reportportal/
-helm install --name <chart_name> --set mongodbUsername=<mongo_user_pass>,mongodbPassword=<user_password> ./reportportal/charts/mongodb-0.4.18.tgz
+helm install --name <chart_name> --set mongodbUsername=<mongo_user_name>,mongodbPassword=<user_password> ./reportportal/charts/mongodb-0.4.18.tgz
 ```
 Once MongoDB has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -140,7 +140,7 @@ ingress:
 4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
-helm install --name <app_chart_name> --set mongoSecretName=<mongo_chart_name>-mongodb,mongodb.endpoint.address=<db_chart_name>-mongodb.default.svc.cluster.local ./reportportal-4.3.6.tgz
+helm install --name <app_chart_name> --set mongoSecretName=<mongo_chart_name>-mongodb,mongodb.endpoint.address=<db_chart_name>-mongodb.default.svc.cluster.local,mongodb.endpoint.username=<mongo_user_name> ./reportportal-4.3.6.tgz
 ```
 Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example
