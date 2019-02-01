@@ -130,10 +130,16 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-Set ingress controller configuration for UI like this:
+Set ingress configuration for UI and adjust settings if you have installed ingress controller.:
 ```
 # ingress configuration for the ui
+# If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
+# If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
+# If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
 ingress:
+  enable: true
+  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+  usedomainname: false
   hosts:
     - reportportal.k8.com
 ```
