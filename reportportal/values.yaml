@@ -85,6 +85,7 @@ rabbitmq:
 
 # ingress configuration for the ui
 ingress:
+  enable: false  # for minikube
   hosts:
     - reportportal.k8.com
 

@@ -90,6 +90,8 @@ rabbitmq:
 ```
 
 ### Installation notes
+
+#### Minikube
 1. Make sure you have Kubernetes up and running
 2. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
 If you don't have your own postgresql and rabbitmq instances, they can be installed from official helm charts. 
@@ -199,7 +201,7 @@ ingress:
 4. Once values.yaml is adjusted, helm package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
-helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-4.3.6.tgz
+helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0.0.tgz
 ```
 Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
 ```example
@@ -211,3 +213,26 @@ default
 1q2w3e
 ```
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize.
+
+#### GKE
+
+1. To deploy Report Portal to the GKE you should have Kubernetes cluster up and running
+
+    1.1 Setup Helm on the GKE:
+   ```
+   helm init
+   kubectl create serviceaccount --namespace kube-system tiller
+   kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+   kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+   helm init --service-account tiller --upgrade
+   ```
+
+2. To start deploy application to the GKE use 2 and points from "Minikube" section regarding;
+
+3. Helm package can be created and deployed by executing:
+   ```sh
+   helm package ./reportportal/
+   helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha,ingress.enable=true ./reportportal-5.0.0.tgz
+   ```
+4. To get access to the UI you should create DNS zone and record for created Load Balancer.
+    Example: Create k8s.com zone and DNS A record using external LB ip and reportportal.k8s.com like a DNS name

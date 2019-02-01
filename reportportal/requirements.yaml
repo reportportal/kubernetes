@@ -8,3 +8,8 @@ dependencies:
     version: 1.18.0
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: rabbitmq.installdep.enable
+
+  - name: nginx-ingress
+    version: 1.2.3
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: ingress.enable
