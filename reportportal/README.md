@@ -216,7 +216,7 @@ P.S: If you can't login - please check logs of api and uat pods. It take some ti
 
 #### GKE
 
-1. To deploy Report Portal to the GKE you should have Kubernetes cluster up and running
+1. To deploy Report Portal to the GKE you should have Kubernetes cluster up and running. To create Kubernetes cluster use [installetion guide](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-cluster)
 
     1.1 Setup Helm on the GKE:
    ```
@@ -226,6 +226,21 @@ P.S: If you can't login - please check logs of api and uat pods. It take some ti
    kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
    helm init --service-account tiller --upgrade
    ```
+
+2. To start deploy application to the GKE use 2 and points from "Minikube" section regarding;
+
+3. Helm package can be created and deployed by executing:
+   ```sh
+   helm package ./reportportal/
+   helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha,ingress.enable=true ./reportportal-5.0.0.tgz
+   ```
+4. To get access to the UI you should create DNS zone and record for created Load Balancer.
+    Example: Create k8s.com zone and DNS A record using external LB ip and reportportal.k8s.com like a DNS name
+
+
+#### DigitalOcean
+
+1. To deploy Report Portal to the DigitalOcean you should have Kubernetes cluster up and running. To create Kubernetes cluster use [installetion guide](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/)
 
 2. To start deploy application to the GKE use 2 and points from "Minikube" section regarding;
 
