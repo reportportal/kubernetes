@@ -242,7 +242,7 @@ P.S: If you can't login - please check logs of api and uat pods. It take some ti
 
 1. To deploy Report Portal to the DigitalOcean you should have Kubernetes cluster up and running. To create Kubernetes cluster use [installetion guide](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/)
 
-2. To start deploy application to the GKE use 2 and points from "Minikube" section regarding;
+2. To start deploy application to the DigitalOcean use 2 and points from "Minikube" section regarding;
 
 3. Helm package can be created and deployed by executing:
    ```sh
@@ -256,7 +256,7 @@ P.S: If you can't login - please check logs of api and uat pods. It take some ti
 
 1. To deploy Report Portal to the DigitalOcean you should have Kubernetes cluster up and running. To create Kubernetes cluster use [installetion guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 
-2. To start deploy application to the GKE use 2 and points from "Minikube" section regarding;
+2. To start deploy application to the AWS (EKS) use 2 and points from "Minikube" section regarding;
 
 3. Helm package can be created and deployed by executing:
    ```sh
