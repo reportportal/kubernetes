@@ -8,3 +8,8 @@ dependencies:
     version: 1.18.0
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: rabbitmq.installdep.enable
+
+  - name: elasticsearch
+    version: 1.17.0
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: elasticsearch.installdep.enable

@@ -11,8 +11,8 @@ The chart installs all mandatory services to run ReportPortal
 
 The Helm chart installation consist of the following .yaml files:
 
-- Statefulset and Service files of: `Migrations, Api, Index, UAT, UI, RabbitMq, PostgreSQL` that are used for deployment and communication between services.
-- PersistentVolume files: `PostgreSQL`
+- Statefulset and Service files of: `Analyzer, Migrations, Api, Index, UAT, UI, RabbitMq, PostgreSQL, Elasticsearch` that are used for deployment and communication between services.
+- PersistentVolume files: `PostgreSQL and Elasticsearch`
 - A `Ingress` to access the UI
 - A `values.yaml` which exposes a few of the configuration options in the
 charts.
@@ -61,10 +61,11 @@ Variables is presents in value.yml. Report Portal use next images in variables:
 Requirements:
 - `RabbitMq`
 - `PostgreSQL`
+- `Elasticsearch`
 
 Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
 
-Also you should specify correct postgresql and rabbitmq addresses and ports in values.yaml. Also it could be an external existing installation:
+Also you should specify correct postgresql, elasticsearch and rabbitmq addresses and ports in values.yaml. Also it could be an external existing installation:
 ```
 postgresql:
   SecretName: ""
@@ -87,6 +88,14 @@ rabbitmq:
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: elasticsearch-client.default.svc
+    port: 9200
 ```
 
 ### Installation notes
@@ -120,6 +129,11 @@ To connect to your database from outside the cluster execute the following comma
 
     kubectl port-forward --namespace default svc/<postgresql_chart_name>-postgresql 5432:5432 &
     psql --host 127.0.0.1 -U postgres
+```
+```
+Elasticsearch chart can be installed in the same manner:
+```sh
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
 RabbitMq chart can be installed in the same manner:
 ```sh
@@ -178,6 +192,14 @@ rabbitmq:
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: <chart_name>-elasticsearch-client.default.svc
+    port: 9200
 ```
 Adjust resources for each pod if needed:
 ```

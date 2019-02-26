@@ -59,6 +59,18 @@ migrations:
       cpu: 100m
       memory: 128Mi
 
+serviceanalyzer:
+  repository: reportportal/service-analyzer
+  tag: 4.3.0
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
 
 postgresql:
   SecretName: ""
@@ -82,6 +94,14 @@ rabbitmq:
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: <es_chart_name>-elasticsearch-client.default.svc
+    port: 9200
 
 # ingress configuration for the ui
 ingress:
