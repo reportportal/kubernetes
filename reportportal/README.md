@@ -130,10 +130,16 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-Set ingress controller configuration for UI like this:
+Set ingress configuration for UI and adjust settings if you have installed ingress controller.:
 ```
 # ingress configuration for the ui
+# If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
+# If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
+# If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
 ingress:
+  enable: true
+  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+  usedomainname: false
   hosts:
     - reportportal.k8.com
 ```
@@ -152,3 +158,16 @@ default
 1q2w3e
 ```
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize.
+
+### Microsoft Azure AKS deployment notes
+1. Deploy an Azure Kubernetes Service (AKS) cluster using the Azure portal or cli -> [instruction](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
+2. Make sure you have AKS cluster up and running
+3. Configure Helm package manager on your AKS cluster -> [instruction](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
+4. Deploy ingress controller if you need to expose your allpication -> [instruction](https://docs.microsoft.com/en-us/azure/aks/ingress-basic)
+5. Deploy dependencies and application according to installation notes
+6. Get nginx-ingress-controller LoadBalancer's EXTERNAL-IP address with command ```kubectl get services```
+```
+NAME				TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                       AGE
+nginx-ingress-controller	LoadBalancer   10.0.132.176   40.114.87.240   80:32763/TCP,443:30295/TCP    2m38s
+```
+7. Open it in your browser http://40.114.87.240

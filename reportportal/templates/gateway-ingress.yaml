@@ -1,3 +1,4 @@
+{{- if .Values.ingress.enable }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -5,19 +6,29 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
+    {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
   rules:
+{{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
       paths:
       - backend:
+  {{- end -}}
+{{ else }}
+  - http:
+      paths:
+      - path: /
+        backend:
+{{ end }}
           serviceName: gateway
           servicePort: 8080
-    {{- end -}}
+status:
+  loadBalancer: {}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
 {{- end -}}
+{{- end }}
