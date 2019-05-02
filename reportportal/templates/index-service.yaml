@@ -6,9 +6,9 @@ metadata:
 spec:
   ports:
   - name: headless
-    port: 8090
+    port: 8080
     protocol: TCP
-    targetPort: 8090
+    targetPort: 8080
   selector:
     component: reportportal-index
   type: ClusterIP
