@@ -1,24 +1,7 @@
-# docker registry in which the images are hosted
-registry: "" # docker-registry.com
-
-# list of images
-
-traefik:
-  repository: traefik
-  tag: 1.7.6
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 150m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
-
 serviceindex:
-  repository: reportportal/service-index
-  tag: 4.2.0
-  pullPolicy: IfNotPresent
+  repository: pbortnik/rp5-index
+  tag: latest
+  pullPolicy: Always
   resources:
     requests:
       cpu: 150m
@@ -26,21 +9,11 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
-consul:
-  repository: consul
-  tag: 1.0.6
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 64Mi
-    limits:
-      cpu: 200m
-      memory: 128Mi
-serviceauthorization:
-  repository: reportportal/service-authorization
-  tag: 4.2.0
-  pullPolicy: IfNotPresent
+
+uat:
+  repository: pbortnik/rp5-uat
+  tag: latest
+  pullPolicy: Always
   resources:
     requests:
       cpu: 100m
@@ -49,10 +22,11 @@ serviceauthorization:
       cpu: 250m
       memory: 512Mi
   sessionLiveTime: 86400
+
 serviceui:
-  repository: reportportal/service-ui
-  tag: 4.3.6
-  pullPolicy: IfNotPresent
+  repository: pbortnik/rp5-ui
+  tag: latest
+  pullPolicy: Always
   resources:
     requests:
       cpu: 100m
@@ -60,21 +34,11 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
-serviceanalyzer:
-  repository: reportportal/service-analyzer
-  tag: 4.3.0
-  pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
+
 serviceapi:
-  repository: reportportal/service-api
-  tag: 4.3.4
-  pullPolicy: IfNotPresent
+  repository: pbortnik/rp5-api
+  tag: latest
+  pullPolicy: Always
   resources:
     requests:
       cpu: 200m
@@ -82,6 +46,54 @@ serviceapi:
     limits:
       cpu: 300m
       memory: 1500Mi
+
+migrations:
+  repository: pbortnik/rp5-migrations
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+serviceanalyzer:
+  repository: pbortnik/rp5-analyzer
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+postgresql:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: db-postgresql.default.svc.cluster.local
+    port: 5432
+    user: postgres
+    dbName: reportportal
+
+rabbitmq:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint: 
+    external: true
+    address: mq-rabbitmq-ha.default.svc.cluster.local
+    port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
+
 elasticsearch:
   installdep:
     enable: false
@@ -89,42 +101,24 @@ elasticsearch:
     external: true
     address: <es_chart_name>-elasticsearch-client.default.svc
     port: 9200
-mongodb:
-  installdep:
-    enable: false
-  endpoint: 
-    external: true
-    address: ""
-    port: 27017
-
-mongoSecretName: ""
 
 # ingress configuration for the ui
+# If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
+# If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
+# If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
 ingress:
+  enable: true
+  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+  usedomainname: false
   hosts:
     - reportportal.k8.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 
 # node selector for all components, if any
 nodeSelector:
   enabled: false
   selector:
     reportportal: true
-
-# persistence configuration for elasticsearch, mongodb & consul
-persistence:
-  registry:
-    enabled: true
-    ## If true will use an existing PVC instead of creating one
-    # useExisting: false
-    spec:
-      ## consul data Persistent Volume Storage Class
-      ## If defined, storageClassName: <storageClass>
-      ## If set to "-", storageClassName: "", which disables dynamic provisioning
-      ## If undefined (the default) or set to null, no storageClassName spec is
-      ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-      ##   GKE, AWS & OpenStack)
-      ##
-      # storageClass: "-"
-      accessMode: ReadWriteOnce
-      capacity:
-        storage: 10Gi
