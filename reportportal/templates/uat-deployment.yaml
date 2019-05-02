@@ -15,35 +15,29 @@ spec:
     spec:
       containers:
       - env:
-        - name: RP_PROFILES
-          value: docker
         - name: RP_SESSION_LIVE
-          value: "{{ .Values.serviceauthorization.sessionLiveTime }}"
-        {{ if .Values.mongodb.endpoint.external }}
-        - name: SPRING_DATA_MONGODB_USERNAME
-          value: user
-        - name: SPRING_DATA_MONGODB_PASSWORD
+          value: "3600"
+        - name: RP_DB_HOST
+          value: "{{ .Values.postgresql.endpoint.address }}"
+        - name: RP_DB_PORT
+          value: "{{ .Values.postgresql.endpoint.port }}"
+        - name: RP_DB_USER
+          value: "{{ .Values.postgresql.endpoint.user }}"
+        - name: RP_DB_PASS
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.mongoSecretName }}"
-              key: "mongodb-password"
-        - name: "RP_MONGO_URI"
-          value: "mongodb://{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
-        {{- end }}
-        - name: HOSTNAME
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        image: "{{ .Values.serviceauthorization.repository }}:{{ .Values.serviceauthorization.tag }}"
+              name: "{{ .Values.postgresql.SecretName }}"
+              key: "postgresql-password"
         name: uat
+        image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
         ports:
-        - containerPort: 8080
+        - containerPort: 9999
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.serviceauthorization.resources.requests.cpu }}
-            memory: {{ .Values.serviceauthorization.resources.requests.memory }}
+            cpu: {{ .Values.uat.resources.requests.cpu }}
+            memory: {{ .Values.uat.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.serviceauthorization.resources.limits.cpu }}
-            memory: {{ .Values.serviceauthorization.resources.limits.memory }}
+            cpu: {{ .Values.uat.resources.limits.cpu }}
+            memory: {{ .Values.uat.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
