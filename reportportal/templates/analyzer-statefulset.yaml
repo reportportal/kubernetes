@@ -15,8 +15,19 @@ spec:
         component: reportportal-analyzer
     spec:
       containers:
-#      - image: "{{ .Values.registry }}/reportportal/service-analyzer:4.1.0"
-      - image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+      - env:
+        - name: RP_AMQP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
+        - name: AMQP_URL
+          value: "amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/"
+        - name: AMQP_EXCHANGE_NAME
+          value: "analyzer-default"
+        - name: ES_HOSTS
+          value: "http://{{ .Values.elasticsearch.endpoint.address }}:{{ .Values.elasticsearch.endpoint.port }}"
+        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
         - containerPort: 8080
