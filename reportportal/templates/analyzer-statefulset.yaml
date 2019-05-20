@@ -18,6 +18,11 @@ spec:
 #      - image: "{{ .Values.registry }}/reportportal/service-analyzer:4.1.0"
       - image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
+        env:
+        {{ if .Values.elasticsearch.endpoint.external }}
+        - name: ES_HOSTS
+          value: "http://{{ default "elasticsearch" .Values.elasticsearch.endpoint.address }}:{{ default 9200 .Values.elasticsearch.endpoint.port }}"
+        {{- end }}
         ports:
         - containerPort: 8080
           protocol: TCP
