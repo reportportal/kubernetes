@@ -171,3 +171,23 @@ NAME				TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)                   
 nginx-ingress-controller	LoadBalancer   10.0.132.176   40.114.87.240   80:32763/TCP,443:30295/TCP    2m38s
 ```
 7. Open it in your browser http://40.114.87.240
+
+### Amazon EKS deployment notes
+
+Prerequisites
+1. Create and configure AWS EKS Cluster
+You can use either the AWS console or AWS CLI -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+2. Install and configure Helm package manager on your AWS AKS cluster -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/helm.html)
+
+You can test your Helm configuration by installing a simple Helm chart like a Wordpress
+```
+$ helm install stable/wordpress
+```
+Do not forget to clean up the wordpress chart resources after making sure everything works as expected
+
+Installation
+1. Deploy Ingress controller if you plan to expose your application -> [Instruction](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#aws)
+2. Proceed with the Installation notes at https://github.com/reportportal/kubernetes/tree/master/reportportal#installation-notes
+(The steps before it can be ignored )
+3. Run ```kubectl get svc``` to get LoadBalancer's EXTERNAL-IP address
+4. Open http://EXTERNAL-IP  in your browser to see if the dashboard is available
