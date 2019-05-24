@@ -2,7 +2,7 @@
 
 ## Kubernetes/Helm configs for ReportPortal
 
-> **Important** Do note that this is **a Beta version**
+**Important** Do note that this is **a Beta version**
 
 This Helm project is created to setup ReportPortal with only one commando.
 The help chart is tested on Minikube and creates a fully working ReportPortal project
@@ -38,9 +38,9 @@ Commando to create those folders:
 
 ```bash
 minikube ssh
-sudo mkdir /mnt/data/db
-sudo mkdir /mnt/data/console
-sudo mkdir /mnt/data/elastic
+sudo mkdir /mnt/data/db -p
+sudo mkdir /mnt/data/console -p
+sudo mkdir /mnt/data/elastic -p
 ```
 
 Also make sure that the vm.max_map_count is setup
@@ -128,16 +128,16 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 
     ```yaml
     elasticsearch:
-    installdep:
+      installdep:
         enable: false
-    endpoint:
+      endpoint:
         external: true
         address: <chart_name>-elasticsearch-client.default.svc
         port: 9200
     mongodb:
-    installdep:
+      installdep:
         enable: false
-    endpoint:
+      endpoint:
         external: true
         address: mongodb://<chart_name>-mongodb.default.svc
         port: 27017
@@ -147,10 +147,10 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 
     ```yaml
     resources:
-        requests:
+      requests:
         cpu: 100m
         memory: 128Mi
-        limits:
+      limits:
         cpu: 250m
         memory: 512Mi
     ```
@@ -164,8 +164,8 @@ Insert real values of mongodb and elasticsearch addresses and ports:
     # If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
     ingress:
       enable: true
-    # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
-    usedomainname: false
+      # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+      usedomainname: false
       hosts:
         - reportportal.k8.com
     ```
@@ -185,10 +185,10 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 
 1. Open in browser http://10.233.48.187:8080 page. Defalut login and password can be:
 
-    1. default / 1q2w3e
-    1. superadmin / erebus
+    - default / 1q2w3e
+    - superadmin / erebus
 
-    > If you can't login - please check logs of api and uat pods. It take some time to initialize.
+    **Note**: If you can't login - please check logs of api and uat pods. It takes some time to initialize.
 
 ## Microsoft Azure AKS deployment notes
 
