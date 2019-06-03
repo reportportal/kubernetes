@@ -166,7 +166,7 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
 
 3. After PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
 
-Insert thereal values of postgresql and rabbitmq addresses and ports:
+Insert the real values of PostgreSQL and RabbitMQ addresses and ports:
 ```
 postgresql:
   SecretName: ""
@@ -209,7 +209,7 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects in addition):
 ```
 # ingress configuration for the ui
 ingress:
@@ -218,9 +218,9 @@ ingress:
     - reportportal.k8.com
 ```
 
-4. Creation of ReportPortal data in PostgreSQL db required the ltree extension (all of this is a part of Migrations job). This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
+4. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
 
-Therefore, to change 'rpuser' to a superuser in PostgreSQL helm chart installation, do the following:
+Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following:
 
 Get a shell to a running Postgresql container:
 ```
