@@ -46,8 +46,6 @@ Commando to get ip adress of minikube:
 Example for host file:
 - `192.168.99.100 reportportal.k8.com`
 
-### Minikube installation notes
-
 Variables is presents in value.yml. Report Portal use next images in variables:
 
 - serviceindex:  pbortnik/rp5-index
@@ -93,7 +91,7 @@ elasticsearch:
     enable: false
   endpoint:
     external: true
-    address: elasticsearch-client.default.svc
+    address: <es_chart_name>-elasticsearch-client.default.svc
     port: 9200
 ```
 
@@ -128,12 +126,12 @@ To connect to your database from outside the cluster execute the following comma
     kubectl port-forward --namespace default svc/<postgresql_chart_name>-postgresql 5432:5432 &
     psql --host 127.0.0.1 -U postgres
 ```
-```
+
 Elasticsearch chart can be installed in the same manner:
 ```sh
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
-RabbitMq chart can be installed in the same manner:
+RabbitMQ chart can be installed in the same manner:
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -166,8 +164,9 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
     URL : http://127.0.0.1:15672
 ```
 
-3. After Postgresql and Rabbitmq are up and running, edit values.yaml to adjust ReportPortal settings.
-Insert real values of postgresql and rabbitmq addresses and ports:
+3. After PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
+
+Insert thereal values of postgresql and rabbitmq addresses and ports:
 ```
 postgresql:
   SecretName: ""
@@ -210,7 +209,7 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-Set Ingress controller configuration for UI like this:
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
 ```
 # ingress configuration for the ui
 ingress:
@@ -219,22 +218,26 @@ ingress:
     - reportportal.k8.com
 ```
 
-4. Creation of ReportPortal data required the Postgres ltree extension (all of this is a part of Migrations job). This, in turn, requires Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
+4. Creation of ReportPortal data in PostgreSQL db required the ltree extension (all of this is a part of Migrations job). This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
 
 Therefore, to change 'rpuser' to a superuser in PostgreSQL helm chart installation, do the following:
 
+Get a shell to a running Postgresql container:
 ```
-#Get a shell to a running Postgresql container
 kubectl exec -it postgresqlchart-postgresql-0 -- /bin/bash
-#Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser
+```
+Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser:
+```
 psql -h 127.0.0.1 -U postgres
 ALTER USER rpuser WITH SUPERUSER;
-#Exit
+```
+Exit
+```
 \q
 exit
 ```
 
-5. Once everything is ready, helm package can be created and deployed by executing:
+5. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
@@ -248,4 +251,4 @@ gateway     NodePort   10.233.48.187  <none>       80:31826/TCP,8080:31135/TCP  
 default
 1q2w3e
 ```
-P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize.
+P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
