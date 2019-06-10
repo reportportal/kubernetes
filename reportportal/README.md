@@ -176,7 +176,7 @@ postgresql:
     external: true
     address: db-postgresql.default.svc.cluster.local
     port: 5432
-    user: postgres
+    user: rpuser
     dbName: reportportal
 
 rabbitmq:
