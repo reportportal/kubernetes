@@ -24,10 +24,7 @@ spec:
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.postgresql.SecretName }}"
-              key: "postgresql-password"
+          value: "{{ .Values.postgresql.endpoint.password }}"
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
         ports:
