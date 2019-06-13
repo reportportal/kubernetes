@@ -145,11 +145,13 @@ You need the following information to connect:
 
 Write down the real values of PostgreSQL address, port, user, password (can be skipped on this step) and dbName into the values.yaml
 
+```sh
 postgresql.endpoint.address = 
-postgresql.endpoint.port = 
+postgresql.endpoint.port = 5432
 postgresql.endpoint.user = rpuser
 postgresql.endpoint.dbName = reportportal
 postgresql.endpoint.password = 
+```
 
 5. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 
