@@ -209,11 +209,12 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects in addition):
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects (gateway-ingress, api-ingress) in addition):
 ```
 # ingress configuration for the ui
 ingress:
 ..
+  usedomainname: true
   hosts:
     - reportportal.k8.com
 ```

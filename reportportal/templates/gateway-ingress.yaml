@@ -15,7 +15,18 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - backend:
+      - path: /?(.*)
+        backend:
+          serviceName: ui-0
+          servicePort: headless
+      - path: /ui/?(.*)
+        backend:
+          serviceName: ui-0
+          servicePort: headless
+      - path: /uat/?(.*)
+        backend:
+          serviceName: uat-0
+          servicePort: headless
   {{- end -}}
 {{ else }}
   - http:
