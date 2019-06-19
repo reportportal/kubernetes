@@ -1,7 +1,7 @@
 # k8s
-Kubernetes Helm config for ReportPortal
+Kubernetes Helm config for installation ReportPortal with Amazon RDS as an external database
 
-**Do note that this is a Beta version**
+**Overall information**
 
 This Helm project is created to install all mandatory services to run ReportPortal with only one commando, but it implies that an external Amazon RDS Service for PostgreSQL should be used
 
@@ -21,9 +21,10 @@ Variables is presents in value.yml. Report Portal use next images in variables:
 - migrations: pbortnik/rp5-migrations
 - serviceanalyzer: pbortnik/rp5-analyzer
 
-Requirements (Versions is described in requirements.yaml): 
-- `RabbitMq`
-- `Elasticsearch`
+Requirements: 
+
+- `RabbitMQ`
+- `ElasticSearch`
 - `PostgreSQL` (Amazon PostgreSQL RDS)
 
 Before you deploy ReportPortal you should have installed requirements & deploy your Amazon PostgreSQL RDS
@@ -106,11 +107,12 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects in addition):
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects (gateway-ingress, api-ingress) in addition):
 ```
 # ingress configuration for the ui
 ingress:
 ..
+  usedomainname: true
   hosts:
     - reportportal.k8.com
 ```
