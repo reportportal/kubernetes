@@ -40,7 +40,8 @@ There are two options to use Kubernetes on AWS:
 - `Manage Kubernetes infrastructure yourself with Amazon EC2`
 - `Get an automatically provisioned, managed Kubernetes control plane with Amazon EKS`
 
-We recommend you to go with the second option, and use Amazon EKS
+We recommend you to go with the second option, and use Amazon EKS.
+
 To create and configure your AWS EKS Cluster you can use either the AWS console or AWS CLI -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 
 2. Install and configure Helm package manager 
