@@ -12,8 +12,6 @@ The chart installation consist of the following .yaml files:
 - `values.yaml` which exposes a few of the configuration options in the charts
 - `templates/_helpers.tpl` file which contains helper templates.
 
-Variables is presents in value.yml.
-
 ReportPortal use the following images in variables:
 
 - serviceindex: pbortnik/rp5-index
@@ -30,7 +28,7 @@ Requirements:
 - `PostgreSQL` (Amazon PostgreSQL RDS)
 
 Before you deploy ReportPortal you should have installed all requirements & deploy your Amazon PostgreSQL RDS
-
+All variables are presented in the value.yaml file
 
 ### Installation notes
 
@@ -210,3 +208,4 @@ default
 1q2w3e
 ```
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
+
