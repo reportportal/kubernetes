@@ -1,68 +1,122 @@
-# k8s
-Kubernetes/Helm configs for ReportPortal
+# K8s
+Kubernetes/Helm configs for installation ReportPortal
 
-**Do note that this is a Beta version**
+**Overall information**
 
-This Helm project is created to setup ReportPortal with only one commando.  
+This Helm project is created to setup ReportPortal with only one commando. It installs all mandatory services to run the application.
 
-The chart installs all mandatory services to run ReportPortal
+The Chart installation consist of the following .yaml files:
 
-The Helm chart installation consist of the following .yaml files:
-
-- Statefulset and Service files of: `Analyzer, Api, Index, Migrations, UAT, UI, RabbitMq, PostgreSQL, Elasticsearch` that are used for deployment and communication between services.
+- Statefulset and Service files of: `Analyzer, Api, Index, Migrations, UAT, UI, RabbitMq, PostgreSQL, Elasticsearch` that are used for deployment and communication between services
 - `Ingress` objects to access the UI
 - `values.yaml` which exposes a few of the configuration options in the charts
 - `templates/_helpers.tpl` file which contains helper templates.
 
-### Minikube installation notes
+ReportPortal use the following images:
 
-Start to minikube with options:
-- `minikube --memory 4096 --cpus 2 start`
-
-Installation of ingress plugin:
-- `minikube addons enable ingress`
-
-For deploy Helm Chart, need to initialization Helm:
-- `helm init`
-
-You can deploy this chart with `helm install ./<project folder>`. 
-
-Once it's installed please make sure that the PersistentVolumes directories are created
-
-Commando to create those folders:
-- `minikube ssh`
-- `sudo mkdir /mnt/data/db`
-- `sudo mkdir /mnt/data/console`
-- `sudo mkdir /mnt/data/elastic`
-
-Also make sure that the vm.max_map_count is setup
-- `minikube ssh`
-- `sudo sysctl -w vm.max_map_count=262144`
-
-The url to reach ReportPortal is http://reportportal.k8.com
-Make sure that the url is added in the host file and the ip is the K8 ip address
-Commando to get ip adress of minikube:
-- `minikube ip`
-Example for host file:
-- `192.168.99.100 reportportal.k8.com`
-
-Variables is presents in value.yml. Report Portal use next images in variables:
-
-- serviceindex:  pbortnik/rp5-index
+- serviceindex: pbortnik/rp5-index
 - uat: pbortnik/rp5-uat
 - serviceui: pbortnik/rp5-ui
 - serviceapi: pbortnik/rp5-api
 - migrations: pbortnik/rp5-migrations
 - serviceanalyzer: pbortnik/rp5-analyzer
 
-Requirements:
-- `RabbitMq`
-- `PostgreSQL`
-- `Elasticsearch`
+Requirements: 
 
-Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
+- `RabbitMQ`
+- `ElasticSearch`
+- `PostgreSQL` 
 
-Also you should specify correct postgresql, elasticsearch and rabbitmq addresses and ports in values.yaml. Also it could be an external existing installation:
+Before you deploy ReportPortal you should have installed all requirements.
+All variables are presented in the value.yaml file.
+
+To deploy ReportPortal you should have Kubernetes cluster up and running. Please follow the guides below to run your Kubernetes cluster on different platforms
+
+
+### Minikube installation
+
+Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptopS
+
+##### Prerequisites
+
+Make sure you have kubectl installed. You can install kubectl according to the instructions in [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux) guide
+
+##### Install Minikube
+
+> Linux
+
+There are experimental packages for Minikube available; you can find Linux (AMD64) packages from Minikube’s releases page on GitHub
+
+If you’re not installing via a package, you can download a stand-alone binary and use that:
+
+```sh
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+  && chmod +x minikube
+```
+
+Here’s an easy way to add the Minikube executable to your path:
+
+```sh
+sudo install minikube /usr/local/bin
+```
+
+> MacOS
+
+The easiest way to install Minikube on macOS is using Homebrew:
+
+```sh
+brew cask install minikube
+```
+
+You can also install it on macOS by downloading a stand-alone binary:
+
+```sh
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64 \
+  && chmod +x minikube
+```
+
+Here’s an easy way to add the Minikube executable to your path:
+
+```sh
+sudo mv minikube /usr/local/bin
+```
+
+> Windows
+
+The easiest way to install Minikube on Windows is using [Chocolatey](https://chocolatey.org) (run as an administrator):
+
+```sh
+choco install minikube kubernetes-cli
+```
+
+After Minikube has finished installing, close the current CLI session and restart. Minikube should have been added to your path automatically
+
+To install Minikube manually on Windows using Windows Installer, download [minikube-installer.exe](https://github.com/kubernetes/minikube/releases/latest/minikube-installer.exe) and execute the installer
+
+##### Run the application in Minikube
+
+Start to minikube with the options:
+```sh
+minikube --memory 4096 --cpus 2 start
+```
+
+Install Ingress plugin:
+```sh
+minikube addons enable ingress
+```
+
+Verify that the NGINX Ingress controller is running
+```sh
+kubectl get pods -n kube-system
+```
+
+Initialize Helm package manager:
+```sh
+helm init
+```
+
+> Before you deploy ReportPortal you should have installed requirements. Versions are described in requirements.yaml.
+> Also you should specify correct PostgreSQL, ElasticSearch and RabbitMQ addresses and ports in values.yaml. Also it could be an external existing installation:
 ```
 postgresql:
   SecretName: ""
@@ -72,7 +126,8 @@ postgresql:
     external: true
     address: db-postgresql.default.svc.cluster.local
     port: 5432
-    user: postgres
+    user: rpuser
+    dbName: reportportal
 
 rabbitmq:
   SecretName: ""
@@ -85,7 +140,7 @@ rabbitmq:
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
-    
+
 elasticsearch:
   installdep:
     enable: false
@@ -95,10 +150,92 @@ elasticsearch:
     port: 9200
 ```
 
-### Installation notes
+Deploy the chart:
+```sh
+helm install ./<project folder>`
+```
+
+Once it's installed please make sure that the PersistentVolumes directories are created
+
+Commando to create those folders:
+- `minikube ssh`
+- `sudo mkdir /mnt/data/db`
+- `sudo mkdir /mnt/data/console`
+- `sudo mkdir /mnt/data/elastic`
+
+Also make sure that the vm.max_map_count is setup:
+```sh
+minikube ssh
+```
+```sh
+sudo sysctl -w vm.max_map_count=262144
+```
+
+The default URL to reach ReportPortal page is http://reportportal.k8.com
+Make sure that the URL is added to the host file and the IP is the K8s IP address
+
+The command to get an IP address of Minikube:
+```sh
+minikube ip
+```
+Example for host file:
+```sh
+192.168.99.100 reportportal.k8.com
+```
+
+### Cloud Computing Services platform installation
 
 1. Make sure you have Kubernetes up and running
-2. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
+
+> Kubernetes on AWS
+
+There are two options to use Kubernetes on AWS:
+- `Manage Kubernetes infrastructure yourself with Amazon EC2`
+- `Get an automatically provisioned, managed Kubernetes control plane with Amazon EKS`
+
+We recommend you to go with the second option, and use Amazon EKS.
+
+To create and configure your AWS EKS Cluster you can use either the AWS console or AWS CLI -> [Guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+
+> Kubernetes on  GCP
+
+Please use Google Kubernetes Engine for hosted Kubernetes cluster installation and management on GCP.
+
+To run your K8s cluster on GKE use the following [Guide](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-cluster)
+
+You can find more detailed information about GKE [here](https://cloud.google.com/kubernetes-engine/docs/)
+
+> Kubernetes on Azure
+
+The Azure Kubernetes Service (AKS) offers simple deployments for Kubernetes clusters.
+
+To deploy an AKS cluster use the following guides:
+- [By using the Azure portal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
+- [By using the Azure CLI](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
+
+2. Install and configure Helm package manager 
+
+For more information about installation the Helm package manager on different Kubernetes clusters, use the following:
+
+- [AWS](https://docs.aws.amazon.com/eks/latest/userguide/helm.html)
+- [GCP](https://helm.sh/docs/using_helm/#installing-helm)
+- [Azure](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
+
+You can test your Helm configuration by installing a simple Helm chart like a Wordpress
+```
+$ helm install stable/wordpress
+```
+Do not forget to clean up the Wordpress chart resources after making sure everything works as expected
+
+3. Deploy Ingress controller if you need to expose your application
+
+Please find the guides below:
+
+- [AWS](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#aws)
+- [GCP ](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#gce-gke)
+- [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
+
+4. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
 If you don't have your own postgresql and rabbitmq instances, they can be installed from official helm charts. 
 
 For example to install postgresql please use this commands:
@@ -106,7 +243,7 @@ For example to install postgresql please use this commands:
 helm dependency build ./reportportal/
 helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
 ```
-Once PostgreSql has been deployed, copy address and port from output notes. Should be something like this:
+Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
 ** Please be patient while the chart is being deployed **
 
@@ -164,7 +301,7 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
     URL : http://127.0.0.1:15672
 ```
 
-3. After PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
+5. After PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
 
 Insert the real values of PostgreSQL and RabbitMQ addresses and ports:
 ```
@@ -209,7 +346,7 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
-If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this (Do not foget to update Ingress objects (gateway-ingress, api-ingress) in addition):
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
 ```
 # ingress configuration for the ui
 ingress:
@@ -219,7 +356,7 @@ ingress:
     - reportportal.k8.com
 ```
 
-4. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
+6. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
 
 Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following:
 
@@ -238,18 +375,31 @@ Exit
 exit
 ```
 
-5. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
+7. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
-Once deployed, you can validate application is up and running by opening your ingress address server or NodePort:
-```example
-gateway     NodePort   10.233.48.187  <none>       80:31826/TCP,8080:31135/TCP  2s
+
+8. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / Ingress address server:
+
+```sh
+kubectl get service
 ```
-6. Open in browser http://10.233.48.187:8080 page. Defalut login and password is:
+
+As an example
+```example
+gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
+```
+
+If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
+
+9. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
 ```
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
+
+
+
