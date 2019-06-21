@@ -27,7 +27,7 @@ Requirements:
 - `ElasticSearch`
 - `PostgreSQL` (Amazon PostgreSQL RDS)
 
-Before you deploy ReportPortal you should have installed all requirements & deploy your Amazon PostgreSQL RDS
+Before you deploy ReportPortal you should have installed all requirements & deploy your Amazon PostgreSQL RDS.
 All variables are presented in the value.yaml file
 
 ### Installation notes
