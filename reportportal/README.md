@@ -401,5 +401,141 @@ default
 ```
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
 
+### Run ReportPortal over SSL (HTTPS)
+
+1. Configure a custom domain name for your ReportPortal website
+
+Set up a domain name you own at the domain registrar
+
+2. Pre-requisite configuration
+
+In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA).
+As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS.
+
+2.1. Deploy Cert Manager (e.g. in kube-system namespace)
+
+[Cert-manager](https://github.com/helm/charts/tree/master/stable/cert-manager) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed.
+
+```sh
+## Install the cert-manager CRDs **before** installing the cert-manager Helm chart
+kubectl apply \
+    -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml
+```
+
+```sh
+## Ensure the namespace has an additional label on it in order for the deployment to succeed
+kubectl label namespace kube-system certmanager.k8s.io/disable-validation="true"
+```
+
+```sh
+## Install the cert-manager helm chart
+helm install --name cert-manager stable/cert-manager
+```
+
+2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource
+ 
+Issuers (and ClusterIssuers) represent a certificate authority from which signed x509 certificates can be obtained, such as Let’s Encrypt. You will need at least one Issuer or ClusterIssuer in order to begin issuing certificates within your cluster
+
+```sh
+vi letsencrypt-clusterissuer.yaml
+```
+
+```
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+ # The ACME server URL
+ server: https://acme-staging-v02.api.letsencrypt.org/directory
+ # Email address used for ACME registration
+ email: user@example.com
+ # Name of a secret used to store the ACME account private key
+ privateKeySecretRef:
+name: letsencrypt-prod
+ # Enable the HTTP-01 challenge provider
+ http01: {}
+```
+
+```sh
+kubectl create -f letsencrypt-clusterissuer.yaml
+```
+
+3. Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
+
+With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate.
+
+3.1. Edit values.yaml and api-ingress.yaml, and add certmanager annotations:
+
+```
+..
+annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/acme-challenge-type: http01
+```
+
+3.2. Add TLS to the both ReportPortal Ingress Configuration files
+
+Edit 'gateway-ingress.yaml' and 'api-ingress.yaml' in order to add your TLS information.
+ 
+Let's suppose your domain name is 'my.reportportal.com ' and your certificate name is 'my.reportportal.com-tls'. Then you should add the following under the 'spec':
+
+```
+tls:
+  - hosts:
+    - my.reportportal.com
+    secretName: my.reportportal.com-tls
+```
+
+The result in should look like:
+
+```
+spec:
+  tls:
+  - hosts:
+    - my.reportportal.com
+    secretName: my.reportportal.com-tls
+  rules:
+{{ if .Values.ingress.usedomainname }}
+  {{- range $host := .Values.ingress.hosts }}
+  - host: {{ $host }}
+...
+```
+
+3.3. Redeploy your application
+
+4.  Create a Certificate resource in Kubernetes with acme http challenge configured:
+
+```sh
+vi kubectl create -f certificate-tls.yaml
+```
+
+```
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: my.reportportal.com-tls
+spec:
+  secretName: my.reportportal.com-tls
+  dnsNames:
+  - my.reportportal.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - my.reportportal.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+```
+
+Once this resource is created, there should be a tls cert that is created. If not, then check the logs of the cert-manger service for errors
+
+
 
 
