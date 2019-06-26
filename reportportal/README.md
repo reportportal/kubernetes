@@ -59,6 +59,11 @@ Please find the [Instruction](https://github.com/kubernetes/ingress-nginx/blob/m
 
 4. ReportPortal requires installed [elasticsearch](https://github.com/elastic/helm-charts/tree/master/elasticsearch) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run the application
 
+The following command will use your ReportPortal dependency file requirements.yaml to download all the specified charts into your charts/ directory for you:
+```sh
+helm dependency build ./reportportal/
+```
+
 To install Elasticsearch chart please use this commands:
 ```sh
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
