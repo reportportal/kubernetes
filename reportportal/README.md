@@ -14,12 +14,12 @@ The Chart installation consist of the following .yaml files:
 
 ReportPortal use the following images:
 
-- serviceindex: pbortnik/rp5-index
-- uat: pbortnik/rp5-uat
-- serviceui: pbortnik/rp5-ui
-- serviceapi: pbortnik/rp5-api
-- migrations: pbortnik/rp5-migrations
-- serviceanalyzer: pbortnik/rp5-analyzer
+- serviceindex: reportportal/service-index
+- uat: reportportal/service-authorization
+- serviceui: reportportal/service-ui
+- serviceapi: reportportal/service-api
+- migrations: reportportal/migration
+- serviceanalyzer: reportportal/service-analyzer
 
 Requirements: 
 
