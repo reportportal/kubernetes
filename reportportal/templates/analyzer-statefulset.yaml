@@ -26,7 +26,7 @@ spec:
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: ES_HOSTS
-          value: "http://{{ .Values.elasticsearch.endpoint.address }}:{{ .Values.elasticsearch.endpoint.port }}"
+          value: "http://{{ .Values.elasticsearch.endpoint.address }}"
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:

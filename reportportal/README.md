@@ -1,9 +1,9 @@
 # K8s
-Kubernetes Helm config for installation ReportPortal on AWS with an Amazon RDS as a database
+Kubernetes Helm config for installation ReportPortal on AWS, and using AWS services (Amazon RDS as a database / Amazon ES as an Elasticsearch cluster)
 
 **Overall information**
 
-This Helm project is created to install all mandatory services to run ReportPortal on AWS with only one commando, but it implies that an external Amazon RDS Service for PostgreSQL should be used.
+This Helm project is created to install all mandatory services to run ReportPortal on AWS with only one commando, but it implies that an external Amazon RDS Service for PostgreSQL db and Amazon ES as an Elasticsearch cluster should be used.
 
 The chart installation consist of the following .yaml files:
 
@@ -14,20 +14,20 @@ The chart installation consist of the following .yaml files:
 
 ReportPortal use the following images in variables:
 
-- serviceindex: pbortnik/rp5-index
-- uat: pbortnik/rp5-uat
-- serviceui: pbortnik/rp5-ui
-- serviceapi: pbortnik/rp5-api
-- migrations: pbortnik/rp5-migrations
-- serviceanalyzer: pbortnik/rp5-analyzer
+- serviceindex: reportportal/service-index
+- uat: reportportal/service-authorization
+- serviceui: reportportal/service-ui
+- serviceapi: reportportal/service-api
+- migrations: reportportal/migration
+- serviceanalyzer: reportportal/service-analyzer
 
 Requirements: 
 
-- `RabbitMQ`
-- `ElasticSearch`
+- `RabbitMQ` (Helm Chart installation)
+- `ElasticSearch` (Amazon Elasticsearch Service)
 - `PostgreSQL` (Amazon PostgreSQL RDS)
 
-Before you deploy ReportPortal you should have installed all requirements & deploy your Amazon PostgreSQL RDS.
+Before you deploy ReportPortal you should have installed all requirements / deploy your Amazon RDS PostgreSQL, Amazon ES cluster.
 
 All variables are presented in the value.yaml file
 
@@ -57,19 +57,15 @@ Do not forget to clean up the wordpress chart resources after making sure everyt
 
 Please find the [Instruction](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#aws)
 
-4. ReportPortal requires installed [elasticsearch](https://github.com/elastic/helm-charts/tree/master/elasticsearch) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run the application
+4. ReportPortal requires installed [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run the application
 
 The following command will use your ReportPortal dependency file requirements.yaml to download all the specified charts into your charts/ directory for you:
 ```sh
 helm dependency build ./reportportal/
 ```
 
-To install Elasticsearch chart please use this commands:
-```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
-```
+Then use the following command to install RabbitMQ chart:
 
-RabbitMQ chart can be installed in the same manner:
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -102,30 +98,65 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
     URL : http://127.0.0.1:15672
 ```
 
-5. After ElasticSearch and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
+After RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
 
-Insert the real values of ElasticSearch and RabbitMQ addresses and ports:
-```
+Insert the real values of RabbitMQ addresses and ports:
+
+```sh
 rabbitmq:
   SecretName: ""
   installdep:
     enable: false
   endpoint: 
     external: true
-    address: mq-rabbitmq-ha.default.svc.cluster.local
+    address: <RabbitMQ_ADDRESS>
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
-    
+```
+
+5. Connection to your AWS ElasticSearch cluster
+
+Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud
+
+(For more information about Amazon Elasticsearch Service please click on the following [link](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html)
+
+5.1. Creation an Amazon Elasticsearch Service domain
+
+Please use the [Getting Started guide](https://docs.aws.amazon.com/en_us/elasticsearch-service/latest/developerguide/es-gsg-create-domain.html)
+
+Feel free to choose whatever configuration fits you best.
+
+5.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
+
+Amazon ES adds support for an authorization layer by integrating with IAM. You write an IAM policy to control access to the cluster’s endpoint, allowing or denying Actions (HTTP methods) against Resources.
+
+IAM policies can be attached to your domain or to individual users or roles. If a policy is attached to your domain, it’s called a resource-based policy. If it’s attached to a user or role, it’s called a user-based policy.
+
+We recommend to use an Resource-based access policy:
+
+  * Click on "Modify the access policy for <Your_AWS_ES_Domain_name>";
+  * Choose Allow access to the domain from specific IP(s) and enter
+  * Enter the public IP addresses of your Worker Nodes; (Add a comma-separated list of valid IPv4 addresses or CIDR blocks)
+
+5.3. Accessing your AWS ES domain from ReportPortal
+
+Now you need your AWS ES domain Endpoint URL to connect.
+
+Please copy it from the Overview tab, and write down the real value into the values.yaml:
+
+```sh
 elasticsearch:
   installdep:
     enable: false
   endpoint:
     external: true
-    address: <es_chart_name>-elasticsearch-client.default.svc
-    port: 9200
+    address: <AWS_ES_ENDPOINT>
 ```
+
+6. (OPTIONAL) Additional adjustment
+
 Adjust resources for each pod if needed:
 ```
   resources:
@@ -136,6 +167,7 @@ Adjust resources for each pod if needed:
       cpu: 250m
       memory: 512Mi
 ```
+
 If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
 ```
 # ingress configuration for the ui
@@ -146,26 +178,26 @@ ingress:
     - <YOUR_DNS_NAME>
 ```
 
-6. Connection to your Amazon RDS PostgreSQL instance
+7. Connection to your Amazon RDS PostgreSQL instance
 
-6.1. Provision an Amazon RDS PostgreSQL instance with the created 'rpuser' user and 'reportportal' database
+7.1. Provision an Amazon RDS PostgreSQL instance with the created 'rpuser' user and 'reportportal' database
 
 Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required the 'rpuser' to have a super user access
 
 > If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 6.1.1 - 6.1.3
 
-6.1.1
+7.1.1
 Choose your EKS VPC in 'Network & Security' advanced settings.
 Otherwise, you will need to create a peering connection from the RDS VPC to the EKS VPC, and update the routing tables for both of VPCs. For the EKS routing table a new route should be created with a destination which corresponds to CIDR IP of RDS VPC, and the peering connection as a target. Similarly, you need to create a new route for the RDS routing table
 
-6.1.2
+7.1.2
 You can choose your EKS VPC security groups, or add a new rule in the RDS security group which allows all traffic from EKS CIDR IP
 
-6.1.3
+7.1.3
 In case a peering connection created, go to it and change its configuration by enabling a DNS propagation
 (When you use the RDS DNS name inside the same VPC it will be resolved to a Private IP itself)
 
-6.2. Accessing your RDS
+7.2. Accessing your RDS
 
 To list the details of your Amazon RDS DB instance, you can use the AWS Management Console, the AWS CLI describe-db-instances command, or the Amazon RDS API DescribeDBInstances action.
 You need the following information to connect:
@@ -177,14 +209,17 @@ Write down the real values of PostgreSQL address, port, dbName and password into
 The db password can be skipped here if you're going to override it on the next step.
 
 ```sh
-postgresql.endpoint.address = 
-postgresql.endpoint.port = 5432
-postgresql.endpoint.user = rpuser
-postgresql.endpoint.dbName = reportportal
-postgresql.endpoint.password = 
+postgresql:
+  endpoint:
+    external: true
+    address: <PostgreSQL_ADDRESS>
+    port: 5432
+    user: rpuser
+    password: 
+    dbName: reportportal
 ```
 
-7. Once everything is ready, the ReportPortal Helm chart package can be created and deployed by executing:
+8. Once everything is ready, the ReportPortal Helm chart package can be created and deployed by executing:
 
 (You can override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line)
 
@@ -195,7 +230,7 @@ helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
 
-8. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / Ingress address server:
+9. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / Ingress address server:
 
 ```sh
 kubectl get service
@@ -208,7 +243,7 @@ gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
 
 If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
 
-9. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
+10. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
