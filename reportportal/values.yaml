@@ -1,5 +1,5 @@
 serviceindex:
-  repository: pbortnik/rp5-index
+  repository: reportportal/service-index
   tag: latest
   pullPolicy: Always
   resources:
@@ -11,7 +11,7 @@ serviceindex:
       memory: 256Mi
 
 uat:
-  repository: pbortnik/rp5-uat
+  repository: reportportal/service-authorization
   tag: latest
   pullPolicy: Always
   resources:
@@ -24,7 +24,7 @@ uat:
   sessionLiveTime: 86400
 
 serviceui:
-  repository: pbortnik/rp5-ui
+  repository: reportportal/service-ui
   tag: latest
   pullPolicy: Always
   resources:
@@ -36,7 +36,7 @@ serviceui:
       memory: 128Mi
 
 serviceapi:
-  repository: pbortnik/rp5-api
+  repository: reportportal/service-api
   tag: latest
   pullPolicy: Always
   resources:
@@ -48,7 +48,7 @@ serviceapi:
       memory: 1500Mi
 
 migrations:
-  repository: pbortnik/rp5-migrations
+  repository: reportportal/migration
   tag: latest
   pullPolicy: Always
   resources:
@@ -60,7 +60,7 @@ migrations:
       memory: 128Mi
 
 serviceanalyzer:
-  repository: pbortnik/rp5-analyzer
+  repository: reportportal/service-analyzer
   tag: latest
   pullPolicy: Always
   resources:
