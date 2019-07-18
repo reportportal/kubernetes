@@ -213,6 +213,12 @@ To deploy an AKS cluster use the following guides:
 - [By using the Azure portal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
 - [By using the Azure CLI](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
 
+> Kubernetes on DigitalOcean
+
+To create a Kubernetes cluster on DigitalOcean cloud use the following guide:
+
+[How to Create Kubernetes Clusters Using the Control Panel](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/)
+
 2. Install and configure Helm package manager 
 
 For more information about installation the Helm package manager on different Kubernetes clusters, use the following:
@@ -220,6 +226,7 @@ For more information about installation the Helm package manager on different Ku
 - [AWS](https://docs.aws.amazon.com/eks/latest/userguide/helm.html)
 - [GCP](https://helm.sh/docs/using_helm/#installing-helm)
 - [Azure](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
+- [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager)
 
 You can test your Helm configuration by installing a simple Helm chart like a Wordpress
 ```
@@ -234,6 +241,7 @@ Please find the guides below:
 - [AWS](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#aws)
 - [GCP ](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#gce-gke)
 - [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
+- [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm#step-2-%E2%80%94-installing-the-kubernetes-nginx-ingress-controller)
 
 4. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
 If you don't have your own postgresql and rabbitmq instances, they can be installed from official helm charts. 
