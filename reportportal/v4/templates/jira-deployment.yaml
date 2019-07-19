@@ -1,0 +1,49 @@
+apiVersion:               apps/v1
+kind:                     Deployment
+metadata:
+  name:                   reportportal-jira
+  labels:                 {{ include "labels" . | indent 4 }}
+spec:
+  replicas:               1
+  selector:
+    matchLabels:
+      component:          reportportal-jira
+  template:
+    metadata:
+      labels:
+        component:        reportportal-jira
+    spec:
+      containers:
+      - env:
+        - name:           "RP_PROFILES"
+          value:          "docker"
+        {{ if .Values.mongodb.endpoint.external }}
+        - name:           RP_MONGO_DBNAME
+          value:          "{{ .Values.mongodb.endpoint.dbname }}"
+        - name:           SPRING_DATA_MONGODB_USERNAME
+          value:          "{{ .Values.mongodb.endpoint.username }}"
+        - name:           SPRING_DATA_MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name:       "{{ .Values.mongoSecretName }}"
+              key:        "mongodb-password"
+        - name:           "RP_MONGO_URI"
+          value:          "mongodb://{{ .Values.mongodb.endpoint.address }}:{{ .Values.mongodb.endpoint.port }}"
+        {{- end }}
+        - name:           HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath:  status.podIP
+        image:            "{{ .Values.jira.repository }}:{{ .Values.jira.tag }}"
+        name:             jira
+        ports:
+        - containerPort:  8080
+          protocol:       TCP
+        resources:
+          requests:
+            cpu:          {{ .Values.jira.resources.requests.cpu }}
+            memory:       {{ .Values.jira.resources.requests.memory }}
+          limits:
+            cpu:          {{ .Values.jira.resources.limits.cpu }}
+            memory:       {{ .Values.jira.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}

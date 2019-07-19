@@ -43,11 +43,11 @@ serviceauthorization:
   pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 200m
+      memory: 256Mi
     limits:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 500m
+      memory: 1024Mi
   sessionLiveTime: 86400
 serviceui:
   repository: reportportal/service-ui
@@ -74,6 +74,18 @@ serviceanalyzer:
 serviceapi:
   repository: reportportal/service-api
   tag: 4.3.4
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1000Mi
+    limits:
+      cpu: 300m
+      memory: 1500Mi
+jira:
+  repository: reportportal/service-jira
+  tag:     4.3.0
+  restart: always
   pullPolicy: IfNotPresent
   resources:
     requests:
