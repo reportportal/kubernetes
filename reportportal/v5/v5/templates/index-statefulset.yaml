@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: index
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: reportportal-index
+  serviceName: index-0
+  template:
+    metadata:
+      labels:
+        component: reportportal-index
+    spec:
+      containers:
+      - env:
+        - name: LB_URL
+          value: "http://gateway:8081"
+        image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
+        name: index
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.serviceindex.resources.requests.cpu }}
+            memory: {{ .Values.serviceindex.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceindex.resources.limits.cpu }}
+            memory: {{ .Values.serviceindex.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}

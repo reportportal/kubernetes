@@ -1,13 +1,7 @@
-# k8s
+# K8s
+Kubernetes/Helm configs for installation ReportPortal
 
-## Kubernetes/Helm configs for ReportPortal
-
-**Important** Do note that this is **a Beta version**
-
-This Helm project is created to setup ReportPortal with only one commando.
-The help chart is tested on Minikube and creates a fully working ReportPortal project
-
-The chart installs all mandatory services to run ReportPortal
+This Helm project is created to setup ReportPortal with only one commando. It installs all mandatory services to run the application.
 
 The Helm chart installation consist of the following .yaml files:
 

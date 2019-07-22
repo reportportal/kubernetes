@@ -43,12 +43,12 @@ serviceauthorization:
   pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu:                                      200m
-      memory:                                   256Mi
+      cpu: 200m
+      memory: 256Mi
     limits:
-      cpu:                                      500m
-      memory:                                   1024Mi
-  sessionLiveTime:                              86400
+      cpu: 500m
+      memory: 1024Mi
+  sessionLiveTime: 86400
 serviceui:
   repository: reportportal/service-ui
   tag: 4.3.6
@@ -80,20 +80,20 @@ serviceapi:
       cpu: 200m
       memory: 1000Mi
     limits:
-      cpu:                                      300m
-      memory:                                   1500Mi
+      cpu: 300m
+      memory: 1500Mi
 jira:
-  repository:                                   reportportal/service-jira
-  tag:                                          4.3.0
-  restart:                                      always
-  pullPolicy:                                   IfNotPresent
+  repository: reportportal/service-jira
+  tag:     4.3.0
+  restart: always
+  pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu:                                      200m
-      memory:                                   1000Mi
+      cpu: 200m
+      memory: 1000Mi
     limits:
-      cpu:                                      300m
-      memory:                                   1500Mi
+      cpu: 300m
+      memory: 1500Mi
 elasticsearch:
   installdep:
     enable: false

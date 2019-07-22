@@ -1,0 +1,124 @@
+serviceindex:
+  repository: reportportal/service-index
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 150m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+uat:
+  repository: reportportal/service-authorization
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+  sessionLiveTime: 86400
+
+serviceui:
+  repository: reportportal/service-ui
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+serviceapi:
+  repository: reportportal/service-api
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1000Mi
+    limits:
+      cpu: 300m
+      memory: 1500Mi
+
+migrations:
+  repository: reportportal/migration
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+serviceanalyzer:
+  repository: reportportal/service-analyzer
+  tag: latest
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+postgresql:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: db-postgresql.default.svc.cluster.local
+    port: 5432
+    user: rpuser
+    dbName: reportportal
+
+rabbitmq:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint: 
+    external: true
+    address: mq-rabbitmq-ha.default.svc.cluster.local
+    port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
+
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: <es_chart_name>-elasticsearch-client.default.svc
+    port: 9200
+
+# ingress configuration for the ui
+# If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
+# If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
+# If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
+ingress:
+  enable: true
+  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+  usedomainname: false
+  hosts:
+    - reportportal.k8.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+
+# node selector for all components, if any
+nodeSelector:
+  enabled: false
+  selector:
+    reportportal: true
