@@ -159,9 +159,9 @@ Once it's installed please make sure that the PersistentVolumes directories are 
 
 Commando to create those folders:
 - `minikube ssh`
-- `sudo mkdir /mnt/data/db`
-- `sudo mkdir /mnt/data/console`
-- `sudo mkdir /mnt/data/elastic`
+- `sudo mkdir /mnt/data/db -p`
+- `sudo mkdir /mnt/data/console -p`
+- `sudo mkdir /mnt/data/elastic -p`
 
 Also make sure that the vm.max_map_count is setup:
 ```sh
