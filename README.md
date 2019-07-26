@@ -12,8 +12,6 @@ The repo includes a number of Kubernetes/Helm configurations for installation Re
 ### Usage notes and getting started
 - To start with aggregator installation please follow the guide in ["aggregator" folder](https://github.com/reportportal/kubernetes/tree/master/aggregator)
 - The following verions of ReportPortal application are available:
-[v4](https://github.com/reportportal/kubernetes/tree/master/reportportal/v4)
-[v5](https://github.com/reportportal/kubernetes/tree/master/reportportal/v5/v5)
-[v5 installation with using cloud services for RP dependencies](https://github.com/AlehB/kubernetes/tree/master/reportportal/v5/v5-cloud-services)
-
-
+[ReportPortal v4](https://github.com/reportportal/kubernetes/tree/master/reportportal/v4)
+[ReportPortal v5](https://github.com/reportportal/kubernetes/tree/master/reportportal/v5/v5)
+[ReportPortal v5 installation with using cloud services for RP dependencies](https://github.com/AlehB/kubernetes/tree/master/reportportal/v5/v5-cloud-services)
