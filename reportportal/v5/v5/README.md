@@ -124,7 +124,7 @@ postgresql:
     enable: false
   endpoint:
     external: true
-    address: db-postgresql.default.svc.cluster.local
+    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -135,12 +135,12 @@ rabbitmq:
     enable: false
   endpoint: 
     external: true
-    address: mq-rabbitmq-ha.default.svc.cluster.local
+    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
-
+    
 elasticsearch:
   installdep:
     enable: false
