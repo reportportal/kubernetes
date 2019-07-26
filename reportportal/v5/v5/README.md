@@ -246,11 +246,16 @@ Please find the guides below:
 4. Reportportal requires installed [postgresql](https://github.com/helm/charts/tree/master/stable/postgresql), [elasticsearch](https://github.com/elastic/helm-charts/tree/master/elasticsearch) and [rabbitmq](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha) to run. Required versions of helm charts are described in requirements.yaml
 If you don't have your own postgresql and rabbitmq instances, they can be installed from official helm charts. 
 
-For example to install postgresql please use this commands:
+The following command will use your ReportPortal dependency file requirements.yaml to download all the specified charts into your charts/ directory for you:
 ```sh
 helm dependency build ./reportportal/
+```
+
+Then use the following command to install PostgreSQL chart:  
+```sh
 helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
 ```
+
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
 ** Please be patient while the chart is being deployed **
@@ -272,11 +277,14 @@ To connect to your database from outside the cluster execute the following comma
     psql --host 127.0.0.1 -U postgres
 ```
 
-Elasticsearch chart can be installed in the same manner:
+ElasticSearch and RabbitMQ charts can be installed in the same manner:  
+
+ElasticSearch
 ```sh
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
-RabbitMQ chart can be installed in the same manner:
+
+RabbitMQ
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -309,9 +317,9 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
     URL : http://127.0.0.1:15672
 ```
 
-5. After PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
+5. After ElasticSearch, PostgreSQL and RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings  
 
-Insert the real values of PostgreSQL and RabbitMQ addresses and ports:
+Insert the real values of ElasticSearch, PostgreSQL and RabbitMQ addresses and ports:
 ```
 postgresql:
   SecretName: ""
@@ -319,7 +327,7 @@ postgresql:
     enable: false
   endpoint:
     external: true
-    address: db-postgresql.default.svc.cluster.local
+    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -330,7 +338,7 @@ rabbitmq:
     enable: false
   endpoint: 
     external: true
-    address: mq-rabbitmq-ha.default.svc.cluster.local
+    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -370,7 +378,7 @@ Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm
 
 Get a shell to a running Postgresql container:
 ```
-kubectl exec -it postgresqlchart-postgresql-0 -- /bin/bash
+kubectl exec -it <postgresql_chart_name>-postgresql-0 -- /bin/bash
 ```
 Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser:
 ```
@@ -383,13 +391,39 @@ Exit
 exit
 ```
 
-7. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
+7. Creation RabbitMQ virtual host and granting permission to rabbitmq user
+
+In RabbitMQ, virtual hosts are like a virtual box which contains a logical grouping of connections, exchanges, queues, bindings, user permissions, policies and many more things.  
+For correct Analyzer work we need to create its vhost and grant permissions for the rabbitmq user.  
+
+Get a shell to a running RabbitMQ container:
+```
+kubectl exec -it <rabbitmq_chart_name>-rabbitmq-ha-0 -- /bin/bash
+```
+
+Add a new vhost 'analyzer':
+```
+rabbitmqctl add_vhost analyzer
+```
+
+Grant permissions:
+```
+rabbitmqctl set_permissions -p analyzer rabbitmq ".*" ".*" ".*"
+```
+
+Check:
+```
+rabbitmqctl list_users
+rabbitmqctl list_permissions -p analyzer
+```
+
+8. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 ```sh
 helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
 
-8. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
+9. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
 
 ```sh
 kubectl get service
@@ -402,7 +436,7 @@ gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
 
 If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
 
-9. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
+10. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
@@ -432,12 +466,23 @@ kubectl apply \
 
 ```sh
 ## Ensure the namespace has an additional label on it in order for the deployment to succeed
-kubectl label namespace kube-system certmanager.k8s.io/disable-validation="true"
+kubectl label namespace <deployment-namespace> certmanager.k8s.io/disable-validation="true"
 ```
 
 ```sh
 ## Install the cert-manager helm chart
 helm install --name cert-manager stable/cert-manager
+```
+
+Optional  
+In order to provide advanced resource validation, cert-manager includes a ValidatingWebhookConfiguration resource which is deployed into the cluster.  
+In case it fails to start, you can disable the webhook component, cert-manager will still perform the same resource validation however it will not reject ‘create’ events when the resources are submitted to the apiserver if they are invalid.  
+```sh
+helm install \
+    --name cert-manager \
+    --namespace cert-manager \
+    stable/cert-manager \
+    --set webhook.enabled=false
 ```
 
 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource
