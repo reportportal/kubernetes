@@ -279,12 +279,12 @@ To connect to your database from outside the cluster execute the following comma
 
 ElasticSearch and RabbitMQ charts can be installed in the same manner:  
 
-ElasticSearch
+To install ElasticSearch:
 ```sh
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
 ```
 
-RabbitMQ
+To install RabbitMQ:
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -352,6 +352,9 @@ elasticsearch:
     address: <es_chart_name>-elasticsearch-client.default.svc
     port: 9200
 ```
+
+(OPTIONAL) 
+
 Adjust resources for each pod if needed:
 ```
   resources:
@@ -391,10 +394,10 @@ Exit
 exit
 ```
 
-7. Creation RabbitMQ virtual host and granting permission to rabbitmq user
+7. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user
 
 In RabbitMQ, virtual hosts are like a virtual box which contains a logical grouping of connections, exchanges, queues, bindings, user permissions, policies and many more things.  
-For correct Analyzer work we need to create its vhost and grant permissions for the rabbitmq user.  
+For correct Analyzer work we need to create its vhost and grant permissions for the 'rabbitmq' user.  
 
 Get a shell to a running RabbitMQ container:
 ```
@@ -413,7 +416,7 @@ rabbitmqctl set_permissions -p analyzer rabbitmq ".*" ".*" ".*"
 
 Check:
 ```
-rabbitmqctl list_users
+rabbitmqctl list_vhosts
 rabbitmqctl list_permissions -p analyzer
 ```
 

@@ -115,10 +115,10 @@ rabbitmq:
     apiuser: rabbitmq
 ```
 
-5. Creation RabbitMQ virtual host and granting permission to rabbitmq user
+5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user
 
 In RabbitMQ, virtual hosts are like a virtual box which contains a logical grouping of connections, exchanges, queues, bindings, user permissions, policies and many more things.  
-For correct Analyzer work we need to create its vhost and grant permissions for the rabbitmq user.  
+For correct Analyzer work we need to create its vhost and grant permissions for the 'rabbitmq' user.  
 
 Get a shell to a running RabbitMQ container:
 ```
@@ -137,7 +137,7 @@ rabbitmqctl set_permissions -p analyzer rabbitmq ".*" ".*" ".*"
 
 Check:
 ```
-rabbitmqctl list_users
+rabbitmqctl list_vhosts
 rabbitmqctl list_permissions -p analyzer
 ```
 

@@ -14,6 +14,6 @@ The repo includes a number of Kubernetes/Helm configurations for installation Re
 - The following verions of ReportPortal application are available:  
 [ReportPortal v4](https://github.com/reportportal/kubernetes/tree/master/reportportal/v4)  
 [ReportPortal v5](https://github.com/reportportal/kubernetes/tree/master/reportportal/v5/v5)  
-[ReportPortal v5 with the use of cloud computing services](https://github.com/AlehB/kubernetes/tree/master/reportportal/v5/v5-cloud-services)
+[ReportPortal v5 with the use of cloud computing services](https://github.com/reportportal/kubernetes/tree/master/reportportal/v5/v5-cloud-services)
 
 
