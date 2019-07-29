@@ -65,7 +65,6 @@ helm dependency build ./reportportal/
 ```
 
 Then use the following command to install RabbitMQ chart:
-
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -100,7 +99,7 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
 
 After RabbitMQ are up and running, edit values.yaml to adjust ReportPortal settings
 
-Insert the real values of RabbitMQ addresses and ports:
+Insert the real values of RabbitMQ address and ports:
 
 ```sh
 rabbitmq:
@@ -109,26 +108,52 @@ rabbitmq:
     enable: false
   endpoint: 
     external: true
-    address: <RabbitMQ_ADDRESS>
+    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
 ```
 
-5. Connection to your AWS ElasticSearch cluster
+5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user
+
+In RabbitMQ, virtual hosts are like a virtual box which contains a logical grouping of connections, exchanges, queues, bindings, user permissions, policies and many more things.  
+For correct Analyzer work we need to create its vhost and grant permissions for the 'rabbitmq' user.  
+
+Get a shell to a running RabbitMQ container:
+```
+kubectl exec -it <rabbitmq_chart_name>-rabbitmq-ha-0 -- /bin/bash
+```
+
+Add a new vhost 'analyzer':
+```
+rabbitmqctl add_vhost analyzer
+```
+
+Grant permissions:
+```
+rabbitmqctl set_permissions -p analyzer rabbitmq ".*" ".*" ".*"
+```
+
+Check:
+```
+rabbitmqctl list_vhosts
+rabbitmqctl list_permissions -p analyzer
+```
+
+6. Connection to your AWS ElasticSearch cluster
 
 Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud
 
 (For more information about Amazon Elasticsearch Service please click on the following [link](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html)
 
-5.1. Creation an Amazon Elasticsearch Service domain
+6.1. Creation an Amazon Elasticsearch Service domain
 
 Please use the [Getting Started guide](https://docs.aws.amazon.com/en_us/elasticsearch-service/latest/developerguide/es-gsg-create-domain.html)
 
 Feel free to choose whatever configuration fits you best.
 
-5.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
+6.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
 
 Amazon ES adds support for an authorization layer by integrating with IAM. You write an IAM policy to control access to the cluster’s endpoint, allowing or denying Actions (HTTP methods) against Resources.
 
@@ -140,7 +165,7 @@ We recommend to use an Resource-based access policy:
   * Choose Allow access to the domain from specific IP(s) and enter
   * Enter the public IP addresses of your Worker Nodes; (Add a comma-separated list of valid IPv4 addresses or CIDR blocks)
 
-5.3. Accessing your AWS ES domain from ReportPortal
+6.3. Accessing your AWS ES domain from ReportPortal
 
 Now you need your AWS ES domain Endpoint URL to connect.
 
@@ -152,30 +177,7 @@ elasticsearch:
     enable: false
   endpoint:
     external: true
-    address: <AWS_ES_ENDPOINT>
-```
-
-6. (OPTIONAL) Additional adjustment
-
-Adjust resources for each pod if needed:
-```
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
-      memory: 512Mi
-```
-
-If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
-```
-# ingress configuration for the ui
-ingress:
-..
-  usedomainname: true
-  hosts:
-    - <YOUR_DNS_NAME>
+    address: <AWS_ES_Endpoint>
 ```
 
 7. Connection to your Amazon RDS PostgreSQL instance
@@ -212,14 +214,37 @@ The db password can be skipped here if you're going to override it on the next s
 postgresql:
   endpoint:
     external: true
-    address: <PostgreSQL_ADDRESS>
+    address: <PostgreSQL_Address>
     port: 5432
     user: rpuser
     password: 
     dbName: reportportal
 ```
 
-8. Once everything is ready, the ReportPortal Helm chart package can be created and deployed by executing:
+8. (OPTIONAL) Additional adjustment
+
+Adjust resources for each pod if needed:
+```
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+```
+
+If you are going to associate a specific DNS name for your UI, set Ingress controller configuration like this:
+```
+# ingress configuration for the ui
+ingress:
+..
+  usedomainname: true
+  hosts:
+    - <YOUR_DNS_NAME>
+```
+
+9. Once everything is ready, the ReportPortal Helm chart package can be created and deployed by executing:
 
 (You can override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line)
 
@@ -230,7 +255,7 @@ helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
 
-9. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
+10. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
 
 ```sh
 kubectl get service
@@ -243,7 +268,7 @@ gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
 
 If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
 
-10. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
+11. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
@@ -276,12 +301,23 @@ kubectl apply \
 
 ```sh
 ## Ensure the namespace has an additional label on it in order for the deployment to succeed
-kubectl label namespace kube-system certmanager.k8s.io/disable-validation="true"
+kubectl label namespace <deployment-namespace> certmanager.k8s.io/disable-validation="true"
 ```
 
 ```sh
 ## Install the cert-manager helm chart
 helm install --name cert-manager stable/cert-manager
+```
+
+Optional  
+In order to provide advanced resource validation, cert-manager includes a ValidatingWebhookConfiguration resource which is deployed into the cluster.  
+In case it fails to start, you can disable the webhook component, cert-manager will still perform the same resource validation however it will not reject ‘create’ events when the resources are submitted to the apiserver if they are invalid.  
+```sh
+helm install \
+    --name cert-manager \
+    --namespace cert-manager \
+    stable/cert-manager \
+    --set webhook.enabled=false
 ```
 
 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource

@@ -77,7 +77,7 @@ rabbitmq:
     enable: false
   endpoint: 
     external: true
-    address: 
+    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -88,18 +88,18 @@ elasticsearch:
     enable: false
   endpoint:
     external: true
-    address: 
+    address: <AWS_ES_Endpoint>
 
 postgresql:
   endpoint:
     external: true
-    address: 
+    address: <PostgreSQL_Address>
     port: 5432
     user: rpuser
     password: 
     dbName: reportportal
 
-# ingress configuration for the ui
+# Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
 # If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
 # If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
