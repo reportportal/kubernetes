@@ -6,8 +6,8 @@ These charts bootstraps a ReportPortal deployment on a Kubernetes cluster using 
 The repo includes a number of Kubernetes/Helm configurations for installation ReportPortal v4/v5 and aggregator compontent 
 
 ### Requirements
-- Kubernetes 1.8+
-- Helm Package Manager
+- Kubernetes 1.10+
+- Helm Package Manager 2.8.0+
 
 ### Usage notes and getting started
 - To start with aggregator installation please follow the guide in ["aggregator" folder](https://github.com/reportportal/kubernetes/tree/master/aggregator)
