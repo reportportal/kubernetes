@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-{{ if .Values.ingress.usedomainname }
+{{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
