@@ -6,8 +6,15 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+{{/*    nginx.ingress.kubernetes.io/ssl-redirect: "false"*/}}
+{{/*    certmanager.k8s.io/cluster-issuer: "letsencrypt-prod"*/}}
+{{/*    certmanager.k8s.io/acme-challenge-type: http01*/}}
+
 spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
   rules:
 {{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
@@ -29,8 +36,4 @@ spec:
 {{ end }}
 status:
   loadBalancer: {}
-{{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end -}}
 {{- end }}
