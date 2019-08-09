@@ -117,6 +117,7 @@ ingress:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/x-forwarded-prefix: "/uat"
+    nginx.ingress.kubernetes.io/proxy-body-size: 128m
 
 # node selector for all components, if any
 nodeSelector:
