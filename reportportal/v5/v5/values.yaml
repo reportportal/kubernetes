@@ -1,6 +1,6 @@
 serviceindex:
   repository: reportportal/service-index
-  tag: latest
+  tag: 5.0.2
   pullPolicy: Always
   resources:
     requests:
@@ -12,7 +12,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: latest
+  tag: 5.0.0-BETA-9
   pullPolicy: Always
   resources:
     requests:
@@ -25,7 +25,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: latest
+  tag: 5.0.0-BETA-10
   pullPolicy: Always
   resources:
     requests:
@@ -37,7 +37,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: latest
+  tag: 5.0.0-BETA-7
   pullPolicy: Always
   resources:
     requests:
@@ -49,7 +49,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migration
-  tag: latest
+  tag: 5.0.0-BETA-7
   pullPolicy: Always
   resources:
     requests:
@@ -61,7 +61,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: latest
+  tag: 5.0.0-BETA-1
   pullPolicy: Always
   resources:
     requests:
@@ -116,6 +116,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/uat"
 
 # node selector for all components, if any
 nodeSelector:
