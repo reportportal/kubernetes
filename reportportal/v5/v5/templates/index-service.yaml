@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: index-0
   labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    {{ include "annotations" . | indent 4 }}
+    service: {{ $.Values.serviceindex.name }}
+
 spec:
   ports:
   - name: headless

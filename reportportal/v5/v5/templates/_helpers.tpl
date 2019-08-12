@@ -15,3 +15,7 @@ nodeSelector:
 {{ toYaml .Values.nodeSelector.selector | indent 2 -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "annotations" }}
+app: {{ $.Chart.Name | quote }}
+{{- end -}}
