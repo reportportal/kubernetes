@@ -6,7 +6,7 @@ Generate labels
 heritage: {{ $.Release.Service | quote }}
 release: {{ $.Release.Name | quote }}
 chart: "{{ $.Chart.Name }}-{{ $.Chart.Version }}"
-app: {{ $.Release.Name | quote }}
+app: {{ $.Chart.Name | quote }}
 {{- end -}}
 
 {{- define "nodeSelector" }}
@@ -14,8 +14,4 @@ app: {{ $.Release.Name | quote }}
 nodeSelector:
 {{ toYaml .Values.nodeSelector.selector | indent 2 -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "annotations" }}
-app: {{ $.Chart.Name | quote }}
 {{- end -}}

@@ -1,5 +1,6 @@
 serviceindex:
   name: Index Service
+  infoEndpoint: "/info"
   repository: reportportal/service-index
   tag: 5.0.2
   pullPolicy: Always
@@ -87,7 +88,7 @@ rabbitmq:
   SecretName: ""
   installdep:
     enable: false
-  endpoint: 
+  endpoint:
     external: true
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672

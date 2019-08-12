@@ -4,8 +4,8 @@ metadata:
   name: index-0
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-    {{ include "annotations" . | indent 4 }}
     service: {{ $.Values.serviceindex.name }}
+    infoEndpoint: {{ $.Values.serviceindex.infoEndpoint }}
 
 spec:
   ports:
