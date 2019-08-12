@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceindex.name }}
-    infoEndpoint: {{ $.Values.serviceindex.infoEndpoint }}
+    infoEndpoint: {{ $.Values.serviceindex.infoEndpoint | default "/info"}}
 
 spec:
   ports:
