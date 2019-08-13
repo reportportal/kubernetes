@@ -21,7 +21,7 @@ spec:
       paths:
       - path: /?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: index-0
           servicePort: headless
       - path: /ui/?(.*)
         backend:
@@ -37,7 +37,7 @@ spec:
       paths:
       - path: /?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: index-0
           servicePort: headless
       - path: /ui/?(.*)
         backend:
