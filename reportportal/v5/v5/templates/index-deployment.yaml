@@ -18,8 +18,6 @@ spec:
       - env:
         - name: K8S_MODE
           value: "true"
-        - name: K8S_NS
-          value: "{{.Release.Namespace}}"
         image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
         name: index
         ports:
