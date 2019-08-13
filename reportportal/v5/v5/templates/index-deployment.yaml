@@ -17,7 +17,7 @@ spec:
       containers:
       - env:
         - name: K8S_MODE
-          value: true
+          value: "true"
         - name: K8S_NS
           value: "{{.Release.Namespace}}"
         image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
