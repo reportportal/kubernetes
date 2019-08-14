@@ -9,8 +9,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
 spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
   rules:
-{{ if .Values.ingress.usedomainname }
+{{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
@@ -30,8 +34,4 @@ spec:
 {{ end }}
 status:
   loadBalancer: {}
-{{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end -}}
 {{- end }}

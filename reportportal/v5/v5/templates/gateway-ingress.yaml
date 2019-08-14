@@ -9,6 +9,10 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
   rules:
 {{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
@@ -17,7 +21,7 @@ spec:
       paths:
       - path: /?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: index-0
           servicePort: headless
       - path: /ui/?(.*)
         backend:
@@ -33,7 +37,7 @@ spec:
       paths:
       - path: /?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: index-0
           servicePort: headless
       - path: /ui/?(.*)
         backend:
@@ -46,8 +50,4 @@ spec:
 {{ end }}
 status:
   loadBalancer: {}
-{{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end -}}
 {{- end }}

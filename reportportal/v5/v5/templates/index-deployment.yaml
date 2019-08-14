@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - env:
-        - name: LB_URL
-          value: "http://gateway:8081"
+        - name: K8S_MODE
+          value: "true"
         image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
         name: index
         ports:
