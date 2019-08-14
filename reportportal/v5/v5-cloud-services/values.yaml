@@ -48,7 +48,7 @@ serviceapi:
       memory: 1500Mi
 
 migrations:
-  repository: reportportal/migration
+  repository: reportportal/migrations
   tag: 5.0.0-BETA-7
   pullPolicy: Always
   resources:
@@ -113,6 +113,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/proxy-body-size: 128m
     nginx.ingress.kubernetes.io/x-forwarded-prefix: "/uat"
 
 # node selector for all components, if any
