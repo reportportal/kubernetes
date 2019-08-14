@@ -48,7 +48,7 @@ serviceapi:
       memory: 1500Mi
 
 migrations:
-  repository: reportportal/migration
+  repository: reportportal/migrations
   tag: 5.0.0-BETA-7
   pullPolicy: Always
   resources:
