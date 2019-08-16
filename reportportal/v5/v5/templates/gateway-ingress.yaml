@@ -19,15 +19,15 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - path: /?(.*)
+      - path: /()?(.*)
         backend:
           serviceName: index-0
           servicePort: headless
-      - path: /ui/?(.*)
+      - path: /(ui)/?(.*)
         backend:
           serviceName: ui-0
           servicePort: headless
-      - path: /uat/?(.*)
+      - path: /(uat)/?(.*)
         backend:
           serviceName: uat-0
           servicePort: headless
@@ -35,15 +35,15 @@ spec:
 {{ else }}
   - http:
       paths:
-      - path: /?(.*)
+      - path: /()?(.*)
         backend:
           serviceName: index-0
           servicePort: headless
-      - path: /ui/?(.*)
+      - path: /(ui)/?(.*)
         backend:
           serviceName: ui-0
           servicePort: headless
-      - path: /uat/?(.*)
+      - path: /(uat)/?(.*)
         backend:
           serviceName: uat-0
           servicePort: headless
