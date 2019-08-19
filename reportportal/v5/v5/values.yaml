@@ -43,9 +43,9 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-7
+  tag: 5.0.0-BETA-8
   name: API Service
-  infoEndpoint: "/api/v1/info"
+  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
@@ -57,7 +57,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-BETA-7
+  tag: 5.0.0-BETA-8
   pullPolicy: Always
   resources:
     requests:
@@ -125,8 +125,8 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/uat"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
 
 # node selector for all components, if any
