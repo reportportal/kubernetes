@@ -45,7 +45,7 @@ serviceapi:
   repository: reportportal/service-api
   tag: 5.0.0-BETA-8
   name: API Service
-  infoEndpoint: "/api/v1/info"
+  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
