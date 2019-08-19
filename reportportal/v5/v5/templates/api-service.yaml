@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: api-0
   labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.serviceapi.name }}
+    infoEndpoint: {{ $.Values.serviceapi.infoEndpoint | default "/api/v1/info"}}
 spec:
   ports:
   - name: headless

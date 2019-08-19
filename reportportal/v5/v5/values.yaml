@@ -14,6 +14,8 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
+  name: Authorization Service
+  infoEndpoint: "/info"
   tag: 5.0.0-BETA-9
   pullPolicy: Always
   resources:
@@ -28,6 +30,8 @@ uat:
 serviceui:
   repository: reportportal/service-ui
   tag: 5.0.0-BETA-10
+  name: UI Service
+  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
@@ -40,6 +44,8 @@ serviceui:
 serviceapi:
   repository: reportportal/service-api
   tag: 5.0.0-BETA-7
+  name: API Service
+  infoEndpoint: "/api/v1/info"
   pullPolicy: Always
   resources:
     requests:
@@ -64,6 +70,8 @@ migrations:
 serviceanalyzer:
   repository: reportportal/service-analyzer
   tag: 5.0.0-BETA-1
+  name: Analyzer Service
+  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
