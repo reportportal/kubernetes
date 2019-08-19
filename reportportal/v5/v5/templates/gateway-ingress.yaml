@@ -31,6 +31,10 @@ spec:
         backend:
           serviceName: uat-0
           servicePort: headless
+      - path: /(api)/?(.*)
+        backend:
+            serviceName: api-0
+            servicePort: headless
   {{- end -}}
 {{ else }}
   - http:
@@ -47,6 +51,10 @@ spec:
         backend:
           serviceName: uat-0
           servicePort: headless
+      - path: /(api)/?(.*)
+        backend:
+            serviceName: api-0
+            servicePort: headless
 {{ end }}
 status:
   loadBalancer: {}
