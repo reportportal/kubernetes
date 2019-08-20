@@ -21,10 +21,14 @@ spec:
         - name: POSTGRES_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: POSTGRES_PASSWORD
+        {{ if .Values.postgresql.endpoint.cloudservice }}
+          value: "{{ .Values.postgresql.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
+        {{ end }}
         image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
         name: migrations
         resources:
