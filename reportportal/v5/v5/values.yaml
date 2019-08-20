@@ -81,17 +81,6 @@ serviceanalyzer:
       cpu: 100m
       memory: 128Mi
 
-postgresql:
-  SecretName: ""
-  installdep:
-    enable: false
-  endpoint:
-    external: true
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
-    port: 5432
-    user: rpuser
-    dbName: reportportal
-
 rabbitmq:
   SecretName: ""
   installdep:
@@ -104,11 +93,25 @@ rabbitmq:
     apiport: 15672
     apiuser: rabbitmq
 
+postgresql:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    cloudservice: false
+    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    port: 5432
+    user: rpuser
+    dbName: reportportal
+    password: 
+
 elasticsearch:
   installdep:
     enable: false
   endpoint:
     external: true
+    cloudservice: false
     address: <es_chart_name>-elasticsearch-client.default.svc
     port: 9200
 
