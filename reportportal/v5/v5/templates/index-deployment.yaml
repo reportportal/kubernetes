@@ -23,6 +23,12 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
         resources:
           requests:
             cpu: {{ .Values.serviceindex.resources.requests.cpu }}
