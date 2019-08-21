@@ -16,7 +16,7 @@ uat:
   repository: reportportal/service-authorization
   name: Authorization Service
   infoEndpoint: "/info"
-  tag: 5.0.0-BETA-9
+  tag: 5.0.0-BETA-10
   pullPolicy: Always
   resources:
     requests:
@@ -29,7 +29,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-BETA-10
+  tag: 5.0.0-BETA-12
   name: UI Service
   infoEndpoint: "/info"
   pullPolicy: Always
@@ -43,7 +43,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-8
+  tag: 5.0.0-BETA-9
   name: API Service
   infoEndpoint: "/info"
   pullPolicy: Always
