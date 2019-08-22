@@ -69,7 +69,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-BETA-1
+  tag: 5.0.0-BETA-2
   name: Analyzer Service
   infoEndpoint: "/info"
   pullPolicy: Always
