@@ -76,7 +76,7 @@ spec:
         livenessProbe:
           httpGet:
             path: "{{ .Values.rp.healthEndpoint }}"
-            port: 8080
+            port: 8585
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 10
