@@ -66,4 +66,12 @@ spec:
           limits:
             cpu: {{ .Values.serviceapi.resources.limits.cpu }}
             memory: {{ .Values.serviceapi.resources.limits.memory }}
+        readinessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 8585
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 5
 {{ include "nodeSelector" . | indent 8 }}

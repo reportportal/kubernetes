@@ -1,6 +1,5 @@
 serviceindex:
   name: Index Service
-  infoEndpoint: "/info"
   repository: reportportal/service-index
   tag: 5.0.3
   pullPolicy: Always
@@ -15,23 +14,21 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: Authorization Service
-  infoEndpoint: "/info"
   tag: 5.0.0-BETA-10
   pullPolicy: Always
   resources:
     requests:
       cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
       memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 2048Mi
   sessionLiveTime: 86400
 
 serviceui:
   repository: reportportal/service-ui
   tag: 5.0.0-BETA-12
   name: UI Service
-  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
@@ -45,15 +42,14 @@ serviceapi:
   repository: reportportal/service-api
   tag: 5.0.0-BETA-9
   name: API Service
-  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
-      cpu: 200m
-      memory: 1000Mi
+      cpu: 500m
+      memory: 1024Mi
     limits:
-      cpu: 300m
-      memory: 1500Mi
+      cpu: 1000m
+      memory: 2048Mi
 
 migrations:
   repository: reportportal/migrations
@@ -71,7 +67,6 @@ serviceanalyzer:
   repository: reportportal/service-analyzer
   tag: 5.0.0-BETA-2
   name: Analyzer Service
-  infoEndpoint: "/info"
   pullPolicy: Always
   resources:
     requests:
@@ -104,7 +99,7 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
-    password: 
+    password:
 
 elasticsearch:
   installdep:
@@ -137,3 +132,7 @@ nodeSelector:
   enabled: false
   selector:
     reportportal: true
+
+rp:
+  infoEndpoint: "/info"
+  healthEndpoint: "/health"

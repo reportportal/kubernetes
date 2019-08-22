@@ -25,10 +25,11 @@ spec:
           protocol: TCP
         readinessProbe:
           httpGet:
-            path: /health
+            path: "{{ .Values.rp.healthEndpoint }}"
             port: 8080
-          initialDelaySeconds: 3
-          periodSeconds: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
         resources:
           requests:
             cpu: {{ .Values.serviceindex.resources.requests.cpu }}
