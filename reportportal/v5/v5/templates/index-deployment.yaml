@@ -30,13 +30,6 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 3
-        livenessProbe:
-          httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 10
         resources:
           requests:
             cpu: {{ .Values.serviceindex.resources.requests.cpu }}
