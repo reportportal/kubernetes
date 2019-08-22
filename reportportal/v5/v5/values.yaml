@@ -137,3 +137,10 @@ nodeSelector:
   enabled: false
   selector:
     reportportal: true
+
+# RBAC is required for service-index in order to collect status/info over all services
+rbac:
+  create: true
+  serviceAccount:
+      create: true
+      name: reportportal

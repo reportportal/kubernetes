@@ -15,3 +15,14 @@ nodeSelector:
 {{ toYaml .Values.nodeSelector.selector | indent 2 -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "reportportal.serviceAccountName" -}}
+{{- if .Values.rbac.serviceAccount.create -}}
+    {{ default "reportportal" .Values.rbac.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.rbac.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
