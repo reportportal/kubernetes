@@ -48,8 +48,8 @@ spec:
           httpGet:
             path: "{{ .Values.rp.healthEndpoint }}"
             port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
           timeoutSeconds: 3
         livenessProbe:
           httpGet:
@@ -57,5 +57,5 @@ spec:
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
-          timeoutSeconds: 300
+          timeoutSeconds: 10
 {{ include "nodeSelector" . | indent 8 }}
