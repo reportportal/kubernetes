@@ -19,10 +19,10 @@ uat:
   resources:
     requests:
       cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
       memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 2048Mi
   sessionLiveTime: 86400
 
 serviceui:
@@ -45,11 +45,11 @@ serviceapi:
   pullPolicy: Always
   resources:
     requests:
-      cpu: 200m
-      memory: 1000Mi
+      cpu: 500m
+      memory: 1024Mi
     limits:
-      cpu: 300m
-      memory: 1500Mi
+      cpu: 1000m
+      memory: 2048Mi
 
 migrations:
   repository: reportportal/migrations
