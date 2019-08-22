@@ -2,7 +2,7 @@ serviceindex:
   name: Index Service
   infoEndpoint: "/info"
   repository: reportportal/service-index
-  tag: 5.0.2
+  tag: 5.0.3
   pullPolicy: Always
   resources:
     requests:
