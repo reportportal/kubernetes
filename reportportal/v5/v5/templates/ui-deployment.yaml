@@ -29,4 +29,11 @@ spec:
           limits:
             cpu: {{ .Values.serviceui.resources.limits.cpu }}
             memory: {{ .Values.serviceui.resources.limits.memory }}
+        readinessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 3
 {{ include "nodeSelector" . | indent 8 }}
