@@ -10,6 +10,6 @@ dependencies:
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
-    version: 1.17.0
-    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 6.3.0
+    repository: https://charts.bitnami.com/bitnami
     condition: elasticsearch.installdep.enable
