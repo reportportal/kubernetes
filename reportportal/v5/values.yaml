@@ -40,7 +40,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-9
+  tag: 5.0.0-BETA-11
   name: api
   pullPolicy: Always
   resources:
