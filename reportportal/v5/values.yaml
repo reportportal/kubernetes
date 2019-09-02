@@ -110,6 +110,13 @@ elasticsearch:
     address: <es_chart_name>-elasticsearch-coordinating-only.default.svc.cluster.local
     port: 9200
 
+minio:
+  enabled: true
+  installdep:
+    enable: false
+  endpoint: minio.reportportal.svc.cluster.local:9000
+  secretName: minio
+
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
 # If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
