@@ -40,7 +40,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-11
+  tag: 5.0.0-BETA-12
   name: api
   pullPolicy: Always
   resources:
@@ -65,7 +65,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-BETA-2
+  tag: 5.0.0-BETA-4
   name: analyzer
   pullPolicy: Always
   resources:
