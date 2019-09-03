@@ -65,7 +65,7 @@ spec:
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.postgresql.secretName }}"
+              name: "{{ .Values.minio.secretName }}"
               key: "secretkey"
          {{ end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"

@@ -111,10 +111,10 @@ elasticsearch:
     port: 9200
 
 minio:
-  enabled: true
+  enabled: false
   installdep:
     enable: false
-  endpoint: minio.reportportal.svc.cluster.local:9000
+  endpoint: <minio-release-name>.default.svc.cluster.local:9000
   secretName: minio
 
 # Ingress configuration for the ui
