@@ -13,3 +13,8 @@ dependencies:
     version: 6.3.0
     repository: https://charts.bitnami.com/bitnami
     condition: elasticsearch.installdep.enable
+
+  - name: minio
+    version: 2.5.12
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    condition: minio.installdep.enable

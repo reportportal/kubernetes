@@ -28,6 +28,7 @@ Requirements:
 - `RabbitMQ` (Helm chart installation)  
 - `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)  
 - `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS)  
+- `Minio` (Helm chart installation)  
 
 Before you deploy ReportPortal you should have installed all dependencies (requirements) (deploy your Amazon RDS PostgreSQL, Amazon ES cluster in case you go with cloud services).  
 All variables are presented in the value.yaml file.  
@@ -336,11 +337,52 @@ rabbitmqctl list_vhosts
 rabbitmqctl list_permissions -p analyzer
 ```
 
-6. Elasticsearch installation
+6. Minio Installation
+The following command will install Minio with 40GB PVC:
+```sh
+helm install --name minio --set accessKey=XXX,secretKey=XXX,persistence.size=40Gi stable/minio
+```
+Notice that k8s secret will be created in order to hold accessKey and secretKey values
+
+Installation output example:
+```
+Minio can be accessed via port 9000 on the following DNS name from within your cluster:
+minio.default.svc.cluster.local
+
+To access Minio from localhost, run the below commands:
+
+  1. export POD_NAME=$(kubectl get pods --namespace default -l "release=minio" -o jsonpath="{.items[0].metadata.name}")
+
+  2. kubectl port-forward $POD_NAME 9000 --namespace default
+
+Read more about port forwarding here: http://kubernetes.io/docs/user-guide/kubectl/kubectl_port-forward/
+
+You can now access Minio server on http://localhost:9000. Follow the below steps to connect to Minio server with mc client:
+
+  1. Download the Minio mc client - https://docs.minio.io/docs/minio-client-quickstart-guide
+
+  2. mc config host add minio-local http://localhost:9000 rptestaccesskey rptestsecretkey S3v4
+
+  3. mc ls minio-local
+
+Alternately, you can use your browser or the Minio SDK to access the server - https://docs.minio.io/categories/17
+```
+Do not forget to update corresponding section of values.yaml. For the example given above, 
+the configuration would look like:
+```yaml
+minio:
+  enabled: true
+  installdep:
+    enable: false
+  endpoint: minio.default.svc.cluster.local:9000
+  secretName: minio
+```
+
+7. Elasticsearch installation
 
 You can install Elasticsearch from the [Elasticsearch Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/elasticsearch) or use an Amazon ES as an Elasticsearch cluster.  
 
-6.1. Elasticsearch Helm chart installation  
+7.1. Elasticsearch Helm chart installation  
 
 To use this type of installation, please run the following commands   
 
@@ -374,19 +416,19 @@ elasticsearch:
     port: 9200
 ```
 
-6.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
+7.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
 
 Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud.  
 
 (For more information about Amazon Elasticsearch Service please click on the following [link](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html)
 
-6.2.1. Creation an Amazon Elasticsearch Service domain
+7.2.1. Creation an Amazon Elasticsearch Service domain
 
 Please use the [Getting Started guide](https://docs.aws.amazon.com/en_us/elasticsearch-service/latest/developerguide/es-gsg-create-domain.html)
 
 Feel free to choose whatever configuration fits you best.
 
-6.2.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
+7.2.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
 
 Amazon ES adds support for an authorization layer by integrating with IAM. You write an IAM policy to control access to the cluster’s endpoint, allowing or denying Actions (HTTP methods) against Resources.
 
@@ -398,7 +440,7 @@ We recommend to use an Resource-based access policy:
   * Choose Allow access to the domain from specific IP(s) and enter
   * Enter the public IP addresses of your Worker Nodes; (Add a comma-separated list of valid IPv4 addresses or CIDR blocks)
 
-6.2.3. Accessing your AWS ES domain from ReportPortal
+7.2.3. Accessing your AWS ES domain from ReportPortal
 
 a) First of all, edit RP values.yaml and set 'cloudservice' value in elasticsearch section from 'false' to 'true'. This allows you to use an external ES service.  
 
@@ -424,11 +466,11 @@ elasticsearch:
     port: 9200
 ```
 
-7. PostgreSQL installation
+8. PostgreSQL installation
 
 You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) or use an Amazon RDS Service for your PostgreSQL database.
 
-7.1.1. PostgreSQL Helm chart installation  
+8.1.1. PostgreSQL Helm chart installation  
 
 To use this type of installation, please run the following commands:  
 
@@ -482,7 +524,7 @@ postgresql:
     password:
 ```
 
-7.1.2. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
+8.1.2. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
 
 Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following:
 
@@ -501,26 +543,26 @@ Exit
 exit
 ```
 
-7.2. PostgreSQL as an external cloud service. Connection to your Amazon RDS PostgreSQL instance
+8.2. PostgreSQL as an external cloud service. Connection to your Amazon RDS PostgreSQL instance
 
-7.2.1. Provision an Amazon RDS PostgreSQL instance with the created 'rpuser' user and 'reportportal' database
+8.2.1. Provision an Amazon RDS PostgreSQL instance with the created 'rpuser' user and 'reportportal' database
 
 Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required the 'rpuser' to have a super user access
 
 > If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 6.1.1 - 6.1.3
 
-7.2.1.1
+8.2.1.1
 Choose your EKS VPC in 'Network & Security' advanced settings.
 Otherwise, you will need to create a peering connection from the RDS VPC to the EKS VPC, and update the routing tables for both of VPCs. For the EKS routing table a new route should be created with a destination which corresponds to CIDR IP of RDS VPC, and the peering connection as a target. Similarly, you need to create a new route for the RDS routing table
 
-7.2.1.2
+8.2.1.2
 You can choose your EKS VPC security groups, or add a new rule in the RDS security group which allows all traffic from EKS CIDR IP
 
-7.2.1.3
+8.2.1.3
 In case a peering connection created, go to it and change its configuration by enabling a DNS propagation
 (When you use the RDS DNS name inside the same VPC it will be resolved to a Private IP itself)
 
-7.2.2. Accessing your RDS
+8.2.2. Accessing your RDS
 
 To list the details of your Amazon RDS DB instance, you can use the AWS Management Console, the AWS CLI describe-db-instances command, or the Amazon RDS API DescribeDBInstances action.
 You need the following information to connect:
@@ -555,7 +597,7 @@ postgresql:
     password: <postgresql password>
 ```
 
-8. (OPTIONAL) Additional adjustment
+9. (OPTIONAL) Additional adjustment
 
 Adjust resources for each pod if needed:
 ```
@@ -578,7 +620,7 @@ ingress:
     - <Your DNS name>
 ```
 
-9. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
+10. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 
 ```sh
 helm package ./reportportal/
@@ -594,7 +636,7 @@ If you use Amazon RDS PostgreSQL instance (You can override the specified 'rpuse
 helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
 
-10. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
+11. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
 
 ```sh
 kubectl get service
@@ -607,7 +649,7 @@ gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
 
 If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
 
-11. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
+12. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
