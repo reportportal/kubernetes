@@ -14,7 +14,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0-BETA-10
+  tag: 5.0.0-BETA-11
   pullPolicy: Always
   resources:
     requests:
