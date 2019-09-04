@@ -55,6 +55,8 @@ spec:
               key: "postgresql-password"
         {{ end }}
         {{ if .Values.minio.enabled }}
+        - name: RP_BINARYSTORE_TYPE
+          value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
