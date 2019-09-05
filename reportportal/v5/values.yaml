@@ -119,7 +119,7 @@ minio:
   enabled: false
   installdep:
     enable: false
-  endpoint: <minio-release-name>.default.svc.cluster.local:9000
+  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
   secretName: minio
 
 # Ingress configuration for the ui
