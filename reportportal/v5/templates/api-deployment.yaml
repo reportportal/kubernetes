@@ -86,8 +86,8 @@ spec:
           httpGet:
             path: "{{ .Values.rp.healthEndpoint }}"
             port: 8585
-          initialDelaySeconds: 30
-          periodSeconds: 20
-          timeoutSeconds: 3
-          failureThreshold: 20
+          initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold }}
 {{ include "nodeSelector" . | indent 8 }}

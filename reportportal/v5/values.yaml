@@ -43,6 +43,11 @@ serviceapi:
   tag: 5.0.0-BETA-12
   name: api
   pullPolicy: Always
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 20
   resources:
     requests:
       cpu: 500m
