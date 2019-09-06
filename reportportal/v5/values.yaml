@@ -58,7 +58,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-BETA-8
+  tag: 5.0.0-BETA-9
   pullPolicy: Always
   resources:
     requests:
