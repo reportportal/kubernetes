@@ -11,7 +11,7 @@ dependencies:
 
   - name: elasticsearch
     version: 6.3.0
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://charts.bitnami.com/
     condition: elasticsearch.installdep.enable
 
   - name: minio
