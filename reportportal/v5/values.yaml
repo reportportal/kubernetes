@@ -87,11 +87,13 @@ rabbitmq:
     enable: false
   endpoint:
     external: true
+    cloudservice: false
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    password:
 
 postgresql:
   SecretName: ""
