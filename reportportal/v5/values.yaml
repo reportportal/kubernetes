@@ -1,5 +1,5 @@
 serviceindex:
-  name: Index Service
+  name: index
   repository: reportportal/service-index
   tag: 5.0.3
   pullPolicy: Always
@@ -13,8 +13,8 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  name: Authorization Service
-  tag: 5.0.0-BETA-10
+  name: uat
+  tag: 5.0.0-BETA-12
   pullPolicy: Always
   resources:
     requests:
@@ -28,7 +28,7 @@ uat:
 serviceui:
   repository: reportportal/service-ui
   tag: 5.0.0-BETA-12
-  name: UI Service
+  name: ui
   pullPolicy: Always
   resources:
     requests:
@@ -40,9 +40,14 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-9
-  name: API Service
+  tag: 5.0.0-BETA-12
+  name: api
   pullPolicy: Always
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 20
   resources:
     requests:
       cpu: 500m
@@ -53,7 +58,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-BETA-8
+  tag: 5.0.0-BETA-9
   pullPolicy: Always
   resources:
     requests:
@@ -65,8 +70,8 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-BETA-2
-  name: Analyzer Service
+  tag: 5.0.0-BETA-4
+  name: analyzer
   pullPolicy: Always
   resources:
     requests:
@@ -109,6 +114,13 @@ elasticsearch:
     cloudservice: false
     address: <es_chart_name>-elasticsearch-coordinating-only.default.svc.cluster.local
     port: 9200
+
+minio:
+  enabled: false
+  installdep:
+    enable: false
+  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
+  secretName: minio
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.

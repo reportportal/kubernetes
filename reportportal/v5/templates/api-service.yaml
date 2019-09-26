@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceapi.name }}
-    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/api/v1/info"}}
+    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
 spec:
   ports:
   - name: headless
