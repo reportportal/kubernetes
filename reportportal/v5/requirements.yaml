@@ -10,8 +10,8 @@ dependencies:
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
-    version: 6.3.0
-    repository: https://charts.bitnami.com/bitnami
+    version: 7.3.2
+    repository: https://helm.elastic.co
     condition: elasticsearch.installdep.enable
 
   - name: minio
