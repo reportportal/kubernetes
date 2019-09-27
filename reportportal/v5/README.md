@@ -119,7 +119,7 @@ helm init
 ```
 
 > Before you deploy ReportPortal you should have installed requirements. Versions are described in requirements.yaml.
-> Also you should specify correct PostgreSQL, ElasticSearch and RabbitMQ addresses and ports in values.yaml. Also it could be an external existing installation:
+> Also you should specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml. Also it could be an external existing installation:
 ```
 rabbitmq:
   SecretName: ""
@@ -145,15 +145,6 @@ postgresql:
     user: rpuser
     dbName: reportportal
     password: 
-
-elasticsearch:
-  installdep:
-    enable: false
-  endpoint:
-    external: true
-    cloudservice: false
-    address: <es_chart_name>-elasticsearch-coordinating-only.default.svc.cluster.local
-    port: 9200
 ```
 
 Deploy the chart:
@@ -380,15 +371,15 @@ minio:
 
 7. Elasticsearch installation
 
-You can install Elasticsearch from the [Elasticsearch Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/elasticsearch) or use an Amazon ES as an Elasticsearch cluster.  
+You can install Elasticsearch from the [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) or use an Amazon ES as an Elasticsearch cluster.  
 
 7.1. Elasticsearch Helm chart installation  
 
 To use this type of installation, please run the following commands   
 
-Add bitnami repo:
+Add the elastic helm charts repo:
 ```sh
-helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add elastic https://helm.elastic.co
 ```
 
 Download the specified chart into your charts/ directory:
@@ -398,22 +389,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:
 ```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-6.3.0.tgz
-```
-
-After Elasticsearch is up and running, edit values.yaml to adjust the settings
-
-Insert the real values of RabbitMQ address and ports:
-
-```sh
-elasticsearch:
-  installdep:
-    enable: false
-  endpoint:
-    external: true
-    cloudservice: false
-    address: <es_chart_name>-elasticsearch-coordinating-only.default.svc.cluster.local
-    port: 9200
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.3.2.tgz
 ```
 
 7.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster

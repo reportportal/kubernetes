@@ -14,7 +14,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0-BETA-12
+  tag: 5.0.0-BETA-13
   pullPolicy: Always
   resources:
     requests:
@@ -27,7 +27,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-BETA-12
+  tag: 5.0.0-BETA-13
   name: ui
   pullPolicy: Always
   resources:
@@ -40,7 +40,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-12
+  tag: 5.0.0-BETA-13
   name: api
   pullPolicy: Always
   readinessProbe:
@@ -58,7 +58,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-BETA-9
+  tag: 5.0.0-BETA-10
   pullPolicy: Always
   resources:
     requests:
@@ -70,7 +70,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-BETA-4
+  tag: 5.0.0-BETA-5
   name: analyzer
   pullPolicy: Always
   resources:
@@ -112,7 +112,7 @@ elasticsearch:
   endpoint:
     external: true
     cloudservice: false
-    address: <es_chart_name>-elasticsearch-coordinating-only.default.svc.cluster.local
+    address: elasticsearch-master
     port: 9200
 
 minio:
