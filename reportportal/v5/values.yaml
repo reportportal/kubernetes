@@ -27,7 +27,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-BETA-13
+  tag: 5.0.0-BETA-14
   name: ui
   pullPolicy: Always
   resources:
