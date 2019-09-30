@@ -525,7 +525,7 @@ exit
 
 Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required the 'rpuser' to have a super user access
 
-> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 6.1.1 - 6.1.3
+> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 8.1.1 - 8.1.2
 
 8.2.1.1
 Choose your EKS VPC in 'Network & Security' advanced settings.
