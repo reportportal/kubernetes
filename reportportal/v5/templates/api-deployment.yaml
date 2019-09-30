@@ -60,16 +60,9 @@ spec:
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "accesskey"
+          value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "secretkey"
-         {{ end }}
+          value: "{{ .Values.minio.secretkey }}"
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:

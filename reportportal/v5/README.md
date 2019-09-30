@@ -329,13 +329,14 @@ rabbitmqctl list_permissions -p analyzer
 ```
 
 6. Minio Installation
-The following command will install Minio with 40GB PVC:
-```sh
-helm install --name minio --set accessKey=XXX,secretKey=XXX,persistence.size=40Gi stable/minio
-```
-Notice that k8s secret will be created in order to hold accessKey and secretKey values
 
-Installation output example:
+The following command will install Minio with 40GB PVC:
+
+```sh
+helm install --name minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
+```
+
+Installation output example
 ```
 Minio can be accessed via port 9000 on the following DNS name from within your cluster:
 minio.default.svc.cluster.local
@@ -352,21 +353,22 @@ You can now access Minio server on http://localhost:9000. Follow the below steps
 
   1. Download the Minio mc client - https://docs.minio.io/docs/minio-client-quickstart-guide
 
-  2. mc config host add minio-local http://localhost:9000 rptestaccesskey rptestsecretkey S3v4
+  2. mc config host add minio-local http://localhost:9000 testaccesskey testsecretkey S3v4
 
   3. mc ls minio-local
 
 Alternately, you can use your browser or the Minio SDK to access the server - https://docs.minio.io/categories/17
 ```
-Do not forget to update corresponding section of values.yaml. For the example given above, 
-the configuration would look like:
+
+Do not forget to update corresponding section of values.yaml with your endpoint, secret and access keys:
 ```yaml
 minio:
   enabled: true
   installdep:
     enable: false
-  endpoint: minio.default.svc.cluster.local:9000
-  secretName: minio
+  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
+  accesskey: <minio-accesskey>
+  secretkey: <minio-secretkey>
 ```
 
 7. Elasticsearch installation
@@ -525,7 +527,7 @@ exit
 
 Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required the 'rpuser' to have a super user access
 
-> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 6.1.1 - 6.1.3
+> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 8.1.1 - 8.1.2
 
 8.2.1.1
 Choose your EKS VPC in 'Network & Security' advanced settings.

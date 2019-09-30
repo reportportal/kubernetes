@@ -27,7 +27,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-BETA-13
+  tag: 5.0.0-BETA-14
   name: ui
   pullPolicy: Always
   resources:
@@ -120,7 +120,8 @@ minio:
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  secretName: minio
+  accesskey: <minio-accesskey>
+  secretkey: <minio-secretkey>
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
