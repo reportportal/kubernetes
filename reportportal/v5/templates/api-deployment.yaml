@@ -76,6 +76,7 @@ spec:
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
        {{ end }}
+       {{ end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
