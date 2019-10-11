@@ -26,19 +26,27 @@ spec:
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
+        {{ end }}
         - name: RP_AMQP_APIPORT
           value: "{{ .Values.rabbitmq.endpoint.apiport }}"
         - name: RP_AMQP_APIUSER
           value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
+        {{ end }}
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
