@@ -1,7 +1,7 @@
 serviceindex:
   name: index
   repository: reportportal/service-index
-  tag: 5.0.3
+  tag: 5.0.4
   pullPolicy: Always
   resources:
     requests:
@@ -14,7 +14,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0-BETA-13
+  tag: 5.0.0-RC-1
   pullPolicy: Always
   resources:
     requests:
@@ -27,7 +27,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-BETA-14
+  tag: 5.0.0-RC-1
   name: ui
   pullPolicy: Always
   resources:
@@ -40,7 +40,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-BETA-13
+  tag: 5.0.0-RC-1
   name: api
   pullPolicy: Always
   readinessProbe:
@@ -55,10 +55,11 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
+  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241"
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-BETA-10
+  tag: 5.0.0-RC-1
   pullPolicy: Always
   resources:
     requests:
@@ -70,7 +71,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-BETA-5
+  tag: 5.0.0-RC-1
   name: analyzer
   pullPolicy: Always
   resources:
@@ -87,11 +88,13 @@ rabbitmq:
     enable: false
   endpoint:
     external: true
+    cloudservice: false
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    password:
 
 postgresql:
   SecretName: ""

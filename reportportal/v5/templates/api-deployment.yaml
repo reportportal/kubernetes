@@ -18,7 +18,7 @@ spec:
         - name: "LOGGING_LEVEL_ORG_HIBERNATE_SQL"
           value: "info"
         - name: "JAVA_OPTS"
-          value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241"
+          value: {{ $.Values.serviceapi.jvmArgs | default "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241"}}
         - name: RP_AMQP_HOST
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
@@ -26,19 +26,27 @@ spec:
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
+        {{ end }}
         - name: RP_AMQP_APIPORT
           value: "{{ .Values.rabbitmq.endpoint.apiport }}"
         - name: RP_AMQP_APIUSER
           value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
+        {{ end }}
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
@@ -59,10 +67,24 @@ spec:
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
+        {{ if .Values.minio.secretName }}
+        - name: RP_BINARYSTORE_MINIO_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "accesskey"
+        - name: RP_BINARYSTORE_MINIO_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "secretkey"
+       {{ else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
+       {{ end }}
+       {{ end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
