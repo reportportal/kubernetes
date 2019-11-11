@@ -483,7 +483,7 @@ To connect to your database from outside the cluster execute the following comma
 
 After PostgreSQL is up and running, edit values.yaml to adjust the settings
 
-Insert the real values of RabbitMQ address and ports:
+Insert the real values of PostgreSQL address and ports:
 
 (IMPORTANT. If you go with the PostgreSQL Helm chart option, you do not need to set the db password in the 'password' value here, because it has been already set above with "helm install .." command.)
 
