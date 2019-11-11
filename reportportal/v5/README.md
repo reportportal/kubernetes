@@ -240,6 +240,10 @@ Please find the guides below:
 - [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
 - [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm#step-2-%E2%80%94-installing-the-kubernetes-nginx-ingress-controller)
 
+(NOTE)
+
+After your NGINX Ingress controller create a load balancer in your Cloud computing provider, please increase its idle timeout to 300 seconds.  
+
 4. RabbitMQ installation
 
 ReportPortal requires installed PostgreSQL, Elasticsearch and RabbitMQ to run.  
