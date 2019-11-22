@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: analyzer-0
+  name: {{ include "reportportal.fullname" . }}-analyzer
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.uat.name }}
@@ -13,5 +13,5 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    component: reportportal-analyzer
+    component: {{ include "reportportal.fullname" . }}-analyzer
   type: ClusterIP
