@@ -87,7 +87,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
@@ -101,7 +100,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
@@ -113,7 +111,6 @@ elasticsearch:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: elasticsearch-master
     port: 9200
