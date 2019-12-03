@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: analyzer
+  name: {{ include "reportportal.fullname" . }}-analyzer
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: reportportal-analyzer
-  serviceName: analyzer-0
+      component: {{ include "reportportal.fullname" . }}-analyzer
+  serviceName: {{ include "reportportal.fullname" . }}-analyzer
   template:
     metadata:
       labels:
-        component: reportportal-analyzer
+        component: {{ include "reportportal.fullname" . }}-analyzer
     spec:
       containers:
       - env:

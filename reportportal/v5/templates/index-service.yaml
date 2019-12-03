@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: index-0
+  name: {{ include "reportportal.fullname" . }}-index
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceindex.name }}
     infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
-
 spec:
   ports:
   - name: headless
@@ -14,5 +13,5 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    component: reportportal-index
+    component: {{ include "reportportal.fullname" . }}-index
   type: ClusterIP
