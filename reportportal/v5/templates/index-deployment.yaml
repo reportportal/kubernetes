@@ -8,7 +8,6 @@ spec:
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-index
-  serviceName: {{ include "reportportal.fullname" . }}-index
   template:
     metadata:
       labels:
