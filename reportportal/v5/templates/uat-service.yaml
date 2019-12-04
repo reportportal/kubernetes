@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: uat-0
+  name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.uat.name }}
@@ -13,5 +13,5 @@ spec:
     protocol: TCP
     targetPort: 9999
   selector:
-    component: reportportal-uat
+    component: {{ include "reportportal.fullname" . }}-uat
   type: ClusterIP

@@ -1,18 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: index
+  name: {{ include "reportportal.fullname" . }}-index
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: reportportal-index
-  serviceName: index-0
+      component: {{ include "reportportal.fullname" . }}-index
   template:
     metadata:
       labels:
-        component: reportportal-index
+        component: {{ include "reportportal.fullname" . }}-index
     spec:
       serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
       containers:

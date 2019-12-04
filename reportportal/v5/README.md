@@ -231,7 +231,7 @@ $ helm install stable/wordpress
 ```
 Do not forget to clean up the Wordpress chart resources after making sure everything works as expected
 
-3. Deploy NGINX Ingress controller
+3. Deploy NGINX Ingress controller (version 0.22.0+)
 
 Please find the guides below:
 

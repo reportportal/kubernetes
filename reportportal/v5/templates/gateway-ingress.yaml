@@ -1,8 +1,9 @@
 {{- if .Values.ingress.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: reportportal-gateway-ingress
+  name: {{ $fullName }}-gateway-ingress
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
@@ -21,40 +22,40 @@ spec:
       paths:
       - path: /()?(.*)
         backend:
-          serviceName: index-0
+          serviceName: {{ $fullName }}-index
           servicePort: headless
       - path: /(ui)/?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: {{ $fullName }}-ui
           servicePort: headless
       - path: /(uat)/?(.*)
         backend:
-          serviceName: uat-0
+          serviceName: {{ $fullName }}-uat
           servicePort: headless
       - path: /(api)/?(.*)
         backend:
-            serviceName: api-0
-            servicePort: headless
+          serviceName: {{ $fullName }}-api
+          servicePort: headless
   {{- end -}}
 {{ else }}
   - http:
       paths:
       - path: /()?(.*)
         backend:
-          serviceName: index-0
+          serviceName: {{ $fullName }}-index
           servicePort: headless
       - path: /(ui)/?(.*)
         backend:
-          serviceName: ui-0
+          serviceName: {{ $fullName }}-ui
           servicePort: headless
       - path: /(uat)/?(.*)
         backend:
-          serviceName: uat-0
+          serviceName: {{ $fullName }}-uat
           servicePort: headless
       - path: /(api)/?(.*)
         backend:
-            serviceName: api-0
-            servicePort: headless
+          serviceName: {{ $fullName }}-api
+          servicePort: headless
 {{ end }}
 status:
   loadBalancer: {}

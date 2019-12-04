@@ -1,3 +1,11 @@
+## String to partially override reportportal.fullname template (will maintain the release name)
+##
+# nameOverride:
+
+## String to fully override reportportal.fullname template
+##
+# fullnameOverride:
+
 serviceindex:
   name: index
   repository: reportportal/service-index
@@ -55,7 +63,7 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
-  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241"
+  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp "
 
 migrations:
   repository: reportportal/migrations
@@ -87,7 +95,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
@@ -101,7 +108,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
@@ -113,7 +119,6 @@ elasticsearch:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: elasticsearch-master
     port: 9200
@@ -142,7 +147,7 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k    
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"

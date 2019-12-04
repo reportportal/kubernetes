@@ -1,13 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: migrations
+  name: {{ include "reportportal.fullname" . }}-migrations
   labels: {{ include "labels" . | indent 4 }}
 spec:
   template:
     metadata:
       labels:
-        component: reportportal-migrations
+        component: {{ include "reportportal.fullname" . }}-migrations
     spec:
       restartPolicy: Never
       containers:

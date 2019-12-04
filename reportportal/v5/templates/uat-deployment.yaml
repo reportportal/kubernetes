@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: uat
+  name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: reportportal-uat
+      component: {{ include "reportportal.fullname" . }}-uat
   template:
     metadata:
       labels:
-        component: reportportal-uat
+        component: {{ include "reportportal.fullname" . }}-uat
     spec:
       containers:
       - env:
