@@ -1,26 +1,27 @@
 # K8s
 Kubernetes/Helm configs for installation ReportPortal
 
-   * [Table of contents]
+   * [Table of contents]  
          * [Overall information](#overall-information)  
-         * [Minikube installation](#minikube-installation)  
-               * [Prerequisites](#prerequisites)  
-               * [Install Minikube](#install-minikube)  
-               * [Run the application in Minikube](#run-the-application-in-minikube)  
-         * [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)  
-               * [1. Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)  
-               * [2. Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)  
-               * [3. Deploy NGINX Ingress controller (version 0.22.0 )](#3-deploy-nginx-ingress-controller-version-0220)  
-               * [4. RabbitMQ installation](#4-rabbitmq-installation)  
-               * [5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user](#5-creation-a-rabbitmq-virtual-host-and-granting-permissions-to-rabbitmq-user)  
-               * [6. MinIO installation](#6-minio-installation)  
-               * [7. Elasticsearch installation](#7-elasticsearch-installation)  
-               * [8. PostgreSQL installation](#8-postgresql-installation)  
-               * [9. (OPTIONAL) Additional adjustment](#9-optional-additional-adjustment)  
-               * [10. Deploy ReportPortal Helm Chart](#10-deploy-reportportal-helm-chart)  
-               * [11. Validate the service](#11-validate-the-service)  
-               * [12. Start work with ReportPortal](#12-start-work-with-reportportal)  
-         * [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)  
+         - [Minikube installation](#minikube-installation)  
+               + [Prerequisites](#prerequisites)  
+               + [Install Minikube](#install-minikube)  
+               + [Run the application in Minikube](#run-the-application-in-minikube)  
+         - [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)  
+               + [1. Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)  
+               + [2. Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)  
+               + [3. Deploy NGINX Ingress controller (version 0.22.0 )](#3-deploy-nginx-ingress-controller-version-0220)  
+               + [4. RabbitMQ installation](#4-rabbitmq-installation)  
+               + [5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user](#5-creation-a-rabbitmq-virtual-host-and-granting-permissions-to-rabbitmq-user)  
+               + [6. MinIO installation](#6-minio-installation)  
+               + [7. Elasticsearch installation](#7-elasticsearch-installation)  
+               + [8. PostgreSQL installation](#8-postgresql-installation)  
+               + [9. (OPTIONAL) Additional adjustment](#9-optional-additional-adjustment)  
+               + [10. Deploy ReportPortal Helm Chart](#10-deploy-reportportal-helm-chart)  
+               + [11. Validate the service](#11-validate-the-service)  
+               + [12. Start work with ReportPortal](#12-start-work-with-reportportal)  
+         - [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)  
+
 
 #### **Overall information**
 
