@@ -1,7 +1,8 @@
 # K8s
 Kubernetes/Helm configs for installation ReportPortal
 
-**Overall information**
+
+#### **Overall information**
 
 This Helm project is created to setup ReportPortal with only one commando. It installs all mandatory services to run the application.  
 
@@ -182,7 +183,7 @@ Example for host file:
 
 ### Cloud Computing Services platform installation
 
-1. Make sure you have Kubernetes up and running
+##### 1. Make sure you have Kubernetes up and running
 
 > Kubernetes on AWS
 
@@ -216,7 +217,7 @@ To create a Kubernetes cluster on DigitalOcean cloud use the following guide:
 
 [How to Create Kubernetes Clusters Using the Control Panel](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/)
 
-2. Install and configure Helm package manager 
+##### 2. Install and configure Helm package manager 
 
 For more information about installation the Helm package manager on different Kubernetes clusters, use the following:
 
@@ -231,7 +232,7 @@ $ helm install stable/wordpress
 ```
 Do not forget to clean up the Wordpress chart resources after making sure everything works as expected
 
-3. Deploy NGINX Ingress controller (version 0.22.0+)
+##### 3. Deploy NGINX Ingress controller (version 0.22.0+)
 
 Please find the guides below:
 
@@ -244,7 +245,7 @@ Please find the guides below:
 
 After your NGINX Ingress controller create a load balancer in your Cloud computing provider, please increase its idle timeout to 300 seconds.  
 
-4. RabbitMQ installation
+##### 4. RabbitMQ installation
 
 ReportPortal requires installed PostgreSQL, Elasticsearch and RabbitMQ to run.  
 
@@ -306,7 +307,7 @@ rabbitmq:
     apiuser: rabbitmq
 ```
 
-5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user
+##### 5. Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user
 
 In RabbitMQ, virtual hosts are like a virtual box which contains a logical grouping of connections, exchanges, queues, bindings, user permissions, policies and many more things.  
 For correct Analyzer work we need to create its vhost and grant permissions for the 'rabbitmq' user.  
@@ -332,7 +333,7 @@ rabbitmqctl list_vhosts
 rabbitmqctl list_permissions -p analyzer
 ```
 
-6. Minio Installation
+##### 6. MinIO installation
 
 The following command will install Minio with 40GB PVC:
 
@@ -375,7 +376,7 @@ minio:
   secretkey: <minio-secretkey>
 ```
 
-7. Elasticsearch installation
+##### 7. Elasticsearch installation
 
 You can install Elasticsearch from the [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) or use an Amazon ES as an Elasticsearch cluster.  
 
@@ -448,7 +449,7 @@ elasticsearch:
     port: 9200
 ```
 
-8. PostgreSQL installation
+##### 8. PostgreSQL installation
 
 You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) or use an Amazon RDS Service for your PostgreSQL database.
 
@@ -579,7 +580,7 @@ postgresql:
     password: <postgresql password>
 ```
 
-9. (OPTIONAL) Additional adjustment
+##### 9. (OPTIONAL) Additional adjustment
 
 Adjust resources for each pod if needed:
 ```
@@ -602,7 +603,9 @@ ingress:
     - <Your DNS name>
 ```
 
-10. Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
+##### 10. Deploy ReportPortal
+
+Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 
 ```sh
 helm package ./reportportal/
@@ -618,7 +621,9 @@ If you use Amazon RDS PostgreSQL instance (You can override the specified 'rpuse
 helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
 ```
 
-11. Once ReportPortal is deployed, you can validate application is up and running by opening your NodePort / LoadBalancer address:
+##### 11. Validate
+
+Once ReportPortal is deployed, you can validate if the application is up and running by opening your NodePort / LoadBalancer address  
 
 ```sh
 kubectl get service
@@ -631,7 +636,9 @@ gateway   NodePort   10.233.48.187  <none>     80:31826/TCP,8080:31135/TCP  2s
 
 If you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address instead
 
-12. Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
+##### 12. Start work with ReportPortal 
+
+Open http://10.233.48.187:8080 page in your browser. Defalut login and password is:
 ```
 default
 1q2w3e
