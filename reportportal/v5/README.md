@@ -2,6 +2,9 @@
 Kubernetes/Helm configs for installation ReportPortal
 
 
+#### Table of contents
+
+<!--ts-->
       - [**Overall information**](#--overall-information--)
     + [Minikube installation](#minikube-installation)
         * [Prerequisites](#prerequisites)
@@ -21,6 +24,7 @@ Kubernetes/Helm configs for installation ReportPortal
         * [11. Validate the service](#11-validate-the-service)
         * [12. Start work with ReportPortal](#12-start-work-with-reportportal)
     + [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl--https-)
+<!--te-->
 
 
 #### **Overall information**
