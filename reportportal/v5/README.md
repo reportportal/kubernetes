@@ -2,11 +2,14 @@
 Kubernetes/Helm configs for installation ReportPortal
 
    * [Table of contents]  
+
          * [Overall information](#overall-information)  
+
          * [Minikube installation](#minikube-installation)  
               * [Prerequisites](#prerequisites)  
-              * [[Install Minikube](#install-minikube)  
+              * [Install Minikube](#install-minikube)  
               * [Run the application in Minikube](#run-the-application-in-minikube)  
+
          * [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)  
               * [1. Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)  
               * [2. Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)  
@@ -20,6 +23,7 @@ Kubernetes/Helm configs for installation ReportPortal
               * [10. Deploy ReportPortal Helm Chart](#10-deploy-reportportal-helm-chart)  
               * [11. Validate the service](#11-validate-the-service)  
               * [12. Start work with ReportPortal](#12-start-work-with-reportportal)  
+              
          * [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)  
 
 
