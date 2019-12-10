@@ -31,7 +31,7 @@ Kubernetes/Helm configs for installation ReportPortal
 
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
-* [Reconfigure / Redeploy your ReportPortal installation](#3-reconfigure-redeploy-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
+* [Update your ReportPortal installation with a new Ingress Configuration](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
 
 -----------
 
@@ -751,7 +751,7 @@ name: letsencrypt-prod
 kubectl create -f letsencrypt-clusterissuer.yaml
 ```
 
-##### 3. Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
+##### 3. Update your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
 
 With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate.
 
