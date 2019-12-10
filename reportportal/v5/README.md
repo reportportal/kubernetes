@@ -31,7 +31,7 @@ Kubernetes/Helm configs for installation ReportPortal
 
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
-* [Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration](#3-reconfigure-redeploy-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
+* [Reconfigure / Redeploy your ReportPortal installation](#3-reconfigure-redeploy-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
 
 -----------
 
