@@ -10,24 +10,28 @@ Kubernetes/Helm configs for installation ReportPortal
 
 * [Prerequisites](#prerequisites)
 * [Install Minikube](#install-minikube)
-* [Run the application in Minikube](#run-the-application-in-minikube)
+* [Run ReportPortal in Minikube](#run-reportportal-in-minikube)
 
 [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)
 
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
-* [Deploy NGINX Ingress controller (version 0.22.0 )](#3-deploy-nginx-ingress-controller-version-0220)
+* [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller-version-0220)
 * [RabbitMQ installation](#4-rabbitmq-installation)
 * [Creation a RabbitMQ virtual host and granting permissions to 'rabbitmq' user](#5-creation-a-rabbitmq-virtual-host-and-granting-permissions-to-rabbitmq-user)
 * [MinIO installation](#6-minio-installation)
 * [Elasticsearch installation](#7-elasticsearch-installation)
 * [PostgreSQL installation](#8-postgresql-installation)
-* [(OPTIONAL) Additional adjustment](#9-optional-additional-adjustment)
-* [Deploy ReportPortal Helm Chart](#10-deploy-reportportal-helm-chart)
+* [(OPTIONAL) Additional adjustments](#9-optional-additional-adjustments)
+* [Deploy the ReportPortal Helm Chart](#10-deploy-the-reportportal-helm-chart)
 * [Validate the service](#11-validate-the-service)
 * [Start work with ReportPortal](#12-start-work-with-reportportal)
 
 [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)
+
+* [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
+* [Pre-requisite configuration](#2-pre-requisite-configuration)
+* [Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration](#3-reconfigure-redeploy-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
 
 -----------
 
@@ -126,7 +130,7 @@ After Minikube has finished installing, close the current CLI session and restar
 
 To install Minikube manually on Windows using Windows Installer, download [minikube-installer.exe](https://github.com/kubernetes/minikube/releases/latest/minikube-installer.exe) and execute the installer
 
-##### Run the application in Minikube
+##### Run ReportPortal in Minikube
 
 Start to minikube with the options:
 ```sh
@@ -609,7 +613,7 @@ postgresql:
     password: <postgresql password>
 ```
 
-##### 9. (OPTIONAL) Additional adjustment
+##### 9. (OPTIONAL) Additional adjustments
 
 Adjust resources for each pod if needed:
 ```
@@ -632,7 +636,7 @@ ingress:
     - <Your DNS name>
 ```
 
-##### 10. Deploy ReportPortal Helm Chart
+##### 10. Deploy the ReportPortal Helm Chart
 
 Once everything is ready, the ReportPortal Helm Chart package can be created and deployed by executing:
 
@@ -677,11 +681,11 @@ P.S: If you can't login - please check logs of api and uat pods. It take some ti
 
 ### Run ReportPortal over SSL (HTTPS)
 
-1. Configure a custom domain name for your ReportPortal website
+##### 1. Configure a custom domain name for your ReportPortal website
 
 Set up a domain name you own at the domain registrar
 
-2. Pre-requisite configuration
+##### 2. Pre-requisite configuration
 
 In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA).
 As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS.
@@ -747,7 +751,7 @@ name: letsencrypt-prod
 kubectl create -f letsencrypt-clusterissuer.yaml
 ```
 
-3. Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
+##### 3. Reconfigure/redeploy your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
 
 With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate.
 
@@ -793,7 +797,7 @@ spec:
 
 3.3. Redeploy your application
 
-4.  Create a Certificate resource in Kubernetes with acme http challenge configured:
+##### 4.  Create a Certificate resource in Kubernetes with acme http challenge configured:
 
 ```sh
 vi kubectl create -f certificate-tls.yaml
