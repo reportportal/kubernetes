@@ -35,7 +35,7 @@ Kubernetes/Helm configs for installation ReportPortal
 
 -----------
 
-#### **Overall information**
+### Overall information
 
 This Helm project is created to setup ReportPortal with only one commando. It installs all mandatory services to run the application.  
 
