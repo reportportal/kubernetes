@@ -32,7 +32,7 @@ Kubernetes/Helm configs for installation ReportPortal
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
 * [Update your ReportPortal installation with a new Ingress Configuration](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
-* [Create a Certificate resource in Kubernetes with acme http challenge configured](#4-create-a-certificate-resource-in-kubernetes-with-acme-http-challenge-configured-)
+* [Create a Certificate resource in Kubernetes with acme http challenge configured](#4-create-a-certificate-resource-in-kubernetes-with-acme-http-challenge-configured)
 
 -----------
 
