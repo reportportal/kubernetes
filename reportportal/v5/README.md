@@ -32,6 +32,7 @@ Kubernetes/Helm configs for installation ReportPortal
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
 * [Update your ReportPortal installation with a new Ingress Configuration](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
+* [Create a Certificate resource in Kubernetes with acme http challenge configured](#4-create-a-certificate-resource-in-kubernetes-with-acme-http-challenge-configured)
 
 -----------
 
@@ -690,7 +691,7 @@ Set up a domain name you own at the domain registrar
 In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA)  
 As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS  
 
-2.1. Deploy the Cert Manager (e.g. in kube-system namespace)
+##### 2.1. Deploy the Cert Manager (e.g. in kube-system namespace)
 
 [Cert-manager](https://github.com/helm/charts/tree/master/stable/cert-manager) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed  
 
@@ -722,7 +723,7 @@ helm install \
     --set webhook.enabled=false
 ```
 
-2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource
+##### 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource
  
 Issuers (and ClusterIssuers) represent a certificate authority from which signed x509 certificates can be obtained, such as Let’s Encrypt. You will need at least one Issuer or ClusterIssuer in order to begin issuing certificates within your cluster
 
@@ -758,7 +759,7 @@ kubectl create -f letsencrypt-clusterissuer.yaml
 
 With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate by editing ReportPortal Helm chart 'values.yaml' file  
 
-3.1. Add the certmanager annotations:
+##### 3.1. Add the certmanager annotations:
 
 ```
     certmanager.k8s.io/issuer: "letsencrypt-prod"
@@ -783,7 +784,7 @@ annotations:
     certmanager.k8s.io/acme-challenge-type: http01
 ```
 
-3.2. Set 'tls' to 'true' and add your tls secretName (will be created in the next step):
+##### 3.2. Set 'tls' to 'true' and add your tls secretName (will be created in the next step):
 
 ```
   tls: true
@@ -805,7 +806,7 @@ ingress:
   tlssecretname: my.reportportal.com-tls
 ```
 
-3.3. Redeploy or upgrade your ReporPortal installation with Helm
+##### 3.3. Redeploy or upgrade your ReporPortal installation with Helm
 
 
 ##### 4. Create a Certificate resource in Kubernetes with acme http challenge configured:   
