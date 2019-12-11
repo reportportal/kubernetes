@@ -11,9 +11,12 @@ metadata:
     {{- end }}
 spec:
 {{- if .Values.ingress.tls }}
+  {{- range $host := .Values.ingress.hosts }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end}}
+  - hosts:
+    - {{ $host }}
+    secretName: "{{ .Values.ingress.tlssecretname }}" 
+  {{- end -}}
   rules:
 {{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}

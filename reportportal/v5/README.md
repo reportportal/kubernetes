@@ -687,12 +687,12 @@ Set up a domain name you own at the domain registrar
 
 ##### 2. Pre-requisite configuration
 
-In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA).
-As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS.
+In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA)  
+As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS  
 
-2.1. Deploy Cert Manager (e.g. in kube-system namespace)
+2.1. Deploy the Cert Manager (e.g. in kube-system namespace)
 
-[Cert-manager](https://github.com/helm/charts/tree/master/stable/cert-manager) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed.
+[Cert-manager](https://github.com/helm/charts/tree/master/stable/cert-manager) is a native Kubernetes certificate management controller. It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed  
 
 ```sh
 ## Install the cert-manager CRDs **before** installing the cert-manager Helm chart
@@ -710,9 +710,10 @@ kubectl label namespace <deployment-namespace> certmanager.k8s.io/disable-valida
 helm install --name cert-manager stable/cert-manager
 ```
 
-Optional  
+(OPTIONAL)    
 In order to provide advanced resource validation, cert-manager includes a ValidatingWebhookConfiguration resource which is deployed into the cluster.  
 In case it fails to start, you can disable the webhook component, cert-manager will still perform the same resource validation however it will not reject ‘create’ events when the resources are submitted to the apiserver if they are invalid.  
+
 ```sh
 helm install \
     --name cert-manager \
@@ -747,61 +748,93 @@ name: letsencrypt-prod
  http01: {}
 ```
 
+You can change the name and email for your ClusterIssuer here  
+
 ```sh
 kubectl create -f letsencrypt-clusterissuer.yaml
 ```
 
 ##### 3. Update your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
 
-With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate.
+With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate by editing ReportPortal Helm chart 'values.yaml' file  
 
-3.1. Edit values.yaml and api-ingress.yaml, and add certmanager annotations:
+3.1. Add the certmanager annotations:
+
+```
+    certmanager.k8s.io/issuer: "letsencrypt-prod"
+    certmanager.k8s.io/acme-challenge-type: http01
+```
+
+The result  
 
 ```
 ..
 annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
+    nginx.ingress.kubernetes.io/proxy-body-size: 128m
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     certmanager.k8s.io/issuer: "letsencrypt-prod"
     certmanager.k8s.io/acme-challenge-type: http01
 ```
 
-3.2. Add TLS to the both ReportPortal Ingress Configuration files
-
-Edit 'gateway-ingress.yaml' and 'api-ingress.yaml' in order to add your TLS information.
- 
-Let's suppose your domain name is 'my.reportportal.com ' and your certificate name is 'my.reportportal.com-tls'. Then you should add the following under the 'spec':
+3.2. Set 'tls' to 'true' and add your tls secretName (will be created in the next step):
 
 ```
-tls:
-  - hosts:
+  tls: true
+  tlssecretname: <your_tlssecretname>
+```
+
+Let's suppose your domain name is 'my.reportportal.com' and your certificate secretname is 'my.reportportal.com-tls'  
+
+Then the result in your 'values.yaml' file should be  
+
+```
+ingress:
+  enable: true
+  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
+  usedomainname: true
+  hosts:
     - my.reportportal.com
-    secretName: my.reportportal.com-tls
+  tls: true
+  tlssecretname: my.reportportal.com-tls
 ```
 
-The result in should look like:
+3.3. Redeploy or upgrade your ReporPortal installation with Helm
 
-```
-spec:
-  tls:
-  - hosts:
-    - my.reportportal.com
-    secretName: my.reportportal.com-tls
-  rules:
-{{ if .Values.ingress.usedomainname }}
-  {{- range $host := .Values.ingress.hosts }}
-  - host: {{ $host }}
-...
-```
 
-3.3. Redeploy your application
-
-##### 4.  Create a Certificate resource in Kubernetes with acme http challenge configured:
+##### 4. Create a Certificate resource in Kubernetes with acme http challenge configured:   
 
 ```sh
 vi kubectl create -f certificate-tls.yaml
 ```
+
+```
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: <your_certificatename>
+spec:
+  secretName: <your_tlssecretname>
+  dnsNames:
+  - <your_domainname>
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - <your_domainname>
+  issuerRef:
+    name: <your_letsencrypt-clusterissuer_name>
+    kind: ClusterIssuer
+```
+
+For our example  
 
 ```
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -825,6 +858,14 @@ spec:
 
 Once this resource is created, there should be a tls cert that is created. If not, then check the logs of the cert-manger service for errors
 
+In ordet to check the certificate and secret  
 
+```
+kubectl get certificates
+kubectl describe certificate <your_certificatename>
+```
 
-
+```
+kubectl get secrets
+kubectl describe secret <your_tlssecretname>
+```
