@@ -749,7 +749,7 @@ name: letsencrypt-prod
  http01: {}
 ```
 
-You can change the name and email for your ClusterIssuer here  
+You can change the name and email for your ClusterIssuer there  
 
 ```sh
 kubectl create -f letsencrypt-clusterissuer.yaml
@@ -784,26 +784,31 @@ annotations:
     certmanager.k8s.io/acme-challenge-type: http01
 ```
 
-##### 3.2. Set 'tls' to 'true' and add your tls secretName (will be created in the next step):
+##### 3.2. Update your Ingress configuration
+
+Edit 'gateway-ingress.yaml' and add the following right after 'spec'
 
 ```
-  tls: true
-  tlssecretname: <your_tlssecretname>
+  tls:
+  - hosts:
+    - <your_domain_name>
+    secretName: <your_certificate_secretname>
 ```
+
+Your certificate secretname will be created on the next step   
 
 Let's suppose your domain name is 'my.reportportal.com' and your certificate secretname is 'my.reportportal.com-tls'  
 
-Then the result in your 'values.yaml' file should be  
+Then the result in your 'gateway-ingress.yaml' file will be  
 
 ```
-ingress:
-  enable: true
-  # IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
-  usedomainname: true
-  hosts:
+spec:
+  tls:
+  - hosts:
     - my.reportportal.com
-  tls: true
-  tlssecretname: my.reportportal.com-tls
+    secretName: my.reportportal.com-tls
+  rules:
+..
 ```
 
 ##### 3.3. Redeploy or upgrade your ReporPortal installation with Helm
@@ -819,17 +824,17 @@ vi kubectl create -f certificate-tls.yaml
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: <your_certificatename>
+  name: <your_certificate_name>
 spec:
-  secretName: <your_tlssecretname>
+  secretName: <your_certificate_secretname>
   dnsNames:
-  - <your_domainname>
+  - <your_domain_name>
   acme:
     config:
     - http01:
         ingressClass: nginx
       domains:
-      - <your_domainname>
+      - <your_domain_name>
   issuerRef:
     name: <your_letsencrypt-clusterissuer_name>
     kind: ClusterIssuer
@@ -863,10 +868,10 @@ In ordet to check the certificate and secret
 
 ```
 kubectl get certificates
-kubectl describe certificate <your_certificatename>
+kubectl describe certificate <your_certificate_name>
 ```
 
 ```
 kubectl get secrets
-kubectl describe secret <your_tlssecretname>
+kubectl describe secret <your_certificate_secretname>
 ```
