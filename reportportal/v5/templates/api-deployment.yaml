@@ -20,9 +20,9 @@ spec:
         - name: "RP_REQUESTLOGGING"
           value: "false"
         - name: RP_AMQP_QUEUES
-          value: "10"
+          value: "{{ $.Values.serviceapi.queues.totalNumber | default "10"}}"
         - name: RP_AMQP_QUEUESPERPOD
-          value: "5"
+          value: {{ $.Values.serviceapi.queues.perPodNumber | default "10"}}
         - name: "JAVA_OPTS"
           value: {{ $.Values.serviceapi.jvmArgs | default "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241"}}
         - name: RP_AMQP_HOST
