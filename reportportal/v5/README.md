@@ -430,7 +430,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:
 ```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.3.2.tgz
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.5.0.tgz
 ```
 
 7.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
