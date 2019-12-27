@@ -893,3 +893,4 @@ kubectl describe secret <your_certificate_secretname>
 
 Now you should be able to run your ReportPortal installation over HTTPS  
 
+Please take into account that you don't have to re-deploy the application in order to apply changes
