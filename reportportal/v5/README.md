@@ -406,7 +406,6 @@ minio:
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  aws: false
   region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
@@ -414,14 +413,13 @@ minio:
 
 You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.  
 
-In order to use this option, please set 'aws' value to true.  
 Configuration of MinIO AWS storage region for binary storage can be defined via 'region' value.  
 
 Example  
 ```yaml
 minio:
+  enabled: true
 ..
-  aws: true
   region: us-east-1
 ..
 ```
