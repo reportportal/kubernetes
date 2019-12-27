@@ -37,6 +37,8 @@ spec:
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
+        - name: RP_BINARYSTORE_MINIO_REGION
+          value: "{{ .Values.minio.region }}"
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
