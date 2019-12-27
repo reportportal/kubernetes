@@ -1,0 +1,21 @@
+# This requires migration script update first, but the code left here for further use.
+#
+# initdbScripts:
+#   init_postgres.sh: |
+#     #!/bin/sh
+#     /opt/bitnami/postgresql/bin/psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS ltree;CREATE EXTENSION IF NOT EXISTS pgcrypto;CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+
+postgresqlConfiguration:
+  # Copied from default 'postgresql.conf'
+  listenAddresses: "'*'"
+  port: 5432
+  walLevel: hot_standby
+  fsync: on
+  maxWalSize: 400MB
+  maxWalSenders: 16
+  walKeepSegments: 12
+  hotStandby: on
+  includeDir: "'conf.d'"
+  # RP config
+  # We need such number of connections to scale RP nodes in case of big loads
+  maxConnections: 500

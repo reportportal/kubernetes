@@ -1,6 +1,6 @@
 dependencies:
   - name: postgresql
-    version: 3.9.1
+    version: 7.4.0
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: postgresql.installdep.enable
 
