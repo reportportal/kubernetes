@@ -406,14 +406,25 @@ minio:
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  region: null
+  aws: false
+  region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
 ```
 
-You can also use Amazon S3 instead of self-hosted MinIO through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.  
+You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.  
 
-Configuration of MinIO AWS region for binary storage can be defined via 'region' value (null by default)  
+In order to use this option, please set 'aws' value to true.  
+Configuration of MinIO AWS storage region for binary storage can be defined via 'region' value.  
+
+Example  
+```yaml
+minio:
+..
+  aws: true
+  region: us-east-1
+..
+```
 
 ##### 7. Elasticsearch installation
 

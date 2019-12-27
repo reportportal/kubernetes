@@ -128,7 +128,8 @@ minio:
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  region: null
+  aws: false
+  region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
 
