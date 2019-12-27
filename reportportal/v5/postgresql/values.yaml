@@ -19,3 +19,7 @@ postgresqlConfiguration:
   # RP config
   # We need such number of connections to scale RP nodes in case of big loads
   maxConnections: 500
+
+# Enabling Prometheus metrics
+metrics:
+  enabled: true
