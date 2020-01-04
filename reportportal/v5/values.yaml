@@ -173,3 +173,9 @@ rp:
   infoEndpoint: "/info"
   healthEndpoint: "/health"
 
+# to enable deploying to an openshift environment (tested for openshift v3.9)
+# this will create openshift Route resources
+openshift:
+  enable: false
+  hosts:
+    - reportportal.k8.com

@@ -1,0 +1,19 @@
+{{- if .Values.openshift.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels: {{ include "labels" . | indent 4 }}
+  name: {{ $fullName }}-gateway
+spec:
+  ports:
+    # use 8081 to allow for usage of the dashboard which is on port 8080
+    - name: http
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    component:  {{ $fullName }}-gateway
+  sessionAffinity: None
+  type: ClusterIP
+{{- end }}

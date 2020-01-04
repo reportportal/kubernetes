@@ -13,6 +13,9 @@ spec:
       labels:
         component: {{ include "reportportal.fullname" . }}-api
     spec:
+      {{- if .Values.openshift.enable }}
+      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
+      {{ end }}
       containers:
       - env:
         - name: "LOGGING_LEVEL_ORG_HIBERNATE_SQL"
@@ -97,6 +100,10 @@ spec:
        {{ end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
+        {{- if .Values.openshift.enable }}
+        securityContext:
+          runAsUser: 0
+        {{- end }}
         ports:
         - containerPort: 8585
           protocol: TCP

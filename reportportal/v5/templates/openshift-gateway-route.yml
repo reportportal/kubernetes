@@ -1,0 +1,22 @@
+{{- $fullName := include "reportportal.fullname" . -}}
+{{- if .Values.openshift.enable }}
+{{- range $host := .Values.openshift.hosts }}
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  labels: {{ include "labels" $ | indent 4  }}
+  name: {{ $host | replace "." "-" | trunc 63 | trimSuffix "-" }}
+spec:
+  host: {{ $host }}
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: {{ $fullName }}-gateway
+    weight: 100
+  wildcardPolicy: None
+{{- end }}
+{{- end }}

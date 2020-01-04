@@ -1,0 +1,48 @@
+{{- if .Values.openshift.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels: {{ include "labels" . | indent 4  }}
+  name: {{ $fullName }}-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ $fullName }}-gateway
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: {{ $fullName }}-gateway
+    spec:
+      containers:
+        - image: 'traefik:v2.0'
+          imagePullPolicy: IfNotPresent
+          name: traefik
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/traefik/
+              name: config
+              readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            defaultMode: 420
+            name: {{ $fullName }}-gateway-config
+{{- end }}

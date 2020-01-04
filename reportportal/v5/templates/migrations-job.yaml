@@ -9,6 +9,9 @@ spec:
       labels:
         component: {{ include "reportportal.fullname" . }}-migrations
     spec:
+      {{- if .Values.openshift.enable }}
+      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
+      {{ end }}
       restartPolicy: Never
       containers:
       - env:

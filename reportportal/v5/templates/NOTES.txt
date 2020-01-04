@@ -1,2 +1,6 @@
 ReportPortal is now available at:
+{{- if .Values.openshift.enable }}
+{{ toYaml .Values.openshift.hosts | indent 4 }}
+{{- else }}
 {{ toYaml .Values.ingress.hosts | indent 4 }}
+{{- end }}
