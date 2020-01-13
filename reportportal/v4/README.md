@@ -127,11 +127,11 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 ## Microsoft Azure AKS deployment notes
 
 1. Deploy an Azure Kubernetes Service (AKS) cluster using the Azure portal or cli -> [instruction](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
-1. Make sure you have AKS cluster up and running
-1. Configure Helm package manager on your AKS cluster -> [instruction](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
-1. Deploy ingress controller if you need to expose your allpication -> [instruction](https://docs.microsoft.com/en-us/azure/aks/ingress-basic)
-1. Deploy dependencies and application according to installation notes
-1. Get nginx-ingress-controller LoadBalancer's EXTERNAL-IP address with command
+2. Make sure you have AKS cluster up and running
+3. Configure Helm package manager on your AKS cluster -> [instruction](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
+4. Deploy ingress controller if you need to expose your allpication -> [instruction](https://docs.microsoft.com/en-us/azure/aks/ingress-basic)
+5. Deploy dependencies and application according to installation notes
+6. Get nginx-ingress-controller LoadBalancer's EXTERNAL-IP address with command
 
     ```sh
     kubectl get services
@@ -139,7 +139,7 @@ Insert real values of mongodb and elasticsearch addresses and ports:
     nginx-ingress-controller	LoadBalancer   10.0.132.176   40.114.87.240   80:32763/TCP,443:30295/TCP    2m38s
     ```
 
-1. Open it in your browser http://40.114.87.240
+7. Open it in your browser http://40.114.87.240
 
 
 ## Amazon EKS deployment notes
@@ -148,7 +148,7 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 
 1. Create and configure AWS EKS Cluster. You can use either the AWS console or AWS CLI -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 
-1. Install and configure Helm package manager on your AWS AKS cluster -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/helm.html)
+2. Install and configure Helm package manager on your AWS AKS cluster -> [Instruction](https://docs.aws.amazon.com/eks/latest/userguide/helm.html)
 
     You can test your Helm configuration by installing a simple Helm chart like a Wordpress
 
@@ -162,67 +162,42 @@ Insert real values of mongodb and elasticsearch addresses and ports:
 
 1. Deploy Ingress controller if you plan to expose your application -> [Instruction](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#aws)
 
-1. Proceed with the Installation notes at https://github.com/reportportal/kubernetes/tree/master/reportportal#installation-notes
+2. Proceed with the Installation notes at https://github.com/reportportal/kubernetes/tree/master/reportportal#installation-notes
 (The steps before it can be ignored )
 
-1. Run the next command to get LoadBalancer's EXTERNAL-IP address:
+3. Run the next command to get LoadBalancer's EXTERNAL-IP address:
 
     ```sh
     kubectl get svc
     ```
 
-1. Open http://EXTERNAL-IP  in your browser to see if the dashboard is available
+4. Open http://EXTERNAL-IP  in your browser to see if the dashboard is available
 
 
 ## Minikube notes
 
-Start to minikube with options:
-
-- `minikube --memory 12228 --cpus 2 start`
-
-Installation of ingress plugin:
-
-- `minikube addons enable ingress`
-
-For deploy Helm Chart, need to initialization Helm:
-
-- `helm init`
-
-You can deploy this chart with `helm install ./<project folder>`.
-
-Once it's installed please make sure that the PersistentVolumes directories are created
-
-Commando to create those folders:
-
-```bash
-minikube ssh
-sudo mkdir /mnt/data/db -p
-sudo mkdir /mnt/data/console -p
-sudo mkdir /mnt/data/elastic -p
+Start Minikube with the options:  
+```sh
+minikube --memory 4096 --cpus 2 start
 ```
 
-Also make sure that the vm.max_map_count is setup
-
-```bash
-minikube ssh
-sudo sysctl -w vm.max_map_count=262144
+Install the Ingress plugin:  
+```sh
+minikube addons enable ingress
 ```
 
-The url to reach ReportPortal is http://reportportal.k8.com
-Make sure that the url is added in the host file and the ip is the K8 ip address
+Verify that the NGINX Ingress controller is running:  
+```sh
+kubectl get pods -n kube-system
+```
 
-Commands to get ip adress of minikube:
+Initialize Helm package manager:  
+```sh
+helm init
+```
 
-`minikube ip`
-
-Example for host file:
-
-`192.168.99.100 reportportal.k8.com`
-
-
-Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
-Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
-
+> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml  
+> Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation  
 ```yaml
 elasticsearch:
   installdep:
@@ -240,3 +215,44 @@ mongodb:
     port: 27017
 ```
 
+Deploy the chart:  
+```sh
+helm install ./<project folder>`
+```
+
+Once it's installed please make sure that the PersistentVolumes directories are created.  
+
+To create:  
+```sh
+`minikube ssh`
+```
+```sh
+`sudo mkdir /mnt/data/db -p`
+```
+```sh
+`sudo mkdir /mnt/data/console -p`
+```
+```sh
+`sudo mkdir /mnt/data/elastic -p`  
+```
+
+Also make sure that the vm.max_map_count is setup:  
+```sh
+minikube ssh
+```
+```sh
+sudo sysctl -w vm.max_map_count=262144
+```
+
+
+The default URL to reach the ReportPortal UI page is http://reportportal.k8.com.  
+Make sure that the URL is added to the host file and the IP is the K8s IP address  
+
+The command to get an IP address of Minikube:
+```sh
+minikube ip
+```
+Example for host file:
+```sh
+192.168.99.100 reportportal.k8.com
+```
