@@ -1,9 +1,9 @@
 # K8s
 Kubernetes/Helm configs for installation ReportPortal
 
-This Helm project is created to setup ReportPortal with only one commando. It installs all mandatory services to run the application.
+This project is created to install ReportPortal on Kubernetes with Helm. It describes installation of all mandatory services to run the application.  
 
-The Helm chart installation consist of the following .yaml files:
+The chart includes the following files configuration files:  
 
 - Statefulset and Service files of: `Analyzer, Api, Elasticsearch, Gateway, Index, Mongodb, Registry, UAT, UI` that are used for deployment and communication between services.
 - PersistentVolume files: `Elasticsearch, Mongodb, Registry`
@@ -12,50 +12,7 @@ The Helm chart installation consist of the following .yaml files:
 charts.
 - A `templates/_helpers.tpl` file which contains helper templates.
 
-Start to minikube with options:
-
-- `minikube --memory 12228 --cpus 2 start`
-
-Installation of ingress plugin:
-
-- `minikube addons enable ingress`
-
-For deploy Helm Chart, need to initialization Helm:
-
-- `helm init`
-
-You can deploy this chart with `helm install ./<project folder>`.
-
-Once it's installed please make sure that the PersistentVolumes directories are created
-
-Commando to create those folders:
-
-```bash
-minikube ssh
-sudo mkdir /mnt/data/db -p
-sudo mkdir /mnt/data/console -p
-sudo mkdir /mnt/data/elastic -p
-```
-
-Also make sure that the vm.max_map_count is setup
-
-```bash
-minikube ssh
-sudo sysctl -w vm.max_map_count=262144
-```
-
-The url to reach ReportPortal is http://reportportal.k8.com
-Make sure that the url is added in the host file and the ip is the K8 ip address
-
-Commands to get ip adress of minikube:
-
-`minikube ip`
-
-Example for host file:
-
-`192.168.99.100	reportportal.k8.com`
-
-Variables is presents in value.yml. Report Portal uses the next images in variables:
+ReportPortal use the following images:
 
 - traefik: traefik 1.6
 - serviceindex:  reportportal/service-index 4.0.0
@@ -67,33 +24,15 @@ Variables is presents in value.yml. Report Portal uses the next images in variab
 
 Requirements:
 
-- `mongodb`
-- `elasticsearch`
+- `Mongodb`
+- `Elasticsearch`
 
-Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
-Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
-
-```yaml
-elasticsearch:
-  installdep:
-    enable: false
-  endpoint:
-    external: true
-    address: elasticsearch-client.default.svc
-    port: 9200
-mongodb:
-  installdep:
-    enable: false
-  endpoint:
-    external: true
-    address: mongodb://mongodb.default.svc.cluster.local
-    port: 27017
-```
 
 ## Installation notes
 
-1. Make sure you have Kubernetes up and running
-1. Reportportal requires installed [mongodb](https://github.com/helm/charts/tree/master/stable/mongodb) and [elasticsearch](https://github.com/helm/charts/tree/master/stable/elasticsearch) to run. Required versions of helm charts are described in requirements.yaml
+1. Make sure you have Kubernetes up and running  
+
+2. Reportportal requires installed [mongodb](https://github.com/helm/charts/tree/master/stable/mongodb) and [elasticsearch](https://github.com/helm/charts/tree/master/stable/elasticsearch) to run. Required versions of helm charts are described in requirements.yaml
 If you don't have your own mongodb and elasticsearch instances, they can be installed from official helm charts.
 
     For example to install mongodb please use this commands:
@@ -117,7 +56,7 @@ If you don't have your own mongodb and elasticsearch instances, they can be inst
     helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-1.17.0.tgz
     ```
 
-1. After mongodb and elasticsearch are up and running, edit values.yaml to adjust ReportPortal settings.
+3. After mongodb and elasticsearch are up and running, edit values.yaml to adjust ReportPortal settings.
 Insert real values of mongodb and elasticsearch addresses and ports:
 
     ```yaml
@@ -164,7 +103,7 @@ Insert real values of mongodb and elasticsearch addresses and ports:
         - reportportal.k8.com
     ```
 
-1. Once values.yaml is adjusted, helm package can be created and deployed by executing:
+4. Once values.yaml is adjusted, helm package can be created and deployed by executing:  
 
     ```sh
     helm package ./reportportal/
@@ -177,12 +116,13 @@ Insert real values of mongodb and elasticsearch addresses and ports:
     gateway     NodePort   10.233.48.187  <none>       80:31826/TCP,8080:31135/TCP  2s
     ```
 
-1. Open in browser http://10.233.48.187:8080 page. Defalut login and password can be:
+5. Open in browser http://10.233.48.187:8080 page. Defalut login and password can be:
 
     - default / 1q2w3e
     - superadmin / erebus
 
     **Note**: If you can't login - please check logs of api and uat pods. It takes some time to initialize.
+
 
 ## Microsoft Azure AKS deployment notes
 
@@ -200,6 +140,7 @@ Insert real values of mongodb and elasticsearch addresses and ports:
     ```
 
 1. Open it in your browser http://40.114.87.240
+
 
 ## Amazon EKS deployment notes
 
@@ -231,3 +172,71 @@ Insert real values of mongodb and elasticsearch addresses and ports:
     ```
 
 1. Open http://EXTERNAL-IP  in your browser to see if the dashboard is available
+
+
+## Minikube notes
+
+Start to minikube with options:
+
+- `minikube --memory 12228 --cpus 2 start`
+
+Installation of ingress plugin:
+
+- `minikube addons enable ingress`
+
+For deploy Helm Chart, need to initialization Helm:
+
+- `helm init`
+
+You can deploy this chart with `helm install ./<project folder>`.
+
+Once it's installed please make sure that the PersistentVolumes directories are created
+
+Commando to create those folders:
+
+```bash
+minikube ssh
+sudo mkdir /mnt/data/db -p
+sudo mkdir /mnt/data/console -p
+sudo mkdir /mnt/data/elastic -p
+```
+
+Also make sure that the vm.max_map_count is setup
+
+```bash
+minikube ssh
+sudo sysctl -w vm.max_map_count=262144
+```
+
+The url to reach ReportPortal is http://reportportal.k8.com
+Make sure that the url is added in the host file and the ip is the K8 ip address
+
+Commands to get ip adress of minikube:
+
+`minikube ip`
+
+Example for host file:
+
+`192.168.99.100 reportportal.k8.com`
+
+
+Before you deploy reportportal you should have installed requirements. Versions are described in requirements.yaml.
+Also you should specify correct mongodb and elasticsearch addresses and ports in values.yaml. Also it could be an external existing installation:
+
+```yaml
+elasticsearch:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: elasticsearch-client.default.svc
+    port: 9200
+mongodb:
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    address: mongodb://mongodb.default.svc.cluster.local
+    port: 27017
+```
+
