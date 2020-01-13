@@ -35,7 +35,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-RC-5
+  tag: 5.0.0-RC-6
   name: ui
   pullPolicy: Always
   resources:
@@ -48,7 +48,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-RC-5
+  tag: 5.0.0-RC-6
   name: api
   pullPolicy: Always
   readinessProbe:
