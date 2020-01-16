@@ -1,5 +1,5 @@
 # K8s
-Kubernetes/Helm configs for installation ReportPortal
+Kubernetes/Helm configs for installation of ReportPortal v4
 
 This project is created to install ReportPortal on Kubernetes with Helm. It describes installation of all mandatory services to run the application.  
 
@@ -26,6 +26,9 @@ Requirements:
 
 - `Mongodb`
 - `Elasticsearch`
+
+
+> For matching the installation commands on this guide with your command line, please download this Helm chart to your machine, and rename ../v4 folder to 'reportportal' 
 
 
 ## Installation notes

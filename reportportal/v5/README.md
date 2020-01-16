@@ -1,5 +1,5 @@
 # K8s
-Kubernetes/Helm configs for installation ReportPortal
+Kubernetes/Helm configs for installation of ReportPortal v5
 
 -----------
 ### Table of Contents
@@ -70,6 +70,7 @@ Before you deploy ReportPortal you should have installed all its dependencies (r
 
 You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.  
 
+> For matching the installation commands on this guide with your command line, please download this Helm chart to your machine, and rename ../v5 folder to 'reportportal'  
 
 ### Minikube installation
 
@@ -192,16 +193,16 @@ Once it's installed please make sure that the PersistentVolumes directories are 
 
 To create:  
 ```sh
-`minikube ssh`
+minikube ssh
 ```
 ```sh
-`sudo mkdir /mnt/data/db -p`
+sudo mkdir /mnt/data/db -p
 ```
 ```sh
-`sudo mkdir /mnt/data/console -p`
+sudo mkdir /mnt/data/console -p
 ```
 ```sh
-`sudo mkdir /mnt/data/elastic -p`  
+sudo mkdir /mnt/data/elastic -p
 ```
 
 Also make sure that the vm.max_map_count is setup:  
@@ -291,8 +292,6 @@ ReportPortal requires installation of Elasticsearch, RabbitMQ, PostgreSQL and Mi
 
 You can go with [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) (4.1) or use an Amazon ES as an Elasticsearch cluster (4.2).  
 
-> For matching the commands on this guide with your command line, please download this Helm chart to your machine, and rename ../v5 folder to 'reportportal'  
-
 4.1. Elasticsearch Helm chart installation  
 
 To use this type of installation, please run the following commands  
@@ -338,7 +337,7 @@ We recommend to use an Resource-based access policy:
 
 4.2.3. Accessing your AWS ES domain from ReportPortal  
 
-a) First of all, open ReportPortal Helm chart values.yaml and set 'cloudservice' value in elasticsearch section from 'false' to 'true'. This allows you to use an external ES service.  
+a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in elasticsearch section from 'false' to 'true'. This allows you to use an external ES service.  
 
 ```yaml
 elasticsearch:
@@ -347,9 +346,9 @@ elasticsearch:
 ..
 ```
 
-b) Now you need your AWS ES domain Endpoint URL to connect  
+b) Now you need to get your AWS ES domain Endpoint URL to connect  
 
-Please copy it from the Overview tab in AWS, and write down the real value into the values.yaml:
+Please copy it from the Overview tab in AWS, and write down the real value into the values.yaml:  
 
 ```yaml
 elasticsearch:
@@ -364,14 +363,14 @@ elasticsearch:
 
 #### 5. RabbitMQ installation
 
-You can install RabbitMQ from the [RabbitMQ](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha).  
+You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha).  
 
-Download the specified chart into your charts/ directory:
+Download the specified chart into your charts/ directory:  
 ```sh
 helm dependency build ./reportportal/
 ```
 
-Then use the following command to install RabbitMQ chart:
+Then use install it:  
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -403,7 +402,7 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
     URL : http://127.0.0.1:15672
 ```
 
-After RabbitMQ is up and running, edit values.yaml to adjust the settings  
+When RabbitMQ is up and running, edit values.yaml to adjust the settings  
 
 Insert the real values of RabbitMQ address and ports:  
 
@@ -526,18 +525,18 @@ You need the following information to connect:
   * The port on which the DB instance is listening. For example, the default PostgreSQL port is 5432 ;
   * The user name and password
 
-a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in postgresql section from 'false' to 'true'. This allows you to use PostgreSQL as an external cloud service.  
+a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in postgresql section from 'false' to 'true'. This allows you to use PostgreSQL as an external cloud service    
 
 ```yaml
-elasticsearch:
+postgresql:
 ..
     cloudservice: true
 ..
 ```
 
-b) Update corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:
+b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:  
 
-> The db password can be also skipped here if you're going to override it on the stage of ReportPortal deploy
+> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy  
 
 ```yaml
 postgresql:
@@ -603,7 +602,7 @@ minio:
 
 You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.  
 
-Configuration of MinIO AWS storage region for binary storage can be defined via 'region' value.  
+Configuration of MinIO AWS storage region for binary storage must be defined via 'region' value in this case.  
 
 Example
 
@@ -656,7 +655,7 @@ helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_ch
 ```
 
 > If you use Amazon RDS PostgreSQL instance  
-> You can override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
+> You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
 helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
