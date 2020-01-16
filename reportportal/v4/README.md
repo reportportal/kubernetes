@@ -227,16 +227,16 @@ Once it's installed please make sure that the PersistentVolumes directories are 
 
 To create:  
 ```sh
-`minikube ssh`
+minikube ssh
 ```
 ```sh
-`sudo mkdir /mnt/data/db -p`
+sudo mkdir /mnt/data/db -p
 ```
 ```sh
-`sudo mkdir /mnt/data/console -p`
+sudo mkdir /mnt/data/console -p
 ```
 ```sh
-`sudo mkdir /mnt/data/elastic -p`  
+sudo mkdir /mnt/data/elastic -p` 
 ```
 
 Also make sure that the vm.max_map_count is setup:  
