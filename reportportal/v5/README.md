@@ -311,7 +311,7 @@ Install Elasticsearch:
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.5.0.tgz
 ```
 
-> Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run installation command with an additional values file.  
+> Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
 
 4.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
 
