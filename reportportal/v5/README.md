@@ -653,14 +653,14 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
+helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance  
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
+helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
 #### 10. Validate the pods and service
