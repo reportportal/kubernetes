@@ -124,7 +124,7 @@ elasticsearch:
     port: 9200
 
 minio:
-  enabled: false
+  enabled: true
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
