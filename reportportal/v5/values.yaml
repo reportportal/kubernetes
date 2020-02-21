@@ -82,7 +82,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.1.0-RC
+  tag: 5.0.0
   name: analyzer
   pullPolicy: Always
   resources:
