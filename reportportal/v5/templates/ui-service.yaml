@@ -4,7 +4,7 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-ui
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-    service: {{ $.Values.serviceui.name }}
+    service: {{ $.Values.serviceui.name | default "ui" }}
     infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
 spec:
   ports:

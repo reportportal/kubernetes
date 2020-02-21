@@ -311,6 +311,8 @@ Install Elasticsearch:
 helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.5.0.tgz
 ```
 
+> Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
+
 4.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
 
 Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud  
@@ -504,7 +506,7 @@ exit
 
 Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required the 'rpuser' to have a super user access
 
-> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 8.1.1 - 8.1.2
+> If you are using AWS EKS to run Kubernetes for ReportPortal please be sure to follow the steps 6.1.1 - 6.1.2
 
 6.2.1.1
 Choose your EKS VPC in 'Network & Security' advanced settings.
@@ -555,7 +557,7 @@ postgresql:
 
 #### 7. MinIO installation
 
-MiIO is a high performance distributed object storage server and a preferable way of using our file storage. It stays on top of S3 or any other cloud storage, and allows to have a shared FS for several API and UAT pods in Kubernetes.  
+MinIO is a high performance distributed object storage server and a preferable way of using our file storage. It stays on top of S3 or any other cloud storage, and allows to have a shared FS for several API and UAT pods in Kubernetes.  
 
 The following command will install Minio with 40GB PVC:  
 
@@ -651,14 +653,14 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
+helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance  
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.0-SNAPSHOT.tgz
+helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
 #### 10. Validate the pods and service

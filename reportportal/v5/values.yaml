@@ -22,7 +22,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0-RC-5
+  tag: 5.0.0
   pullPolicy: Always
   resources:
     requests:
@@ -35,7 +35,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0-RC-6
+  tag: 5.0.0
   name: ui
   pullPolicy: Always
   resources:
@@ -48,7 +48,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0-RC-6
+  tag: 5.0.0
   name: api
   pullPolicy: Always
   readinessProbe:
@@ -67,7 +67,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0-RC-5
+  tag: 5.0.0
   pullPolicy: Always
   resources:
     requests:
@@ -79,16 +79,16 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0-RC-5
+  tag: 5.0.0
   name: analyzer
   pullPolicy: Always
   resources:
     requests:
       cpu: 100m
-      memory: 64Mi
+      memory: 256Mi
     limits:
       cpu: 100m
-      memory: 128Mi
+      memory: 512Mi
 
 rabbitmq:
   SecretName: ""
@@ -124,7 +124,7 @@ elasticsearch:
     port: 9200
 
 minio:
-  enabled: false
+  enabled: true
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
@@ -151,9 +151,9 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
     nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "2000"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "1000"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "1000"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
 
 # node selector for all components, if any
 nodeSelector:
