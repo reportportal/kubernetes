@@ -372,7 +372,7 @@ Download the specified chart into your charts/ directory:
 helm dependency build ./reportportal/
 ```
 
-Then use install it:  
+Then use to install it:  
 ```sh
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
@@ -640,6 +640,16 @@ ingress:
   hosts:
     - <Your DNS name>
 ..
+```
+
+You can also set total amount of RabbitMQ queues, and their number for each API service pod by changing serviceapi.queues.totalNumber and serviceapi.queues.perPodNumber parameters (10 and 10 by default). The general rule here is "queues.totalNumber = number_of_api_pods * queues.perPodNumber"
+
+```yaml
+serviceapi:
+..
+  queues:
+    totalNumber: 
+    perPodNumber: 
 ```
 
 #### 9. Deploy the ReportPortal Helm Chart
