@@ -9,7 +9,7 @@
 serviceindex:
   name: index
   repository: reportportal/service-index
-  tag: 5.0.5
+  tag: 5.0.6
   pullPolicy: Always
   resources:
     requests:
@@ -22,7 +22,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0
+  tag: 5.1.0-RC
   pullPolicy: Always
   resources:
     requests:
@@ -35,7 +35,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0
+  tag: 5.1.0-RC
   name: ui
   pullPolicy: Always
   resources:
@@ -48,7 +48,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0
+  tag: 5.1.0-RC
   name: api
   pullPolicy: Always
   readinessProbe:
@@ -70,7 +70,7 @@ serviceapi:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0
+  tag: 5.1.0-RC
   pullPolicy: Always
   resources:
     requests:
@@ -82,7 +82,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-analyzer
-  tag: 5.0.0
+  tag: 5.1.0-RC
   name: analyzer
   pullPolicy: Always
   resources:
