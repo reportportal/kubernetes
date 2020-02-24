@@ -81,8 +81,8 @@ migrations:
       memory: 128Mi
 
 serviceanalyzer:
-  repository: reportportal/service-analyzer
-  tag: 5.0.0
+  repository: reportportal/service-auto-analyzer
+  tag: 5.1.0-RC-1
   name: analyzer
   pullPolicy: Always
   resources:
