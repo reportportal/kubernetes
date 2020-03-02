@@ -567,17 +567,23 @@ For the best performance we strongly recommend you to use the 'General Purpose' 
 
 In the Azure portal go to the created Azure Database for PostgreSQL server, Settings - Connection security  
 
+6.3.2.1
+
 > If you run your Kubernetes cluster in Azure AKS  
+
 Allow access to Azure services - set to 'Yes'  
 You can also tweak this more finely by using the firewall rules (see below)
 
 > If you run your Kubernetes cluster outside of Azure AKS or want to tweak this more finely
+
 Under the Firewall rules, in the Rule Name column, select the blank text box to begin creating the firewall rule.  
 Fill in the text boxes with a name, and the start and end IP range of the clients that will be accessing your server (it must be all of your Kubernetes Worker nodes, at minimum).  
 If it is a single IP, use the same value for the start IP and end IP
 On the upper toolbar of the Connection security page, select Save. Wait until the notification appears stating that the connection security update has finished successfully before you continue
 
-Then under the SSL settings,
+6.3.2.2
+
+Under the SSL settings,
 Enforce SSL connection - set to 'Disabled'
 
 6.3.3. Creation 'reportportal' database
