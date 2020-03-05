@@ -374,7 +374,7 @@ helm dependency build ./reportportal/
 
 Then use install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
+helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.38.2.tgz
 ```
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
@@ -434,7 +434,7 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>, postgresqlPostgresPassword=<postgres_admin_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-8.3.4.tgz
 ```
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
