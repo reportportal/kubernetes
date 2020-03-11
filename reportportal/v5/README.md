@@ -377,6 +377,11 @@ Then use to install it:
 helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
 
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
+
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
 ```
 ** Please be patient while the chart is being deployed **
@@ -436,6 +441,11 @@ helm dependency build ./reportportal/
 ```sh
 helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
+
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
