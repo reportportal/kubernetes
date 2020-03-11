@@ -1,4 +1,7 @@
 initdbScripts:
   init_postgres.sh: |
     #!/bin/sh
-    /opt/bitnami/postgresql/bin/psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS ltree;CREATE EXTENSION IF NOT EXISTS pgcrypto;CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+    /opt/bitnami/postgresql/bin/psql -U postgres -d reportportal -c 'CREATE EXTENSION IF NOT EXISTS ltree; CREATE EXTENSION IF NOT EXISTS pgcrypto; CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+    /opt/bitnami/postgresql/bin/psql -U postgres -d reportportal -c 'CREATE TABLE schema_migrations (version BIGINT NOT NULL CONSTRAINT schema_migrations_pkey PRIMARY KEY, dirty BOOLEAN NOT NULL);'
+    /opt/bitnami/postgresql/bin/psql -U postgres -d reportportal -c 'INSERT INTO schema_migrations(version, dirty) VALUES (0, false);'
+    /opt/bitnami/postgresql/bin/psql -U postgres -d reportportal -c 'ALTER TABLE schema_migrations owner TO rpuser;'

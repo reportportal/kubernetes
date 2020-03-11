@@ -434,7 +434,7 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.4.0.tgz
+helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
