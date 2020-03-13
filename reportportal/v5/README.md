@@ -439,8 +439,12 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
+At the last command:
+* postgresql_chart_name - a name of your DB deployment inside a cluster
+* postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
+* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
 
 > Please be aware of api deprecations in Kubernetes 1.16.  
 It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
@@ -487,27 +491,6 @@ postgresql:
     user: rpuser
     dbName: reportportal
     password:
-```
-
-6.1.2. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
-
-Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following
-
-Get a shell to a running Postgresql container:
-```sh
-kubectl exec -it <postgresql_chart_name>-postgresql-0 -- /bin/bash
-```
-
-Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser:
-```sh
-psql -h 127.0.0.1 -U postgres
-ALTER USER rpuser WITH SUPERUSER;
-```
-
-Exit
-```sh
-\q
-exit
 ```
 
 6.2. PostgreSQL as an external cloud service. Amazon RDS PostgreSQL
