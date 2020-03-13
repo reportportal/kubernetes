@@ -442,8 +442,9 @@ helm dependency build ./reportportal/
 helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
 At the last command:
+* postgresql_chart_name - a name of your DB deployment inside a cluster
 * postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
-* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you.
+* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
 
 > Please be aware of api deprecations in Kubernetes 1.16.  
 It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
