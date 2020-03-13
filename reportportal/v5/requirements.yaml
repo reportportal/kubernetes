@@ -10,7 +10,7 @@ dependencies:
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
-    version: 7.5.0
+    version: 7.6.1
     repository: https://helm.elastic.co
     condition: elasticsearch.installdep.enable
 
