@@ -374,7 +374,7 @@ helm dependency build ./reportportal/
 
 Then use to install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
+helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
 
 > Please be aware of api deprecations in Kubernetes 1.16.  
