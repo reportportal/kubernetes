@@ -39,7 +39,7 @@ Kubernetes/Helm configs for installation of ReportPortal v5
 
 This project is created to install ReportPortal on Kubernetes with Helm.  
 
-It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service for PostgreSQL database and Amazon ES as an Elasticsearch cluster.  
+It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service / Azure Database for PostgreSQL as a database and Amazon ES as an elasticsearch cluster.  
 
 The chart includes the following configuration files:
 
@@ -61,12 +61,12 @@ Requirements:
 
 - `RabbitMQ` (Helm chart installation)  
 - `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)  
-- `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS)  
+- `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)  
 - `Minio` (Helm chart installation)  
 
 All configuration variables are presented in `value.yaml` file.  
 
-Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL, Amazon ES cluster in case you go with an external AWS cloud services option.  
+Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL / Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.  
 
 You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.  
 
@@ -308,7 +308,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:  
 ```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.5.0.tgz
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
@@ -374,8 +374,13 @@ helm dependency build ./reportportal/
 
 Then use to install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
+helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
+
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -424,7 +429,7 @@ rabbitmq:
 
 #### 6. PostgreSQL installation
 
-You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) (6.1) or use an Amazon RDS Service for your PostgreSQL database (6.2).  
+You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) (6.1) or use an Amazon RDS Service for your PostgreSQL database (6.2) or Azure Database for PostgreSQL (6.3).  
 
 6.1.1. PostgreSQL Helm chart installation
 
@@ -434,8 +439,17 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
+At the last command:
+* postgresql_chart_name - a name of your DB deployment inside a cluster
+* postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
+* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
+
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -479,28 +493,7 @@ postgresql:
     password:
 ```
 
-6.1.2. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
-
-Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following
-
-Get a shell to a running Postgresql container:
-```sh
-kubectl exec -it <postgresql_chart_name>-postgresql-0 -- /bin/bash
-```
-
-Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser:
-```sh
-psql -h 127.0.0.1 -U postgres
-ALTER USER rpuser WITH SUPERUSER;
-```
-
-Exit
-```sh
-\q
-exit
-```
-
-6.2. PostgreSQL as an external cloud service. Connection to your Amazon RDS PostgreSQL instance
+6.2. PostgreSQL as an external cloud service. Amazon RDS PostgreSQL
 
 6.2.1. Provision an Amazon RDS PostgreSQL instance with the created 'rpuser' user and 'reportportal' database
 
@@ -548,9 +541,95 @@ postgresql:
   endpoint:
     external: true
     cloudservice: true
-    address: <PostgreSQL address>
+    address: <postgresql address>
     port: 5432
     user: rpuser
+    dbName: reportportal
+    password: <postgresql password>
+```
+
+6.3. PostgreSQL as an external cloud service. Azure Database for PostgreSQL  
+
+6.3.1. Creation an Azure Database for PostgreSQL server  
+
+You can create an Azure Database for PostgreSQL server in the [Azure portal](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal) or using the [Azure CLI](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal)  
+
+For the best performance we strongly recommend you to use the 'General Purpose' compute and storage configurations  
+
+6.3.2. Configuration a server-level firewall rules    
+
+In the Azure portal go to the created Azure Database for PostgreSQL server, Settings - Connection security  
+
+6.3.2.1
+
+> If you run your Kubernetes cluster in Azure AKS  
+
+Allow access to Azure services - set to 'Yes'  
+You can also tweak this more finely by using the firewall rules (see below)
+
+> If you run your Kubernetes cluster outside of Azure AKS or want to tweak this more finely
+
+Under the Firewall rules, in the Rule Name column, select the blank text box to begin creating the firewall rule.  
+Fill in the text boxes with a name, and the start and end IP range of the clients that will be accessing your server (it must be all of your Kubernetes Worker nodes, at minimum).  
+If it is a single IP, use the same value for the start IP and end IP
+On the upper toolbar of the Connection security page, select Save. Wait until the notification appears stating that the connection security update has finished successfully before you continue
+
+6.3.2.2
+
+Under the SSL settings,
+Enforce SSL connection - set to 'Disabled'
+
+6.3.3. Creation 'reportportal' database
+
+After your Azure PostgreSQL server is ready and you able to connect, get the connection information (server name and login) on the server Overview page in the portal.  
+
+Run the following psql command to connect to an Azure Database for PostgreSQL server  
+```sh
+psql --host=<servername> --port=<port> --username=<user@servername> --dbname=<dbname>
+```
+
+Create a blank database called 'reportportal
+```sh
+CREATE DATABASE reportportal;
+```
+
+Execute the following command to switch connections to the newly created database
+```sh
+\c reportportal
+```
+
+Type \q, and then select the Enter key to quit psql
+
+6.3.4. Accessing your Azure Database for PostgreSQL server
+
+You need the following information to connect:
+  * The server name;
+  * The Admin username and password
+
+a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in postgresql section from 'false' to 'true'. This allows you to use PostgreSQL as an external cloud service    
+
+```yaml
+postgresql:
+..
+    cloudservice: true
+..
+```
+
+b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:  
+
+> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy  
+
+```yaml
+postgresql:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint:
+    external: true
+    cloudservice: true
+    address: <postgresql address>
+    port: 5432
+    user: <Admin username>
     dbName: reportportal
     password: <postgresql password>
 ```
@@ -666,7 +745,7 @@ helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
-> If you use Amazon RDS PostgreSQL instance  
+> If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (external database)
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh

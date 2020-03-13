@@ -6,8 +6,8 @@ These charts bootstraps a ReportPortal deployment on a Kubernetes cluster using 
 The repo includes a number of Kubernetes/Helm configurations for installation ReportPortal v4/v5.  
 
 ### Requirements
-- Kubernetes 1.10+
-- Helm Package Manager 2.8.0+
+- Kubernetes =<1.14
+- Helm Package Manager 2.x
 
 ### Usage notes and getting started
 - The following verions of ReportPortal application are available:  
