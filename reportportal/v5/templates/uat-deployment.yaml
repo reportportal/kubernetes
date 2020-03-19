@@ -15,8 +15,12 @@ spec:
     spec:
       containers:
       - env:
+        {{ if .Values.serviceapi.jvmArgs }}
+        - name: JAVA_OPTS
+          value: "{{ .Values.uat.jvmArgs }}"
+        {{ end }}
         - name: RP_SESSION_LIVE
-          value: "3600"
+          value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
