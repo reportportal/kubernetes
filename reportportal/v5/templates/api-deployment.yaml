@@ -30,8 +30,10 @@ spec:
         - name: RP_AMQP_QUEUESPERPOD
           value: "10"
         {{ end }}
+        {{ if .Values.serviceapi.jvmArgs }}
         - name: "JAVA_OPTS"
           value: "{{ .Values.serviceapi.jvmArgs }}"
+        {{ end }}
         - name: RP_AMQP_HOST
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT

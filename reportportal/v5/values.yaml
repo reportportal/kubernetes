@@ -63,7 +63,7 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
-  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   queues:
     totalNumber: 
     perPodNumber: 
