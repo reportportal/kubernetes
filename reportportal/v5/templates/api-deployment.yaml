@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - env:
-        - name: "LOGGING_LEVEL_ORG_HIBERNATE_SQL"
+        - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
-        - name: "RP_REQUESTLOGGING"
+        - name: RP_REQUESTLOGGING
           value: "false"
         {{ if .Values.serviceapi.queues }}
         - name: RP_AMQP_QUEUES
@@ -31,7 +31,7 @@ spec:
           value: "10"
         {{ end }}
         {{ if .Values.serviceapi.jvmArgs }}
-        - name: "JAVA_OPTS"
+        - name: JAVA_OPTS
           value: "{{ .Values.serviceapi.jvmArgs }}"
         {{ end }}
         - name: RP_AMQP_HOST
