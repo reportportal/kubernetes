@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - env:
-        {{ if .Values.serviceapi.jvmArgs }}
+        {{ if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
         {{ end }}
