@@ -359,7 +359,6 @@ elasticsearch:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: true
     address: <AWS ES domain Endpoint URL>
     port: 9200
