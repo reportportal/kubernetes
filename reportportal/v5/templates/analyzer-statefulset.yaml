@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         component: {{ include "reportportal.fullname" . }}-analyzer
+      annotations:
+        {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       containers:
       - env:

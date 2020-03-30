@@ -8,6 +8,10 @@ spec:
     metadata:
       labels:
         component: {{ include "reportportal.fullname" . }}-migrations
+      annotations:
+        {{- range $key, $value := .Values.migrations.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       restartPolicy: Never
       containers:
