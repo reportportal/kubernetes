@@ -31,7 +31,8 @@ uat:
     limits:
       cpu: 500m
       memory: 2048Mi
-  sessionLiveTime: 86400
+  sessionLiveTime: 43200
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
 
 serviceui:
   repository: reportportal/service-ui
@@ -63,7 +64,7 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
-  jvmArgs: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp "
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 -XX:+UnlockExperimentalVMOptions -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   queues:
     totalNumber: 
     perPodNumber: 
