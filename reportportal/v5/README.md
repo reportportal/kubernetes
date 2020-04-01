@@ -26,6 +26,8 @@ Kubernetes/Helm configs for installation of ReportPortal v5
 * [Validate the pods and service](#10-validate-the-pods-and-service)
 * [Start work with ReportPortal](#11-start-work-with-reportportal)
 
+[Updating ReportPortal to the latest version](#updating-reportportal-to-the-latest-version)
+
 [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)
 
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
@@ -745,7 +747,7 @@ helm package ./reportportal/
 helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
 ```
 
-> If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (external database)
+> If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
@@ -789,6 +791,44 @@ default
 ```
 
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
+
+
+### Updating ReportPortal to the latest version  
+
+Generally, updating ReportPortal in Kubernetes is a two step process.  
+
+#### 1. Update values.yaml
+
+In the first step, your helm chart values.yaml file should be updated with the latest version of services (see values `repository` and `tag`).  
+
+The following services should be taken into consideration:  
+- serviceindex
+- uat
+- serviceui
+- serviceapi
+- migrations
+- serviceanalyzer  
+
+#### 2. Update the application  
+
+The second step is update / redeploy the application using the following commands:  
+
+> If you use PostgreSQL Helm chart  
+
+```sh
+helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha <reportportal_chart_name> ./reportportal-5.tgz
+```
+
+> If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
+
+```sh
+helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha <reportportal_chart_name> ./reportportal-5.tgz
+```
+
+#### IMPORTANT  
+
+Before you start updating your application, please check release notes at the [reportportal wiki](https://github.com/reportportal/reportportal/wiki)!  
+Sometimes, ReportPortal update may require recreation / cleaning of its dependencies (e.g. RabbitMQ), or any other additional actions.  
 
 
 ### Run ReportPortal over SSL (HTTPS)
