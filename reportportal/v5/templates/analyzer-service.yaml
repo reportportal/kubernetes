@@ -6,9 +6,9 @@ metadata:
 spec:
   ports:
   - name: headless
-    port: 5000
+    port: 8080
     protocol: TCP
-    targetPort: 5000
+    targetPort: 8080
   selector:
     component: {{ include "reportportal.fullname" . }}-analyzer
   type: ClusterIP

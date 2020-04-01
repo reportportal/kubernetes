@@ -38,7 +38,7 @@ spec:
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
-        - containerPort: 5000
+        - containerPort: 8080
           protocol: TCP
         resources:
           requests:
