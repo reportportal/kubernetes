@@ -9,7 +9,7 @@
 serviceindex:
   name: index
   repository: reportportal/service-index
-  tag: 5.0.5
+  tag: 5.0.7
   pullPolicy: Always
   resources:
     requests:
@@ -22,7 +22,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.0.0
+  tag: 5.1.0
   pullPolicy: Always
   resources:
     requests:
@@ -36,7 +36,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.0.0
+  tag: 5.1.0
   name: ui
   pullPolicy: Always
   resources:
@@ -49,7 +49,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.0.0
+  tag: 5.1.0
   name: api
   pullPolicy: Always
   readinessProbe:
@@ -64,14 +64,14 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 -XX:+UnlockExperimentalVMOptions -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   queues:
     totalNumber: 
     perPodNumber: 
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.0.0
+  tag: 5.1.0
   pullPolicy: Always
   resources:
     requests:
@@ -82,8 +82,8 @@ migrations:
       memory: 128Mi
 
 serviceanalyzer:
-  repository: reportportal/service-analyzer
-  tag: 5.0.0
+  repository: reportportal/service-auto-analyzer
+  tag: 5.1.0
   name: analyzer
   pullPolicy: Always
   resources:
