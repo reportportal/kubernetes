@@ -19,9 +19,9 @@ spec:
     spec:
       containers:
       - env:
-        - name: "LOGGING_LEVEL_ORG_HIBERNATE_SQL"
+        - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
-        - name: "RP_REQUESTLOGGING"
+        - name: RP_REQUESTLOGGING
           value: "false"
         {{ if .Values.serviceapi.queues }}
         - name: RP_AMQP_QUEUES
@@ -34,8 +34,10 @@ spec:
         - name: RP_AMQP_QUEUESPERPOD
           value: "10"
         {{ end }}
-        - name: "JAVA_OPTS"
-          value: {{ .Values.serviceapi.jvmArgs | default "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp  -Dcom.sun.management.jmxremote.rmi.port=12349 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false  -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=10.6.128.241" | quote }}
+        {{ if .Values.serviceapi.jvmArgs }}
+        - name: JAVA_OPTS
+          value: "{{ .Values.serviceapi.jvmArgs }}"
+        {{ end }}
         - name: RP_AMQP_HOST
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
