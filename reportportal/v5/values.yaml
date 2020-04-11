@@ -18,6 +18,7 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+  podAnnotations: {}
 
 uat:
   repository: reportportal/service-authorization
@@ -31,6 +32,8 @@ uat:
     limits:
       cpu: 500m
       memory: 2048Mi
+  sessionLiveTime: 86400
+  podAnnotations: {}
   sessionLiveTime: 43200
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
 
@@ -46,6 +49,7 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+  podAnnotations: {}
 
 serviceapi:
   repository: reportportal/service-api
@@ -68,6 +72,7 @@ serviceapi:
   queues:
     totalNumber: 
     perPodNumber: 
+  podAnnotations: {}
 
 migrations:
   repository: reportportal/migrations
@@ -80,6 +85,7 @@ migrations:
     limits:
       cpu: 100m
       memory: 128Mi
+  podAnnotations: {}
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
@@ -93,6 +99,7 @@ serviceanalyzer:
     limits:
       cpu: 100m
       memory: 512Mi
+  podAnnotations: {}
 
 rabbitmq:
   SecretName: ""
@@ -128,6 +135,7 @@ elasticsearch:
     port: 9200
 
 minio:
+  secretName: ""
   enabled: true
   installdep:
     enable: false
