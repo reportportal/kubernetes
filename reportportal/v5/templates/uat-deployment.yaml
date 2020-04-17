@@ -12,11 +12,19 @@ spec:
     metadata:
       labels:
         component: {{ include "reportportal.fullname" . }}-uat
+      annotations:
+        {{- range $key, $value := .Values.uat.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       containers:
       - env:
+        {{ if .Values.uat.jvmArgs }}
+        - name: JAVA_OPTS
+          value: "{{ .Values.uat.jvmArgs }}"
+        {{ end }}
         - name: RP_SESSION_LIVE
-          value: "3600"
+          value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
@@ -41,10 +49,23 @@ spec:
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
         {{ end }} 
+        {{ if .Values.minio.secretName }}
+        - name: RP_BINARYSTORE_MINIO_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "accesskey"
+        - name: RP_BINARYSTORE_MINIO_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "secretkey"
+        {{ else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
+        {{ end }}
         {{ end }}
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"

@@ -310,7 +310,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:  
 ```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.5.0.tgz
+helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
@@ -376,8 +376,13 @@ helm dependency build ./reportportal/
 
 Then use to install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password> ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
+helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
 ```
+
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -436,8 +441,17 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal ./reportportal/charts/postgresql-3.9.1.tgz
+helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
+At the last command:
+* postgresql_chart_name - a name of your DB deployment inside a cluster
+* postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
+* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
+
+> Please be aware of api deprecations in Kubernetes 1.16.  
+It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
+The issue is coming from the 3rd party dependencies which listed deprecated API versions.
+As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -479,27 +493,6 @@ postgresql:
     user: rpuser
     dbName: reportportal
     password:
-```
-
-6.1.2. Creation of ReportPortal data in PostgreSQL db required the ltree extension installation. This, in turn, required Super user access to 'rpuser' (PostgreSQL user for ReportPortal database)
-
-Therefore, please change 'rpuser' to a superuser in PostgreSQL installed by Helm chart by doing the following
-
-Get a shell to a running Postgresql container:
-```sh
-kubectl exec -it <postgresql_chart_name>-postgresql-0 -- /bin/bash
-```
-
-Connect to the database as 'postgres' user and upgrade 'rpuser' to be a superuser:
-```sh
-psql -h 127.0.0.1 -U postgres
-ALTER USER rpuser WITH SUPERUSER;
-```
-
-Exit
-```sh
-\q
-exit
 ```
 
 6.2. PostgreSQL as an external cloud service. Amazon RDS PostgreSQL
