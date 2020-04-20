@@ -165,7 +165,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    external: true
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
@@ -177,7 +176,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
@@ -341,28 +339,13 @@ We recommend to use an Resource-based access policy:
 
 4.2.3. Accessing your AWS ES domain from ReportPortal  
 
-a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in elasticsearch section from 'false' to 'true'. This allows you to use an external ES service.  
-
-```yaml
-elasticsearch:
-..
-    cloudservice: true
-..
-```
-
-b) Now you need to get your AWS ES domain Endpoint URL to connect  
-
-Please copy it from the Overview tab in AWS, and write down the real value into the values.yaml:  
+Get your AWS ES domain endpoint URL from the the "Overview" tab in AWS, and write down its value into the ReportPortal values.yaml:  
 
 ```yaml
 elasticsearch:
   installdep:
     enable: false
-  endpoint:
-    external: true
-    cloudservice: true
-    address: <AWS ES domain Endpoint URL>
-    port: 9200
+  endpoint: <AWS ES domain Endpoint URL>
 ```
 
 #### 5. RabbitMQ installation
@@ -421,7 +404,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    external: true
     address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
     port: 5672
     user: rabbitmq
@@ -486,7 +468,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
@@ -541,7 +522,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: true
     address: <postgresql address>
     port: 5432
@@ -627,7 +607,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    external: true
     cloudservice: true
     address: <postgresql address>
     port: 5432
