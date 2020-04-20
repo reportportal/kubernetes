@@ -131,7 +131,7 @@ elasticsearch:
     enable: false
   endpoint:
     cloudservice: false
-    address: elasticsearch-master
+    address: http://elasticsearch-master
     port: 9200
 
 minio:

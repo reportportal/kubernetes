@@ -35,9 +35,9 @@ spec:
           value: "analyzer-default"
         - name: ES_HOSTS
         {{ if .Values.elasticsearch.endpoint.cloudservice }}
-          value: "http://{{ .Values.elasticsearch.endpoint.address }}"
+          value: "{{ .Values.elasticsearch.endpoint.address }}"
         {{ else }}
-          value: "http://{{ .Values.elasticsearch.endpoint.address }}:{{ .Values.elasticsearch.endpoint.port }}"
+          value: "{{ .Values.elasticsearch.endpoint.address }}:{{ .Values.elasticsearch.endpoint.port }}"
         {{ end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
