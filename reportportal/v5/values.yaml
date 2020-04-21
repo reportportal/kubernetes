@@ -129,10 +129,7 @@ postgresql:
 elasticsearch:
   installdep:
     enable: false
-  endpoint:
-    cloudservice: false
-    address: http://elasticsearch-master
-    port: 9200
+  endpoint: http://elasticsearch-master:9200
 
 minio:
   secretName: ""
