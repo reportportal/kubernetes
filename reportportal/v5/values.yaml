@@ -32,7 +32,6 @@ uat:
     limits:
       cpu: 500m
       memory: 2048Mi
-  sessionLiveTime: 86400
   podAnnotations: {}
   sessionLiveTime: 43200
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
@@ -132,7 +131,7 @@ elasticsearch:
   endpoint: http://elasticsearch-master:9200
 
 minio:
-  secretName: ""
+  SecretName: ""
   enabled: true
   installdep:
     enable: false

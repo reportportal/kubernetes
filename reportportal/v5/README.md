@@ -930,7 +930,7 @@ Edit gateway-ingress.yaml template in your copy of ReportPortal Helm chart, and 
   tls:
   - hosts:
     - <your_domain_name>
-    secretName: <your_certificate_secretname>
+    SecretName: <your_certificate_secretname>
 ```
 > You will create your certificate with secretname on the next step  
 
@@ -943,7 +943,7 @@ spec:
   tls:
   - hosts:
     - my.reportportal.com
-    secretName: my.reportportal.com-tls
+    SecretName: my.reportportal.com-tls
   rules:
 ..
 ```
@@ -963,7 +963,7 @@ kind: Certificate
 metadata:
   name: <your_certificate_name>
 spec:
-  secretName: <your_certificate_secretname>
+  SecretName: <your_certificate_secretname>
   dnsNames:
   - <your_domain_name>
   acme:
@@ -984,7 +984,7 @@ kind: Certificate
 metadata:
   name: my.reportportal.com-tls
 spec:
-  secretName: my.reportportal.com-tls
+  SecretName: my.reportportal.com-tls
   dnsNames:
   - my.reportportal.com
   acme:
