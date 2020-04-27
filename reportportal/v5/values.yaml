@@ -34,7 +34,6 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   podAnnotations: {}
-  sessionLiveTime: 43200
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
 
 serviceui:
