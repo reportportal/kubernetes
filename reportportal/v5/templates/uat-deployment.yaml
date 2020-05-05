@@ -88,3 +88,6 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 5
 {{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.uat.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.uat.serviceAccountName }}

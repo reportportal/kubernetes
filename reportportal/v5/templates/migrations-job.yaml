@@ -46,3 +46,6 @@ spec:
             cpu: {{ .Values.migrations.resources.limits.cpu }}
             memory: {{ .Values.migrations.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.migrations.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.migrations.serviceAccountName }}
