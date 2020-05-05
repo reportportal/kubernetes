@@ -95,6 +95,11 @@ migrations:
   podAnnotations: {}
   serviceContext: {}
   serviceAccountName: ""
+  metadataAnnotations:
+    enabled: true
+    hooks:
+      "helm.sh/hook": "pre-install,pre-upgrade"
+      "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer

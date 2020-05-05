@@ -3,9 +3,12 @@ kind: Job
 metadata:
   name: {{ include "reportportal.fullname" . }}-migrations
   labels: {{ include "labels" . | indent 4 }}
+{{- if .Values.migrations.metadataAnnotations.enabled }}
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
-    "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+    {{- range $key, $value := .Values.migrations.metadataAnnotations.hooks }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
 spec:
   template:
     metadata:
