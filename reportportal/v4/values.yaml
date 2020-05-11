@@ -51,7 +51,7 @@ serviceauthorization:
   sessionLiveTime: 86400
 serviceui:
   repository: reportportal/service-ui
-  tag: 4.3.6
+  tag: 4.3.7
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -73,7 +73,7 @@ serviceanalyzer:
       memory: 128Mi
 serviceapi:
   repository: reportportal/service-api
-  tag: 4.3.4
+  tag: 4.3.12
   pullPolicy: IfNotPresent
   resources:
     requests:
