@@ -41,3 +41,6 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
 {{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.serviceui.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.serviceui.serviceAccountName }}

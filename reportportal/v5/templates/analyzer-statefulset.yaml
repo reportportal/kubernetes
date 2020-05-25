@@ -48,3 +48,6 @@ spec:
             cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName }}
