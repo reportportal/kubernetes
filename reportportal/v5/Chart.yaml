@@ -2,7 +2,7 @@ apiVersion: v1
 appVersion: "5.2.0"
 description: ReportPortal.io AI-powered Test Automation Dashboard
 name: reportportal
-version: 5.2.0
+version: 5.2.1
 sources:
   - https://github.com/reportportal/k8s/reportportal
 keywords:
