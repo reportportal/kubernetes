@@ -49,4 +49,3 @@ spec:
 {{ include "nodeSelector" . | indent 8 }}
       securityContext:
 {{ toYaml .Values.serviceindex.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceindex.serviceAccountName }}

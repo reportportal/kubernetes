@@ -20,7 +20,6 @@ serviceindex:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
-  serviceAccountName: ""
 
 uat:
   repository: reportportal/service-authorization
