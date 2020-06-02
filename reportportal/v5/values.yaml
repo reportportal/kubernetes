@@ -19,8 +19,7 @@ serviceindex:
       cpu: 200m
       memory: 256Mi
   podAnnotations: {}
-  serviceContext: {}
-  serviceAccountName: ""
+  securityContext: {}
 
 uat:
   repository: reportportal/service-authorization
@@ -37,7 +36,7 @@ uat:
   sessionLiveTime: 86400
   podAnnotations: {}
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
-  serviceContext: {}
+  securityContext: {}
   serviceAccountName: ""
 
 serviceui:
@@ -53,7 +52,7 @@ serviceui:
       cpu: 200m
       memory: 128Mi
   podAnnotations: {}
-  serviceContext: {}
+  securityContext: {}
   serviceAccountName: ""
 
 serviceapi:
@@ -78,7 +77,7 @@ serviceapi:
     totalNumber: 
     perPodNumber: 
   podAnnotations: {}
-  serviceContext: {}
+  securityContext: {}
   serviceAccountName: ""
 
 migrations:
@@ -93,7 +92,7 @@ migrations:
       cpu: 100m
       memory: 128Mi
   podAnnotations: {}
-  serviceContext: {}
+  securityContext: {}
   serviceAccountName: ""
   metadataAnnotations:
     enabled: true
@@ -114,7 +113,7 @@ serviceanalyzer:
       cpu: 100m
       memory: 512Mi
   podAnnotations: {}
-  serviceContext: {}
+  securityContext: {}
   serviceAccountName: ""
 
 rabbitmq:
