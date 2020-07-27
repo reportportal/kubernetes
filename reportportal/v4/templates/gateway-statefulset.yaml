@@ -36,3 +36,7 @@ spec:
             cpu: {{ .Values.traefik.resources.limits.cpu }}
             memory: {{ .Values.traefik.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
+      tolerations:
+        {{- with .Values.tolerations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}

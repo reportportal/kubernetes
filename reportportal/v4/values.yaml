@@ -135,6 +135,12 @@ nodeSelector:
   selector:
     reportportal: true
 
+tolerations:
+  - key: role
+    operator: Equal
+    value: reportportal
+    effect: NoSchedule
+
 # persistence configuration for elasticsearch, mongodb & consul
 persistence:
   registry:
