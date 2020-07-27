@@ -49,9 +49,9 @@ spec:
             memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
       tolerations:
-        {{- with .Values.tolerations }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
 {{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName }}

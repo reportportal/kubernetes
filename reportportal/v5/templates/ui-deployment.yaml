@@ -42,9 +42,9 @@ spec:
           timeoutSeconds: 3
 {{ include "nodeSelector" . | indent 8 }}
       tolerations:
-        {{- with .Values.tolerations }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
 {{ toYaml .Values.serviceui.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceui.serviceAccountName }}

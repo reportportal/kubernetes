@@ -89,9 +89,9 @@ spec:
           failureThreshold: 5
 {{ include "nodeSelector" . | indent 8 }}
       tolerations:
-        {{- with .Values.tolerations }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
       serviceAccountName: {{ .Values.uat.serviceAccountName }}

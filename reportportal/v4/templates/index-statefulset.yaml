@@ -35,6 +35,6 @@ spec:
             memory: {{ .Values.serviceindex.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
       tolerations:
-        {{- with .Values.tolerations }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
