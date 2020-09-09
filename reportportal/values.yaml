@@ -224,7 +224,8 @@ nodeSelector:
     reportportal: true
     
 # tolerations for all components, if any
-tolerations: {}
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+tolerations: []
   # - key: role
   #   operator: Equal
   #   value: reportportal
