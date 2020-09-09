@@ -74,3 +74,7 @@ spec:
       securityContext:
 {{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName }}
+      tolerations:
+      {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
