@@ -223,13 +223,13 @@ nodeSelector:
   selector:
     reportportal: true
     
-# tolerations for all components, if any
+# tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 tolerations: []
-  # - key: role
-  #   operator: Equal
-  #   value: reportportal
-  #   effect: NoSchedule
+  # - key: "key"
+  #   operator: "Equal|Exists"
+  #   value: "value"
+  #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
 # RBAC is required for service-index in order to collect status/info over all services
 rbac:
