@@ -184,7 +184,13 @@ nodeSelector:
   enabled: false
   selector:
     reportportal: true
-
+    
+# tolerations for all components, if any
+tolerations: {}
+  # - key: role
+  #   operator: Equal
+  #   value: reportportal
+  #   effect: NoSchedule
 
 # RBAC is required for service-index in order to collect status/info over all services
 rbac:
