@@ -151,11 +151,6 @@ Verify that the NGINX Ingress controller is running:
 kubectl get pods -n kube-system
 ```
 
-Initialize Helm package manager:  
-```sh
-helm init
-```
-
 > Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml  
 > You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml  
 
