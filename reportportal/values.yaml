@@ -157,6 +157,8 @@ minio:
   region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
+  bucketPrefix: ""
+  defaultBucketName: ""
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
