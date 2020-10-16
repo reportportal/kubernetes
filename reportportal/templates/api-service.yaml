@@ -15,4 +15,3 @@ spec:
   selector:
     component: {{ include "reportportal.fullname" . }}-api
   type: ClusterIP
-

@@ -90,10 +90,10 @@ spec:
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
-        {{ if .Values.minio.region }}          
+        {{ if .Values.minio.region }}
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
-        {{ end }}     
+        {{ end }}
         {{ if .Values.minio.secretName }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           valueFrom:
