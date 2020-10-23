@@ -122,7 +122,7 @@ rabbitmq:
     enable: false
   endpoint:
     cloudservice: false
-    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
+    address: <rabbitmq_chart_name>.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
