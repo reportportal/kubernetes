@@ -4,9 +4,9 @@ dependencies:
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: postgresql.installdep.enable
 
-  - name: rabbitmq-ha
-    version: 1.18.0
-    repository: https://kubernetes-charts.storage.googleapis.com/
+  - name: rabbitmq
+    version: 7.5.6
+    repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch

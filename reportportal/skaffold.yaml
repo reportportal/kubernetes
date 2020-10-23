@@ -1,12 +1,12 @@
 ## HOW-TO
 ## Install dependencies
 #  helm install postgresql --set postgresqlUsername=rpuser,postgresqlPassword=rppass,postgresqlDatabase=reportportal,postgresqlPostgresPassword=rppass -f ./postgresql/values.yaml ./charts/postgresql-8.6.2.tgz
-#  helm install rabbitmq --set rabbitmqUsername=rabbitmq,rabbitmqPassword=rabbitmqPassword,replicaCount=1 ./charts/rabbitmq-ha-1.18.0.tgz
+#  helm install rabbitmq --set auth.username=rabbitmq,auth.password=rabbitmqPassword,replicaCount=1 ./charts/rabbitmq-7.5.6.tgz
 #  helm install minio --set accessKey=accessKey,secretKey=secretKey,persistence.size=2Gi stable/minio
 
 # Run dev environment (make sure skaffold is installed)
 # skaffold dev --status-check=false
-apiVersion: skaffold/v2beta2
+apiVersion: skaffold/v2beta8
 kind: Config
 metadata:
   name: reportportal
@@ -27,29 +27,27 @@ build:
   local:
     useBuildkit: true
 deploy:
+  statusCheckDeadlineSeconds: 600
   helm:
     flags:
-      upgrade: ["-i"]
+      upgrade: [ "-i" ]
     releases:
       - name: reportportal-dev
         chartPath: ./v5/
-        values:
+        artifactOverrides:
           serviceindex.image: reportportal/service-index
           serviceui.image: reportportal/service-ui
         setValues:
           ingress.hosts: kubernetes.docker.internal
 
-          rabbitmq.endpoint.address: rabbitmq-rabbitmq-ha.default.svc.cluster.local
-          rabbitmq.SecretName: rabbitmq-rabbitmq-ha
+          rabbitmq.endpoint.address: rabbitmq.default.svc.cluster.local
+          rabbitmq.SecretName: rabbitmq
           rabbitmq.installdep.enable: false
-          #rabbitmq.endpoint.address: rabbitmq-rabbitmq-ha.default.svc.cluster.local
 
           postgresql.SecretName: postgresql
           postgresql.endpoint.address: postgresql.default.svc.cluster.local
-          #postgresql.endpoint.address: reportportal-dev-postgresql.default.svc.cluster.local
           postgresql.installdep.enable: false
 
-          minio.SecretName: minio
-          minio.endpoint: minio.default.svc.cluster.local:9000
-          #minio.endpoint: reportportal-dev-minio.default.svc.cluster.local:9000
+          minio.secretName: minio
+          minio.endpoint: http://minio.default.svc.cluster.local:9000
           minio.installdep.enable: false
