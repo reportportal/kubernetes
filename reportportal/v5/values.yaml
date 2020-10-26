@@ -166,6 +166,11 @@ ingress:
   usedomainname: false
   hosts:
     - reportportal.k8.com
+  paths:
+    index: "/()?(.*)"
+    ui: "/(ui)/?(.*)"
+    uat: "/(uat)/?(.*)"
+    api: "/(api)/?(.*)"
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"

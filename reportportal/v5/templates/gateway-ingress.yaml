@@ -1,5 +1,6 @@
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
+{{- $paths := .Values.ingress.paths -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -15,48 +16,30 @@ spec:
 {{ toYaml .Values.ingress.tls | indent 4 }}
 {{- end}}
   rules:
-{{ if .Values.ingress.usedomainname }}
+{{- if .Values.ingress.usedomainname }}
+  {{- if .Values.ingress.hosts }}
   {{- range $host := .Values.ingress.hosts }}
-  - host: {{ $host }}
-    http:
-      paths:
-      - path: /()?(.*)
-        backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
-      - path: /(ui)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
-      - path: /(uat)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
-      - path: /(api)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
+    - host: {{ $host }}
+      http:
+        paths:
+  {{- range $svc, $p := $paths }}
+          - path: {{ $p }}
+            backend:
+              serviceName: "{{ $fullName }}-{{ $svc }}"
+              servicePort: headless
   {{- end -}}
-{{ else }}
-  - http:
-      paths:
-      - path: /()?(.*)
-        backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
-      - path: /(ui)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
-      - path: /(uat)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
-      - path: /(api)/?(.*)
-        backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
-{{ end }}
+  {{- end -}}
+  {{- else }}
+    - http:
+        paths:
+  {{- range $svc, $p := $paths }}
+          - path: {{ $p }}
+            backend:
+              serviceName: "{{ $fullName }}-{{ $svc }}"
+              servicePort: headless
+  {{- end -}}
+  {{- end -}}
+  {{- end }}
 status:
   loadBalancer: {}
 {{- end }}
