@@ -166,7 +166,7 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
+    address: <rabbitmq_chart_name>.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -351,7 +351,7 @@ elasticsearch:
 
 #### 5. RabbitMQ installation
 
-You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/helm/charts/tree/master/stable/rabbitmq-ha).  
+You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq).  
 
 Download the specified chart into your charts/ directory:  
 ```sh
@@ -360,7 +360,7 @@ helm dependency build ./reportportal/
 
 Then use to install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set rabbitmqUsername=rabbitmq,rabbitmqPassword=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-ha-1.18.0.tgz
+helm install --name <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
 ```
 
 > Please be aware of api deprecations in Kubernetes 1.16.  
@@ -372,27 +372,25 @@ Once RabbitMQ has been deployed, copy address and port from output notes. Should
 ```
 ** Please be patient while the chart is being deployed **
 
-  Credentials:
+Credentials:
 
-    Username      : rabbitmq
-    Password      : $(kubectl get secret --namespace default <rabbitmq_chart_name>-rabbitmq-ha -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
-    ErLang Cookie : $(kubectl get secret --namespace default <rabbitmq_chart_name>-rabbitmq-ha -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)
+    echo "Username      : rabbitmq"
+    echo "Password      : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
+    echo "ErLang Cookie : $(kubectl get secret --namespace default rabbitmq -o jsonpath="{.data.rabbitmq-erlang-cookie}" | base64 --decode)"
 
+RabbitMQ can be accessed within the cluster on port  at rabbitmq.default.svc.
 
-  RabbitMQ can be accessed within the cluster on port 5672 at <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
+To access for outside the cluster, perform the following steps:
 
-  To access the cluster externally execute the following commands:
+To Access the RabbitMQ AMQP port:
 
-    export POD_NAME=$(kubectl get pods --namespace default -l "app=rabbitmq-ha" -o jsonpath="{.items[0].metadata.name}")
-    kubectl port-forward $POD_NAME --namespace default 5672:5672 15672:15672
+    echo "URL : amqp://127.0.0.1:5672/"
+    kubectl port-forward --namespace default svc/rabbitmq 5672:5672
 
-  To Access the RabbitMQ AMQP port:
+To Access the RabbitMQ Management interface:
 
-    amqp://127.0.0.1:5672/
-
-  To Access the RabbitMQ Management interface:
-
-    URL : http://127.0.0.1:15672
+    echo "URL : http://127.0.0.1:15672/"
+    kubectl port-forward --namespace default svc/rabbitmq 15672:15672
 ```
 
 When RabbitMQ is up and running, edit values.yaml to adjust the settings  
@@ -405,7 +403,7 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq_chart_name>-rabbitmq-ha.default.svc.cluster.local
+    address: <rabbitmq_chart_name>.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -724,14 +722,14 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
+helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha ./reportportal-5.tgz
+helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
 ```
 
 #### 10. Validate the pods and service
@@ -796,13 +794,13 @@ The second step is update / redeploy the application using the following command
 > If you use PostgreSQL Helm chart  
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha <reportportal_chart_name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq-ha <reportportal_chart_name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
 ```
 
 #### IMPORTANT  
