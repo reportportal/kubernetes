@@ -15,6 +15,6 @@ dependencies:
     condition: elasticsearch.installdep.enable
 
   - name: minio
-    version: 2.5.12
+    version: 5.0.10
     repository: https://kubernetes-charts.storage.googleapis.com/
     condition: minio.installdep.enable
