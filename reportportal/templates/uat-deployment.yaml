@@ -31,14 +31,15 @@ spec:
           value: "{{ .Values.postgresql.endpoint.port }}"
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
+        {{ if .Values.postgresql.SecretName }}
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.endpoint.cloudservice }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
+        {{ else }}
+        - name: RP_DB_PASS
+          value: "{{ .Values.postgresql.endpoint.password }}"
         {{ end }}
         {{ if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
