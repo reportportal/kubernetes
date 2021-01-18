@@ -231,7 +231,7 @@ Please find the guides below:
 Or you can istall an NGINX ingress controller using Helm. 
 
 ```
-helm install --namespace reportportal nginx-ingress stable/nginx-ingress
+helm install reportportal nginx-ingress stable/nginx-ingress
 ```
 
 > If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
@@ -258,7 +258,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:  
 ```sh
-helm install --name <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
+helm install <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
@@ -311,7 +311,7 @@ helm dependency build ./reportportal/
 
 Then use to install it:  
 ```sh
-helm install --name <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
+helm install <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
 ```
 
 > Please be aware of api deprecations in Kubernetes 1.16.  
@@ -411,7 +411,7 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install --name <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
+helm install <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
 At the last command:
 * postgresql_chart_name - a name of your DB deployment inside a cluster
@@ -610,7 +610,7 @@ MinIO is a high performance distributed object storage server and a preferable w
 The following command will install Minio with 40GB PVC:  
 
 ```sh
-helm install --name minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
+helm install minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
 ```
 
 Installation output example  
@@ -711,14 +711,14 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
+helm install <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
 
 ```sh
-helm install --name <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
+helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
 ```
 
 #### 10. Validate the pods and service
