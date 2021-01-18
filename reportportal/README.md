@@ -1,5 +1,6 @@
-# K8s
-Kubernetes/Helm configs for installation of ReportPortal v5
+# ReportPortal on Kubernetes
+
+Kubernetes/Helm configs for installation of ReportPortal
 
 -----------
 ### Table of Contents
@@ -7,13 +8,10 @@ Kubernetes/Helm configs for installation of ReportPortal v5
 [Overall information](#overall-information)
 
 [Minikube installation](#minikube-installation)
-
 * [Prerequisites](#prerequisites)
-* [Install Minikube](#install-minikube)
 * [Run ReportPortal in Minikube](#run-reportportal-in-minikube)
 
 [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)
-
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
 * [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller-version-0220)
@@ -29,7 +27,6 @@ Kubernetes/Helm configs for installation of ReportPortal v5
 [Updating ReportPortal to the latest version](#updating-reportportal-to-the-latest-version)
 
 [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)
-
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
 * [Update your ReportPortal installation with a new Ingress Configuration](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
@@ -39,100 +36,46 @@ Kubernetes/Helm configs for installation of ReportPortal v5
 
 ### Overall information
 
-This project is created to install ReportPortal on Kubernetes with Helm.  
+This project is created to install ReportPortal on Kubernetes with Helm.
 
-It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service / Azure Database for PostgreSQL as a database and Amazon ES as an elasticsearch cluster.  
+It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service / Azure Database for PostgreSQL as a database, Amazon ES as an elasticsearch cluster and AmazonMQ brocker for RabbitMQ
 
-The chart includes the following configuration files:
+#### The chart includes the following configuration files:
 
-- Statefulset, Deployments and Service files of: `Analyzer, Api, Index, Migrations, UAT, UI` that are used for deployment and communication between services
+- Statefulset, Deployments and Service files of: `Analyzer`, `Api`, `Index`, `Migrations`, `UAT`, `UI` that are used for deployment and communication between services
 - `Ingress` object to access the UI
 - `values.yaml` which exposes a few of the configuration options
 - `templates/_helpers.tpl` file which contains helper templates
 
-ReportPortal use the following images:
+#### ReportPortal use the following images:
 
-- serviceindex: reportportal/service-index
-- uat: reportportal/service-authorization
-- serviceui: reportportal/service-ui
-- serviceapi: reportportal/service-api
-- migrations: reportportal/migration
-- serviceanalyzer: reportportal/service-analyzer
+- [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
+- [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
+- [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
+- [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
+- [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail prob
 
-Requirements: 
-
+#### Requirements: 
 - `RabbitMQ` (Helm chart installation)  
 - `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)  
 - `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)  
-- `Minio` (Helm chart installation)  
+- `MinIO` (Helm chart installation)  
 
 All configuration variables are presented in `value.yaml` file.  
 
-Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL / Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.  
+Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.  
 
 You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.  
 
-> For matching the installation commands on this guide with your command line, please download this Helm chart to your machine, and rename ../v5 folder to 'reportportal'  
+> For matching the installation commands on this guide with your command line, please download this Helm chart to your machine.
 
-### Minikube installation
+### Minikube
 
 Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptopS
 
 #### Prerequisites
 
 Make sure you have kubectl installed. You can install kubectl according to the instructions in [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux) guide
-
-#### Install Minikube
-
-> Linux
-
-There are experimental packages for Minikube available; you can find Linux (AMD64) packages from Minikube’s releases page on GitHub
-
-If you’re not installing via a package, you can download a stand-alone binary and use that:
-
-```sh
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
-  && chmod +x minikube
-```
-
-Here’s an easy way to add the Minikube executable to your path:
-
-```sh
-sudo install minikube /usr/local/bin
-```
-
-> MacOS
-
-The easiest way to install Minikube on macOS is using Homebrew:
-
-```sh
-brew cask install minikube
-```
-
-You can also install it on macOS by downloading a stand-alone binary:
-
-```sh
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64 \
-  && chmod +x minikube
-```
-
-Here’s an easy way to add the Minikube executable to your path:
-
-```sh
-sudo mv minikube /usr/local/bin
-```
-
-> Windows
-
-The easiest way to install Minikube on Windows is using [Chocolatey](https://chocolatey.org) (run as an administrator):
-
-```sh
-choco install minikube kubernetes-cli
-```
-
-After Minikube has finished installing, close the current CLI session and restart. Minikube should have been added to your path automatically
-
-To install Minikube manually on Windows using Windows installer, download [minikube-installer.exe](https://github.com/kubernetes/minikube/releases/latest/minikube-installer.exe) and execute the installer
 
 #### Run ReportPortal in Minikube
 
@@ -153,7 +96,7 @@ kubectl get pods -n kube-system
 
 Initialize Helm package manager:  
 ```sh
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo add stable https://charts.helm.sh/stable && helm repo update
 ```
 
 
@@ -178,7 +121,7 @@ postgresql:
     enable: false
   endpoint:
     cloudservice: false
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    address: <postgresql_chart_name>.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -187,7 +130,7 @@ postgresql:
 
 Deploy the chart:  
 ```sh
-helm install ./<project folder>`
+helm install ./<project folder>
 ```
 
 Once it's installed please make sure that the PersistentVolumes directories are created  
@@ -273,10 +216,10 @@ For more information about installation the Helm package manager on different Ku
 
 Confirm that Helm is running with the following command  
 ```
-$ helm help
+helm version
 ```
 
-#### 3. Deploy NGINX Ingress controller (version 0.22.0+)
+#### 3. Deploy NGINX Ingress controller (version 0.34.1)
 
 Please find the guides below:
 
@@ -285,11 +228,17 @@ Please find the guides below:
 - [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
 - [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm#step-2-%E2%80%94-installing-the-kubernetes-nginx-ingress-controller)
 
-> If you go with AWS, then after your NGINX Ingress controller created a load balancer, please increase its idle timeout to 300 seconds  
+Or you can istall an NGINX ingress controller using Helm. 
+
+```
+helm install --namespace reportportal nginx-ingress stable/nginx-ingress
+```
+
+> If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
 
 #### 4. Elasticsearch installation
 
-ReportPortal requires installation of Elasticsearch, RabbitMQ, PostgreSQL and MinIO . On this step we will start with Elasticsearch.  
+ReportPortal requires installation of Elasticsearch, RabbitMQ, PostgreSQL and MinIO. On this step we will start with Elasticsearch.  
 
 You can go with [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) (4.1) or use an Amazon ES as an Elasticsearch cluster (4.2).  
 
@@ -299,7 +248,7 @@ To use this type of installation, please run the following commands
 
 Add the elastic helm charts repo:
 ```sh
-helm repo add elastic https://helm.elastic.co
+helm repo add elastic https://helm.elastic.co && helm repo update
 ```
 
 The following command will use your ReportPortal dependency file requirements.yaml to download all the specified charts into your charts/ directory for you:
@@ -351,7 +300,9 @@ elasticsearch:
 
 #### 5. RabbitMQ installation
 
-You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq).  
+You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq) (5.1) or use an AmazonMQ as RabbitMQ (5.2).  
+
+5.1 RabbitMQ from the Helm chart
 
 Download the specified chart into your charts/ directory:  
 ```sh
@@ -408,6 +359,44 @@ rabbitmq:
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+```
+
+After the pod gets the status Running, you need to configure the RabbitMQ memory threshold
+
+```bash
+kubectl exec -it <rabbitmq_pod_name> -- rabbitmqctl set_vm_memory_high_watermark 0.8
+```
+
+5.2 RabbitMQ as AmazoneMQ brocker
+
+Amazon MQ is a managed message broker service for that makes it easy to migrate to a message broker in the cloud. Use the AWS manual to create [RabbitMQ brocker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/getting-started-rabbitmq.html#create-rabbitmq-broker)
+
+Edit `api-deployment.yaml` in `reportportal/templates/` folder
+
+```yaml
+{{ if .Values.rabbitmq.endpoint.cloudservice }}
+- name: RP_AMQP_ADDRESSES
+  value: "amqps://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}"
+- name: RP_AMQP_API_ADDRESS
+  value: "https://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}/api"
+{{ end }}
+```
+
+Edit values.yaml in `reportportal/` folder
+
+```yaml
+rabbitmq:
+  SecretName: ''
+  installdep:
+    enable: false
+  endpoint:
+    cloudservice: true
+    address: <RABBITMQ_CLOUD_ADDRESS>
+    port: <RABBITMQ_PORT>  # for example 5671
+    user: <RABBITMQ_USERNAME>
+    apiport: 1<RABBITMQ_PORT>  # for expample 15671
+    apiuser: <RABBITMQ_USERNAME>
+    password: <RABBITMQ_PASSWORD>
 ```
 
 #### 6. PostgreSQL installation
@@ -825,20 +814,22 @@ As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose i
 [Cert-manager](https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager) is a native Kubernetes certificate management controller  
 It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed  
 
-```sh
-## Install the cert-manager CRDs **before** installing the cert-manager Helm 
-$ kubectl apply --validate=false\
-    -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.12/deploy/manifests/00-crds.yaml
-```
+Install the cert-manager CRDs **before** installing the cert-manager Helm
 
 ```sh
-## Add the Jetstack Helm repository
-$ helm repo add jetstack https://charts.jetstack.io
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.0.3/cert-manager.crds.yaml
 ```
 
+Add the Jetstack Helm repository
+
 ```sh
-## Install the cert-manager helm chart
-$ helm install --name cert-manager --namespace cert-manager jetstack/cert-manager
+$ helm repo add jetstack https://charts.jetstack.io && helm repo update
+```
+
+Install the cert-manager
+
+```sh
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.0.3
 ```
 
 #### 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource:
