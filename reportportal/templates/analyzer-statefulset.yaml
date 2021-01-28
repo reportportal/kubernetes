@@ -20,6 +20,29 @@ spec:
     spec:
       containers:
       - env:
+      {{ if .Values.minio.enabled }}
+        - name: ANALYZER_BINARYSTORE_TYPE
+          value: "minio"
+        - name: MINIO_SHORT_HOST
+          value: "{{ .Values.minio.endpointshort }}"
+        {{ if .Values.minio.secretName }}
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "accesskey"
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "secretkey"
+       {{ else }}
+        - name: MINIO_ACCESS_KEY
+          value: "{{ .Values.minio.accesskey }}"
+        - name: MINIO_SECRET_KEY
+          value: "{{ .Values.minio.secretkey }}"
+       {{ end }}
+       {{ end }}
         - name: RP_AMQP_PASS
         {{ if .Values.rabbitmq.endpoint.cloudservice }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
