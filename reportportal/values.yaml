@@ -60,6 +60,7 @@ serviceapi:
   tag: 5.3.5
   name: api
   pullPolicy: Always
+  replicaCount: 1
   readinessProbe:
     initialDelaySeconds: 30
     periodSeconds: 20
