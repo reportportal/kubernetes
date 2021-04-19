@@ -7,13 +7,14 @@ Kubernetes/Helm configs for installation of ReportPortal
 
 [Overall information](#overall-information)
 
-[Minikube installation](#minikube-installation)
+[Minikube installation](#minikube)
 * [Prerequisites](#prerequisites)
 * [Run ReportPortal in Minikube](#run-reportportal-in-minikube)
 
 [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
+* [Kubernetes Node Labels](#Kubernetes-Node-Labels)
 * [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller-version-0220)
 * [Elasticsearch installation](#4-elasticsearch-installation)
 * [RabbitMQ installation](#5-rabbitmq-installation)
@@ -217,6 +218,24 @@ For more information about installation the Helm package manager on different Ku
 Confirm that Helm is running with the following command  
 ```
 helm version
+```
+
+#### Kubernetes Node Labels
+
+To ensure fault tolerance and reduce the load on the application use the labels. Setting labels is different from environment. If you deplyed database on different VM or Cloud Service use 2 API, 1 RabbitMQ, else for Database in the cluster use 1 API, 1 DB, 1 RabbitMQ.
+
+- DB as separeted service:
+```
+kubectl label nodes <NODE-1> service=api
+kubectl label nodes <NODE-2> service=api
+kubectl label nodes <NODE-3> service=rabbitmq
+```
+
+- DB as part of cluster:
+```
+kubectl label nodes <NODE-1> service=api
+kubectl label nodes <NODE-2> service=rabbitmq
+kubectl label nodes <NODE-3> service=db
 ```
 
 #### 3. Deploy NGINX Ingress controller (version 0.34.1)
