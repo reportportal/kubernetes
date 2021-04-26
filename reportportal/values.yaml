@@ -193,6 +193,7 @@ rbac:
   create: true
   serviceAccount:
       create: true
+      annotations: null
       name: reportportal
 
 rp:
