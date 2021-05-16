@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gateway-ingress
@@ -21,41 +21,65 @@ spec:
     http:
       paths:
       - path: /()?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-index
+            port:
+              number: 8080
       - path: /(ui)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              number: 8080
       - path: /(uat)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              number: 9999
       - path: /(api)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-api
+            port:
+              number: 8585
   {{- end -}}
 {{ else }}
   - http:
       paths:
       - path: /()?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-index
+            port:
+              number: 8080
       - path: /(ui)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              number: 8080
       - path: /(uat)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              number: 9999
       - path: /(api)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-api
+            port:
+              number: 8585
 {{ end }}
 status:
   loadBalancer: {}
