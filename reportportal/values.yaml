@@ -82,7 +82,6 @@ serviceapi:
   serviceAccountName: ""
 
 migrations:
-  enabled: true
   repository: reportportal/migrations
   tag: 5.3.5
   pullPolicy: Always

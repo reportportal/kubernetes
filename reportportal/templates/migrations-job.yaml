@@ -1,4 +1,4 @@
-{{- if .Values.migrations.enabled }}
+{{- if or (not (hasKey .Values.migrations "enabled")) .Values.migrations.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
