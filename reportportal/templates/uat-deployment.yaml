@@ -74,6 +74,10 @@ spec:
         - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
           value: "{{ .Values.minio.defaultBucketName }}"
         {{ end }}
+        {{ if .Values.minio.integrationSaltPath }}
+        - name: RP_INTEGRATION_SALT_PATH
+          value: "{{ .Values.minio.integrationSaltPath }}"
+        {{ end }}
         {{ end }}
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"

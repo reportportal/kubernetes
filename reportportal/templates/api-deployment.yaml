@@ -119,9 +119,9 @@ spec:
         - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
           value: "{{ .Values.minio.defaultBucketName }}"
        {{ end }}
-       {{ if .Values.minio.defaultBucketName }}
+       {{ if .Values.minio.integrationSaltPath }}
         - name: RP_INTEGRATION_SALT_PATH
-          value: "{{ .Values.minio.defaultBucketName }}"
+          value: "{{ .Values.minio.integrationSaltPath }}"
        {{ end }}
        {{ end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
