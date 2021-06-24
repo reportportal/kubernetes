@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "reportportal.fullname" . }}-analyzer-train
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-analyzer-train
+  serviceName: {{ include "reportportal.fullname" . }}-analyzertrain
+  template:
+    metadata:
+      labels:
+        component: {{ include "reportportal.fullname" . }}-analyzer-train
+      annotations:
+        {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      containers:
+      - env:
+        - name: INSTANCE_TASK_TYPE
+          value: "train"
+        - name: UWSGI_WORKERS
+          value: "1"
+        {{ if .Values.minio.enabled }}
+        - name: ANALYZER_BINARYSTORE_TYPE
+          value: "minio"
+        - name: MINIO_SHORT_HOST
+          value: "{{ .Values.minio.shorthost }}"
+        {{ if .Values.minio.secretName }}
+        - name: MINIO_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "accesskey"
+        - name: MINIO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.minio.secretName }}"
+              key: "secretkey"
+       {{ else }}
+        - name: MINIO_ACCESS_KEY
+          value: "{{ .Values.minio.accesskey }}"
+        - name: MINIO_SECRET_KEY
+          value: "{{ .Values.minio.secretkey }}"
+       {{ end }}
+       {{ end }}
+        - name: RP_AMQP_PASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
+        {{ end }}
+        - name: AMQP_URL
+          value: "amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/"
+        - name: AMQP_EXCHANGE_NAME
+          value: "analyzer-default"
+        - name: ES_HOSTS
+          value: "{{ .Values.elasticsearch.endpoint }}"
+        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+        name: analyzer
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName }}
