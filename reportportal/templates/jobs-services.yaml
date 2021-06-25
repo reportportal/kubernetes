@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-jobs
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.servicejobs.name | default "jobs" }}
+    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+spec:
+  ports:
+  - name: headless
+    port: 8686
+    protocol: TCP
+    targetPort: 8686
+  selector:
+    component: {{ include "reportportal.fullname" . }}-jobs
+  type: ClusterIP
