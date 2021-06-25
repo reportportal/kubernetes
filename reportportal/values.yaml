@@ -87,7 +87,7 @@ servicejobs:
   name: jobs
   pullPolicy: Always
   clean:
-    chunksize: 200000
+    chunksize: 1000
     cron:
       attachment: 0 0 */24 * * *
       log: 0 0 */24 * * *
