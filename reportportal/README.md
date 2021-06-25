@@ -15,7 +15,7 @@ Kubernetes/Helm configs for installation of ReportPortal
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
 * [Kubernetes Node Labels](#Kubernetes-Node-Labels)
-* [Deploy NGINX Ingress controller (version 0.34.1)](#3-Deploy-NGINX-Ingress-controller-\(version-0.34.1\))
+* [Deploy NGINX Ingress controller (version 0.34.1)](#3-deploy-nginx-ingress-controller-version-0341)
 * [Elasticsearch installation](#4-elasticsearch-installation)
 * [RabbitMQ installation](#5-rabbitmq-installation)
 * [PostgreSQL installation](#6-postgresql-installation)
