@@ -28,7 +28,7 @@ spec:
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.minio.shorthost }}"
+          value: "{{ .Values.minio.endpointshort }}"
         {{ if .Values.minio.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
