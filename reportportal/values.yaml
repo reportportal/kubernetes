@@ -10,7 +10,7 @@ serviceindex:
   name: index
   repository: reportportal/service-index
   tag: 5.0.10
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources:
     requests:
       cpu: 150m
@@ -25,7 +25,7 @@ uat:
   repository: reportportal/service-authorization
   name: uat
   tag: 5.4.0
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources:
     requests:
       cpu: 100m
@@ -43,7 +43,7 @@ serviceui:
   repository: reportportal/service-ui
   tag: v5.4.0
   name: ui
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources:
     requests:
       cpu: 100m
@@ -59,7 +59,7 @@ serviceapi:
   repository: reportportal/service-api
   tag: 5.4.0
   name: api
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   replicaCount: 1
   readinessProbe:
     initialDelaySeconds: 30
@@ -85,7 +85,7 @@ servicejobs:
   repository: reportportal/service-jobs
   tag: 5.4.0
   name: jobs
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   clean:
     chunksize: 1000
     cron:
@@ -108,7 +108,7 @@ servicejobs:
 migrations:
   repository: reportportal/migrations
   tag: 5.4.0
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources:
     requests:
       cpu: 100m
@@ -129,7 +129,7 @@ serviceanalyzer:
   repository: reportportal/service-auto-analyzer
   tag: 5.4.0
   name: analyzer
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   resources:
     requests:
       cpu: 100m
