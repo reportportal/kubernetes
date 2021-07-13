@@ -29,6 +29,7 @@ spec:
               servicePort: headless
   {{- end -}}
   {{- end -}}
+  {{- end }}
   {{- else }}
     - http:
         paths:
@@ -37,7 +38,6 @@ spec:
             backend:
               serviceName: "{{ $fullName }}-{{ $svc }}"
               servicePort: headless
-  {{- end -}}
   {{- end -}}
   {{- end }}
 status:
