@@ -136,3 +136,7 @@ spec:
       securityContext:
 {{ toYaml .Values.serviceapi.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceapi.serviceAccountName }}
+{{- with .Values.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}

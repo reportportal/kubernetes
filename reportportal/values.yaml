@@ -75,8 +75,8 @@ serviceapi:
       memory: 2048Mi
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   queues:
-    totalNumber: 
-    perPodNumber: 
+    totalNumber:
+    perPodNumber:
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
@@ -223,13 +223,20 @@ nodeSelector:
   selector:
     reportportal: true
 
+# tolerations for all components, if any (requires Kubernetes >= 1.6)
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+tolerations: []
+  # - key: "key"
+  #   operator: "Equal|Exists"
+  #   value: "value"
+  #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
 # RBAC is required for service-index in order to collect status/info over all services
 rbac:
   create: true
   serviceAccount:
-      create: true
-      name: reportportal
+    create: true
+    name: reportportal
 
 rp:
   infoEndpoint: "/info"
