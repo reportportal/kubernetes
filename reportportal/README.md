@@ -238,7 +238,7 @@ kubectl label nodes <NODE-2> service=rabbitmq
 kubectl label nodes <NODE-3> service=db
 ```
 
-#### 3. Deploy NGINX Ingress controller (version 0.34.1)
+#### 3. Deploy NGINX Ingress controller
 
 Please find the guides below:
 
