@@ -250,7 +250,7 @@ Please find the guides below:
 Or you can istall an NGINX ingress controller using Helm. 
 
 ```
-helm install reportportal nginx-ingress stable/nginx-ingress
+helm install nginx-ingress stable/nginx-ingress
 ```
 
 > If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
