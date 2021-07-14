@@ -35,16 +35,16 @@ spec:
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
-        {{ if .Values.postgresql.endpoint.connections }}
+        {{- if .Values.postgresql.endpoint.connections }}
         - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
           value: "{{ .Values.postgresql.endpoint.connections }}"
-        {{ end }}
+        {{- end }}
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.endpoint.cloudservice }}
+        {{- if .Values.postgresql.endpoint.cloudservice }}
           value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ else }}
+        {{- else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
@@ -55,13 +55,19 @@ spec:
           value: "minio"
         - name: DATASTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
-        - name: DATASTORE_MINIO_DEFAULTBUCKETNAME
-          value: "rp-bucket"
-        {{ if .Values.minio.region }}
+        {{- if .Values.minio.bucketPrefix }}
+        - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
+          value: "{{ .Values.minio.bucketPrefix }}"
+        {{- end }}
+        {{- if .Values.minio.defaultBucketName }}
+        - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
+          value: "{{ .Values.minio.defaultBucketName }}"
+        {{- end }}
+        {{- if .Values.minio.region }}
         - name: DATASTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
-        {{ end }}
-        {{ if .Values.minio.secretName }}
+        {{- end }}
+        {{- if .Values.minio.secretName }}
         - name: DATASTORE_MINIO_ACCESSKEY
           valueFrom:
             secretKeyRef:
@@ -72,12 +78,12 @@ spec:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
               key: "secretkey"
-       {{ else }}
+       {{- else }}
         - name: DATASTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: DATASTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
-       {{ end }}
+       {{- end }}
        {{ end }}
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
         name: jobs
