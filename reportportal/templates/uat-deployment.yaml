@@ -66,6 +66,18 @@ spec:
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
         {{ end }}
+        {{ if .Values.minio.bucketPrefix}}
+        - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
+          value: "{{ .Values.minio.bucketPrefix }}"
+        {{ end }}
+        {{ if .Values.minio.defaultBucketName}}
+        - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
+          value: "{{ .Values.minio.defaultBucketName }}"
+        {{ end }}
+        {{ if .Values.minio.integrationSaltPath }}
+        - name: RP_INTEGRATION_SALT_PATH
+          value: "{{ .Values.minio.integrationSaltPath }}"
+        {{ end }}
         {{ end }}
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
@@ -91,3 +103,8 @@ spec:
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
       serviceAccountName: {{ .Values.uat.serviceAccountName }}
+      tolerations:
+{{- with .Values.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}

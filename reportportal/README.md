@@ -15,7 +15,7 @@ Kubernetes/Helm configs for installation of ReportPortal
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
 * [Kubernetes Node Labels](#Kubernetes-Node-Labels)
-* [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller-version-0220)
+* [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller)
 * [Elasticsearch installation](#4-elasticsearch-installation)
 * [RabbitMQ installation](#5-rabbitmq-installation)
 * [PostgreSQL installation](#6-postgresql-installation)
@@ -233,7 +233,7 @@ kubectl label nodes <NODE-2> service=rabbitmq
 kubectl label nodes <NODE-3> service=db
 ```
 
-#### 3. Deploy NGINX Ingress controller (version 0.34.1)
+#### 3. Deploy NGINX Ingress controller
 
 Please find the guides below:
 
@@ -245,7 +245,8 @@ Please find the guides below:
 Or you can istall an NGINX ingress controller using Helm.
 
 ```
-helm install reportportal nginx-ingress stable/nginx-ingress
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx
 ```
 
 > If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
@@ -327,11 +328,6 @@ Then use to install it:
 ```sh
 helm install <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
 ```
-
-> Please be aware of api deprecations in Kubernetes 1.16.
-It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
-The issue is coming from the 3rd party dependencies which listed deprecated API versions.
-As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements).
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -431,11 +427,6 @@ At the last command:
 * postgresql_chart_name - a name of your DB deployment inside a cluster
 * postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
 * postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
-
-> Please be aware of api deprecations in Kubernetes 1.16.
-It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
-The issue is coming from the 3rd party dependencies which listed deprecated API versions.
-As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements).
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
