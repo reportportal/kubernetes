@@ -11,7 +11,7 @@
 Application Core based on micro-services architecture and includes next mandatory services:
 ![structure](https://github.com/reportportal/reportportal/blob/master/public/rp_repo_structure.png)
 
-ReportPortal is a service that provides great capabilities for speeding up results analysis and reporting by means of built-in analytical features.  
+ReportPortal is a service that provides great capabilities for speeding up results analysis and reporting by means of built-in analytical features.
 
 ## Introduction
 These charts bootstraps a ReportPortal deployment on a Kubernetes cluster using the Helm package manager
@@ -43,4 +43,3 @@ The repo includes a number of Kubernetes and Helm configurations for installatio
 
 ## License
 Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-
