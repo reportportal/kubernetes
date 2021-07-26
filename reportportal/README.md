@@ -61,6 +61,10 @@ It describes installation of all mandatory services to run the application, and 
 - `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)
 - `MinIO` (Helm chart installation)
 
+All configuration variables are presented in `value.yaml` file.
+
+Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.
+
 You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.
 
 > For matching the installation commands on this guide with your command line, please download this Helm chart to your machine.
