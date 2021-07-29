@@ -7,14 +7,15 @@ Kubernetes/Helm configs for installation of ReportPortal
 
 [Overall information](#overall-information)
 
-[Minikube installation](#minikube-installation)
+[Minikube installation](#minikube)
 * [Prerequisites](#prerequisites)
 * [Run ReportPortal in Minikube](#run-reportportal-in-minikube)
 
 [Cloud Computing Services platform installation](#cloud-computing-services-platform-installation)
 * [Make sure you have Kubernetes up and running](#1-make-sure-you-have-kubernetes-up-and-running)
 * [Install and configure Helm package manager](#2-install-and-configure-helm-package-manager)
-* [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller-version-0220)
+* [Kubernetes Node Labels](#Kubernetes-Node-Labels)
+* [Deploy NGINX Ingress controller](#3-deploy-nginx-ingress-controller)
 * [Elasticsearch installation](#4-elasticsearch-installation)
 * [RabbitMQ installation](#5-rabbitmq-installation)
 * [PostgreSQL installation](#6-postgresql-installation)
@@ -52,20 +53,19 @@ It describes installation of all mandatory services to run the application, and 
 - [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
 - [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
 - [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
-- [`service-index`](https://github.com/reportportal/service-index) Index Service. Info and health checks per service.
 - [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail prob
 
-#### Requirements: 
-- `RabbitMQ` (Helm chart installation)  
-- `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)  
-- `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)  
-- `MinIO` (Helm chart installation)  
+#### Requirements:
+- `RabbitMQ` (Helm chart installation)
+- `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)
+- `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)
+- `MinIO` (Helm chart installation)
 
-All configuration variables are presented in `value.yaml` file.  
+All configuration variables are presented in `value.yaml` file.
 
-Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.  
+Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.
 
-You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.  
+You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.
 
 > For matching the installation commands on this guide with your command line, please download this Helm chart to your machine.
 
@@ -79,29 +79,29 @@ Make sure you have kubectl installed. You can install kubectl according to the i
 
 #### Run ReportPortal in Minikube
 
-Start Minikube with the options:  
+Start Minikube with the options:
 ```sh
 minikube --memory 4096 --cpus 2 start
 ```
 
-Install the Ingress plugin:  
+Install the Ingress plugin:
 ```sh
 minikube addons enable ingress
 ```
 
-Verify that the NGINX Ingress controller is running:  
+Verify that the NGINX Ingress controller is running:
 ```sh
 kubectl get pods -n kube-system
 ```
 
-Initialize Helm package manager:  
+Initialize Helm package manager:
 ```sh
 helm repo add stable https://charts.helm.sh/stable && helm repo update
 ```
 
 
-> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml  
-> You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml  
+> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml
+> You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml
 
 ```yaml
 rabbitmq:
@@ -124,17 +124,17 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
-    password: 
+    password:
 ```
 
-Deploy the chart:  
+Deploy the chart:
 ```sh
 helm install ./<project folder>
 ```
 
-Once it's installed please make sure that the PersistentVolumes directories are created  
+Once it's installed please make sure that the PersistentVolumes directories are created
 
-To create:  
+To create:
 ```sh
 minikube ssh
 ```
@@ -148,7 +148,7 @@ sudo mkdir /mnt/data/console -p
 sudo mkdir /mnt/data/elastic -p
 ```
 
-Also make sure that the vm.max_map_count is setup:  
+Also make sure that the vm.max_map_count is setup:
 ```sh
 minikube ssh
 ```
@@ -156,10 +156,10 @@ minikube ssh
 sudo sysctl -w vm.max_map_count=262144
 ```
 
-The default URL to reach the ReportPortal UI page is http://reportportal.k8.com.  
-Make sure that the URL is added to your host file and the IP is the K8s IP address  
+The default URL to reach the ReportPortal UI page is http://reportportal.k8.com.
+Make sure that the URL is added to your host file and the IP is the K8s IP address
 
-The command to get an IP address of Minikube:  
+The command to get an IP address of Minikube:
 ```sh
 minikube ip
 ```
@@ -204,7 +204,7 @@ To create a Kubernetes cluster on DigitalOcean cloud use the following guide:
 
 [How to Create Kubernetes Clusters Using the Control Panel](https://www.digitalocean.com/docs/kubernetes/how-to/create-clusters/)
 
-#### 2. Install and configure Helm package manager 
+#### 2. Install and configure Helm package manager
 
 For more information about installation the Helm package manager on different Kubernetes clusters, use the following:
 
@@ -213,12 +213,30 @@ For more information about installation the Helm package manager on different Ku
 - [Azure](https://docs.microsoft.com/en-us/azure/aks/kubernetes-helm)
 - [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-install-software-on-kubernetes-clusters-with-the-helm-package-manager)
 
-Confirm that Helm is running with the following command  
+Confirm that Helm is running with the following command
 ```
 helm version
 ```
 
-#### 3. Deploy NGINX Ingress controller (version 0.34.1)
+#### Kubernetes Node Labels
+
+To ensure fault tolerance and reduce the load on the application use the labels. Setting labels is different from environment. If you deplyed database on different VM or Cloud Service use 2 API, 1 RabbitMQ, else for Database in the cluster use 1 API, 1 DB, 1 RabbitMQ.
+
+- DB as separeted service:
+```
+kubectl label nodes <NODE-1> service=api
+kubectl label nodes <NODE-2> service=api
+kubectl label nodes <NODE-3> service=rabbitmq
+```
+
+- DB as part of cluster:
+```
+kubectl label nodes <NODE-1> service=api
+kubectl label nodes <NODE-2> service=rabbitmq
+kubectl label nodes <NODE-3> service=db
+```
+
+#### 3. Deploy NGINX Ingress controller
 
 Please find the guides below:
 
@@ -227,23 +245,24 @@ Please find the guides below:
 - [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
 - [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm#step-2-%E2%80%94-installing-the-kubernetes-nginx-ingress-controller)
 
-Or you can istall an NGINX ingress controller using Helm. 
+Or you can istall an NGINX ingress controller using Helm.
 
 ```
-helm install reportportal nginx-ingress stable/nginx-ingress
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx
 ```
 
 > If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
 
 #### 4. Elasticsearch installation
 
-ReportPortal requires installation of Elasticsearch, RabbitMQ, PostgreSQL and MinIO. On this step we will start with Elasticsearch.  
+ReportPortal requires installation of Elasticsearch, RabbitMQ, PostgreSQL and MinIO. On this step we will start with Elasticsearch.
 
-You can go with [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) (4.1) or use an Amazon ES as an Elasticsearch cluster (4.2).  
+You can go with [Elasticsearch Helm chart](https://github.com/elastic/helm-charts/tree/master/elasticsearch) (4.1) or use an Amazon ES as an Elasticsearch cluster (4.2).
 
-4.1. Elasticsearch Helm chart installation  
+4.1. Elasticsearch Helm chart installation
 
-To use this type of installation, please run the following commands  
+To use this type of installation, please run the following commands
 
 Add the elastic helm charts repo:
 ```sh
@@ -255,40 +274,40 @@ The following command will use your ReportPortal dependency file requirements.ya
 helm dependency build ./reportportal/
 ```
 
-Install Elasticsearch:  
+Install Elasticsearch:
 ```sh
 helm install <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
-> Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.  
+> Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.
 
 4.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
 
-Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud  
+Amazon Elasticsearch Service (Amazon ES) makes it easy to set up, operate, and scale an Elasticsearch cluster in the cloud
 
-(For more information about Amazon Elasticsearch Service please click on the following [link](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html)  
+(For more information about Amazon Elasticsearch Service please click on the following [link](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/what-is-amazon-elasticsearch-service.html)
 
-4.2.1. Creation an Amazon Elasticsearch Service domain  
+4.2.1. Creation an Amazon Elasticsearch Service domain
 
 Please use the [Getting Started guide](https://docs.aws.amazon.com/en_us/elasticsearch-service/latest/developerguide/es-gsg-create-domain.html)
 
-Feel free to choose whatever configuration fits you best  
+Feel free to choose whatever configuration fits you best
 
-4.2.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes  
+4.2.2. Configuration the IAM Policy for your AWS Kubernetes Worker Nodes
 
-Amazon ES adds support for an authorization layer by integrating with IAM. You write an IAM policy to control access to the cluster’s endpoint, allowing or denying Actions (HTTP methods) against Resources  
+Amazon ES adds support for an authorization layer by integrating with IAM. You write an IAM policy to control access to the cluster’s endpoint, allowing or denying Actions (HTTP methods) against Resources
 
-IAM policies can be attached to your domain or to individual users or roles. If a policy is attached to your domain, it’s called a resource-based policy. If it’s attached to a user or role, it’s called a user-based policy  
+IAM policies can be attached to your domain or to individual users or roles. If a policy is attached to your domain, it’s called a resource-based policy. If it’s attached to a user or role, it’s called a user-based policy
 
-We recommend to use an Resource-based access policy:  
+We recommend to use an Resource-based access policy:
 
   * Click on "Modify the access policy for <Your_AWS_ES_domain_name>";
   * Choose Allow access to the domain from specific IP(s) and enter
   * Enter the public IP addresses of your Worker Nodes; (Add a comma-separated list of valid IPv4 addresses or CIDR blocks)
 
-4.2.3. Accessing your AWS ES domain from ReportPortal  
+4.2.3. Accessing your AWS ES domain from ReportPortal
 
-Get your AWS ES domain endpoint URL from the the "Overview" tab in AWS, and write down its value into the ReportPortal values.yaml:  
+Get your AWS ES domain endpoint URL from the the "Overview" tab in AWS, and write down its value into the ReportPortal values.yaml:
 
 ```yaml
 elasticsearch:
@@ -299,24 +318,19 @@ elasticsearch:
 
 #### 5. RabbitMQ installation
 
-You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq) (5.1) or use an AmazonMQ as RabbitMQ (5.2).  
+You can install RabbitMQ from the following [RabbitMQ Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq) (5.1) or use an AmazonMQ as RabbitMQ (5.2).
 
 5.1 RabbitMQ from the Helm chart
 
-Download the specified chart into your charts/ directory:  
+Download the specified chart into your charts/ directory:
 ```sh
 helm dependency build ./reportportal/
 ```
 
-Then use to install it:  
+Then use to install it:
 ```sh
 helm install <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
 ```
-
-> Please be aware of api deprecations in Kubernetes 1.16.  
-It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
-The issue is coming from the 3rd party dependencies which listed deprecated API versions.
-As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -343,9 +357,9 @@ To Access the RabbitMQ Management interface:
     kubectl port-forward --namespace default svc/rabbitmq 15672:15672
 ```
 
-When RabbitMQ is up and running, edit values.yaml to adjust the settings  
+When RabbitMQ is up and running, edit values.yaml to adjust the settings
 
-Insert the real values of RabbitMQ address and ports:  
+Insert the real values of RabbitMQ address and ports:
 
 ```yaml
 rabbitmq:
@@ -397,7 +411,7 @@ rabbitmq:
 
 #### 6. PostgreSQL installation
 
-You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) (6.1) or use an Amazon RDS Service for your PostgreSQL database (6.2) or Azure Database for PostgreSQL (6.3).  
+You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) (6.1) or use an Amazon RDS Service for your PostgreSQL database (6.2) or Azure Database for PostgreSQL (6.3).
 
 6.1.1. PostgreSQL Helm chart installation
 
@@ -413,11 +427,6 @@ At the last command:
 * postgresql_chart_name - a name of your DB deployment inside a cluster
 * postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
 * postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
-
-> Please be aware of api deprecations in Kubernetes 1.16.  
-It can cause the following issue on some Helm charts: Error: validation failed: unable to recognize "": no matches for kind "StatefulSet" in version "apps/v1beta1.
-The issue is coming from the 3rd party dependencies which listed deprecated API versions.
-As a workaround, please use [compatible versions of Kubernetes](https://github.com/reportportal/kubernetes#requirements). 
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -440,9 +449,9 @@ To connect to your database from outside the cluster execute the following comma
     psql --host 127.0.0.1 -U postgres
 ```
 
-After PostgreSQL is up and running, edit values.yaml to adjust the settings  
+After PostgreSQL is up and running, edit values.yaml to adjust the settings
 
-Insert the real values of PostgreSQL address and ports:  
+Insert the real values of PostgreSQL address and ports:
 
 > Since you go with the PostgreSQL Helm chart option, you do not need to set the db password in the 'password' value here, because it has been already set above with "helm install .." command
 
@@ -486,9 +495,9 @@ You need the following information to connect:
   * The port on which the DB instance is listening. For example, the default PostgreSQL port is 5432 ;
   * The user name and password
 
-b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:  
+b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:
 
-> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy  
+> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy
 
 ```yaml
 postgresql:
@@ -503,29 +512,29 @@ postgresql:
     password: <postgresql password>
 ```
 
-6.3. PostgreSQL as an external cloud service. Azure Database for PostgreSQL  
+6.3. PostgreSQL as an external cloud service. Azure Database for PostgreSQL
 
-6.3.1. Creation an Azure Database for PostgreSQL server  
+6.3.1. Creation an Azure Database for PostgreSQL server
 
-You can create an Azure Database for PostgreSQL server in the [Azure portal](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal) or using the [Azure CLI](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal)  
+You can create an Azure Database for PostgreSQL server in the [Azure portal](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal) or using the [Azure CLI](https://docs.microsoft.com/en-us/azure/postgresql/quickstart-create-server-database-portal)
 
-For the best performance we strongly recommend you to use the 'General Purpose' compute and storage configurations  
+For the best performance we strongly recommend you to use the 'General Purpose' compute and storage configurations
 
-6.3.2. Configuration a server-level firewall rules    
+6.3.2. Configuration a server-level firewall rules
 
-In the Azure portal go to the created Azure Database for PostgreSQL server, Settings - Connection security  
+In the Azure portal go to the created Azure Database for PostgreSQL server, Settings - Connection security
 
 6.3.2.1
 
-> If you run your Kubernetes cluster in Azure AKS  
+> If you run your Kubernetes cluster in Azure AKS
 
-Allow access to Azure services - set to 'Yes'  
+Allow access to Azure services - set to 'Yes'
 You can also tweak this more finely by using the firewall rules (see below)
 
 > If you run your Kubernetes cluster outside of Azure AKS or want to tweak this more finely
 
-Under the Firewall rules, in the Rule Name column, select the blank text box to begin creating the firewall rule.  
-Fill in the text boxes with a name, and the start and end IP range of the clients that will be accessing your server (it must be all of your Kubernetes Worker nodes, at minimum).  
+Under the Firewall rules, in the Rule Name column, select the blank text box to begin creating the firewall rule.
+Fill in the text boxes with a name, and the start and end IP range of the clients that will be accessing your server (it must be all of your Kubernetes Worker nodes, at minimum).
 If it is a single IP, use the same value for the start IP and end IP
 On the upper toolbar of the Connection security page, select Save. Wait until the notification appears stating that the connection security update has finished successfully before you continue
 
@@ -536,9 +545,9 @@ Enforce SSL connection - set to 'Disabled'
 
 6.3.3. Creation 'reportportal' database
 
-After your Azure PostgreSQL server is ready and you able to connect, get the connection information (server name and login) on the server Overview page in the portal.  
+After your Azure PostgreSQL server is ready and you able to connect, get the connection information (server name and login) on the server Overview page in the portal.
 
-Run the following psql command to connect to an Azure Database for PostgreSQL server  
+Run the following psql command to connect to an Azure Database for PostgreSQL server
 ```sh
 psql --host=<servername> --port=<port> --username=<user@servername> --dbname=<dbname>
 ```
@@ -561,9 +570,9 @@ You need the following information to connect:
   * The server name;
   * The Admin username and password
 
-b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:  
+b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:
 
-> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy  
+> The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy
 
 ```yaml
 postgresql:
@@ -580,15 +589,15 @@ postgresql:
 
 #### 7. MinIO installation
 
-MinIO is a high performance distributed object storage server and a preferable way of using our file storage. It stays on top of S3 or any other cloud storage, and allows to have a shared FS for several API and UAT pods in Kubernetes.  
+MinIO is a high performance distributed object storage server and a preferable way of using our file storage. It stays on top of S3 or any other cloud storage, and allows to have a shared FS for several API and UAT pods in Kubernetes.
 
-The following command will install Minio with 40GB PVC:  
+The following command will install Minio with 40GB PVC:
 
 ```sh
 helm install minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
 ```
 
-Installation output example  
+Installation output example
 ```
 Minio can be accessed via port 9000 on the following DNS name from within your cluster:
 minio.default.svc.cluster.local
@@ -612,7 +621,7 @@ You can now access Minio server on http://localhost:9000. Follow the below steps
 Alternately, you can use your browser or the Minio SDK to access the server - https://docs.minio.io/categories/17
 ```
 
-Do not forget to update corresponding section of values.yaml with your endpoint, secret and access keys:  
+Do not forget to update corresponding section of values.yaml with your endpoint, secret and access keys:
 
 ```yaml
 minio:
@@ -625,9 +634,9 @@ minio:
   secretkey: <minio-secretkey>
 ```
 
-You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.  
+You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.
 
-Configuration of MinIO AWS storage region for binary storage must be defined via 'region' value in this case.  
+Configuration of MinIO AWS storage region for binary storage must be defined via 'region' value in this case.
 
 Example
 
@@ -641,7 +650,7 @@ minio:
 
 #### 8. (OPTIONAL) Additional adjustments
 
-Adjust resources requests/limits in values.yaml for each pod if needed:  
+Adjust resources requests/limits in values.yaml for each pod if needed:
 
 ```yaml
   resources:
@@ -653,7 +662,7 @@ Adjust resources requests/limits in values.yaml for each pod if needed:
       memory: 512Mi
 ```
 
-If you are going to associate a specific DNS name with your UI, set Ingress controller configuration like this:  
+If you are going to associate a specific DNS name with your UI, set Ingress controller configuration like this:
 
 ```yaml
 # ingress configuration for the ui
@@ -671,8 +680,8 @@ You can also set total amount of RabbitMQ queues, and their number for each API 
 serviceapi:
 ..
   queues:
-    totalNumber: 
-    perPodNumber: 
+    totalNumber:
+    perPodNumber:
 ```
 
 #### 9. Deploy the ReportPortal Helm Chart
@@ -683,14 +692,14 @@ Once everything is ready, the ReportPortal Helm chart can be packaged into a cha
 helm package ./reportportal/
 ```
 
-> If you use PostgreSQL Helm chart  
+> If you use PostgreSQL Helm chart
 
 ```sh
 helm install <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
-> You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line  
+> You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line
 
 ```sh
 helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> ./reportportal-5.tgz
@@ -700,32 +709,32 @@ helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postg
 
 Once ReportPortal is deployed, you can validate if the application is up and running by:
 
-1. Check the pods status:  
+1. Check the pods status:
 
 ```sh
 kubectl get pods
 ```
 
-Everything should be in "Running" status, and 'migrations' service in "Completed"  
+Everything should be in "Running" status, and 'migrations' service in "Completed"
 
 2. Open your LoadBalancer address in a web browser
 
-Since you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address by run:  
+Since you expose your application with an Ingress controller, note LoadBalancer's EXTERNAL-IP address by run:
 
 ```sh
 kubectl get service
 ```
 
-As an example, if you have:  
+As an example, if you have:
 ```sh
 my-nginx-nginx-ingress-controller  LoadBalancer 10.100.69.32  af1010eb94bce011e9bb3306ea08f1137-459046881.eu-central-1.elb.amazonaws.com  80:32633/TCP,443:31683/TCP  2s
 ```
 
 Then http://af1010eb94bce011e9bb3306ea08f1137-459046881.eu-central-1.elb.amazonaws.com is your RP UI address
 
-#### 11. Start work with ReportPortal 
+#### 11. Start work with ReportPortal
 
-Open the http://<LoadBalancer's EXTERNAL-IP address> page in your browser. Defalut login and password are:  
+Open the http://<LoadBalancer's EXTERNAL-IP address> page in your browser. Defalut login and password are:
 
 ```
 default
@@ -735,27 +744,27 @@ default
 P.S: If you can't login - please check logs of api and uat pods. It take some time to initialize
 
 
-### Updating ReportPortal to the latest version  
+### Updating ReportPortal to the latest version
 
-Generally, updating ReportPortal in Kubernetes is a two step process.  
+Generally, updating ReportPortal in Kubernetes is a two step process.
 
 #### 1. Update values.yaml
 
-In the first step, your helm chart values.yaml file should be updated with the latest version of services (see values `repository` and `tag`).  
+In the first step, your helm chart values.yaml file should be updated with the latest version of services (see values `repository` and `tag`).
 
-The following services should be taken into consideration:  
+The following services should be taken into consideration:
 - serviceindex
 - uat
 - serviceui
 - serviceapi
 - migrations
-- serviceanalyzer  
+- serviceanalyzer
 
-#### 2. Update the application  
+#### 2. Update the application
 
-The second step is update / redeploy the application using the following commands:  
+The second step is update / redeploy the application using the following commands:
 
-> If you use PostgreSQL Helm chart  
+> If you use PostgreSQL Helm chart
 
 ```sh
 helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
@@ -767,27 +776,27 @@ helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_c
 helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
 ```
 
-#### IMPORTANT  
+#### IMPORTANT
 
-Before you start updating your application, please check release notes at the [reportportal wiki](https://github.com/reportportal/reportportal/wiki)!  
-Sometimes, ReportPortal update may require recreation / cleaning of its dependencies (e.g. RabbitMQ), or any other additional actions.  
+Before you start updating your application, please check release notes at the [reportportal wiki](https://github.com/reportportal/reportportal/wiki)!
+Sometimes, ReportPortal update may require recreation / cleaning of its dependencies (e.g. RabbitMQ), or any other additional actions.
 
 
 ### Run ReportPortal over SSL (HTTPS)
 
 #### 1. Configure a custom domain name for your ReportPortal website
 
-Set up a domain name you own at the domain registrar  
+Set up a domain name you own at the domain registrar
 
 #### 2. Pre-requisite configuration
 
-In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA)  
-As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS  
+In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA)
+As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS
 
 #### 2.1. Deploy the Cert Manager
 
-[Cert-manager](https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager) is a native Kubernetes certificate management controller  
-It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed  
+[Cert-manager](https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager) is a native Kubernetes certificate management controller
+It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed
 
 Install the cert-manager CRDs **before** installing the cert-manager Helm
 
@@ -808,8 +817,8 @@ helm install cert-manager jetstack/cert-manager --namespace cert-manager --versi
 ```
 
 #### 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource:
- 
- ClusterIssuers (and Issuers) represent a certificate authority from which signed x509 certificates can be obtained, such as Let’s Encrypt. You will need at least one ClusterIssuer in order to begin issuing certificates within your cluster  
+
+ ClusterIssuers (and Issuers) represent a certificate authority from which signed x509 certificates can be obtained, such as Let’s Encrypt. You will need at least one ClusterIssuer in order to begin issuing certificates within your cluster
 
 ```sh
 vi letsencrypt-clusterissuer.yaml
@@ -832,9 +841,9 @@ spec:
           class: nginx
 ```
 
-Do not forget to set the name and email for your ClusterIssuer   
+Do not forget to set the name and email for your ClusterIssuer
 
-For example  
+For example
 ```yaml
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
@@ -858,17 +867,17 @@ kubectl create -f letsencrypt-clusterissuer.yaml
 
 #### 3. Update your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
 
-With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate  
+With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate
 
 #### 3.1. Add the certmanager annotation:
 
-Add the following annotation to your Ingress configuration by editing ReportPortal Helm chart values.yaml file  
+Add the following annotation to your Ingress configuration by editing ReportPortal Helm chart values.yaml file
 
 ```
 cert-manager.io/cluster-issuer: "letsencrypt-prod"
 ```
 
-The result in values.yaml  
+The result in values.yaml
 
 ```yaml
 ..
@@ -889,7 +898,7 @@ The result in values.yaml
 
 #### 3.2. Update your ReportPortal Ingress configuration:
 
-Edit gateway-ingress.yaml template in your copy of ReportPortal Helm chart, and add the following right after 'spec'  
+Edit gateway-ingress.yaml template in your copy of ReportPortal Helm chart, and add the following right after 'spec'
 
 ```yaml
   tls:
@@ -897,11 +906,11 @@ Edit gateway-ingress.yaml template in your copy of ReportPortal Helm chart, and 
     - <your_domain_name>
     secretName: <your_certificate_secretname>
 ```
-> You will create your certificate with secretname on the next step  
+> You will create your certificate with secretname on the next step
 
-Let's suppose your domain name is 'my.reportportal.com' and your certificate secretname is 'my.reportportal.com-tls'  
+Let's suppose your domain name is 'my.reportportal.com' and your certificate secretname is 'my.reportportal.com-tls'
 
-Then the result in your gateway-ingress.yaml file will be  
+Then the result in your gateway-ingress.yaml file will be
 
 ```yaml
 spec:
@@ -916,7 +925,7 @@ spec:
 #### 3.3. Redeploy or upgrade your ReporPortal installation with Helm
 
 
-#### 4. Create a Certificate resource in Kubernetes with acme http challenge configured:   
+#### 4. Create a Certificate resource in Kubernetes with acme http challenge configured:
 
 ```sh
 vi certificate-tls.yaml
@@ -942,8 +951,8 @@ spec:
     kind: ClusterIssuer
 ```
 
-For our example  
-```yaml 
+For our example
+```yaml
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
@@ -967,9 +976,9 @@ spec:
 kubectl create -f certificate-tls.yaml
 ```
 
-Once this resource is created, there should be a tls cert that is created. If not, then check the logs of the cert-manger service for errors  
+Once this resource is created, there should be a tls cert that is created. If not, then check the logs of the cert-manger service for errors
 
-In order to check the certificate and secret  
+In order to check the certificate and secret
 
 ```
 kubectl get certificates
@@ -981,6 +990,6 @@ kubectl get secrets
 kubectl describe secret <your_certificate_secretname>
 ```
 
-Now you should be able to run your ReportPortal installation over HTTPS  
+Now you should be able to run your ReportPortal installation over HTTPS
 
 Please take into account that you don't have to re-deploy the application in order to apply changes
