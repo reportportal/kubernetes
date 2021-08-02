@@ -120,7 +120,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
     address: <postgresql_chart_name>.default.svc.cluster.local
     port: 5432
     user: rpuser
@@ -388,12 +387,10 @@ Amazon MQ is a managed message broker service for that makes it easy to migrate 
 Edit `api-deployment.yaml` in `reportportal/templates/` folder
 
 ```yaml
-{{ if .Values.rabbitmq.endpoint.cloudservice }}
 - name: RP_AMQP_ADDRESSES
   value: "amqps://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}"
 - name: RP_AMQP_API_ADDRESS
   value: "https://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}/api"
-{{ end }}
 ```
 
 Edit values.yaml in `reportportal/` folder
@@ -404,7 +401,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    cloudservice: true
     address: <RABBITMQ_CLOUD_ADDRESS>
     port: <RABBITMQ_PORT>  # for example 5671
     user: <RABBITMQ_USERNAME>
@@ -465,7 +461,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
@@ -500,15 +495,6 @@ You need the following information to connect:
   * The port on which the DB instance is listening. For example, the default PostgreSQL port is 5432 ;
   * The user name and password
 
-a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in postgresql section from 'false' to 'true'. This allows you to use PostgreSQL as an external cloud service
-
-```yaml
-postgresql:
-..
-    cloudservice: true
-..
-```
-
 b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:
 
 > The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy
@@ -519,7 +505,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: true
     address: <postgresql address>
     port: 5432
     user: rpuser
@@ -585,15 +570,6 @@ You need the following information to connect:
   * The server name;
   * The Admin username and password
 
-a) Open ReportPortal Helm chart values.yaml and set 'cloudservice' value in postgresql section from 'false' to 'true'. This allows you to use PostgreSQL as an external cloud service
-
-```yaml
-postgresql:
-..
-    cloudservice: true
-..
-```
-
 b) Write down the real values into the corresponding section of values.yaml with your PostgreSQL address, port, dbName and password:
 
 > The db password can be also skipped here if you're going to override it on the stage of ReportPortal Helm chart deploy
@@ -604,7 +580,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: true
     address: <postgresql address>
     port: 5432
     user: <Admin username>

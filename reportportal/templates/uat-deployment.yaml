@@ -32,13 +32,13 @@ spec:
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.endpoint.cloudservice }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ else }}
+        {{ if .Values.postgresql.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
+        {{ else }}
+          value: "{{ .Values.postgresql.endpoint.password }}"
         {{ end }}
         {{ if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE

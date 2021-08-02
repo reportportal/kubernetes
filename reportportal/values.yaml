@@ -158,7 +158,6 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
     address: <rabbitmq_chart_name>.default.svc.cluster.local
     port: 5672
     user: rabbitmq
@@ -171,7 +170,6 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
     address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
