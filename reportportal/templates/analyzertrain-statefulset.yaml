@@ -1,26 +1,30 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "reportportal.fullname" . }}-analyzer
+  name: {{ include "reportportal.fullname" . }}-analyzer-train
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-analyzer
-  serviceName: {{ include "reportportal.fullname" . }}-analyzer
+      component: {{ include "reportportal.fullname" . }}-analyzer-train
+  serviceName: {{ include "reportportal.fullname" . }}-analyzertrain
   template:
     metadata:
       labels:
-        component: {{ include "reportportal.fullname" . }}-analyzer
+        component: {{ include "reportportal.fullname" . }}-analyzer-train
       annotations:
-        {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
       containers:
       - env:
-      {{ if .Values.minio.enabled }}
+        - name: INSTANCE_TASK_TYPE
+          value: "train"
+        - name: UWSGI_WORKERS
+          value: "1"
+        {{ if .Values.minio.enabled }}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
         - name: MINIO_SHORT_HOST
@@ -44,13 +48,13 @@ spec:
        {{ end }}
        {{ end }}
         - name: RP_AMQP_PASS
-        {{ if .Values.rabbitmq.SecretName }}
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
-        {{ else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{ end }}
         - name: AMQP_URL
           value: "amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/"
@@ -61,20 +65,20 @@ spec:
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
-        - containerPort: 8080
+        - containerPort: 5000
           protocol: TCP
         resources:
           requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
+            cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+            cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
 {{ include "nodeSelector" . | indent 8 }}
       securityContext:
-{{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName }}
+{{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}

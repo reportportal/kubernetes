@@ -23,17 +23,17 @@ landing:
   twitter_consumer_secret:
   twitter_token:
   twitter_token_secret:
-  twitter_buffer_size: 
-  twitter_search_term: 
-  github_include_beta: 
+  twitter_buffer_size:
+  twitter_search_term:
+  github_include_beta:
   github_token:
   youtube_channel_id:
   google_api_key:
-  
+
 ingress:
   hosts:
     - status.reportportal.com
-    
+
 # node selector for all components, if any
 nodeSelector:
   enabled: false
