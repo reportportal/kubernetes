@@ -238,6 +238,9 @@ rbac:
   serviceAccount:
     create: true
     name: reportportal
+    # For AWS IAM role association use the following annotations
+    ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+    annotations:
 
 rp:
   infoEndpoint: "/info"
