@@ -153,6 +153,27 @@ serviceanalyzertrain:
   securityContext: {}
   serviceAccountName: ""
 
+metricsgatherer:
+  repository: reportportal/service-metrics-gatherer
+  tag: 1.1.14
+  name: metrics-gatherer
+  loggingLevel: debug
+  timeManagement:
+    starttime: 22:00
+    endtime: 08:00
+    timezone: Europe/Minsk
+  maxDaysStore: 500
+  resources:
+    requests:
+      cpu: 8m
+      memory: 128Mi
+    limits:
+      cpu: 16m
+      memory: 128Mi
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+
 rabbitmq:
   SecretName: ""
   installdep:
