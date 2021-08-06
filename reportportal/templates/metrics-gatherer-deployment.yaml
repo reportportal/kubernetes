@@ -37,7 +37,7 @@ spec:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
         {{- end }}
         - name: ALLOWED_START_TIME
