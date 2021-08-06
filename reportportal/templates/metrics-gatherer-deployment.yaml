@@ -32,14 +32,14 @@ spec:
         - name: POSTGRES_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: POSTGRES_PASSWORD
-         {{ if .Values.postgresql.SecretName }}
+         {{- if .Values.postgresql.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
         {{ else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ end }}
+        {{- end }}
         - name: ALLOWED_START_TIME
           value: "{{ .Values.metricsgatherer.timeManagement.starttime }}"
         - name: ALLOWED_END_TIME
