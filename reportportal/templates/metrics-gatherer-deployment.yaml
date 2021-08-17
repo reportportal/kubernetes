@@ -22,7 +22,7 @@ spec:
         - name: LOGGING_LEVEL
           value: "{{ .Values.metricsgatherer.loggingLevel }}"
         - name: ES_HOST
-          value: "http://{{ .Values.elasticsearch.endpoint }}"
+          value: "{{ .Values.elasticsearch.endpoint }}"
         - name: POSTGRES_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: POSTGRES_PORT
