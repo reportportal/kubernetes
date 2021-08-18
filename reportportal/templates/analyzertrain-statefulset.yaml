@@ -50,9 +50,9 @@ spec:
         - name: RP_AMQP_PASS
         {{ if .Values.rabbitmq.SecretName }}
           valueFrom:
-           secretKeyRef:
-             name: "{{ .Values.rabbitmq.SecretName }}"
-             key: "rabbitmq-password"
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
         {{ else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{ end }}
