@@ -702,7 +702,7 @@ helm install <reportportal_chart_name> --set postgresql.SecretName=<db_secret>,r
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line
 
 ```sh
-helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_passwords> ./reportportal-5.tgz
+helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_secret> ./reportportal-5.tgz
 ```
 
 #### 10. Validate the pods and service
