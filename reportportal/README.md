@@ -625,10 +625,12 @@ Do not forget to update corresponding section of values.yaml with your endpoint,
 
 ```yaml
 minio:
+  secretName: ""
   enabled: true
   installdep:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
+  endpointshort: <minio-release-name>.default.svc.cluster.local:9000
   region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
