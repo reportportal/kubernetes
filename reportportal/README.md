@@ -434,7 +434,7 @@ Once PostgreSQL has been deployed, copy address and port from output notes. Shou
 
 PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:
 
-    <postgresql_chart_name>-postgresql.default.svc.cluster.local - Read/Write connection
+    <postgresql_chart_name>.default.svc.cluster.local - Read/Write connection
 To get the password for "postgres" run:
 
     export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default <postgresql_chart_name>-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
@@ -461,7 +461,7 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    address: <postgresql_chart_name>.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
