@@ -594,7 +594,8 @@ MinIO is a high performance distributed object storage server and a preferable w
 The following command will install Minio with 40GB PVC:
 
 ```sh
-helm install minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi bitnami/minio
 ```
 
 Installation output example
