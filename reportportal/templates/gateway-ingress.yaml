@@ -1,6 +1,7 @@
+{{- if and (ge .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gateway-ingress
@@ -21,42 +22,67 @@ spec:
     http:
       paths:
       - path: /()?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: headless
       - path: /(ui)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: headless
       - path: /(uat)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: headless
       - path: /(api)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: headless
   {{- end -}}
 {{ else }}
   - http:
       paths:
       - path: /()?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-index
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: headless
       - path: /(ui)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-ui
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: headless
       - path: /(uat)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-uat
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: headless
       - path: /(api)/?(.*)
+        pathType: Prefix
         backend:
-          serviceName: {{ $fullName }}-api
-          servicePort: headless
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: headless
 {{ end }}
 status:
   loadBalancer: {}
+{{- end }}
 {{- end }}
