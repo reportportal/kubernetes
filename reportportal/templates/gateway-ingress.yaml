@@ -59,28 +59,28 @@ spec:
           service:
             name: {{ $fullName }}-index
             port:
-              number: 8080
+              name: headless
       - path: /(ui)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
-              number: 8080
+              name: headless
       - path: /(uat)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
-              number: 9999
+              name: headless
       - path: /(api)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
-              number: 8585
+              name: headless
 {{ end }}
 status:
   loadBalancer: {}
