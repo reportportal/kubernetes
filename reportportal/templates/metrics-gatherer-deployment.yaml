@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reportportal.fullname" . }}-metrics-gatherer
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-metrics-gatherer
+  template:
+    metadata:
+      labels:
+        component: {{ include "reportportal.fullname" . }}-metrics-gatherer
+      annotations:
+        {{- range $key, $value := .Values.metricsgatherer.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      containers:
+      - env:
+        - name: LOGGING_LEVEL
+          value: "{{ .Values.metricsgatherer.loggingLevel }}"
+        - name: ES_HOST
+          value: "{{ .Values.elasticsearch.endpoint }}"
+        - name: POSTGRES_HOST
+          value: "{{ .Values.postgresql.endpoint.address }}"
+        - name: POSTGRES_PORT
+          value: "{{ .Values.postgresql.endpoint.port }}"
+        - name: POSTGRES_DB
+          value: "{{ .Values.postgresql.endpoint.dbName }}"
+        - name: POSTGRES_USER
+          value: "{{ .Values.postgresql.endpoint.user }}"
+        - name: POSTGRES_PASSWORD
+         {{- if .Values.postgresql.SecretName }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.postgresql.SecretName }}"
+              key: "postgresql-password"
+        {{- else }}
+          value: "{{ .Values.postgresql.endpoint.password }}"
+        {{- end }}
+        - name: ALLOWED_START_TIME
+          value: "{{ .Values.metricsgatherer.timeManagement.starttime }}"
+        - name: ALLOWED_END_TIME
+          value: "{{ .Values.metricsgatherer.timeManagement.endtime }}"
+        - name: MAX_DAYS_STORE
+          value: "{{ .Values.metricsgatherer.maxDaysStore }}"
+        - name: TZ
+          value: "{{ .Values.metricsgatherer.timeManagement.timezone }}"
+        image: "{{ .Values.metricsgatherer.repository }}:{{ .Values.metricsgatherer.tag }}"
+        name: metrics-gatherer
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.metricsgatherer.resources.requests.cpu }}
+            memory: {{ .Values.metricsgatherer.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.metricsgatherer.resources.limits.cpu }}
+            memory: {{ .Values.metricsgatherer.resources.limits.memory }}
+{{ include "nodeSelector" . | indent 8 }}
+      securityContext:
+{{ toYaml .Values.metricsgatherer.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.metricsgatherer.serviceAccountName }}
+{{- with .Values.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}

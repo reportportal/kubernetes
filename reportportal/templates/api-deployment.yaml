@@ -58,7 +58,7 @@ spec:
         - name: RP_AMQP_APIUSER
           value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
-        {{ if .Values.postgresql.SecretName }}
+        {{ if .Values.rabbitmq.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"

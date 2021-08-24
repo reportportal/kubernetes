@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-metrics-gatherer
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.metricsgatherer.name | default "metrics-gatherer" }}
+    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+spec:
+  ports:
+  - name: headless
+    port: 8585
+    protocol: TCP
+    targetPort: 8585
+  selector:
+    component: {{ include "reportportal.fullname" . }}-metrics-gatherer
+  type: ClusterIP
+  

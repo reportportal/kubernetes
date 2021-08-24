@@ -24,7 +24,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.4.0
+  tag: 5.5.0
   pullPolicy: Always
   resources:
     requests:
@@ -41,7 +41,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: v5.4.0
+  tag: 5.5.0
   name: ui
   pullPolicy: Always
   resources:
@@ -57,7 +57,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.4.0
+  tag: 5.5.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -83,7 +83,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.4.0
+  tag: 5.5.0
   name: jobs
   pullPolicy: Always
   clean:
@@ -107,7 +107,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.4.0
+  tag: 5.5.0
   pullPolicy: Always
   resources:
     requests:
@@ -127,7 +127,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.4.0
+  tag: 5.5.0
   name: analyzer
   pullPolicy: Always
   resources:
@@ -149,6 +149,27 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+
+metricsgatherer:
+  repository: reportportal/service-metrics-gatherer
+  tag: 1.1.14
+  name: metrics-gatherer
+  loggingLevel: debug
+  timeManagement:
+    starttime: 22:00
+    endtime: 08:00
+    timezone: Europe/Minsk
+  maxDaysStore: 500
+  resources:
+    requests:
+      cpu: 8m
+      memory: 128Mi
+    limits:
+      cpu: 16m
+      memory: 128Mi
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
