@@ -96,7 +96,10 @@ kubectl get pods -n kube-system
 
 Initialize Helm package manager:
 ```sh
-helm repo add stable https://charts.helm.sh/stable && helm repo update
+helm repo add stable https://charts.helm.sh/stable && \
+  helm repo add bitnami https://charts.bitnami.com/bitnami && \
+  helm repo add elasticsearch https://helm.elastic.co && \
+  helm repo update
 ```
 
 
@@ -109,18 +112,19 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq_chart_name>.default.svc.cluster.local
+    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    password:
 
 postgresql:
   SecretName: ""
   installdep:
     enable: false
   endpoint:
-    address: <postgresql_chart_name>.default.svc.cluster.local
+    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
