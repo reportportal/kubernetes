@@ -179,7 +179,7 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq_chart_name>.default.svc.cluster.local
+    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -191,7 +191,7 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
