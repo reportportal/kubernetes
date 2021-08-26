@@ -30,12 +30,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "accesskey"
+              key: "access-key"
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "secretkey"
+              key: "secret-key"
        {{ else }}
         - name: MINIO_ACCESS_KEY
           value: "{{ .Values.minio.accesskey }}"
