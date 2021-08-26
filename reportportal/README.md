@@ -98,6 +98,7 @@ Initialize Helm package manager:
 ```sh
 helm repo add stable https://charts.helm.sh/stable && \
   helm repo add bitnami https://charts.bitnami.com/bitnami && \
+  helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx \
   helm repo add elasticsearch https://helm.elastic.co && \
   helm repo update
 ```
