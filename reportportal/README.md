@@ -279,7 +279,7 @@ helm dependency build ./reportportal/
 
 Install Elasticsearch:
 ```sh
-helm install <es_chart_name> ./reportportal/charts/elasticsearch-7.6.1.tgz
+helm install <elastic-release-name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.
@@ -332,7 +332,7 @@ helm dependency build ./reportportal/
 
 Then use to install it:
 ```sh
-helm install <rabbitmq_chart_name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
+helm install <rabbitmq-release-name> --set auth.username=rabbitmq,auth.password=<rmq_password>,replicaCount=1 ./reportportal/charts/rabbitmq-7.5.6.tgz
 ```
 
 Once RabbitMQ has been deployed, copy address and port from output notes. Should be something like this:
@@ -370,11 +370,12 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq_chart_name>.default.svc.cluster.local
+    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    password:
 ```
 
 After the pod gets the status Running, you need to configure the RabbitMQ memory threshold
@@ -424,10 +425,10 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install <postgresql_chart_name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
+helm install <postgresql-release-name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
 ```
 At the last command:
-* postgresql_chart_name - a name of your DB deployment inside a cluster
+* postgresql-release-name - a name of your DB deployment inside a cluster
 * postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
 * postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
 
@@ -437,18 +438,18 @@ Once PostgreSQL has been deployed, copy address and port from output notes. Shou
 
 PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:
 
-    <postgresql_chart_name>-postgresql.default.svc.cluster.local - Read/Write connection
+    <postgresql-release-name>-postgresql.default.svc.cluster.local - Read/Write connection
 To get the password for "postgres" run:
 
-    export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default <postgresql_chart_name>-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+    export POSTGRESQL_PASSWORD=$(kubectl get secret --namespace default <postgresql-release-name>-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
 
 To connect to your database run the following command:
 
-    kubectl run <postgresql_chart_name>-postgresql-client --rm --tty -i --restart='Never' --namespace default --image bitnami/postgresql --env="PGPASSWORD=$POSTGRESQL_PASSWORD" --command -- psql --host <postgresql_chart_name>-postgresql -U postgres
+    kubectl run <postgresql-release-name>-postgresql-client --rm --tty -i --restart='Never' --namespace default --image bitnami/postgresql --env="PGPASSWORD=$POSTGRESQL_PASSWORD" --command -- psql --host <postgresql-release-name>-postgresql -U postgres
 
 To connect to your database from outside the cluster execute the following commands:
 
-    kubectl port-forward --namespace default svc/<postgresql_chart_name>-postgresql 5432:5432 &
+    kubectl port-forward --namespace default svc/<postgresql-release-name>-postgresql 5432:5432 &
     psql --host 127.0.0.1 -U postgres
 ```
 
@@ -464,7 +465,7 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -597,7 +598,7 @@ MinIO is a high performance distributed object storage server and a preferable w
 The following command will install Minio with 40GB PVC:
 
 ```sh
-helm install minio --set accessKey=<your_minio_accesskey>,secretKey=<your_minio_secretkey>,persistence.size=40Gi stable/minio
+helm install <minio-release-name> --set accessKey.password=<your_minio_accesskey>,secretKey.password=<your_minio_secretkey>,persistence.size=40Gi ./reportportal/charts/minio-7.1.9.tgz
 ```
 
 Installation output example
@@ -637,6 +638,9 @@ minio:
   region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
+  bucketPrefix:
+  defaultBucketName:
+  integrationSaltPath:
 ```
 
 You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.
@@ -700,14 +704,14 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm install <reportportal_chart_name> --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq ./reportportal-5.5.0.tgz
+helm install <reportportal-release-name> --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq,minio.secretName=<minio-release-name> ./reportportal-5.5.0.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 > You can also override the specified 'rpuser' user password in values.yaml, by passing it as a parameter in this install command line
 
 ```sh
-helm install <reportportal_chart_name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name>-rabbitmq ./reportportal-5.5.0.tgz
+helm install <reportportal-release-name> --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq ./reportportal-5.5.0.tgz
 ```
 
 #### 10. Validate the pods and service
@@ -772,13 +776,13 @@ The second step is update / redeploy the application using the following command
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<db_chart_name>-postgresql,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq_chart_name> <reportportal_chart_name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
 ```
 
 #### IMPORTANT
