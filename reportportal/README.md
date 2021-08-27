@@ -96,11 +96,8 @@ kubectl get pods -n kube-system
 
 Initialize Helm package manager:
 ```sh
-helm repo add stable https://charts.helm.sh/stable && \
-  helm repo add bitnami https://charts.bitnami.com/bitnami && \
-  helm repo update
+helm repo add bitnami https://charts.bitnami.com/bitnami && helm repo update
 ```
-
 
 > Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml
 > You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml
@@ -425,7 +422,7 @@ helm dependency build ./reportportal/
 ```
 
 ```sh
-helm install <postgresql-release-name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-8.6.2.tgz
+helm install <postgresql-release-name> --set postgresqlUsername=rpuser,postgresqlPassword=<rpuser_password>,postgresqlDatabase=reportportal,postgresqlPostgresPassword=<postgres_password> -f ./reportportal/postgresql/values.yaml ./reportportal/charts/postgresql-10.9.4.tgz
 ```
 At the last command:
 * postgresql-release-name - a name of your DB deployment inside a cluster
