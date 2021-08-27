@@ -633,8 +633,8 @@ minio:
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>.default.svc.cluster.local:9000
   region:
-  accesskey: <minio-accesskey>
-  secretkey: <minio-secretkey>
+  accesskey: <your_minio_accesskey>
+  secretkey: <your_minio_secretkey>
   bucketPrefix:
   defaultBucketName:
   integrationSaltPath:
