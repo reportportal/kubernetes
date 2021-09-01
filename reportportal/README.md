@@ -374,6 +374,7 @@ rabbitmq:
     apiuser: rabbitmq
     password:
 ```
+Note: If the release is named "rabbitmq", then address is "rabbitmq.default.svc.cluster.local"
 
 After the pod gets the status Running, you need to configure the RabbitMQ memory threshold
 
@@ -468,6 +469,7 @@ postgresql:
     dbName: reportportal
     password:
 ```
+Note: If the release is named "postgresql", then address is "postgresql.default.svc.cluster.local"
 
 6.2. PostgreSQL as an external cloud service. Amazon RDS PostgreSQL
 
