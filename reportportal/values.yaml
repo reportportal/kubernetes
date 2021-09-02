@@ -136,7 +136,7 @@ serviceanalyzer:
       memory: 256Mi
     limits:
       cpu: 100m
-      memory: 512Mi
+      memory: 768Mi
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
