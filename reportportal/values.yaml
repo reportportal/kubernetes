@@ -130,7 +130,7 @@ serviceanalyzer:
   tag: 5.5.0
   name: analyzer
   pullPolicy: Always
-  uwsgi_workers: 2
+  uwsgiWorkers: 2
   resources:
     requests:
       cpu: 100m

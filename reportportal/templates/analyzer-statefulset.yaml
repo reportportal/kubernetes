@@ -58,9 +58,9 @@ spec:
           value: "analyzer-default"
         - name: ES_HOSTS
           value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.serviceanalyzer.uwsgi_workers }}
+        {{- if .Values.serviceanalyzer.uwsgiWorkers }}
         - name: UWSGI_WORKERS
-          value: "{{ .Values.serviceanalyzer.uwsgi_workers }}"
+          value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- else }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
