@@ -61,7 +61,7 @@ spec:
         {{- if .Values.serviceanalyzer.uwsgiWorkers }}
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
-        {{- else }}
+        {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
