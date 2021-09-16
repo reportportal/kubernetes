@@ -63,6 +63,8 @@ spec:
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
+        - name: RP_DB_NAME
+          value: "{{ .Values.postgresql.endpoint.dbName }}"
         {{- if .Values.postgresql.endpoint.connections }}
         - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
           value: "{{ .Values.postgresql.endpoint.connections }}"
