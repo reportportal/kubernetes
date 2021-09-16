@@ -29,6 +29,8 @@ spec:
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
+        - name: RP_DB_NAME
+          value: "{{ .Values.postgresql.endpoint.dbName }}"
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
