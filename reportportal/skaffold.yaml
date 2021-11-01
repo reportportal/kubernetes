@@ -1,6 +1,6 @@
 ## HOW-TO
 ## Install dependencies
-#  helm install postgresql --set postgresqlUsername=rpuser,postgresqlPassword=rppass,postgresqlDatabase=reportportal,postgresqlPostgresPassword=rppass -f ./postgresql/values.yaml ./charts/postgresql-8.6.2.tgz
+#  helm install postgresql --set postgresqlUsername=rpuser,postgresqlPassword=rppass,postgresqlDatabase=reportportal,postgresqlPostgresPassword=rppass -f ./postgresql/values.yaml ./charts/helm install postgresql --set postgresqlUsername=rpuser,postgresqlPassword=rppass,postgresqlDatabase=reportportal,postgresqlPostgresPassword=rppass -f ./postgresql/values.yaml ./charts/postgresql-10.9.4.tgz
 #  helm install rabbitmq --set auth.username=rabbitmq,auth.password=rabbitmqPassword,replicaCount=1 ./charts/rabbitmq-7.5.6.tgz
 #  helm install minio --set accessKey=accessKey,secretKey=secretKey,persistence.size=2Gi stable/minio
 
