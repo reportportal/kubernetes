@@ -19,6 +19,34 @@ spec:
     spec:
       containers:
       - env:
+      - name: RP_AMQP_HOST
+          value: "{{ .Values.rabbitmq.endpoint.address }}"
+        - name: RP_AMQP_PORT
+          value: "{{ .Values.rabbitmq.endpoint.port }}"
+        - name: RP_AMQP_USER
+          value: "{{ .Values.rabbitmq.endpoint.user }}"
+        - name: RP_AMQP_PASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
+        {{ end }}
+        - name: RP_AMQP_APIPORT
+          value: "{{ .Values.rabbitmq.endpoint.apiport }}"
+        - name: RP_AMQP_APIUSER
+          value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
+        - name: RP_AMQP_APIPASS
+        {{ if .Values.rabbitmq.endpoint.cloudservice }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{ else }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
+        {{ end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.clean.cron.attachment }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
