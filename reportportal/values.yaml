@@ -83,7 +83,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.5.0
+  tag: 5.6.0
   name: jobs
   pullPolicy: Always
   clean:
@@ -155,7 +155,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 1.1.15
+  tag: 1.1.17
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
