@@ -29,42 +29,56 @@ spec:
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
+        - name: RP_DB_NAME
+          value: "{{ .Values.postgresql.endpoint.dbName }}"
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.endpoint.cloudservice }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ else }}
+        {{ if .Values.postgresql.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
+        {{ else }}
+          value: "{{ .Values.postgresql.endpoint.password }}"
         {{ end }}
         {{ if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
-        {{ if .Values.minio.region }}          
+        {{ if .Values.minio.region }}
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
-        {{ end }} 
+        {{ end }}
         {{ if .Values.minio.secretName }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "accesskey"
+              key: "access-key"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "secretkey"
+              key: "secret-key"
         {{ else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
+        {{ end }}
+        {{ if .Values.minio.bucketPrefix}}
+        - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
+          value: "{{ .Values.minio.bucketPrefix }}"
+        {{ end }}
+        {{ if .Values.minio.defaultBucketName}}
+        - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
+          value: "{{ .Values.minio.defaultBucketName }}"
+        {{ end }}
+        {{ if .Values.minio.integrationSaltPath }}
+        - name: RP_INTEGRATION_SALT_PATH
+          value: "{{ .Values.minio.integrationSaltPath }}"
         {{ end }}
         {{ end }}
         name: uat
@@ -91,3 +105,8 @@ spec:
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
       serviceAccountName: {{ .Values.uat.serviceAccountName }}
+      tolerations:
+{{- with .Values.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}

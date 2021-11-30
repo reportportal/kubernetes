@@ -9,7 +9,7 @@
 serviceindex:
   name: index
   repository: reportportal/service-index
-  tag: 5.0.10
+  tag: 5.0.11
   pullPolicy: Always
   resources:
     requests:
@@ -24,7 +24,7 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.3.5
+  tag: 5.6.0
   pullPolicy: Always
   resources:
     requests:
@@ -41,7 +41,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.3.5
+  tag: 5.6.0
   name: ui
   pullPolicy: Always
   resources:
@@ -57,9 +57,10 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.3.5
+  tag: 5.6.0
   name: api
   pullPolicy: Always
+  replicaCount: 1
   readinessProbe:
     initialDelaySeconds: 30
     periodSeconds: 20
@@ -74,15 +75,39 @@ serviceapi:
       memory: 2048Mi
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   queues:
-    totalNumber: 
-    perPodNumber: 
+    totalNumber:
+    perPodNumber:
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+
+servicejobs:
+  repository: reportportal/service-jobs
+  tag: 5.6.0
+  name: jobs
+  pullPolicy: Always
+  clean:
+    chunksize: 1000
+    cron:
+      attachment: 0 0 */24 * * *
+      log: 0 0 */24 * * *
+      launch: 0 0 */24 * * *
+      storage: 0 0 */24 * * *
+      storageproject: 0 */5 * * * *
+  resources:
+    requests:
+      cpu: 100m
+      memory: 248Mi
+    limits:
+      cpu: 100m
+      memory: 372Mi
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.3.5
+  tag: 5.6.0
   pullPolicy: Always
   resources:
     requests:
@@ -102,9 +127,10 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.3.5
+  tag: 5.6.0
   name: analyzer
   pullPolicy: Always
+  uwsgiWorkers: 2
   resources:
     requests:
       cpu: 100m
@@ -116,13 +142,45 @@ serviceanalyzer:
   securityContext: {}
   serviceAccountName: ""
 
+serviceanalyzertrain:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+
+metricsgatherer:
+  repository: reportportal/service-metrics-gatherer
+  tag: 1.1.17
+  name: metrics-gatherer
+  loggingLevel: debug
+  timeManagement:
+    starttime: 22:00
+    endtime: 08:00
+    timezone: Europe/Minsk
+  maxDaysStore: 500
+  resources:
+    requests:
+      cpu: 8m
+      memory: 128Mi
+    limits:
+      cpu: 16m
+      memory: 256Mi
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+
 rabbitmq:
   SecretName: ""
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
-    address: <rabbitmq_chart_name>.default.svc.cluster.local
+    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -134,8 +192,7 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    cloudservice: false
-    address: <postgresql_chart_name>-postgresql.default.svc.cluster.local
+    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -156,6 +213,9 @@ minio:
   region:
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
+  bucketPrefix:
+  defaultBucketName:
+  integrationSaltPath:
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
@@ -186,15 +246,24 @@ nodeSelector:
   selector:
     reportportal: true
 
+# tolerations for all components, if any (requires Kubernetes >= 1.6)
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+tolerations: []
+  # - key: "key"
+  #   operator: "Equal|Exists"
+  #   value: "value"
+  #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
 # RBAC is required for service-index in order to collect status/info over all services
 rbac:
   create: true
   serviceAccount:
-      create: true
-      name: reportportal
+    create: true
+    name: reportportal
+    # For AWS IAM role association use the following annotations
+    ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+    annotations:
 
 rp:
   infoEndpoint: "/info"
   healthEndpoint: "/health"
-

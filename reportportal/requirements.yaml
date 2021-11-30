@@ -1,7 +1,7 @@
 dependencies:
   - name: postgresql
-    version: 8.6.2
-    repository: https://charts.helm.sh/stable
+    version: 10.9.4
+    repository: https://charts.bitnami.com/bitnami
     condition: postgresql.installdep.enable
 
   - name: rabbitmq
@@ -15,6 +15,6 @@ dependencies:
     condition: elasticsearch.installdep.enable
 
   - name: minio
-    version: 5.0.33
-    repository: https://charts.helm.sh/stable
+    version: 7.1.9
+    repository: https://charts.bitnami.com/bitnami
     condition: minio.installdep.enable

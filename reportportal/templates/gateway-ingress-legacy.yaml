@@ -1,0 +1,64 @@
+{{- if and (le .Capabilities.KubeVersion.Major "1") (lt .Capabilities.KubeVersion.Minor "19") }}
+{{- if .Values.ingress.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-gateway-ingress
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
+  rules:
+{{ if .Values.ingress.usedomainname }}
+  {{- range $host := .Values.ingress.hosts }}
+  - host: {{ $host }}
+    http:
+      paths:
+      - path: /()?(.*)
+        backend:
+          serviceName: {{ $fullName }}-index
+          servicePort: headless
+      - path: /(ui)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-ui
+          servicePort: headless
+      - path: /(uat)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-uat
+          servicePort: headless
+      - path: /(api)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-api
+          servicePort: headless
+  {{- end -}}
+{{ else }}
+  - http:
+      paths:
+      - path: /()?(.*)
+        backend:
+          serviceName: {{ $fullName }}-index
+          servicePort: headless
+      - path: /(ui)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-ui
+          servicePort: headless
+      - path: /(uat)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-uat
+          servicePort: headless
+      - path: /(api)/?(.*)
+        backend:
+          serviceName: {{ $fullName }}-api
+          servicePort: headless
+{{ end }}
+status:
+  loadBalancer: {}
+{{- end }}
+{{- end }}
