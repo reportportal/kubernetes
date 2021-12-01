@@ -708,7 +708,7 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm install <reportportal-release-name> --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq,minio.secretName=<minio-release-name> ./reportportal-5.5.0.tgz
+helm install <reportportal-release-name> --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq,minio.secretName=<minio-release-name> ./reportportal-5.6.0.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
@@ -780,13 +780,13 @@ The second step is update / redeploy the application using the following command
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.6.0.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.6.0.tgz
 ```
 
 #### IMPORTANT
