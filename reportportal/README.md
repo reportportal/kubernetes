@@ -279,6 +279,11 @@ Install Elasticsearch:
 helm install <elastic-release-name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
+For development and testing purposes or if your Report Portal instance is not going to handle many users you can install and use an Elasticsearch instance in single node mode. Use this command:
+```sh
+helm install <elastic-release-name> ./reportportal/charts/elasticsearch-7.6.1.tgz -f ./reportportal/elasticsearch/single-node-values.yaml
+```
+
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.
 
 4.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
@@ -703,7 +708,7 @@ helm package ./reportportal/
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm install <reportportal-release-name> --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq,minio.secretName=<minio-release-name> ./reportportal-5.5.0.tgz
+helm install <reportportal-release-name> --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name>-rabbitmq,minio.secretName=<minio-release-name> ./reportportal-5.6.0.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
@@ -775,13 +780,13 @@ The second step is update / redeploy the application using the following command
 > If you use PostgreSQL Helm chart
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set --set postgresql.SecretName=<postgresql-release-name>-postgresql,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.6.0.tgz
 ```
 
 > If you use Amazon RDS PostgreSQL instance / Azure Database for PostgreSQL / (an external database)
 
 ```sh
-helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.tgz
+helm upgrade -f reportportal/values.yaml --set postgresql.endpoint.password=<postgresql_dbuser_password>,rabbitmq.SecretName=<rabbitmq-release-name> <reportportal-release-name> ./reportportal-5.6.0.tgz
 ```
 
 #### IMPORTANT
