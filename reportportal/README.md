@@ -279,6 +279,11 @@ Install Elasticsearch:
 helm install <elastic-release-name> ./reportportal/charts/elasticsearch-7.6.1.tgz
 ```
 
+For development and testing purposes or if your Report Portal instance is not going to handle many users you can install and use an Elasticsearch instance in single node mode. Use this command:
+```sh
+helm install <elastic-release-name> ./reportportal/charts/elasticsearch-7.6.1.tgz -f ./reportportal/elasticsearch/single-node-values.yaml
+```
+
 > Default Elasticsearch Helm chart configuration supposes you have at least 3 kubernetes nodes. If you have only one or two nodes, you will face with 'didn't match pod affinity/anti-affinity' issue. To solve this problem, rewrite the number of replicas by using 'replicas' value (3 by default), and run the installation command with an additional values file.
 
 4.2. Elasticsearch as an external cloud service. Connection to your AWS ElasticSearch cluster
