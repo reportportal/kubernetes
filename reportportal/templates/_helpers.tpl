@@ -41,13 +41,6 @@ chart: {{ include "reportportal.chart" . }}
 app: {{ $.Chart.Name | quote }}
 {{- end -}}
 
-{{- define "nodeSelector" }}
-{{- if and .Values.nodeSelector.enabled -}}
-nodeSelector:
-{{ toYaml .Values.nodeSelector.selector | indent 2 -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Create the name of the service account to use
 */}}
