@@ -101,7 +101,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 5
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
       serviceAccountName: {{ .Values.uat.serviceAccountName }}

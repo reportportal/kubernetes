@@ -240,11 +240,10 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
 
-# node selector for all components, if any
-nodeSelector:
-  enabled: false
-  selector:
-    reportportal: true
+# node selector for all components, if any (requires Kubernetes >= 1.6)
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+nodeSelector: {}
+  # disktype: ssd
 
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
