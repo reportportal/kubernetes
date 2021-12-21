@@ -18,6 +18,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       containers:
       - env:
         - name: INSTANCE_TASK_TYPE

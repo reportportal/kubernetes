@@ -5,6 +5,18 @@
 ## String to fully override reportportal.fullname template
 ##
 # fullnameOverride:
+extraInitContainers: {}
+
+# Extra init containers to e.g. wait for minio
+#  - name: "wait-for-minio"
+#    image: "busybox"
+#    imagePullPolicy: "IfNotPresent"
+#    securityContext:
+#      runAsNonRoot: true
+#    command:
+#      - sh
+#      - "-c"
+#      - "for i in {1..100}; do sleep 1; if nc -vz <minio-endpoint> <minio-port>; then exit 0; fi; done; exit 1"
 
 serviceindex:
   name: index

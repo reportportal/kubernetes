@@ -17,6 +17,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       containers:
       - env:
         - name: RP_AMQP_PASS
