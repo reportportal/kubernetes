@@ -2,6 +2,39 @@ apiVersion: v1
 entries:
   reportportal:
   - apiVersion: v1
+    appVersion: 5.6.1
+    created: "2021-12-21T11:57:38.445792216Z"
+    dependencies:
+    - condition: postgresql.installdep.enable
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.9.4
+    - condition: rabbitmq.installdep.enable
+      name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.5.6
+    - condition: elasticsearch.installdep.enable
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: 7.6.1
+    - condition: minio.installdep.enable
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.1.9
+    description: ReportPortal.io AI-powered Test Automation Dashboard
+    digest: 6dee8e46f9e60c32636d908feae5d458e3a93d77446c4b9d32d21d3fae847659
+    keywords:
+    - reportportal
+    maintainers:
+    - email: support@reportportal.io
+      name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/kubernetes
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-5.6.1/reportportal-5.6.1.tgz
+    version: 5.6.1
+  - apiVersion: v1
     appVersion: 5.6.0
     created: "2021-12-01T12:06:15.649496885Z"
     dependencies:
@@ -34,4 +67,18 @@ entries:
     urls:
     - https://github.com/reportportal/kubernetes/releases/download/reportportal-5.6.0/reportportal-5.6.0.tgz
     version: 5.6.0
-generated: "2021-12-01T12:06:15.649507185Z"
+  - apiVersion: v1
+    created: "2021-12-21T11:57:38.298037438Z"
+    description: Aggregator
+    digest: 546a47fcc7739136c24a85a2dbcc8058a6f9de0be0e59ece68ff088779f5338a
+    keywords:
+    - reportportal
+    maintainers:
+    - name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/aggregator-chart
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-1.0.0/reportportal-1.0.0.tgz
+    version: 1.0.0
+generated: "2021-12-21T11:57:38.445922719Z"
