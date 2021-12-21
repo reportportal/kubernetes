@@ -49,7 +49,12 @@ spec:
           limits:
             cpu: {{ .Values.migrations.resources.limits.cpu }}
             memory: {{ .Values.migrations.resources.limits.memory }}
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
 {{ toYaml .Values.migrations.securityContext | indent 8}}
       serviceAccountName: {{ .Values.migrations.serviceAccountName }}

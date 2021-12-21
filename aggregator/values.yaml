@@ -33,9 +33,3 @@ landing:
 ingress:
   hosts:
     - status.reportportal.com
-
-# node selector for all components, if any
-nodeSelector:
-  enabled: false
-  selector:
-    reportportal: true

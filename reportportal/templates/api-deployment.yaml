@@ -23,21 +23,21 @@ spec:
           value: "info"
         - name: RP_REQUESTLOGGING
           value: "false"
-        {{ if .Values.serviceapi.queues }}
+        {{- if .Values.serviceapi.queues }}
         - name: RP_AMQP_QUEUES
           value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
         - name: RP_AMQP_QUEUESPERPOD
           value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
-        {{ else }}
+        {{- else }}
         - name: RP_AMQP_QUEUES
           value: "10"
         - name: RP_AMQP_QUEUESPERPOD
           value: "10"
-        {{ end }}
-        {{ if .Values.serviceapi.jvmArgs }}
+        {{- end }}
+        {{- if .Values.serviceapi.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.serviceapi.jvmArgs }}"
-        {{ end }}
+        {{- end }}
         - name: RP_AMQP_HOST
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
@@ -45,58 +45,58 @@ spec:
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
-        {{ if .Values.rabbitmq.SecretName }}
+        {{- if .Values.rabbitmq.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
-        {{ end }}
+        {{- end }}
         - name: RP_AMQP_APIPORT
           value: "{{ .Values.rabbitmq.endpoint.apiport }}"
         - name: RP_AMQP_APIUSER
           value: "{{ .Values.rabbitmq.endpoint.apiuser }}"
         - name: RP_AMQP_APIPASS
-        {{ if .Values.rabbitmq.SecretName }}
+        {{- if .Values.rabbitmq.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
-        {{ end }}
+        {{- end }}
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.endpoint.port }}"
         - name: RP_DB_NAME
           value: "{{ .Values.postgresql.endpoint.dbName }}"
-        {{ if .Values.postgresql.endpoint.connections }}
+        {{- if .Values.postgresql.endpoint.connections }}
         - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
           value: "{{ .Values.postgresql.endpoint.connections }}"
-        {{ end }}
+        {{- end }}
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.SecretName }}
+        {{- if .Values.postgresql.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ end }}
-        {{ if .Values.minio.enabled }}
+        {{- end }}
+        {{- if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
-        {{ if .Values.minio.region }}
+        {{- if .Values.minio.region }}
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
-        {{ end }}
-        {{ if .Values.minio.secretName }}
+        {{- end }}
+        {{- if .Values.minio.secretName }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           valueFrom:
             secretKeyRef:
@@ -107,25 +107,25 @@ spec:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
               key: "secret-key"
-       {{ else }}
+       {{- else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
-       {{ end }}
-       {{ if .Values.minio.bucketPrefix }}
+       {{- end }}
+       {{- if .Values.minio.bucketPrefix }}
         - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
           value: "{{ .Values.minio.bucketPrefix }}"
-       {{ end }}
-       {{ if .Values.minio.defaultBucketName }}
+       {{- end }}
+       {{- if .Values.minio.defaultBucketName }}
         - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
           value: "{{ .Values.minio.defaultBucketName }}"
-       {{ end }}
-       {{ if .Values.minio.integrationSaltPath }}
+       {{- end }}
+       {{- if .Values.minio.integrationSaltPath }}
         - name: RP_INTEGRATION_SALT_PATH
           value: "{{ .Values.minio.integrationSaltPath }}"
-       {{ end }}
-       {{ end }}
+       {{- end }}
+       {{- end }}
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
@@ -146,11 +146,16 @@ spec:
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold }}
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
-{{ toYaml .Values.serviceapi.securityContext | indent 8}}
+{{- toYaml .Values.serviceapi.securityContext | indent 8 }}
       serviceAccountName: {{ .Values.serviceapi.serviceAccountName }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}

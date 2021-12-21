@@ -46,7 +46,12 @@ spec:
           limits:
             cpu: {{ .Values.serviceindex.resources.limits.cpu }}
             memory: {{ .Values.serviceindex.resources.limits.memory }}
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
 {{ toYaml .Values.serviceindex.securityContext | indent 8}}
 {{- with .Values.tolerations }}

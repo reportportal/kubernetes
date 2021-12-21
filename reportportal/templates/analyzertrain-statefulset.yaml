@@ -74,7 +74,12 @@ spec:
           limits:
             cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
 {{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName }}

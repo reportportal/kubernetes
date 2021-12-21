@@ -71,7 +71,12 @@ spec:
           limits:
             cpu: {{ .Values.metricsgatherer.resources.limits.cpu }}
             memory: {{ .Values.metricsgatherer.resources.limits.memory }}
-{{ include "nodeSelector" . | indent 8 }}
+{{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
       securityContext:
 {{ toYaml .Values.metricsgatherer.securityContext | indent 8}}
       serviceAccountName: {{ .Values.metricsgatherer.serviceAccountName }}
