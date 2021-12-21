@@ -39,7 +39,7 @@ spec:
           value: "{{ .Values.serviceapi.jvmArgs }}"
         {{- end }}
         - name: RP_AMQP_HOST
-          value: "{{ .Values.rabbitmq.endpoint.address }}"
+          value: "{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}"
         - name: RP_AMQP_PORT
           value: "{{ .Values.rabbitmq.endpoint.port }}"
         - name: RP_AMQP_USER
@@ -53,6 +53,10 @@ spec:
         {{- else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{- end }}
+        - name: RP_AMQP_ADDRESSES
+          value: "{{ .Values.rabbitmq.endpoint.protocol }}://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.port }}"
+        - name: RP_AMQP_API_ADDRESS
+          value: "{{ .Values.rabbitmq.endpoint.apiprotocol }}://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}/api"
         - name: RP_AMQP_APIPORT
           value: "{{ .Values.rabbitmq.endpoint.apiport }}"
         - name: RP_AMQP_APIUSER

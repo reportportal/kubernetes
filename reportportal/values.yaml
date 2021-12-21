@@ -180,11 +180,13 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
-    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
+    address: 
+    protocol: amqp
     port: 5672
     user: rabbitmq
     apiport: 15672
     apiuser: rabbitmq
+    apiprotocol: http
     password:
 
 postgresql:

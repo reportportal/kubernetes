@@ -387,35 +387,6 @@ After the pod gets the status Running, you need to configure the RabbitMQ memory
 kubectl exec -it <rabbitmq_pod_name> -- rabbitmqctl set_vm_memory_high_watermark 0.8
 ```
 
-5.2 RabbitMQ as AmazoneMQ brocker
-
-Amazon MQ is a managed message broker service for that makes it easy to migrate to a message broker in the cloud. Use the AWS manual to create [RabbitMQ brocker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/getting-started-rabbitmq.html#create-rabbitmq-broker)
-
-Edit `api-deployment.yaml` in `reportportal/templates/` folder
-
-```yaml
-- name: RP_AMQP_ADDRESSES
-  value: "amqps://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}"
-- name: RP_AMQP_API_ADDRESS
-  value: "https://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}/api"
-```
-
-Edit values.yaml in `reportportal/` folder
-
-```yaml
-rabbitmq:
-  SecretName: ''
-  installdep:
-    enable: false
-  endpoint:
-    address: <RABBITMQ_CLOUD_ADDRESS>
-    port: <RABBITMQ_PORT>  # for example 5671
-    user: <RABBITMQ_USERNAME>
-    apiport: 1<RABBITMQ_PORT>  # for expample 15671
-    apiuser: <RABBITMQ_USERNAME>
-    password: <RABBITMQ_PASSWORD>
-```
-
 #### 6. PostgreSQL installation
 
 You can install PostgreSQL from the [PostgreSQL Helm chart](https://github.com/helm/charts/tree/master/stable/postgresql) (6.1) or use an Amazon RDS Service for your PostgreSQL database (6.2) or Azure Database for PostgreSQL (6.3).
