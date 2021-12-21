@@ -35,9 +35,17 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   podAnnotations: {}
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
   securityContext: {}
   serviceAccountName: ""
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  #jvmArgs: "-Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks -Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data:
+      custom-pki.jks: <base64-data>
+
 
 serviceui:
   repository: reportportal/service-ui

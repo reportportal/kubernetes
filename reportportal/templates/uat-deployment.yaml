@@ -101,6 +101,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 5
+        volumeMounts:
+          {{- if .Values.uat.secret.enabled }}
+          - mountPath: {{ .Values.uat.secret.mountPath }}
+            name: {{ template "reportportal.name" . }}-uat-secret
+            readOnly: {{ .Values.uat.secret.readOnly }}
+          {{- end }}
 {{- if .Values.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.nodeSelector }}
@@ -115,3 +121,9 @@ spec:
       tolerations: 
 {{- toYaml . | nindent 8 }}
 {{- end }}
+      volumes:
+        {{- if .Values.uat.secret.enabled }}
+        - name: {{ template "reportportal.name" . }}-uat-secret
+          secret:
+            secretName: {{ template "reportportal.name" . }}-uat-secret
+        {{- end }}
