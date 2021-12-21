@@ -31,6 +31,10 @@ spec:
           value: "{{ .Values.servicejobs.clean.cron.storageproject }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CHUNKSIZE
           value: "{{ .Values.servicejobs.clean.chunksize }}"
+        {{- if .Values.servicejobs.jvmArgs }}
+        - name: JAVA_OPTS
+          value: "{{ .Values.servicejobs.jvmArgs }}"
+        {{- end }}
         - name: RP_AMQP_HOST
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
