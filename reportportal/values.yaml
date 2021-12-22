@@ -43,9 +43,8 @@ uat:
     enabled: false
     mountPath: /etc/secret-volume
     readOnly: true
-    data:
-      custom-pki.jks: <base64-data>
-
+    data: {}
+     #custom-pki.jks: <base64-data>
 
 serviceui:
   repository: reportportal/service-ui
