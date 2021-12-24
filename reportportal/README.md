@@ -249,7 +249,7 @@ Or you can istall an NGINX ingress controller using Helm.
 
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --version 3.36.0  
+helm install nginx-ingress ingress-nginx/ingress-nginx --version 3.36.0
 ```
 
 > If you go with AWS, then after your NGINX Ingress controller automatically creates a Load Balancer and assigns a cname (for example `a1b6b2345kj1113744944ea67hdfh21llbe7f-639623130.eu-central-1.elb.amazonaws.com`), please increase its idle timeout to 300 seconds
@@ -637,8 +637,8 @@ minio:
   enabled: true
   installdep:
     enable: false
-  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  endpointshort: <minio-release-name>.default.svc.cluster.local:9000
+  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
+  endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region:
   accesskey: <your_minio_accesskey>
   secretkey: <your_minio_secretkey>
