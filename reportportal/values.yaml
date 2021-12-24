@@ -140,6 +140,9 @@ serviceanalyzer:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
+  # environment variables for analyzer
+  env: {}
+  # ES_CHUNK_NUMBER: 2000
   serviceAccountName: ""
 
 serviceanalyzertrain:
