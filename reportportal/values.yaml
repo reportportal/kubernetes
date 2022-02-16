@@ -36,6 +36,7 @@ uat:
   sessionLiveTime: 86400
   podAnnotations: {}
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  additionalEnvironments: {}
   securityContext: {}
   serviceAccountName: ""
 
@@ -77,6 +78,7 @@ serviceapi:
   queues:
     totalNumber:
     perPodNumber:
+  additionalEnvironments: {}
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
@@ -101,6 +103,8 @@ servicejobs:
     limits:
       cpu: 100m
       memory: 372Mi
+  jvmArgs:
+  additionalEnvironments: {}
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
@@ -200,6 +204,7 @@ postgresql:
     user: rpuser
     dbName: reportportal
     password:
+    connections:
 
 elasticsearch:
   installdep:

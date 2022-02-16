@@ -19,6 +19,10 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.uat.additionalEnvironments }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         {{ if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"

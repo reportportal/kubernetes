@@ -19,6 +19,10 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.servicejobs.additionalEnvironments }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.clean.cron.attachment }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
