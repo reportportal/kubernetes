@@ -38,6 +38,7 @@ uat:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
   additionalEnvironments: {}
   securityContext: {}
+  nodeSelector: {}
   serviceAccountName: ""
 
 serviceui:
@@ -81,6 +82,7 @@ serviceapi:
   additionalEnvironments: {}
   podAnnotations: {}
   securityContext: {}
+  nodeSelector: {}
   serviceAccountName: ""
 
 servicejobs:
@@ -107,6 +109,7 @@ servicejobs:
   additionalEnvironments: {}
   podAnnotations: {}
   securityContext: {}
+  nodeSelector: {}
   serviceAccountName: ""
 
 migrations:
@@ -145,8 +148,9 @@ serviceanalyzer:
   podAnnotations: {}
   securityContext: {}
   # environment variables for analyzer
-  env: {}
+  additionalEnvironments: {}
   # ES_CHUNK_NUMBER: 2000
+  nodeSelector: {}
   serviceAccountName: ""
 
 serviceanalyzertrain:

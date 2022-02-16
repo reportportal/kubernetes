@@ -62,7 +62,7 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
-        {{- range $key, $value := .Values.serviceanalyzer.env }}
+        {{- range $key, $value := .Values.serviceanalyzer.additionalEnvironments }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
@@ -78,9 +78,9 @@ spec:
           limits:
             cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
