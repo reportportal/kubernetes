@@ -163,6 +163,7 @@ serviceanalyzertrain:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
+  nodeSelector: {}
   serviceAccountName: ""
 
 metricsgatherer:
@@ -184,6 +185,7 @@ metricsgatherer:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  nodeSelector: {}
   serviceAccountName: ""
 
 rabbitmq:
