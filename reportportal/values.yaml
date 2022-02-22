@@ -123,7 +123,7 @@ servicejobs:
     limits:
       cpu: 100m
       memory: 372Mi
-  jvmArgs: {}
+  jvmArgs: ""
   ## Additional environment variables
   ##
   additionalEnvironments: {}
@@ -250,7 +250,7 @@ postgresql:
     dbName: reportportal
     password:
     ## Number of database connections
-    connections: {}
+    connections: 
 
 elasticsearch:
   installdep:
@@ -264,12 +264,12 @@ minio:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>.default.svc.cluster.local:9000
-  region:
+  region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
-  bucketPrefix:
-  defaultBucketName:
-  integrationSaltPath:
+  bucketPrefix: ""
+  defaultBucketName: ""
+  integrationSaltPath: ""
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
@@ -310,7 +310,7 @@ rbac:
     name: reportportal
     # For AWS IAM role association use the following annotations
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-    annotations:
+    annotations: {}
 
 rp:
   infoEndpoint: "/info"
