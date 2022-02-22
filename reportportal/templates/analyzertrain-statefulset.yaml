@@ -74,9 +74,9 @@ spec:
           limits:
             cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceanalyzertrain.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

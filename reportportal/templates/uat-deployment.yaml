@@ -19,6 +19,10 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.uat.additionalEnvironments }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         {{ if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
@@ -101,9 +105,9 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 5
-{{- if .Values.nodeSelector }}
+{{- if .Values.uat.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.uat.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

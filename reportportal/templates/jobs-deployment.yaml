@@ -19,6 +19,10 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.servicejobs.additionalEnvironments }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.clean.cron.attachment }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
@@ -131,9 +135,9 @@ spec:
           limits:
             cpu: {{ .Values.servicejobs.resources.limits.cpu }}
             memory: {{ .Values.servicejobs.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.servicejobs.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.servicejobs.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

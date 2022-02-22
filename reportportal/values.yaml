@@ -36,7 +36,15 @@ uat:
   sessionLiveTime: 86400
   podAnnotations: {}
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  ## Additional environment variables
+  ##
+  additionalEnvironments: {}
+  #   env: value
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
   serviceAccountName: ""
 
 serviceui:
@@ -53,6 +61,11 @@ serviceui:
       memory: 128Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 serviceapi:
@@ -77,8 +90,17 @@ serviceapi:
   queues:
     totalNumber:
     perPodNumber:
+  ## Additional environment variables
+  ##
+  additionalEnvironments: {}
+  #  env: value
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 servicejobs:
@@ -101,8 +123,18 @@ servicejobs:
     limits:
       cpu: 100m
       memory: 372Mi
+  jvmArgs: {}
+  ## Additional environment variables
+  ##
+  additionalEnvironments: {}
+  #  env: value
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 migrations:
@@ -140,9 +172,16 @@ serviceanalyzer:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
-  # environment variables for analyzer
-  env: {}
-  # ES_CHUNK_NUMBER: 2000
+  ## Additional environment variables
+  ##
+  additionalEnvironments: {}
+  #  ES_CHUNK_NUMBER: 2000
+  ##
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 serviceanalyzertrain:
@@ -155,6 +194,11 @@ serviceanalyzertrain:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 metricsgatherer:
@@ -176,6 +220,11 @@ metricsgatherer:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 rabbitmq:
@@ -200,6 +249,8 @@ postgresql:
     user: rpuser
     dbName: reportportal
     password:
+    ## Number of database connections
+    connections: {}
 
 elasticsearch:
   installdep:
@@ -242,11 +293,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-
-# node selector for all components, if any (requires Kubernetes >= 1.6)
-## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
-nodeSelector: {}
-  # disktype: ssd
 
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
