@@ -267,6 +267,8 @@ minio:
   region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
   bucketPrefix: ""
   defaultBucketName: ""
   integrationSaltPath: ""

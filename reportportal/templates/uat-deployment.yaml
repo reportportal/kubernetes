@@ -60,12 +60,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "access-key"
+              key: "{{ .Values.minio.accesskeyName }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "secret-key"
+              key: "{{ .Values.minio.secretkeyName }}"
         {{ else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
