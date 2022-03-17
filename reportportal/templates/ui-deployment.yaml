@@ -42,7 +42,7 @@ spec:
           timeoutSeconds: 3
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceui.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
@@ -50,6 +50,6 @@ spec:
 {{ toYaml .Values.serviceui.securityContext | indent 8}}
       serviceAccountName: {{ .Values.serviceui.serviceAccountName }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}

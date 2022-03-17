@@ -49,9 +49,9 @@ spec:
           limits:
             cpu: {{ .Values.migrations.resources.limits.cpu }}
             memory: {{ .Values.migrations.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.migrations.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.migrations.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
@@ -60,6 +60,6 @@ spec:
       serviceAccountName: {{ .Values.migrations.serviceAccountName }}
 {{- end }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}

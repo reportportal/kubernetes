@@ -48,13 +48,13 @@ spec:
             memory: {{ .Values.serviceindex.resources.limits.memory }}
 {{- if .Values.serviceindex.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceindex.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
       securityContext:
 {{ toYaml .Values.serviceindex.securityContext | indent 8}}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}
