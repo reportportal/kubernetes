@@ -108,14 +108,13 @@ servicejobs:
   tag: 5.6.3
   name: jobs
   pullPolicy: Always
-  clean:
-    chunksize: 1000
-    cron:
-      attachment: 0 0 */24 * * *
-      log: 0 0 */24 * * *
-      launch: 0 0 */24 * * *
-      storage: 0 0 */24 * * *
-      storageproject: 0 */5 * * * *
+  coreJobs:
+    cleanAttachmentCron: 0 0 */24 * * *
+    cleanLogCron: 0 0 */24 * * *
+    cleanLaunchCron: 0 0 */24 * * *
+    cleanStorageCron: 0 0 */24 * * *
+    storageProjectCron: 0 */5 * * * *
+  chunksize: 1000
   resources:
     requests:
       cpu: 100m
@@ -150,6 +149,8 @@ migrations:
       memory: 128Mi
   podAnnotations: {}
   securityContext: {}
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
   metadataAnnotations:
     enabled: true
@@ -248,6 +249,9 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
+    ssl: disabled
+    ## Whether or not to use SSL
+    # ssl: disabled / require
     password:
     ## Number of database connections
     connections: 
