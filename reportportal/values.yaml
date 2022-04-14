@@ -275,5 +275,5 @@ extraInitContainers: {}
   #   command:
   #     - sh
   #     - "-c"
-  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-endpoint>-minio:<minio-port>/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
