@@ -71,9 +71,9 @@ spec:
           limits:
             cpu: {{ .Values.metricsgatherer.resources.limits.cpu }}
             memory: {{ .Values.metricsgatherer.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.metricsgatherer.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.metricsgatherer.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

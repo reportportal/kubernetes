@@ -23,6 +23,8 @@ spec:
       restartPolicy: Never
       containers:
       - env:
+        - name: POSTGRES_SSLMODE
+          value: "{{ .Values.postgresql.endpoint.ssl }}"
         - name: POSTGRES_SERVER
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: POSTGRES_DB
@@ -51,7 +53,7 @@ spec:
             memory: {{ .Values.migrations.resources.limits.memory }}
 {{- if .Values.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.migrations.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

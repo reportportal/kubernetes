@@ -46,7 +46,7 @@ spec:
           limits:
             cpu: {{ .Values.serviceindex.resources.limits.cpu }}
             memory: {{ .Values.serviceindex.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceindex.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.nodeSelector }}
         {{ $key }}: {{ $value | quote }}

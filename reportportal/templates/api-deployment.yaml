@@ -19,6 +19,10 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.serviceapi.additionalEnvironments }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
         - name: RP_REQUESTLOGGING
@@ -146,9 +150,9 @@ spec:
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceapi.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
