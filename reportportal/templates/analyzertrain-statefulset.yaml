@@ -20,6 +20,9 @@ spec:
     spec:
       containers:
       - env:
+{{- if .Values.serviceanalyzertrain.extraEnvs }}
+{{ toYaml ( .Values.serviceanalyzertrain.extraEnvs ) | indent 8 }}
+{{- end }}
         - name: INSTANCE_TASK_TYPE
           value: "train"
         - name: UWSGI_WORKERS
@@ -61,7 +64,24 @@ spec:
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: ES_HOSTS
-          value: "{{ .Values.elasticsearch.endpoint }}"
+          value: "http://{{ .Values.elasticsearch.endpoint }}:{{ .Values.elasticsearch.port }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: ES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: ES_USER
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: ES_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}" 
+        {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:

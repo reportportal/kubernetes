@@ -19,6 +19,9 @@ spec:
     spec:
       containers:
       - env:
+{{- if .Values.metricsgatherer.extraEnvs }}
+{{ toYaml ( .Values.metricsgatherer.extraEnvs ) | indent 8 }}
+{{- end }}
         - name: RP_AMQP_PASS
         {{ if .Values.rabbitmq.SecretName }}
           valueFrom:
@@ -33,7 +36,24 @@ spec:
         - name: LOGGING_LEVEL
           value: "{{ .Values.metricsgatherer.loggingLevel }}"
         - name: ES_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}"
+          value: "http://{{ .Values.elasticsearch.endpoint }}:{{ .Values.elasticsearch.port }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: ES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: ES_USER
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: ES_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}" 
+        {{- end }}
         - name: POSTGRES_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: POSTGRES_PORT

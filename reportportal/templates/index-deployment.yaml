@@ -48,7 +48,7 @@ spec:
             memory: {{ .Values.serviceindex.resources.limits.memory }}
 {{- if .Values.serviceindex.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceindex.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
