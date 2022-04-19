@@ -310,7 +310,7 @@ postgresql:
     connections: 
 
 elasticsearch:
-  secretName: # "elasticsearch-credentials"
+  secretName: ""
   installdep:
     enable: false
   endpoint: elasticsearch-master.default.svc.cluster.local
