@@ -35,6 +35,9 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   podAnnotations: {}
+  ## jvmArgs
+  ## If you need to use a custom java keystore you can use it through jvmArgs
+  ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
   ## Additional environment variables
   ##
@@ -46,14 +49,21 @@ uat:
   ##
   nodeSelector: {}
   serviceAccountName: ""
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
-  #jvmArgs: "-Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks -Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  ## Provide a secret containing sensitives data
+  ## eg. : provide a custom java keystore used in jvmArgs
+  ##
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## 
+  ## Generate base64 data and paste it in your values.yaml :
+  ## cat custom-pki.jks | base64 -w 
   secret:
     enabled: false
     mountPath: /etc/secret-volume
     readOnly: true
     data: {}
-     #custom-pki.jks: <base64-data>
+    #  custom-pki.jks: <base64-data>
 
 serviceui:
   repository: reportportal/service-ui
