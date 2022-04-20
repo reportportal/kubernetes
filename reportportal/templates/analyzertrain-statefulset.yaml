@@ -64,7 +64,7 @@ spec:
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: ES_HOSTS
-          value: "http://{{ .Values.elasticsearch.endpoint }}:{{ .Values.elasticsearch.port }}"
+          value: "{{ .Values.elasticsearch.endpoint }}:{{ .Values.elasticsearch.port }}"
         {{- if .Values.elasticsearch.secretName }}
         - name: ES_USER
           valueFrom:
