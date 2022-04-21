@@ -313,8 +313,7 @@ elasticsearch:
   secretName: ""
   installdep:
     enable: false
-  endpoint: http://elasticsearch-master.default.svc.cluster.local
-  port: 9200
+  endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
   user: elastic
   password:
 

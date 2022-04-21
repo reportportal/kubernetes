@@ -36,7 +36,7 @@ spec:
         - name: LOGGING_LEVEL
           value: "{{ .Values.metricsgatherer.loggingLevel }}"
         - name: ES_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}:{{ .Values.elasticsearch.port }}"
+          value: "{{ .Values.elasticsearch.endpoint }}"
         {{- if .Values.elasticsearch.secretName }}
         - name: ES_USER
           valueFrom:
