@@ -20,6 +20,9 @@ spec:
     spec:
       containers:
       - env:
+{{- if .Values.serviceanalyzer.extraEnvs }}
+{{ toYaml ( .Values.serviceanalyzer.extraEnvs ) | indent 8 }}
+{{- end }}
       {{ if .Values.minio.enabled }}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
@@ -58,13 +61,26 @@ spec:
           value: "analyzer-default"
         - name: ES_HOSTS
           value: "{{ .Values.elasticsearch.endpoint }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: ES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: ES_USER
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: ES_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}" 
+        {{- end }}
         {{- if .Values.serviceanalyzer.uwsgiWorkers }}
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
-        {{- end }}
-        {{- range $key, $value := .Values.serviceanalyzer.env }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
         {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
@@ -78,9 +94,9 @@ spec:
           limits:
             cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

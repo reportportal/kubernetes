@@ -20,11 +20,16 @@ serviceindex:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
 
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.6.3
+  tag: 5.7.0
   pullPolicy: Always
   resources:
     requests:
@@ -36,12 +41,27 @@ uat:
   sessionLiveTime: 86400
   podAnnotations: {}
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.6.0
+  tag: 5.7.0
   name: ui
   pullPolicy: Always
   resources:
@@ -53,11 +73,16 @@ serviceui:
       memory: 128Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.6.3
+  tag: 5.7.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -77,23 +102,37 @@ serviceapi:
   queues:
     totalNumber:
     perPodNumber:
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.6.3
+  tag: 5.7.0
   name: jobs
   pullPolicy: Always
-  clean:
-    chunksize: 1000
-    cron:
-      attachment: 0 0 */24 * * *
-      log: 0 0 */24 * * *
-      launch: 0 0 */24 * * *
-      storage: 0 0 */24 * * *
-      storageproject: 0 */5 * * * *
+  coreJobs:
+    cleanAttachmentCron: 0 0 */24 * * *
+    cleanLogCron: 0 0 */24 * * *
+    cleanLaunchCron: 0 0 */24 * * *
+    cleanStorageCron: 0 0 */24 * * *
+    storageProjectCron: 0 */5 * * * *
+  chunksize: 1000
   resources:
     requests:
       cpu: 100m
@@ -101,13 +140,29 @@ servicejobs:
     limits:
       cpu: 100m
       memory: 372Mi
+  jvmArgs: ""
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.6.0
+  tag: 5.7.0
   pullPolicy: Always
   resources:
     requests:
@@ -118,6 +173,11 @@ migrations:
       memory: 128Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
   metadataAnnotations:
     enabled: true
@@ -127,7 +187,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.6.0
+  tag: 5.7.0
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -140,9 +200,22 @@ serviceanalyzer:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
-  # environment variables for analyzer
-  env: {}
-  # ES_CHUNK_NUMBER: 2000
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
+  ##
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 serviceanalyzertrain:
@@ -155,6 +228,21 @@ serviceanalyzertrain:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 metricsgatherer:
@@ -176,6 +264,21 @@ metricsgatherer:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  ## External environment variables
+  ##
+  extraEnvs: {}
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
 
 rabbitmq:
@@ -199,12 +302,20 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
+    ## Whether or not to use SSL
+    ssl: disabled
+    # ssl: disabled / require
     password:
+    ## Number of database connections
+    connections: 
 
 elasticsearch:
+  secretName: ""
   installdep:
     enable: false
-  endpoint: http://elasticsearch-master:9200
+  endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
+  user: elastic
+  password:
 
 minio:
   secretName: ""
@@ -213,12 +324,12 @@ minio:
     enable: false
   endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>.default.svc.cluster.local:9000
-  region:
+  region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
-  bucketPrefix:
-  defaultBucketName:
-  integrationSaltPath:
+  bucketPrefix: ""
+  defaultBucketName: ""
+  integrationSaltPath: ""
 
 # Ingress configuration for the ui
 # If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
@@ -243,11 +354,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
 
-# node selector for all components, if any (requires Kubernetes >= 1.6)
-## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
-nodeSelector: {}
-  # disktype: ssd
-
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 tolerations: []
@@ -264,7 +370,7 @@ rbac:
     name: reportportal
     # For AWS IAM role association use the following annotations
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-    annotations:
+    annotations: {}
 
 rp:
   infoEndpoint: "/info"
