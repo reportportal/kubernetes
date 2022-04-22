@@ -19,10 +19,9 @@ spec:
     spec:
       containers:
       - env:
-        {{- range $key, $value := .Values.serviceapi.additionalEnvironments }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
+{{- if .Values.serviceapi.extraEnvs }}
+{{ toYaml ( .Values.serviceapi.extraEnvs ) | indent 8 }}
+{{- end }}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
         - name: RP_REQUESTLOGGING

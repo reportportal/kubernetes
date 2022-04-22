@@ -42,7 +42,7 @@ spec:
           timeoutSeconds: 3
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceui.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

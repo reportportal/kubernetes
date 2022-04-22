@@ -19,10 +19,9 @@ spec:
     spec:
       containers:
       - env:
-        {{- range $key, $value := .Values.servicejobs.additionalEnvironments }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
+{{- if .Values.servicejobs.extraEnvs }}
+{{ toYaml ( .Values.servicejobs.extraEnvs ) | indent 8 }}
+{{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON

@@ -51,7 +51,7 @@ spec:
           limits:
             cpu: {{ .Values.migrations.resources.limits.cpu }}
             memory: {{ .Values.migrations.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.migrations.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.migrations.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
