@@ -1,22 +1,36 @@
 # [ReportPortal.io](http://ReportPortal.io) Helm chart repository
 
-## Usage
+## Description
 
-[Helm](https://helm.sh) must be installed to use the charts.  Please refer to
-Helm's [documentation](https://helm.sh/docs) to get started.
+These charts bootstraps a ReportPortal deployment on a Kubernetes cluster using the Helm package manager. The repo includes a number of Kubernetes and Helm configurations for installation ReportPortal v5. 
 
-Once Helm has been set up correctly, add the repo as follows:
+To deploy ReportPortal to Kubernetes use following [Installation guide](https://github.com/reportportal/kubernetes/blob/develop/reportportal/README.md)
 
-helm repo add rp_repo https://reportportal.github.io/kubernetes
+> [Helm](https://helm.sh) must be installed to use the charts. Please refer to Helm's [documentation](https://helm.sh/docs) to get started.
 
-If you had already added this repo earlier, run `helm repo update` to retrieve
-the latest versions of the packages.  You can then run `helm search repo
-rp_repo` to see the charts.
+## Installing
 
-To install the <chart-name> chart:
+### Install released version using Helm repository
 
-    helm install myreportportal rp_repo/reportportal
+Add the ReportPortal Helm charts repo: `helm repo add reportportal https://reportportal.github.io/kubernetes`
 
-To uninstall the chart:
+* Install it:
+    * with Helm 3: `helm install my-reportportal reportportal/reportportal`
+    * with Helm 2 (deprecated): `helm install --name my-reportportal reportportal/reportportal`
 
-    helm delete myreportportal
+### Install custom version using Helm repository
+
+* Install it:
+    * with Helm 3: `helm install my-reportportal reportportal/reportportal --version=5.6.3`
+    * with Helm 2 (deprecated): `helm install --name my-reportportal reportportal/reportportal --version=5.6.3`
+
+### Install reportportal with custom values file using Helm repository
+
+* Install it:
+    * with Helm 3: `helm install my-reportportal --values=values.yaml reportportal/reportportal`
+    * with Helm 2 (deprecated): `helm install --name my-reportportal --values=values.yaml reportportal/reportportal`
+
+## Uninstalling
+
+To remove Hlem Chart use the following command: `helm uninstall my-reportportal reportportal/reportportal`
+
