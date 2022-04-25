@@ -20,7 +20,7 @@ spec:
       containers:
       - env:
 {{- if .Values.serviceapi.extraEnvs }}
-{{ toYaml ( .Values.serviceapi.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"

@@ -20,7 +20,7 @@ spec:
       containers:
       - env:
 {{- if .Values.servicejobs.extraEnvs }}
-{{ toYaml ( .Values.servicejobs.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
