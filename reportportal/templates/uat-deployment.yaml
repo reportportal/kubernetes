@@ -20,7 +20,7 @@ spec:
       containers:
       - env:
 {{- if .Values.uat.extraEnvs }}
-{{ toYaml ( .Values.uat.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
         {{ if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS

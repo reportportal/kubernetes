@@ -43,7 +43,7 @@ uat:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -104,7 +104,7 @@ serviceapi:
     perPodNumber:
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -143,7 +143,7 @@ servicejobs:
   jvmArgs: ""
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -202,7 +202,7 @@ serviceanalyzer:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -230,7 +230,7 @@ serviceanalyzertrain:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -266,7 +266,7 @@ metricsgatherer:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET

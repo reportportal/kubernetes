@@ -20,7 +20,7 @@ spec:
       containers:
       - env:
 {{- if .Values.metricsgatherer.extraEnvs }}
-{{ toYaml ( .Values.metricsgatherer.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.metricsgatherer.extraEnvs | indent 8 }}
 {{- end }}
         - name: RP_AMQP_PASS
         {{ if .Values.rabbitmq.SecretName }}

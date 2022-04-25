@@ -21,7 +21,7 @@ spec:
       containers:
       - env:
 {{- if .Values.serviceanalyzer.extraEnvs }}
-{{ toYaml ( .Values.serviceanalyzer.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
 {{- end }}
       {{ if .Values.minio.enabled }}
         - name: ANALYZER_BINARYSTORE_TYPE

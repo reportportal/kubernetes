@@ -21,7 +21,7 @@ spec:
       containers:
       - env:
 {{- if .Values.serviceanalyzertrain.extraEnvs }}
-{{ toYaml ( .Values.serviceanalyzertrain.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 8 }}
 {{- end }}
         - name: INSTANCE_TASK_TYPE
           value: "train"
