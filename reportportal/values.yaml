@@ -375,3 +375,14 @@ rbac:
 rp:
   infoEndpoint: "/info"
   healthEndpoint: "/health"
+
+# Extra init containers to e.g. wait for minio
+extraInitContainers: {}
+  # - name: "wait-for-minio"
+  #   image: "busybox"
+  #   imagePullPolicy: "IfNotPresent"
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
