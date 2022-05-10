@@ -642,11 +642,15 @@ minio:
   region:
   accesskey: <your_minio_accesskey>
   secretkey: <your_minio_secretkey>
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
   bucketPrefix:
   defaultBucketName:
   integrationSaltPath:
 ```
+
 Note: If the release is named "minio", then address is "minio.default.svc.cluster.local"
+Note: If you want to use a minio version newer than 9.0.0 change the `accesskeyName` to `"root-user"` and the `secretkeyName` to `"root-password"`.
 
 You can also use Amazon S3 storage instead of self-hosted MinIO's storage through passing S3 endpoint and IAM user access key ID and secret to the RP_BINARYSTORE_MINIO_* env variables, which can be defined via the same parameters in values.yaml.
 
