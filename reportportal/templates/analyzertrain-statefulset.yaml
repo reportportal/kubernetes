@@ -20,6 +20,9 @@ spec:
     spec:
       containers:
       - env:
+{{- if .Values.serviceanalyzertrain.extraEnvs }}
+{{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 8 }}
+{{- end }}
         - name: INSTANCE_TASK_TYPE
           value: "train"
         - name: UWSGI_WORKERS
@@ -62,6 +65,23 @@ spec:
           value: "analyzer-default"
         - name: ES_HOSTS
           value: "{{ .Values.elasticsearch.endpoint }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: ES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: ES_USER
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: ES_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}" 
+        {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
@@ -74,9 +94,9 @@ spec:
           limits:
             cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.serviceanalyzertrain.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
