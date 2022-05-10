@@ -17,6 +17,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
       containers:
       - env:
@@ -48,7 +52,7 @@ spec:
             memory: {{ .Values.serviceindex.resources.limits.memory }}
 {{- if .Values.serviceindex.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.nodeSelector }}
+        {{- range $key, $value := .Values.serviceindex.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}

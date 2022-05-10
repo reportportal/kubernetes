@@ -17,12 +17,15 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       containers:
       - env:
-        {{- range $key, $value := .Values.uat.additionalEnvironments }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
+{{- if .Values.uat.extraEnvs }}
+{{ toYaml .Values.uat.extraEnvs | indent 8 }}
+{{- end }}
         {{ if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
@@ -105,6 +108,12 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 5
+        volumeMounts:
+          {{- if .Values.uat.secret.enabled }}
+          - mountPath: {{ .Values.uat.secret.mountPath }}
+            name: {{ template "reportportal.name" . }}-uat-secret
+            readOnly: {{ .Values.uat.secret.readOnly }}
+          {{- end }}
 {{- if .Values.uat.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.uat.nodeSelector }}
@@ -119,3 +128,9 @@ spec:
       tolerations: 
 {{- toYaml . | nindent 8 }}
 {{- end }}
+      volumes:
+        {{- if .Values.uat.secret.enabled }}
+        - name: {{ template "reportportal.name" . }}-uat-secret
+          secret:
+            secretName: {{ template "reportportal.name" . }}-uat-secret
+        {{- end }}

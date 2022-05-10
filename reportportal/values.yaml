@@ -20,11 +20,16 @@ serviceindex:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
 
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.6.3
+  tag: 5.7.0
   pullPolicy: Always
   resources:
     requests:
@@ -35,21 +40,46 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   podAnnotations: {}
+  ## jvmArgs
+  ## If you need to use a custom java keystore you can use it through jvmArgs
+  ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
-  ## Additional environment variables
+  ## External environment variables
   ##
-  additionalEnvironments: {}
-  #   env: value
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
+  ## Provide a secret containing sensitives data
+  ## eg. : provide a custom java keystore used in jvmArgs
+  ##
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## 
+  ## Generate base64 data and paste it in your values.yaml :
+  ## cat custom-pki.jks | base64 -w 
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: {}
+    #  custom-pki.jks: <base64-data>
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.6.0
+  tag: 5.7.0
   name: ui
   pullPolicy: Always
   resources:
@@ -70,7 +100,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.6.3
+  tag: 5.7.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -90,10 +120,16 @@ serviceapi:
   queues:
     totalNumber:
     perPodNumber:
-  ## Additional environment variables
+  ## External environment variables
   ##
-  additionalEnvironments: {}
-  #  env: value
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -105,17 +141,16 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.6.3
+  tag: 5.7.0
   name: jobs
   pullPolicy: Always
-  clean:
-    chunksize: 1000
-    cron:
-      attachment: 0 0 */24 * * *
-      log: 0 0 */24 * * *
-      launch: 0 0 */24 * * *
-      storage: 0 0 */24 * * *
-      storageproject: 0 */5 * * * *
+  coreJobs:
+    cleanAttachmentCron: 0 0 */24 * * *
+    cleanLogCron: 0 0 */24 * * *
+    cleanLaunchCron: 0 0 */24 * * *
+    cleanStorageCron: 0 0 */24 * * *
+    storageProjectCron: 0 */5 * * * *
+  chunksize: 1000
   resources:
     requests:
       cpu: 100m
@@ -124,10 +159,16 @@ servicejobs:
       cpu: 100m
       memory: 372Mi
   jvmArgs: ""
-  ## Additional environment variables
+  ## External environment variables
   ##
-  additionalEnvironments: {}
-  #  env: value
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -139,7 +180,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.6.0
+  tag: 5.7.0
   pullPolicy: Always
   resources:
     requests:
@@ -150,6 +191,11 @@ migrations:
       memory: 128Mi
   podAnnotations: {}
   securityContext: {}
+  ## Define which Nodes the Pods are scheduled on.
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  #  disktype: ssd
   serviceAccountName: ""
   metadataAnnotations:
     enabled: true
@@ -159,7 +205,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.6.0
+  tag: 5.7.0
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -172,10 +218,16 @@ serviceanalyzer:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
-  ## Additional environment variables
+  ## External environment variables
   ##
-  additionalEnvironments: {}
-  #  ES_CHUNK_NUMBER: 2000
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -194,6 +246,16 @@ serviceanalyzertrain:
       memory: 512Mi
   podAnnotations: {}
   securityContext: {}
+  ## External environment variables
+  ##
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -220,6 +282,16 @@ metricsgatherer:
       memory: 256Mi
   podAnnotations: {}
   securityContext: {}
+  ## External environment variables
+  ##
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -248,22 +320,28 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
+    ## Whether or not to use SSL
+    ssl: disabled
+    # ssl: disabled / require
     password:
     ## Number of database connections
     connections: 
 
 elasticsearch:
+  secretName: ""
   installdep:
     enable: false
-  endpoint: http://elasticsearch-master:9200
+  endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
+  user: elastic
+  password:
 
 minio:
   secretName: ""
   enabled: true
   installdep:
     enable: false
-  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  endpointshort: <minio-release-name>.default.svc.cluster.local:9000
+  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
+  endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
@@ -317,3 +395,14 @@ rbac:
 rp:
   infoEndpoint: "/info"
   healthEndpoint: "/health"
+
+# Extra init containers to e.g. wait for minio
+extraInitContainers: {}
+  # - name: "wait-for-minio"
+  #   image: "busybox"
+  #   imagePullPolicy: "IfNotPresent"
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
