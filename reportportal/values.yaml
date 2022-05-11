@@ -321,8 +321,8 @@ postgresql:
     user: rpuser
     dbName: reportportal
     ## Whether or not to use SSL
-    ssl: disabled
-    # ssl: disabled / require
+    ssl: disable
+    # ssl: disable / require
     password:
     ## Number of database connections
     connections: 
