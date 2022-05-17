@@ -25,6 +25,8 @@ serviceindex:
   ##
   nodeSelector: {}
   #  disktype: ssd
+  service:
+    portName: {}
 
 uat:
   repository: reportportal/service-authorization
@@ -76,6 +78,8 @@ uat:
     readOnly: true
     data: {}
     #  custom-pki.jks: <base64-data>
+  service:
+    portName: headless
 
 serviceui:
   repository: reportportal/service-ui
@@ -97,6 +101,8 @@ serviceui:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 serviceapi:
   repository: reportportal/service-api
@@ -138,6 +144,8 @@ serviceapi:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 servicejobs:
   repository: reportportal/service-jobs
@@ -177,6 +185,8 @@ servicejobs:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 migrations:
   repository: reportportal/migrations
@@ -235,6 +245,8 @@ serviceanalyzer:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 serviceanalyzertrain:
   resources:
@@ -262,6 +274,8 @@ serviceanalyzertrain:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
@@ -298,6 +312,8 @@ metricsgatherer:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: {}
 
 rabbitmq:
   SecretName: ""

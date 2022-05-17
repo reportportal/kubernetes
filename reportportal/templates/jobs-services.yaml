@@ -8,7 +8,7 @@ metadata:
     infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
 spec:
   ports:
-  - name: headless
+  - name: {{ $.Values.servicejobs.service.portName | default "headless" }}
     port: 8686
     protocol: TCP
     targetPort: 8686

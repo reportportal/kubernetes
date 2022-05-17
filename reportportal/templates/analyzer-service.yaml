@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   ports:
-  - name: headless
+  - name: {{ $.Values.serviceanalyzer.service.portName | default "headless" }}
     port: 8080
     protocol: TCP
     targetPort: 8080

@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   ports:
-  - name: headless
+  - name: {{ $.Values.serviceanalyzertrain.service.portName | default "headless" }}
     port: 5000
     protocol: TCP
     targetPort: 5000
