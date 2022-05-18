@@ -79,7 +79,7 @@ uat:
     data: {}
     #  custom-pki.jks: <base64-data>
   service:
-    portName: headless
+    portName: {}
 
 serviceui:
   repository: reportportal/service-ui
