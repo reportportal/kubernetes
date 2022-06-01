@@ -17,10 +17,14 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       containers:
       - env:
 {{- if .Values.serviceapi.extraEnvs }}
-{{ toYaml ( .Values.serviceapi.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
@@ -45,6 +49,8 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
           value: "{{ .Values.rabbitmq.endpoint.port }}"
+        - name: RP_AMQP_ANALYZER-VHOST
+          value: "{{ .Values.rabbitmq.vhost }}"
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
@@ -104,12 +110,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "access-key"
+              key: "{{ .Values.minio.accesskeyName }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "secret-key"
+              key: "{{ .Values.minio.secretkeyName }}"
        {{- else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"

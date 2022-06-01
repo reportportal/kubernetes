@@ -27,28 +27,28 @@ spec:
           service:
             name: {{ $fullName }}-index
             port:
-              name: headless
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: /(ui)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
-              name: headless
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: /(uat)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
-              name: headless
+              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: /(api)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
-              name: headless
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
   {{- end -}}
 {{ else }}
   - http:
@@ -59,28 +59,28 @@ spec:
           service:
             name: {{ $fullName }}-index
             port:
-              name: headless
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: /(ui)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
-              name: headless
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: /(uat)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
-              name: headless
+              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: /(api)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
-              name: headless
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
 {{ end }}
 status:
   loadBalancer: {}

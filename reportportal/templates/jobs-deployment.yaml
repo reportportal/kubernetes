@@ -17,10 +17,14 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- end }}
       containers:
       - env:
 {{- if .Values.servicejobs.extraEnvs }}
-{{ toYaml ( .Values.servicejobs.extraEnvs ) | indent 8 }}
+{{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
@@ -42,6 +46,8 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
           value: "{{ .Values.rabbitmq.endpoint.port }}"
+        - name: RP_AMQP_ANALYZER-VHOST
+          value: "{{ .Values.rabbitmq.vhost }}"
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
@@ -109,12 +115,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "access-key"
+              key: "{{ .Values.minio.accesskeyName }}"
         - name: DATASTORE_MINIO_SECRETKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
-              key: "secret-key"
+              key: "{{ .Values.minio.secretkeyName }}"
        {{- else }}
         - name: DATASTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"

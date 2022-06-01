@@ -25,6 +25,8 @@ serviceindex:
   ##
   nodeSelector: {}
   #  disktype: ssd
+  service:
+    portName: ""
 
 uat:
   repository: reportportal/service-authorization
@@ -40,10 +42,13 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   podAnnotations: {}
+  ## jvmArgs
+  ## If you need to use a custom java keystore you can use it through jvmArgs
+  ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -58,6 +63,23 @@ uat:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  ## Provide a secret containing sensitives data
+  ## eg. : provide a custom java keystore used in jvmArgs
+  ##
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## 
+  ## Generate base64 data and paste it in your values.yaml :
+  ## cat custom-pki.jks | base64 -w 
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: {}
+    #  custom-pki.jks: <base64-data>
+  service:
+    portName: ""
 
 serviceui:
   repository: reportportal/service-ui
@@ -79,10 +101,12 @@ serviceui:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.0
+  tag: 5.7.1
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -99,12 +123,15 @@ serviceapi:
       cpu: 1000m
       memory: 2048Mi
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  ## Number of queues
+  ## Where "totalNumber" is the total number of queues
+  ## Сalculation formula: perPodNumber = totalNumber / serviceapi.replicaCount
   queues:
     totalNumber:
     perPodNumber:
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -120,10 +147,12 @@ serviceapi:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.0
+  tag: 5.7.1
   name: jobs
   pullPolicy: Always
   coreJobs:
@@ -143,7 +172,7 @@ servicejobs:
   jvmArgs: ""
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -159,6 +188,8 @@ servicejobs:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 migrations:
   repository: reportportal/migrations
@@ -187,7 +218,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.0
+  tag: 5.7.1
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -202,7 +233,7 @@ serviceanalyzer:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -217,6 +248,8 @@ serviceanalyzer:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 serviceanalyzertrain:
   resources:
@@ -230,7 +263,7 @@ serviceanalyzertrain:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -244,10 +277,12 @@ serviceanalyzertrain:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 1.1.17
+  tag: 1.1.19
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -266,7 +301,7 @@ metricsgatherer:
   securityContext: {}
   ## External environment variables
   ##
-  extraEnvs: {}
+  extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -280,6 +315,8 @@ metricsgatherer:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
+  service:
+    portName: ""
 
 rabbitmq:
   SecretName: ""
@@ -292,6 +329,9 @@ rabbitmq:
     apiport: 15672
     apiuser: rabbitmq
     password:
+  ## Virtual hosts provide logical grouping and separation of resources.
+  ## ref: https://www.rabbitmq.com/vhosts.html
+  vhost: analyzer
 
 postgresql:
   SecretName: ""
@@ -303,8 +343,8 @@ postgresql:
     user: rpuser
     dbName: reportportal
     ## Whether or not to use SSL
-    ssl: disabled
-    # ssl: disabled / require
+    ssl: disable
+    # ssl: disable / require
     password:
     ## Number of database connections
     connections: 
@@ -322,11 +362,13 @@ minio:
   enabled: true
   installdep:
     enable: false
-  endpoint: http://<minio-release-name>.default.svc.cluster.local:9000
-  endpointshort: <minio-release-name>.default.svc.cluster.local:9000
+  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
+  endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
   bucketPrefix: ""
   defaultBucketName: ""
   integrationSaltPath: ""
@@ -375,3 +417,14 @@ rbac:
 rp:
   infoEndpoint: "/info"
   healthEndpoint: "/health"
+
+# Extra init containers to e.g. wait for minio
+extraInitContainers: {}
+  # - name: "wait-for-minio"
+  #   image: "busybox"
+  #   imagePullPolicy: "IfNotPresent"
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
