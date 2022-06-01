@@ -46,6 +46,8 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.address }}"
         - name: RP_AMQP_PORT
           value: "{{ .Values.rabbitmq.endpoint.port }}"
+        - name: RP_AMQP_ANALYZER-VHOST
+          value: "{{ .Values.rabbitmq.vhost }}"
         - name: RP_AMQP_USER
           value: "{{ .Values.rabbitmq.endpoint.user }}"
         - name: RP_AMQP_PASS
