@@ -5,7 +5,7 @@ dependencies:
     condition: postgresql.installdep.enable
 
   - name: rabbitmq
-    version: 9.1.0
+    version: 7.5.6
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.installdep.enable
 
