@@ -106,7 +106,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.0
+  tag: 5.7.1
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -123,6 +123,9 @@ serviceapi:
       cpu: 1000m
       memory: 2048Mi
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  ## Number of queues
+  ## Where "totalNumber" is the total number of queues
+  ## Сalculation formula: perPodNumber = totalNumber / serviceapi.replicaCount
   queues:
     totalNumber:
     perPodNumber:
@@ -149,7 +152,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.0
+  tag: 5.7.1
   name: jobs
   pullPolicy: Always
   coreJobs:
@@ -215,7 +218,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.0
+  tag: 5.7.1
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -279,7 +282,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 1.1.17
+  tag: 1.1.19
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -326,6 +329,9 @@ rabbitmq:
     apiport: 15672
     apiuser: rabbitmq
     password:
+  ## Virtual hosts provide logical grouping and separation of resources.
+  ## ref: https://www.rabbitmq.com/vhosts.html
+  vhost: analyzer
 
 postgresql:
   SecretName: ""
