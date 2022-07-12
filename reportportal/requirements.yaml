@@ -1,12 +1,12 @@
 dependencies:
   - name: postgresql
     version: 10.9.4
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: postgresql.installdep.enable
 
   - name: rabbitmq
     version: 7.5.6
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
@@ -16,5 +16,5 @@ dependencies:
 
   - name: minio
     version: 7.1.9
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: minio.installdep.enable
