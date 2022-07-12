@@ -7,11 +7,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -19,7 +19,7 @@ entries:
       version: 7.10.2
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: bc39db47333bd86d1d2484be4af5fb8ad26e7d08dc635135d42c7bf752875729
@@ -40,11 +40,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -52,7 +52,7 @@ entries:
       version: 7.10.2
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: 2bc1f568fa597fc01a645754fb6d9ddeae9e84d64230f1c83fd876c884d31b7d
@@ -73,11 +73,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -85,7 +85,7 @@ entries:
       version: 7.10.2
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: 1d2963f0ef9a9bdcbb3acbdf4b5e5aea4cd3d23b6c45077ac9fcc633e760169b
@@ -106,11 +106,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -118,7 +118,7 @@ entries:
       version: 7.6.1
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: 8bbb82e9d00a9fc60efdf9f7ed871c49c9cd7490871465277dad25319cdab55e
@@ -139,11 +139,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -151,7 +151,7 @@ entries:
       version: 7.6.1
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: 6dee8e46f9e60c32636d908feae5d458e3a93d77446c4b9d32d21d3fae847659
@@ -172,11 +172,11 @@ entries:
     dependencies:
     - condition: postgresql.installdep.enable
       name: postgresql
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 10.9.4
     - condition: rabbitmq.installdep.enable
       name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.5.6
     - condition: elasticsearch.installdep.enable
       name: elasticsearch
@@ -184,7 +184,7 @@ entries:
       version: 7.6.1
     - condition: minio.installdep.enable
       name: minio
-      repository: https://charts.bitnami.com/bitnami
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
       version: 7.1.9
     description: ReportPortal.io AI-powered Test Automation Dashboard
     digest: a10c517aa02a256151c9134e0b6ea2ded5a73184717f2867b09c6be9df0c6cdc
