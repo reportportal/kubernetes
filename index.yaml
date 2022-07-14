@@ -2,6 +2,39 @@ apiVersion: v1
 entries:
   reportportal:
   - apiVersion: v1
+    appVersion: 5.7.2
+    created: "2022-07-14T11:10:45.577218741Z"
+    dependencies:
+    - condition: postgresql.installdep.enable
+      name: postgresql
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+      version: 10.9.4
+    - condition: rabbitmq.installdep.enable
+      name: rabbitmq
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+      version: 7.5.6
+    - condition: elasticsearch.installdep.enable
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: 7.10.2
+    - condition: minio.installdep.enable
+      name: minio
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+      version: 7.1.9
+    description: ReportPortal.io AI-powered Test Automation Dashboard
+    digest: 350a7d27d63c85ef917c6a9c88004a783a5cf6fed28f582c1e14c17f036626a5
+    keywords:
+    - reportportal
+    maintainers:
+    - email: support@reportportal.io
+      name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/kubernetes
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-5.7.2/reportportal-5.7.2.tgz
+    version: 5.7.2
+  - apiVersion: v1
     appVersion: 5.7.1
     created: "2022-06-01T12:05:54.508023618Z"
     dependencies:
@@ -213,4 +246,4 @@ entries:
     urls:
     - https://github.com/reportportal/kubernetes/releases/download/reportportal-1.0.0/reportportal-1.0.0.tgz
     version: 1.0.0
-generated: "2022-06-01T12:05:54.508061219Z"
+generated: "2022-07-14T11:10:45.577254341Z"
