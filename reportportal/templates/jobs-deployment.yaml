@@ -128,6 +128,12 @@ spec:
           value: "{{ .Values.minio.secretkey }}"
        {{- end }}
        {{ end }}
+        - name: RP_PROCESSING_LOG_MAXBATCHSIZE
+          value: "2000"
+        - name: RP_PROCESSING_LOG_MAXBATCHTIMEOUT
+          value: "6000"
+        - name: RP_AMQP_MAXLOGCONSUMER
+          value: "1"
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
         name: jobs
         ports:
