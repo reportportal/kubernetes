@@ -135,6 +135,8 @@ spec:
           value: "{{ .Values.minio.integrationSaltPath }}"
        {{- end }}
        {{- end }}
+        - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
+          value: "false"
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
         name: api
         ports:
