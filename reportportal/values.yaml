@@ -83,7 +83,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.7.0
+  tag: 5.7.2
   name: ui
   pullPolicy: Always
   resources:
@@ -106,7 +106,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.1
+  tag: 5.7.2
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -152,7 +152,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.1
+  tag: 5.7.2
   name: jobs
   pullPolicy: Always
   coreJobs:
@@ -218,7 +218,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.1
+  tag: 5.7.2
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -282,7 +282,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 1.1.19
+  tag: 1.1.20
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -395,6 +395,10 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+  tls: []
+  # - hosts:
+  #   - reportportal.k8.com
+  #   secretName: reportportal.k8.com-tls
 
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
