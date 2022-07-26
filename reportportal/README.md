@@ -811,7 +811,7 @@ Set up a domain name you own at the domain registrar
 In order to enable HTTPS, you need to get a SSL/TLS certificate from a Certificate Authority (CA)
 As a free option, you can use Let's Encrypt - a non-profit TLS CA. Its purpose is to try to make a safer internet by making it easier and cheaper to use TLS
 
-#### 2.1. Deploy the Cert Manager
+#### 2.1. Deploy the Cert Manager for Kubernetes 1.15-1.19
 
 [Cert-manager](https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager) is a native Kubernetes certificate management controller
 It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed
@@ -825,16 +825,45 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 Add the Jetstack Helm repository
 
 ```sh
-$ helm repo add jetstack https://charts.jetstack.io && helm repo update
+helm repo add jetstack https://charts.jetstack.io && helm repo update
 ```
 
 Install the cert-manager
 
 ```sh
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.0.3
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.0.3
 ```
 
-#### 2.2. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource:
+#### 2.2. Deploy the Cert Manager for Kubernetes 1.20+
+
+[Cert-manager](https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager) is a native Kubernetes certificate management controller
+It can help with issuing certificates from a variety of sources, such as Let’s Encrypt, HashiCorp Vault, Venafi, a simple signing keypair, or self-signed
+
+Install the cert-manager CRDs **before** installing the cert-manager Helm
+
+```sh
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.crds.yaml
+```
+
+Add the Jetstack Helm repository
+
+```sh
+helm repo add jetstack https://charts.jetstack.io && helm repo update
+```
+
+Install the cert-manager
+
+```sh
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.8.2
+```
+
+#### 2.3. Create a Let's Encrypt CA ClusterIssuer Kubernetes resource:
 
  ClusterIssuers (and Issuers) represent a certificate authority from which signed x509 certificates can be obtained, such as Let’s Encrypt. You will need at least one ClusterIssuer in order to begin issuing certificates within your cluster
 
