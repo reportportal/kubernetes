@@ -70,7 +70,14 @@ spec:
         - name: AMQP_VIRTUAL_HOST
           value: "{{ .Values.rabbitmq.vhost }}"
         - name: ES_HOSTS
+        {{- if .Values.elasticsearch.secretESHostsURL }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretESHostsURL }}"
+              key: "hostsURL"
+        {{- else }}
           value: "{{ .Values.elasticsearch.endpoint }}"
+        {{- end }}
         {{- if .Values.elasticsearch.secretName }}
         - name: ES_USER
           valueFrom:
