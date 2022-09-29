@@ -11,6 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- range $key, $value := .Values.servicejobs.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
         component: {{ include "reportportal.fullname" . }}-jobs
       annotations:
         {{- range $key, $value := .Values.servicejobs.podAnnotations }}
