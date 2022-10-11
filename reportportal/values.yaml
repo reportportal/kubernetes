@@ -106,7 +106,6 @@ serviceui:
   serviceAccountName: ""
   service:
     portName: ""
-  
 
 serviceapi:
   repository: reportportal/service-api
