@@ -400,6 +400,24 @@ ingress:
   #   - reportportal.k8.com
   #   secretName: reportportal.k8.com-tls
 
+  # If you wish to use istio ingress gateways
+  # set ingress.enable to false
+  # set ingress.istio.enable true
+  # configure hostnames with ingress.hosts[]
+  istio:
+    enable: false
+    gateway:
+      # Set create to true if you wish to create the gateway
+      create: false
+      name: reportportal-gateway
+      selector: "istio: ingressgateway"
+      # Set tls enable to true if you wish the gateway to use tls
+      tls:
+        enable: false
+        credentialname: istio-system-reportportal
+    virtualservice:
+      name: reportportal-vs
+
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 tolerations: []

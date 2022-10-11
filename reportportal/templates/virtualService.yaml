@@ -1,0 +1,53 @@
+{{- if .Values.ingress.istio.enable }}
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .Values.ingress.istio.virtualservice.name }}
+spec:
+  gateways:
+  {{- if .Values.ingress.istio.gateway.externalnamespace }}
+  - {{.Values.ingress.istio.gateway.externalnamespace }}/{{ .Values.ingress.istio.gateway.name }}
+  {{- else }}
+  - {{ .Values.ingress.istio.gateway.name }}
+  {{- end }}
+  {{- range $host := .Values.ingress.hosts }}
+  hosts:
+  - {{ $host }}
+  {{- end }}
+  http:
+  - match:
+    - uri:
+        prefix: /api/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Release.Name }}-reportportal-api.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8585
+  - match:
+    - uri:
+        prefix: /uat/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Release.Name }}-reportportal-uat.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 9999
+  - match:
+    - uri:
+        prefix: /ui/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Release.Name }}-reportportal-ui.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8080
+  - route:
+    - destination:
+        host: {{ .Release.Name }}-reportportal-index.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 8080
+{{- end }}

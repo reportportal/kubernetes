@@ -30,7 +30,9 @@ Kubernetes/Helm configs for installation of ReportPortal
 [Run ReportPortal over SSL (HTTPS)](#run-reportportal-over-ssl-https)
 * [Configure a custom domain name](#1-configure-a-custom-domain-name-for-your-reportportal-website)
 * [Pre-requisite configuration](#2-pre-requisite-configuration)
-* [Update your ReportPortal installation with a new Ingress Configuration](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-access-at-a-tls-endpoint)
+* [3. Update your ReportPortal installation with a new Ingress Configuration to be accessed at a TLS endpoint](#3-update-your-reportportal-installation-with-a-new-ingress-configuration-to-be-accessed-at-a-tls-endpoint)
+  * [Ingress](#ingress)
+  * [Istio Ingress Gateways](#istio-ingress-gateways)
 * [Create a Certificate resource in Kubernetes with acme http challenge configured](#4-create-a-certificate-resource-in-kubernetes-with-acme-http-challenge-configured)
 
 -----------
@@ -39,7 +41,7 @@ Kubernetes/Helm configs for installation of ReportPortal
 
 This project is created to install ReportPortal on Kubernetes with Helm.
 
-It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service / Azure Database for PostgreSQL as a database, Amazon ES as an elasticsearch cluster and AmazonMQ brocker for RabbitMQ
+It describes installation of all mandatory services to run the application, and supports use of external cloud services to resolve the dependencies, such as Amazon RDS Service / Azure Database for PostgreSQL as a database, Amazon ES as an elasticsearch cluster and AmazonMQ broker for RabbitMQ
 
 #### The chart includes the following configuration files:
 
@@ -220,9 +222,9 @@ helm version
 
 #### Kubernetes Node Labels
 
-To ensure fault tolerance and reduce the load on the application use the labels. Setting labels is different from environment. If you deplyed database on different VM or Cloud Service use 2 API, 1 RabbitMQ, else for Database in the cluster use 1 API, 1 DB, 1 RabbitMQ.
+To ensure fault tolerance and reduce the load on the application use the labels. Setting labels is different from environment. If you deployed database on different VM or Cloud Service use 2 API, 1 RabbitMQ, else for Database in the cluster use 1 API, 1 DB, 1 RabbitMQ.
 
-- DB as separeted service:
+- DB as separated service:
 ```
 kubectl label nodes <NODE-1> service=api
 kubectl label nodes <NODE-2> service=api
@@ -245,7 +247,7 @@ Please find the guides below:
 - [Azure](https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md#azure)
 - [DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nginx-ingress-on-digitalocean-kubernetes-using-helm#step-2-%E2%80%94-installing-the-kubernetes-nginx-ingress-controller)
 
-Or you can istall an NGINX ingress controller using Helm.
+Or you can install an NGINX ingress controller using Helm.
 
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx && helm repo update
@@ -387,9 +389,9 @@ After the pod gets the status Running, you need to configure the RabbitMQ memory
 kubectl exec -it <rabbitmq_pod_name> -- rabbitmqctl set_vm_memory_high_watermark 0.8
 ```
 
-5.2 RabbitMQ as AmazoneMQ brocker
+5.2 RabbitMQ as AmazonMQ broker
 
-Amazon MQ is a managed message broker service for that makes it easy to migrate to a message broker in the cloud. Use the AWS manual to create [RabbitMQ brocker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/getting-started-rabbitmq.html#create-rabbitmq-broker)
+Amazon MQ is a managed message broker service for that makes it easy to migrate to a message broker in the cloud. Use the AWS manual to create [RabbitMQ broker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/getting-started-rabbitmq.html#create-rabbitmq-broker)
 
 Edit `api-deployment.yaml` in `reportportal/templates/` folder
 
@@ -433,7 +435,7 @@ helm install <postgresql-release-name> --set postgresqlUsername=rpuser,postgresq
 At the last command:
 * postgresql-release-name - a name of your DB deployment inside a cluster
 * postgresqlPassword - is a password for a user which will be used by ReportPortal to connect to the database
-* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instanse. You can omit this value and then the chart will generate it for you
+* postgresqlPostgresPassword - is a password for 'postgres' user, which is a superuser for your PostgreSQL instance. You can omit this value and then the chart will generate it for you
 
 Once PostgreSQL has been deployed, copy address and port from output notes. Should be something like this:
 ```
@@ -752,7 +754,7 @@ Then http://af1010eb94bce011e9bb3306ea08f1137-459046881.eu-central-1.elb.amazona
 
 #### 11. Start work with ReportPortal
 
-Open the http://<LoadBalancer's EXTERNAL-IP address> page in your browser. Defalut login and password are:
+Open http://<LoadBalancer's EXTERNAL-IP address> (or domain if you set earlier) in your browser. Default login and password are:
 
 ```
 default
@@ -912,11 +914,13 @@ spec:
 kubectl create -f letsencrypt-clusterissuer.yaml
 ```
 
-#### 3. Update your ReportPortal installation with a new Ingress Configuration to be access at a TLS endpoint
+#### 3. Update your ReportPortal installation with a new Ingress Configuration to be accessed at a TLS endpoint
 
 With all the pre-requisite configuration in place, we can now do the pieces to request the TLS certificate
 
-#### 3.1. Add the certmanager annotation:
+#### Ingress
+
+If you use Ingress
 
 Add the following annotation to your Ingress configuration by editing ReportPortal Helm chart values.yaml file
 
@@ -943,7 +947,7 @@ The result in values.yaml
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 ```
 
-#### 3.2. Update your ReportPortal Ingress configuration:
+Update your ReportPortal Ingress configuration:
 
 Edit gateway-ingress.yaml template in your copy of ReportPortal Helm chart, and add the following right after 'spec'
 
@@ -969,8 +973,26 @@ spec:
 ..
 ```
 
-#### 3.3. Redeploy or upgrade your ReporPortal installation with Helm
+#### Istio Ingress Gateways
 
+If you use Istio Ingress Gateways
+
+Set tls enable to true, and credentialname to the name of your secret containing the certificate (Match the secretName if using cert-manager)
+
+Example
+```
+  istio:
+    enable: true
+    gateway:
+      create: true
+      name: reportportal-gateway
+      selector: "istio: ingressgateway"
+      tls:
+        enable: true
+        credentialname: istio-system-reportportal
+    virtualservice:
+      name: reportportal-vs
+```
 
 #### 4. Create a Certificate resource in Kubernetes with acme http challenge configured:
 
