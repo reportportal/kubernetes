@@ -53,17 +53,10 @@ spec:
         {{- else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{- end }}
-        {{- if .Values.rabbitmq.endpoint.ssl }}
         - name: RP_AMQP_API_ADDRESS
-          value: https://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
+          value: {{ ternary "https" "http" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: amqps://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
-        {{- else }}
-        - name: RP_AMQP_API_ADDRESS
-          value: http://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
-        - name: RP_AMQP_ADDRESSES
-          value: amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
-        {{- end }}
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
