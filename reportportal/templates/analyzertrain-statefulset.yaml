@@ -64,7 +64,7 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{ end }}
         - name: AMQP_URL
-          value: "amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/"
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: AMQP_VIRTUAL_HOST

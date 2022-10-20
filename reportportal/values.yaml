@@ -323,6 +323,8 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
+    ## Enable HTTPS and AMQPS
+    ssl: false
     address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
