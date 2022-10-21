@@ -20,7 +20,7 @@ The repo includes a number of Kubernetes and Helm configurations for installatio
 
 ## Requirements
 * Kubernetes v1.19-1.24
-* Helm Package Manager v3.4.0
+* Helm Package Manager v3.4+
 
 ## Usage notes and getting started
 * [ReportPortal v5](https://github.com/reportportal/kubernetes/tree/master/reportportal)
