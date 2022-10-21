@@ -1,4 +1,3 @@
-{{- if and (ge .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
 apiVersion: networking.k8s.io/v1
@@ -84,5 +83,4 @@ spec:
 {{ end }}
 status:
   loadBalancer: {}
-{{- end }}
 {{- end }}
