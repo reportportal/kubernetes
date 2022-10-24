@@ -11,6 +11,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- range $key, $value := .Values.metricsgatherer.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
         component: {{ include "reportportal.fullname" . }}-metrics-gatherer
       annotations:
         {{- range $key, $value := .Values.metricsgatherer.podAnnotations }}

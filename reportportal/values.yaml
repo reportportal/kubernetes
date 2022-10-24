@@ -18,6 +18,7 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -41,6 +42,7 @@ uat:
       cpu: 500m
       memory: 2048Mi
   sessionLiveTime: 86400
+  podLabels: {}
   podAnnotations: {}
   ## jvmArgs
   ## If you need to use a custom java keystore you can use it through jvmArgs
@@ -93,6 +95,7 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -139,6 +142,7 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -180,6 +184,7 @@ servicejobs:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -202,6 +207,7 @@ migrations:
     limits:
       cpu: 100m
       memory: 128Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -229,6 +235,7 @@ serviceanalyzer:
     limits:
       cpu: 100m
       memory: 512Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables
@@ -259,6 +266,7 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables
@@ -297,6 +305,7 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables

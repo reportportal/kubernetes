@@ -12,6 +12,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- range $key, $value := .Values.serviceanalyzer.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
         component: {{ include "reportportal.fullname" . }}-analyzer
       annotations:
         {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
