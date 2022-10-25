@@ -34,6 +34,18 @@ uat:
   name: uat
   tag: 5.7.0
   pullPolicy: Always
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 5
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 5
   resources:
     requests:
       cpu: 100m
@@ -66,7 +78,7 @@ uat:
   #  disktype: ssd
   serviceAccountName: ""
   ## Provide a secret containing sensitives data
-  ## eg. : provide a custom java keystore used in jvmArgs
+  ## EG.: provide a custom java keystore used in jvmArgs
   ##
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
   ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
@@ -114,10 +126,17 @@ serviceapi:
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
+    enabled: true
     initialDelaySeconds: 30
     periodSeconds: 20
     timeoutSeconds: 3
     failureThreshold: 20
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 5
   resources:
     requests:
       cpu: 500m
@@ -353,7 +372,7 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
-    ## Whether or not to use SSL
+    ## Whether to use SSL
     ssl: disable
     # ssl: disable / require
     password:
