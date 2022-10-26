@@ -78,10 +78,10 @@ spec:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ end }}
-        {{ if .Values.minio.enabled }}
+        {{- end }}
+        {{- if .Values.minio.enabled }}
         - name: DATASTORE_TYPE
           value: "minio"
         - name: DATASTORE_MINIO_ENDPOINT
@@ -115,13 +115,32 @@ spec:
         - name: DATASTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
        {{- end }}
-       {{ end }}
+       {{- end }}
         - name: RP_PROCESSING_LOG_MAXBATCHSIZE
           value: "2000"
         - name: RP_PROCESSING_LOG_MAXBATCHTIMEOUT
           value: "6000"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
+        - name: RP_ELASTICSEARCH_HOST
+          value: "{{ .Values.elasticsearch.endpoint }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: RP_ELASTICSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: RP_ELASTICSEARCH_USERNAME
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}"
+        {{- end }}
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
         name: jobs
         ports:
@@ -134,6 +153,30 @@ spec:
           limits:
             cpu: {{ .Values.servicejobs.resources.limits.cpu }}
             memory: {{ .Values.servicejobs.resources.limits.memory }}
+        {{- if .Values.servicejobs.readinessProbe }}
+        {{- if .Values.servicejobs.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 8585
+          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 20 }}
+          timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 20 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.servicejobs.livenessProbe }}
+        {{- if .Values.servicejobs.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 8585
+          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 20 }}
+          timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 5 }}
+        {{- end }}
+        {{- end }}
 {{- if .Values.servicejobs.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.servicejobs.nodeSelector }}
