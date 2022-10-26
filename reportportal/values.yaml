@@ -36,9 +36,9 @@ uat:
   pullPolicy: Always
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 3
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
     failureThreshold: 5
   livenessProbe:
     enabled: true
@@ -180,16 +180,16 @@ servicejobs:
   pullPolicy: Always
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 20
-    timeoutSeconds: 3
-    failureThreshold: 20
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 20
+    initialDelaySeconds: 60
+    periodSeconds: 40
     timeoutSeconds: 5
     failureThreshold: 5
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
   coreJobs:
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
