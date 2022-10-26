@@ -42,10 +42,10 @@ uat:
     failureThreshold: 5
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 20
+    initialDelaySeconds: 60
+    periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 100m
