@@ -39,7 +39,7 @@ uat:
     initialDelaySeconds: 60
     periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 5
+    failureThreshold: 10
   livenessProbe:
     enabled: true
     initialDelaySeconds: 60
