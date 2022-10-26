@@ -29,10 +29,10 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
-        {{ if .Values.uat.jvmArgs }}
+        {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
-        {{ end }}
+        {{- end }}
         - name: RP_SESSION_LIVE
           value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
@@ -44,24 +44,24 @@ spec:
         - name: RP_DB_USER
           value: "{{ .Values.postgresql.endpoint.user }}"
         - name: RP_DB_PASS
-        {{ if .Values.postgresql.SecretName }}
+        {{- if .Values.postgresql.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
-        {{ end }}
-        {{ if .Values.minio.enabled }}
+        {{- end }}
+        {{- if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
           value: "minio"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
-        {{ if .Values.minio.region }}
+        {{- if .Values.minio.region }}
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"
-        {{ end }}
-        {{ if .Values.minio.secretName }}
+        {{- end }}
+        {{- if .Values.minio.secretName }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           valueFrom:
             secretKeyRef:
@@ -72,25 +72,25 @@ spec:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
               key: "{{ .Values.minio.secretkeyName }}"
-        {{ else }}
+        {{- else }}
         - name: RP_BINARYSTORE_MINIO_ACCESSKEY
           value: "{{ .Values.minio.accesskey }}"
         - name: RP_BINARYSTORE_MINIO_SECRETKEY
           value: "{{ .Values.minio.secretkey }}"
-        {{ end }}
-        {{ if .Values.minio.bucketPrefix}}
+        {{- end }}
+        {{- if .Values.minio.bucketPrefix}}
         - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
           value: "{{ .Values.minio.bucketPrefix }}"
-        {{ end }}
-        {{ if .Values.minio.defaultBucketName}}
+        {{- end }}
+        {{- if .Values.minio.defaultBucketName}}
         - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
           value: "{{ .Values.minio.defaultBucketName }}"
-        {{ end }}
-        {{ if .Values.minio.integrationSaltPath }}
+        {{- end }}
+        {{- if .Values.minio.integrationSaltPath }}
         - name: RP_INTEGRATION_SALT_PATH
           value: "{{ .Values.minio.integrationSaltPath }}"
-        {{ end }}
-        {{ end }}
+        {{- end }}
+        {{- end }}
         name: uat
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
         ports:
@@ -103,14 +103,30 @@ spec:
           limits:
             cpu: {{ .Values.uat.resources.limits.cpu }}
             memory: {{ .Values.uat.resources.limits.memory }}
+        {{- if .Values.uat.readinessProbe }}
+        {{- if .Values.uat.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "{{ .Values.rp.healthEndpoint }}"
             port: 9999
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 3
-          failureThreshold: 5
+          initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 60 }}
+          periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 40 }}
+          timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold | default 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.uat.livenessProbe }}
+        {{- if .Values.uat.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 9999
+          initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
+          periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
+          timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 10 }}
+        {{- end }}
+        {{- end }}
         volumeMounts:
           {{- if .Values.uat.secret.enabled }}
           - mountPath: {{ .Values.uat.secret.mountPath }}

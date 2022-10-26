@@ -137,14 +137,30 @@ spec:
           limits:
             cpu: {{ .Values.serviceapi.resources.limits.cpu }}
             memory: {{ .Values.serviceapi.resources.limits.memory }}
+        {{- if .Values.serviceapi.readinessProbe }}
+        {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "{{ .Values.rp.healthEndpoint }}"
             port: 8585
-          initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
+          timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold | default 20 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.serviceapi.livenessProbe }}
+        {{- if .Values.serviceapi.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: "{{ .Values.rp.healthEndpoint }}"
+            port: 8585
+          initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
+          timeoutSeconds: {{ .Values.serviceapi.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 5 }}
+        {{- end }}
+        {{- end }}
 {{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceapi.nodeSelector }}
