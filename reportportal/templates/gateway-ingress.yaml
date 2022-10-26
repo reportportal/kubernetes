@@ -48,6 +48,13 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
   {{- end -}}
 {{ else }}
   - http:
@@ -80,6 +87,13 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
 {{ end }}
 status:
   loadBalancer: {}
