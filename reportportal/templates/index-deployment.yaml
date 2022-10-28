@@ -29,6 +29,8 @@ spec:
       - env:
         - name: K8S_MODE
           value: "true"
+        - name: RESOURCE_PATH
+          value: {{ .Values.ingress.path }}
         ### Added for Skaffold local dev environment support
         {{ if .Values.serviceindex.image }}
         image: "{{ .Values.serviceindex.image }}"

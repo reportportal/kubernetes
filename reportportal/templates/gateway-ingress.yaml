@@ -20,7 +20,11 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - path: {{ .Values.ingress.path }}/()?(.*)
+      {{- if .Values.ingress.path }}
+      - path: {{ .Values.ingress.path }}/?()?(.*)
+      {{- else }}
+      - path: /()?(.*)
+      {{- end }}
         pathType: Prefix
         backend:
           service:
@@ -59,7 +63,11 @@ spec:
 {{ else }}
   - http:
       paths:
-      - path: {{ .Values.ingress.path }}/()?(.*)
+      {{- if .Values.ingress.path }}
+      - path: {{ .Values.ingress.path }}/?()?(.*)
+      {{- else }}
+      - path: /()?(.*)
+      {{- end }}
         pathType: Prefix
         backend:
           service:
