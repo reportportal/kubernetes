@@ -425,6 +425,9 @@ ingress:
   usedomainname: false
   hosts:
     - reportportal.k8.com
+  # Application path as a prefix, should start from '/' and be without trailing '/'
+  # TODO: remove path before merge
+  path: "/reportportal"
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"

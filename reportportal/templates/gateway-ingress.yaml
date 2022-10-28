@@ -20,35 +20,35 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - path: /()?(.*)
+      - path: {{ .Values.ingress.path }}/()?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
+      - path: {{ .Values.ingress.path }}/(ui)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
+      - path: {{ .Values.ingress.path }}/(uat)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
+      - path: {{ .Values.ingress.path }}/(api)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-      - path: /(jobs)/?(.*)
+      - path: {{ .Values.ingress.path }}/(jobs)/?(.*)
         pathType: Prefix
         backend:
           service:
@@ -59,35 +59,35 @@ spec:
 {{ else }}
   - http:
       paths:
-      - path: /()?(.*)
+      - path: {{ .Values.ingress.path }}/()?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
+      - path: {{ .Values.ingress.path }}/(ui)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
+      - path: {{ .Values.ingress.path }}/(uat)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
+      - path: {{ .Values.ingress.path }}/(api)/?(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-      - path: /(jobs)/?(.*)
+      - path: {{ .Values.ingress.path }}/(jobs)/?(.*)
         pathType: Prefix
         backend:
           service:
