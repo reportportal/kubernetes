@@ -9,7 +9,7 @@
 serviceindex:
   name: index
   repository: reportportal/service-index
-  tag: 5.0.11
+  tag: 5.7.3
   pullPolicy: Always
   resources:
     requests:
@@ -18,6 +18,7 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -31,8 +32,20 @@ serviceindex:
 uat:
   repository: reportportal/service-authorization
   name: uat
-  tag: 5.7.0
+  tag: 5.7.3
   pullPolicy: Always
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 100m
@@ -41,6 +54,7 @@ uat:
       cpu: 500m
       memory: 2048Mi
   sessionLiveTime: 86400
+  podLabels: {}
   podAnnotations: {}
   ## jvmArgs
   ## If you need to use a custom java keystore you can use it through jvmArgs
@@ -64,7 +78,7 @@ uat:
   #  disktype: ssd
   serviceAccountName: ""
   ## Provide a secret containing sensitives data
-  ## eg. : provide a custom java keystore used in jvmArgs
+  ## EG.: provide a custom java keystore used in jvmArgs
   ##
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
   ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
@@ -83,7 +97,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.7.2
+  tag: 5.7.3
   name: ui
   pullPolicy: Always
   resources:
@@ -93,6 +107,7 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -106,15 +121,22 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.2
+  tag: 5.7.3
   name: api
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
+    enabled: true
     initialDelaySeconds: 30
     periodSeconds: 20
     timeoutSeconds: 3
     failureThreshold: 20
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 5
   resources:
     requests:
       cpu: 500m
@@ -139,6 +161,7 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -152,9 +175,21 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.2
+  tag: 5.7.3
   name: jobs
   pullPolicy: Always
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
   coreJobs:
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
@@ -180,6 +215,7 @@ servicejobs:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -193,7 +229,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.7.0
+  tag: 5.7.3
   pullPolicy: Always
   resources:
     requests:
@@ -202,6 +238,7 @@ migrations:
     limits:
       cpu: 100m
       memory: 128Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## Define which Nodes the Pods are scheduled on.
@@ -218,7 +255,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.2
+  tag: 5.7.3
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -229,6 +266,7 @@ serviceanalyzer:
     limits:
       cpu: 100m
       memory: 512Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables
@@ -259,6 +297,7 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables
@@ -282,7 +321,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 1.1.20
+  tag: 5.7.3
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -297,6 +336,7 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
+  podLabels: {}
   podAnnotations: {}
   securityContext: {}
   ## External environment variables
@@ -323,6 +363,8 @@ rabbitmq:
   installdep:
     enable: false
   endpoint:
+    ## Enable HTTPS and AMQPS
+    ssl: false
     address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
@@ -342,7 +384,7 @@ postgresql:
     port: 5432
     user: rpuser
     dbName: reportportal
-    ## Whether or not to use SSL
+    ## Whether to use SSL
     ssl: disable
     # ssl: disable / require
     password:

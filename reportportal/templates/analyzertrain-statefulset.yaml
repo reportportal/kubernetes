@@ -12,6 +12,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- range $key, $value := .Values.serviceanalyzertrain.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
         component: {{ include "reportportal.fullname" . }}-analyzer-train
       annotations:
         {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
@@ -31,12 +34,12 @@ spec:
           value: "train"
         - name: UWSGI_WORKERS
           value: "1"
-        {{ if .Values.minio.enabled }}
+        {{- if .Values.minio.enabled }}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
         - name: MINIO_SHORT_HOST
           value: "{{ .Values.minio.endpointshort }}"
-        {{ if .Values.minio.secretName }}
+        {{- if .Values.minio.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
@@ -47,24 +50,24 @@ spec:
             secretKeyRef:
               name: "{{ .Values.minio.secretName }}"
               key: "{{ .Values.minio.secretkeyName }}"
-       {{ else }}
+       {{- else }}
         - name: MINIO_ACCESS_KEY
           value: "{{ .Values.minio.accesskey }}"
         - name: MINIO_SECRET_KEY
           value: "{{ .Values.minio.secretkey }}"
-       {{ end }}
-       {{ end }}
+       {{- end }}
+       {{- end }}
         - name: RP_AMQP_PASS
-        {{ if .Values.rabbitmq.SecretName }}
+        {{- if .Values.rabbitmq.SecretName }}
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
-        {{ else }}
+        {{- else }}
           value: "{{ .Values.rabbitmq.endpoint.password }}"
-        {{ end }}
+        {{- end }}
         - name: AMQP_URL
-          value: "amqp://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/"
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: AMQP_VIRTUAL_HOST

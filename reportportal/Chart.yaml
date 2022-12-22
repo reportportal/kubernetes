@@ -1,8 +1,8 @@
-apiVersion: v1
-appVersion: "5.7.2"
+apiVersion: v2
+appVersion: "5.7.3"
 description: ReportPortal.io AI-powered Test Automation Dashboard
 name: reportportal
-version: 5.7.2
+version: 5.7.3
 sources:
   - https://github.com/reportportal/kubernetes
 keywords:
@@ -10,4 +10,23 @@ keywords:
 maintainers:
   - name: reportportal
     email: support@reportportal.io
-engine: gotpl
+dependencies:
+  - name: postgresql
+    version: 10.9.4
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    condition: postgresql.installdep.enable
+
+  - name: rabbitmq
+    version: 7.5.6
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    condition: rabbitmq.installdep.enable
+
+  - name: elasticsearch
+    version: 7.10.2
+    repository: https://helm.elastic.co
+    condition: elasticsearch.installdep.enable
+
+  - name: minio
+    version: 7.1.9
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    condition: minio.installdep.enable

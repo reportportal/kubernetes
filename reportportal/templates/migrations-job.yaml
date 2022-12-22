@@ -14,6 +14,9 @@ spec:
   template:
     metadata:
       labels:
+        {{- range $key, $value := .Values.migrations.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
         component: {{ include "reportportal.fullname" . }}-migrations
       annotations:
         {{- range $key, $value := .Values.migrations.podAnnotations }}

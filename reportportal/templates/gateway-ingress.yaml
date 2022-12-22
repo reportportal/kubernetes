@@ -1,4 +1,3 @@
-{{- if and (ge .Capabilities.KubeVersion.Major "1") (ge .Capabilities.KubeVersion.Minor "19") }}
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
 apiVersion: networking.k8s.io/v1
@@ -49,6 +48,13 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
   {{- end -}}
 {{ else }}
   - http:
@@ -81,8 +87,14 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
 {{ end }}
 status:
   loadBalancer: {}
-{{- end }}
 {{- end }}
