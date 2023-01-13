@@ -122,25 +122,6 @@ spec:
           value: "6000"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
-        - name: RP_ELASTICSEARCH_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
-        - name: RP_ELASTICSEARCH_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
-              key: "username"
-        - name: RP_ELASTICSEARCH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
-              key: "password"
-        {{- else }}
-        - name: RP_ELASTICSEARCH_USERNAME
-          value: "{{ .Values.elasticsearch.user }}"
-        - name: RP_ELASTICSEARCH_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}"
-        {{- end }}
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
         name: jobs
         ports:
