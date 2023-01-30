@@ -144,6 +144,9 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
+  ## jvmArgs
+  ## If you need to use a custom java keystore you can use it through jvmArgs
+  ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   ## Number of queues
   ## Where "totalNumber" is the total number of queues
@@ -172,6 +175,21 @@ serviceapi:
   serviceAccountName: ""
   service:
     portName: ""
+  ## Provide a secret containing sensitives data
+  ## eg. : provide a custom java keystore used in jvmArgs
+  ##
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## 
+  ## Generate base64 data and paste it in your values.yaml :
+  ## cat custom-pki.jks | base64 -w 
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: {}
+    #  custom-pki.jks: <base64-data>
 
 servicejobs:
   repository: reportportal/service-jobs

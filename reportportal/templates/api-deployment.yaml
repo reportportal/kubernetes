@@ -161,6 +161,12 @@ spec:
           failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 5 }}
         {{- end }}
         {{- end }}
+        volumeMounts:
+          {{- if .Values.serviceapi.secret.enabled }}
+          - mountPath: {{ .Values.serviceapi.secret.mountPath }}
+            name: {{ template "reportportal.name" . }}-serviceapi-secret
+            readOnly: {{ .Values.serviceapi.secret.readOnly }}
+          {{- end }}
 {{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceapi.nodeSelector }}
@@ -174,3 +180,9 @@ spec:
       tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}
+      volumes:
+        {{- if .Values.serviceapi.secret.enabled }}
+        - name: {{ template "reportportal.name" . }}-serviceapi-secret
+          secret:
+            secretName: {{ template "reportportal.name" . }}-serviceapi-secret
+        {{- end }}
