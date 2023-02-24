@@ -29,6 +29,10 @@ spec:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
+        {{- if .Values.elasticsearch.doubleEntry.enable }}
+        - name: RP_ELASTICSEARCHLOGMESSAGE_HOST
+          value: "true"
+        {{- end}}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
         - name: RP_REQUESTLOGGING
