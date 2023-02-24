@@ -29,6 +29,14 @@ spec:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
+        {{- if .Values.elasticsearch.doubleEntry.enable }}
+        - name: RP_ELASTICSEARCH_HOST
+          value: "{{ .Values.elasticsearch.endpoint }}"
+        - name: RP_ELASTICSEARCH_USERNAME
+          value: "{{ .Values.elasticsearch.user }}"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          value: "{{ .Values.elasticsearch.password }}"
+        {{- end}}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
