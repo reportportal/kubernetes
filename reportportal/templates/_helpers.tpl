@@ -51,3 +51,15 @@ Create the name of the service account to use
     {{ default "default" .Values.rbac.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Generate image pull secrets
+*/}}
+{{- define "reportportal.imagePullSecrets" -}}
+{{- if .Values.global.imagePullSecrets }}
+imagePullSecrets:
+{{- range .Values.global.imagePullSecrets }}
+  - name: {{ . }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

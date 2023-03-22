@@ -20,6 +20,11 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- if .Values.global }}
+      {{- if .Values.global.imagePullSecrets }}
+      {{- include "reportportal.imagePullSecrets" . | nindent 6 }}
+      {{- end }}
+      {{- end }}
       initContainers:
       {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
