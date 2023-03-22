@@ -6,6 +6,11 @@
 ##
 # fullnameOverride:
 
+## imagePullSecrets for all Reportportal images
+# global:
+#   imagePullSecrets:
+#     - your_image_pull_secret_one
+
 serviceindex:
   name: index
   repository: reportportal/service-index
