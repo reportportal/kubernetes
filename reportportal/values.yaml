@@ -428,6 +428,10 @@ minio:
 ## If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
 ## If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
 ingress:
+  ## If the cluster has multiple ingress controllers set the ingressClassName to the proper value, default value is "nginx"
+  ##
+  # spec:
+  #   ingressClassName: 
   enable: true
   ## IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
   usedomainname: false
