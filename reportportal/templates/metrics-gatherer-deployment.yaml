@@ -91,7 +91,7 @@ spec:
         image: "{{ .Values.metricsgatherer.repository }}:{{ .Values.metricsgatherer.tag }}"
         name: metrics-gatherer
         ports:
-        - containerPort: 5001
+        - containerPort: 5000
           name: metricsgatherer
         resources:
           requests:

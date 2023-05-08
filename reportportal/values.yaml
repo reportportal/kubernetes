@@ -54,6 +54,9 @@ uat:
       cpu: 500m
       memory: 2048Mi
   sessionLiveTime: 86400
+  superadminInitPasswd:
+    auto: true
+    password: ""
   podLabels: {}
   podAnnotations: {}
   ## jvmArgs
