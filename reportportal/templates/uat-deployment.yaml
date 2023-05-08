@@ -30,7 +30,7 @@ spec:
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
         {{- if .Values.uat.superadminInitPasswd.auto }}
-        - name: RP_ADMIN_PASSWORD
+        - name: RP_INITIAL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
               name: "{{ template "reportportal.name" . }}-superadmin-passwd"
