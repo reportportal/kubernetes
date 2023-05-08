@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "reportportal.fullname" . }}-analyzer
+  name: {{ include "reportportal.fullname" . }}-analyzer-train
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-analyzer
-  serviceName: {{ include "reportportal.fullname" . }}-analyzer
+      component: {{ include "reportportal.fullname" . }}-analyzer-train
+  serviceName: {{ include "reportportal.fullname" . }}-analyzertrain
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.serviceanalyzer.podLabels }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-analyzer
+        component: {{ include "reportportal.fullname" . }}-analyzer-train
       annotations:
-        {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
@@ -27,10 +27,14 @@ spec:
       {{- end }}
       containers:
       - env:
-{{- if .Values.serviceanalyzer.extraEnvs }}
-{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
+{{- if .Values.serviceanalyzertrain.extraEnvs }}
+{{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 8 }}
 {{- end }}
-      {{- if .Values.minio.enabled }}
+        - name: INSTANCE_TASK_TYPE
+          value: "train"
+        - name: UWSGI_WORKERS
+          value: "1"
+        {{- if .Values.minio.enabled }}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
         - name: MINIO_SHORT_HOST
@@ -87,32 +91,28 @@ spec:
         - name: ES_PASSWORD
           value: "{{ .Values.elasticsearch.password }}" 
         {{- end }}
-        {{- if .Values.serviceanalyzer.uwsgiWorkers }}
-        - name: UWSGI_WORKERS
-          value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
-        {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
         - containerPort: 5001
-          name: analyzercore
+          name: analyzertrain
         resources:
           requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
+            cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
-{{- if .Values.serviceanalyzer.nodeSelector }}
+            cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
+{{- if .Values.serviceanalyzertrain.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzertrain.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName }}
+{{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}

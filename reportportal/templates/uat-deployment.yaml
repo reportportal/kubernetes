@@ -32,7 +32,7 @@ spec:
         - name: RP_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ template "reportportal.name" . }}-superadmin-pass"
+              name: "{{ template "reportportal.name" . }}-superadmin-passwd"
               key: "superadminPasswd"
         {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
