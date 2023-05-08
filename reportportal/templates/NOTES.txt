@@ -1,4 +1,4 @@
-
+###
 CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
@@ -6,8 +6,7 @@ APP VERSION: {{ .Chart.AppVersion }}
 ReportPortal is now available at:
 {{ toYaml .Values.ingress.hosts | indent 4 }}
 
-
 Superadmin credentials:
-
-echo "$(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "reportportal.name" . }}-superadmin-passwd -o jsonpath="{.data..data.superadmin-passwd}" | base64 -d)"
-
+{{- if .Values.uat.superadminInitPasswd.auto }}
+echo "$(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "reportportal.name" . }}-superadmin-passwd -o jsonpath="{.data.superadmin-passwd}" | base64 -d)"
+{{- end}}
