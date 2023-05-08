@@ -26,83 +26,235 @@ spec:
 {{ toYaml .Values.extraInitContainers | indent 8 }}
       {{- end }}
       containers:
-      - env:
-{{- if .Values.serviceanalyzer.extraEnvs }}
-{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
+        - name: analyzer-core
+          image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+          ports:
+          - containerPort: 5001
+            name: analyzer-core
+          resources:
+            requests:
+              cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
+              memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
+              memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+          env:
+  {{- if .Values.serviceanalyzer.extraEnvs }}
+  {{ toYaml .Values.serviceanalyzer.extraEnvs | indent 12 }}
+  {{- end }}
+          {{- if .Values.minio.enabled }}
+            - name: ANALYZER_BINARYSTORE_TYPE
+              value: "minio"
+            - name: MINIO_SHORT_HOST
+              value: "{{ .Values.minio.endpointshort }}"
+            {{- if .Values.minio.secretName }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.minio.secretName }}"
+                  key: "{{ .Values.minio.accesskeyName }}"
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.minio.secretName }}"
+                  key: "{{ .Values.minio.secretkeyName }}"
+          {{- else }}
+            - name: MINIO_ACCESS_KEY
+              value: "{{ .Values.minio.accesskey }}"
+            - name: MINIO_SECRET_KEY
+              value: "{{ .Values.minio.secretkey }}"
+          {{- end }}
+          {{- end }}
+            - name: RP_AMQP_PASS
+            {{- if .Values.rabbitmq.SecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.rabbitmq.SecretName }}"
+                  key: "rabbitmq-password"
+            {{- else }}
+              value: "{{ .Values.rabbitmq.endpoint.password }}"
+            {{- end }}
+            - name: AMQP_URL
+              value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
+            - name: AMQP_EXCHANGE_NAME
+              value: "analyzer-default"
+            - name: AMQP_VIRTUAL_HOST
+              value: "{{ .Values.rabbitmq.vhost }}"
+            - name: ES_HOSTS
+              value: "{{ .Values.elasticsearch.endpoint }}"
+            {{- if .Values.elasticsearch.secretName }}
+            - name: ES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "username"
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "password"
+            {{- else }}
+            - name: ES_USER
+              value: "{{ .Values.elasticsearch.user }}"
+            - name: ES_PASSWORD
+              value: "{{ .Values.elasticsearch.password }}" 
+            {{- end }}
+            {{- if .Values.serviceanalyzer.uwsgiWorkers }}
+            - name: UWSGI_WORKERS
+              value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
+            {{- end }}
+        - name: analyzer-train
+          image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+          ports:
+          - containerPort: 5001
+            name: analyzer-train
+          resources:
+            requests:
+              cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
+              memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
+              memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
+          env:
+{{- if .Values.serviceanalyzertrain.extraEnvs }}
+{{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 12 }}
 {{- end }}
-      {{- if .Values.minio.enabled }}
-        - name: ANALYZER_BINARYSTORE_TYPE
-          value: "minio"
-        - name: MINIO_SHORT_HOST
-          value: "{{ .Values.minio.endpointshort }}"
-        {{- if .Values.minio.secretName }}
-        - name: MINIO_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.accesskeyName }}"
-        - name: MINIO_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.secretkeyName }}"
-       {{- else }}
-        - name: MINIO_ACCESS_KEY
-          value: "{{ .Values.minio.accesskey }}"
-        - name: MINIO_SECRET_KEY
-          value: "{{ .Values.minio.secretkey }}"
-       {{- end }}
-       {{- end }}
-        - name: RP_AMQP_PASS
-        {{- if .Values.rabbitmq.SecretName }}
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.rabbitmq.SecretName }}"
-              key: "rabbitmq-password"
-        {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
-        {{- end }}
-        - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
-        - name: AMQP_EXCHANGE_NAME
-          value: "analyzer-default"
-        - name: AMQP_VIRTUAL_HOST
-          value: "{{ .Values.rabbitmq.vhost }}"
-        - name: ES_HOSTS
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
-        - name: ES_USER
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
-              key: "username"
-        - name: ES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
-              key: "password"
-        {{- else }}
-        - name: ES_USER
-          value: "{{ .Values.elasticsearch.user }}"
-        - name: ES_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}" 
-        {{- end }}
-        {{- if .Values.serviceanalyzer.uwsgiWorkers }}
-        - name: UWSGI_WORKERS
-          value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
-        {{- end }}
-        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
-        name: analyzer
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-        resources:
-          requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+            - name: INSTANCE_TASK_TYPE
+              value: "train"
+            - name: UWSGI_WORKERS
+              value: "1"
+            {{- if .Values.minio.enabled }}
+            - name: ANALYZER_BINARYSTORE_TYPE
+              value: "minio"
+            - name: MINIO_SHORT_HOST
+              value: "{{ .Values.minio.endpointshort }}"
+            {{- if .Values.minio.secretName }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.minio.secretName }}"
+                  key: "{{ .Values.minio.accesskeyName }}"
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.minio.secretName }}"
+                  key: "{{ .Values.minio.secretkeyName }}"
+          {{- else }}
+            - name: MINIO_ACCESS_KEY
+              value: "{{ .Values.minio.accesskey }}"
+            - name: MINIO_SECRET_KEY
+              value: "{{ .Values.minio.secretkey }}"
+          {{- end }}
+          {{- end }}
+            - name: RP_AMQP_PASS
+            {{- if .Values.rabbitmq.SecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.rabbitmq.SecretName }}"
+                  key: "rabbitmq-password"
+            {{- else }}
+              value: "{{ .Values.rabbitmq.endpoint.password }}"
+            {{- end }}
+            - name: AMQP_URL
+              value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
+            - name: AMQP_EXCHANGE_NAME
+              value: "analyzer-default"
+            - name: AMQP_VIRTUAL_HOST
+              value: "{{ .Values.rabbitmq.vhost }}"
+            - name: ES_HOSTS
+              value: "{{ .Values.elasticsearch.endpoint }}"
+            {{- if .Values.elasticsearch.secretName }}
+            - name: ES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "username"
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "password"
+            {{- else }}
+            - name: ES_USER
+              value: "{{ .Values.elasticsearch.user }}"
+            - name: ES_PASSWORD
+              value: "{{ .Values.elasticsearch.password }}" 
+            {{- end }}
+        - name: metrics-gatherer
+          image: "{{ .Values.metricsgatherer.repository }}:{{ .Values.metricsgatherer.tag }}"
+          ports:
+          - containerPort: 5000
+            name: metrics-gatherer
+          resources:
+            requests:
+              cpu: {{ .Values.metricsgatherer.resources.requests.cpu }}
+              memory: {{ .Values.metricsgatherer.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.metricsgatherer.resources.limits.cpu }}
+              memory: {{ .Values.metricsgatherer.resources.limits.memory }}
+          env:
+{{- if .Values.metricsgatherer.extraEnvs }}
+{{ toYaml .Values.metricsgatherer.extraEnvs | indent 12 }}
+{{- end }}
+            - name: RP_AMQP_PASS
+            {{ if .Values.rabbitmq.SecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.rabbitmq.SecretName }}"
+                  key: "rabbitmq-password"
+            {{ else }}
+              value: "{{ .Values.rabbitmq.endpoint.password }}"
+            {{ end }}
+            - name: AMQP_URL
+              value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
+            - name: AMQP_VIRTUAL_HOST
+              value: "{{ .Values.rabbitmq.vhost }}"
+            - name: LOGGING_LEVEL
+              value: "{{ .Values.metricsgatherer.loggingLevel }}"
+            - name: ES_HOST
+              value: "{{ .Values.elasticsearch.endpoint }}"
+            {{- if .Values.elasticsearch.secretName }}
+            - name: ES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "username"
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.elasticsearch.secretName }}"
+                  key: "password"
+            {{- else }}
+            - name: ES_USER
+              value: "{{ .Values.elasticsearch.user }}"
+            - name: ES_PASSWORD
+              value: "{{ .Values.elasticsearch.password }}" 
+            {{- end }}
+            - name: POSTGRES_HOST
+              value: "{{ .Values.postgresql.endpoint.address }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.postgresql.endpoint.port }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.postgresql.endpoint.dbName }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgresql.endpoint.user }}"
+            - name: POSTGRES_PASSWORD
+            {{- if .Values.postgresql.SecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.postgresql.SecretName }}"
+                  key: "postgresql-password"
+            {{- else }}
+              value: "{{ .Values.postgresql.endpoint.password }}"
+            {{- end }}
+            - name: ALLOWED_START_TIME
+              value: "{{ .Values.metricsgatherer.timeManagement.starttime }}"
+            - name: ALLOWED_END_TIME
+              value: "{{ .Values.metricsgatherer.timeManagement.endtime }}"
+            - name: MAX_DAYS_STORE
+              value: "{{ .Values.metricsgatherer.maxDaysStore }}"
+            - name: TZ
+              value: "{{ .Values.metricsgatherer.timeManagement.timezone }}"
 {{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}

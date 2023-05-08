@@ -5,10 +5,16 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   ports:
-  - name: {{ $.Values.serviceanalyzer.service.portName | default "headless" }}
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
-  selector:
-    component: {{ include "reportportal.fullname" . }}-analyzer
+    - name: {{ $.Values.serviceanalyzer.service.portName | default "analyzer-core" }}
+      port: 5001
+      protocol: TCP
+      targetPort: analyzer-core
+    - name: {{ $.Values.serviceanalyzertrain.service.portName | default "analyzer-train" }}
+      port: 5002
+      protocol: TCP
+      targetPort: analyzer-train
+    - name: {{ $.Values.serviceanalyzertrain.service.portName | default "metrics-gatherer" }}
+      port: 5003
+      protocol: TCP
+      targetPort: metrics-gatherer
   type: ClusterIP

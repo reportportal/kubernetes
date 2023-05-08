@@ -29,6 +29,11 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        - name: RP_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ template "reportportal.name" . }}-superadmin-pass"
+              key: "superadminPasswd"
         {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
