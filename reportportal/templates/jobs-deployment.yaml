@@ -138,9 +138,9 @@ spec:
        {{- end }}
        {{- end }}
         - name: RP_PROCESSING_LOG_MAXBATCHSIZE
-          value: "2000"
+          value: "{{ .Values.servicejobs.logProcessing.maxBatchSize }}"
         - name: RP_PROCESSING_LOG_MAXBATCHTIMEOUT
-          value: "6000"
+          value: "{{ .Values.servicejobs.logProcessing.maxBatchTimeout }}"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"

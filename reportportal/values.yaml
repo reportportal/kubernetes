@@ -200,6 +200,11 @@ servicejobs:
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
   chunksize: 1000
+  ## Used for Double Entry. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
+  ## Processing logs by Jobs service (log per ms).
+  logProcessing:
+    maxBatchSize: 2000
+    maxBatchTimeout: 6000
   resources:
     requests:
       cpu: 100m
