@@ -54,8 +54,13 @@ uat:
       cpu: 500m
       memory: 2048Mi
   sessionLiveTime: 86400
+  samlSessionLiveTime: 4320
+  ## The initial password for superadmin user on FIRST launch. If the password was changed from the UI, 
+  ## this value can't change the password on redeployments.
   superadminInitPasswd:
+    ## If 'true', the secret will be generated from 20 random characters.
     auto: true
+    ## Specify if auto = false
     password: ""
   podLabels: {}
   podAnnotations: {}

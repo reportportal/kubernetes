@@ -39,6 +39,8 @@ spec:
         - name: RP_INITIAL_ADMIN_PASSWORD
           value: "{{ .Values.uat.superadminInitPasswd.password }}"
         {{- end }}
+        - name: RP_SAML_SESSION-LIVE
+          value: "{{ .Values.uat.samlSessionLiveTime }}"
         {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
