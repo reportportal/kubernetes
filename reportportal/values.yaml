@@ -7,9 +7,9 @@
 # fullnameOverride:
 
 serviceindex:
-  name: index
   repository: reportportal/service-index
-  tag: 5.7.3
+  tag: 5.8.0
+  name: index
   pullPolicy: Always
   resources:
     requests:
@@ -31,8 +31,8 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
+  tag: 5.8.0
   name: uat
-  tag: 5.7.4
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -105,7 +105,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.7.4
+  tag: 5.8.0
   name: ui
   pullPolicy: Always
   resources:
@@ -129,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.4
+  tag: 5.8.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -183,7 +183,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.4
+  tag: 5.8.0
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -242,7 +242,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.7.3
+  tag: 5.8.0
   pullPolicy: Always
   resources:
     requests:
@@ -268,7 +268,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.4
+  tag: 5.7.5
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -334,7 +334,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 5.7.3
+  tag: 5.7.4
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -421,8 +421,9 @@ elasticsearch:
   password:
 
 minio:
-  secretName: ""
   enabled: true
+  type: minio
+  secretName: ""
   installdep:
     enable: false
   endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000

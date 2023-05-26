@@ -104,7 +104,7 @@ spec:
         {{- end }}
         {{- if .Values.minio.enabled }}
         - name: DATASTORE_TYPE
-          value: "minio"
+          value: "{{ .Values.minio.type }}"
         - name: DATASTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         {{- if .Values.minio.bucketPrefix }}
