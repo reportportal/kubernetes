@@ -90,7 +90,7 @@ spec:
         {{- end }}
         {{- if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
-          value: "minio"
+          value: "{{ .Values.minio.type }}"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         {{- if .Values.minio.region }}

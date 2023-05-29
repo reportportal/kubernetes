@@ -32,10 +32,23 @@ spec:
         {{- if .Values.elasticsearch.doubleEntry.enable }}
         - name: RP_ELASTICSEARCH_HOST
           value: "{{ .Values.elasticsearch.endpoint }}"
+        {{- if .Values.elasticsearch.secretName }}
+        - name: RP_ELASTICSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "username"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.elasticsearch.secretName }}"
+              key: "password"
+        {{- else }}
         - name: RP_ELASTICSEARCH_USERNAME
           value: "{{ .Values.elasticsearch.user }}"
         - name: RP_ELASTICSEARCH_PASSWORD
           value: "{{ .Values.elasticsearch.password }}"
+        {{- end}}
         {{- end}}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
@@ -91,11 +104,11 @@ spec:
         {{- end }}
         {{- if .Values.minio.enabled }}
         - name: DATASTORE_TYPE
-          value: "minio"
+          value: "{{ .Values.minio.type }}"
         - name: DATASTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         {{- if .Values.minio.bucketPrefix }}
-        - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
+        - name: DATASTORE_S3_BUCKETPREFIX
           value: "{{ .Values.minio.bucketPrefix }}"
         {{- end }}
         {{- if .Values.minio.defaultBucketName }}
@@ -125,9 +138,9 @@ spec:
        {{- end }}
        {{- end }}
         - name: RP_PROCESSING_LOG_MAXBATCHSIZE
-          value: "2000"
+          value: "{{ .Values.servicejobs.logProcessing.maxBatchSize }}"
         - name: RP_PROCESSING_LOG_MAXBATCHTIMEOUT
-          value: "6000"
+          value: "{{ .Values.servicejobs.logProcessing.maxBatchTimeout }}"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"

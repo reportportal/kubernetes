@@ -11,7 +11,7 @@ spec:
   - name: {{ $.Values.metricsgatherer.service.portName | default "headless" }}
     port: 8585
     protocol: TCP
-    targetPort: 8585
+    targetPort: metricsgatherer
   selector:
     component: {{ include "reportportal.fullname" . }}-metrics-gatherer
   type: ClusterIP

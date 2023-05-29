@@ -94,8 +94,8 @@ spec:
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
         name: analyzer
         ports:
-        - containerPort: 8080
-          protocol: TCP
+        - containerPort: 5001
+          name: analyzercore
         resources:
           requests:
             cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}

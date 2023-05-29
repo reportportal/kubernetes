@@ -8,7 +8,7 @@ spec:
   - name: {{ $.Values.serviceanalyzer.service.portName | default "headless" }}
     port: 8080
     protocol: TCP
-    targetPort: 8080
+    targetPort: analyzercore
   selector:
     component: {{ include "reportportal.fullname" . }}-analyzer
   type: ClusterIP
