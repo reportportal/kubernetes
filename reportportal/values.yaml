@@ -7,9 +7,9 @@
 # fullnameOverride:
 
 serviceindex:
-  name: index
   repository: reportportal/service-index
-  tag: 5.7.3
+  tag: 5.8.0
+  name: index
   pullPolicy: Always
   resources:
     requests:
@@ -31,8 +31,8 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
+  tag: 5.8.0
   name: uat
-  tag: 5.7.4
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -54,6 +54,14 @@ uat:
       cpu: 500m
       memory: 2048Mi
   sessionLiveTime: 86400
+  samlSessionLiveTime: 4320
+  ## The initial password for superadmin user on FIRST launch. If the password was changed from the UI, 
+  ## this value can't change the password on redeployments.
+  superadminInitPasswd:
+    ## If 'true', the secret will be generated from 20 random characters.
+    auto: true
+    ## Specify if auto = false
+    password: ""
   podLabels: {}
   podAnnotations: {}
   ## jvmArgs
@@ -97,7 +105,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.7.4
+  tag: 5.8.0
   name: ui
   pullPolicy: Always
   resources:
@@ -121,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.7.4
+  tag: 5.8.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -175,7 +183,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.7.4
+  tag: 5.8.0
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -197,6 +205,11 @@ servicejobs:
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
   chunksize: 1000
+  ## Used for Double Entry. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
+  ## Processing logs by Jobs service (log per ms).
+  logProcessing:
+    maxBatchSize: 2000
+    maxBatchTimeout: 6000
   resources:
     requests:
       cpu: 100m
@@ -229,7 +242,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.7.3
+  tag: 5.8.0
   pullPolicy: Always
   resources:
     requests:
@@ -255,7 +268,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.4
+  tag: 5.7.5
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -321,7 +334,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 5.7.3
+  tag: 5.7.4
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -408,8 +421,9 @@ elasticsearch:
   password:
 
 minio:
-  secretName: ""
   enabled: true
+  type: minio
+  secretName: ""
   installdep:
     enable: false
   endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000

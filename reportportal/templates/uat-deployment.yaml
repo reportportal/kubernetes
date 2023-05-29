@@ -29,6 +29,18 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        {{- if .Values.uat.superadminInitPasswd.auto }}
+        - name: RP_INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ template "reportportal.name" . }}-superadmin-passwd"
+              key: "superadmin-passwd"
+        {{ else }}
+        - name: RP_INITIAL_ADMIN_PASSWORD
+          value: "{{ .Values.uat.superadminInitPasswd.password }}"
+        {{- end }}
+        - name: RP_SAML_SESSION-LIVE
+          value: "{{ .Values.uat.samlSessionLiveTime }}"
         {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
@@ -54,7 +66,7 @@ spec:
         {{- end }}
         {{- if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
-          value: "minio"
+          value: "{{ .Values.minio.type }}"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
           value: "{{ .Values.minio.endpoint }}"
         {{- if .Values.minio.region }}

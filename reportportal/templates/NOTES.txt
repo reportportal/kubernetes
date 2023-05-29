@@ -1,2 +1,14 @@
+###
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
 ReportPortal is now available at:
 {{ toYaml .Values.ingress.hosts | indent 4 }}
+
+{{- if .Values.uat.superadminInitPasswd.auto }}
+The initial password for superadmin user on FIRST launch:
+echo "$(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "reportportal.name" . }}-superadmin-passwd -o jsonpath="{.data.superadmin-passwd}" | base64 -d)"
+
+If the password was changed from the UI, this value can't change the password on redeployments.
+{{- end}}
