@@ -196,6 +196,7 @@ serviceapi:
     enabled: false
     mountPath: /etc/secret-volume
     readOnly: true
+    labels: {}
     data: {}
     #  custom-pki.jks: <base64-data>
 
