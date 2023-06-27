@@ -55,13 +55,13 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
-  ## The initial password for superadmin user on FIRST launch. If the password was changed from the UI, 
-  ## this value can't change the password on redeployments.
+  ## RP_INITIAL_ADMIN_PASSWORD. The initial password for superadmin user. 
+  ## If the password was changed from the UI, this value can't change the password on redeployments.
+  ##
   superadminInitPasswd:
-    ## If 'true', the secret will be generated from 20 random characters.
-    auto: true
-    ## Specify if auto = false
-    password: ""
+    secretName: ""
+    passwordKeyName: "superadmin-password"
+    password: "erebus"
   podLabels: {}
   podAnnotations: {}
   ## jvmArgs
@@ -438,22 +438,37 @@ elasticsearch:
   user: elastic
   password:
 
-minio:
-  enabled: true
+storage:
   type: minio
-  secretName: ""
+  # type: minio / s3
   installdep:
     enable: false
+  secretName: ""
+  ##
+  ## env[].valueFrom.secretKeyRef.key
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
   endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  bucketPrefix: ""
-  defaultBucketName: ""
-  integrationSaltPath: ""
+  bucket:
+    ##
+    ## Switching between multi and single buckets. If you are upgrading an already installed Report Portal, 
+    ## a migration is required. Ref: https://reportportal.io
+    type: multi
+    # type: multi / single
+    ##
+    ## When bucket.type=multi 'bucketDefaultName' defines plugins bucket,
+    ## when bucket.type=single 'bucketDefaultName' defines default single bucket name
+    bucketDefaultName: "rp-bucket"
+    ##
+    ## Multi-bucket values, works when storage.bucket.type=multi
+    ## Prefix for all multi-buckets
+    bucketMultiPrefix: "prj-"
+    ## Integration Salt bucket name for multi-bucket
+    bucketMultiSaltName: "keystore"
 
 ## Ingress configuration for the ui
 ## If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.

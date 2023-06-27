@@ -30,29 +30,34 @@ spec:
 {{- if .Values.serviceanalyzer.extraEnvs }}
 {{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
 {{- end }}
-      {{- if .Values.minio.enabled }}
+        {{- if eq .Values.storage.type "minio"}}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
+        - name: ANALYZER_BINARYSTORE_BUCKETPREFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.minio.endpointshort }}"
-        {{- if .Values.minio.secretName }}
+          value: "{{ .Values.storage.endpointshort }}"
+        {{- if .Values.storage.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.accesskeyName }}"
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.accesskeyName }}"
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.secretkeyName }}"
-       {{- else }}
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.secretkeyName }}"
+        {{- else }}
         - name: MINIO_ACCESS_KEY
-          value: "{{ .Values.minio.accesskey }}"
+          value: "{{ .Values.storage.accesskey }}"
         - name: MINIO_SECRET_KEY
-          value: "{{ .Values.minio.secretkey }}"
-       {{- end }}
-       {{- end }}
+          value: "{{ .Values.storage.secretkey }}"
+        {{- end }}
+        {{- else }}
+        - name: ANALYZER_BINARYSTORE_TYPE
+          value: "filesystem"
+        {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.rabbitmq.SecretName }}
           valueFrom:

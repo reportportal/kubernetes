@@ -88,45 +88,46 @@ spec:
         {{- else }}
           value: "{{ .Values.postgresql.endpoint.password }}"
         {{- end }}
-        {{- if .Values.minio.enabled }}
-        - name: RP_BINARYSTORE_TYPE
-          value: "{{ .Values.minio.type }}"
-        - name: RP_BINARYSTORE_MINIO_ENDPOINT
-          value: "{{ .Values.minio.endpoint }}"
-        {{- if .Values.minio.region }}
-        - name: RP_BINARYSTORE_MINIO_REGION
-          value: "{{ .Values.minio.region }}"
+        {{- if eq .Values.bucket.type "single" }}
+        - name: RP_FEATURE_FLAGS
+          value: "singleBucket"
+        {{- else if eq .Values.bucket.type "multi" }}
+        - name: RP_FEATURE_FLAGS
+          value: ""
         {{- end }}
-        {{- if .Values.minio.secretName }}
-        - name: RP_BINARYSTORE_MINIO_ACCESSKEY
+        - name: DATASTORE_TYPE
+          value: "{{ .Values.storage.type }}"
+        - name: DATASTORE_ENDPOINT
+          value: "{{ .Values.storage.endpoint }}"
+        {{- if .Values.storage.region }}
+        - name: DATASTORE_REGION
+          value: "{{ .Values.storage.region }}"
+        {{- end }}
+        {{- if .Values.storage.secretName }}
+        - name: DATASTORE_ACCESSKEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.accesskeyName }}"
-        - name: RP_BINARYSTORE_MINIO_SECRETKEY
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.accesskeyName }}"
+        - name: DATASTORE_SECRETKEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.secretkeyName }}"
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.secretkeyName }}"
        {{- else }}
-        - name: RP_BINARYSTORE_MINIO_ACCESSKEY
-          value: "{{ .Values.minio.accesskey }}"
-        - name: RP_BINARYSTORE_MINIO_SECRETKEY
-          value: "{{ .Values.minio.secretkey }}"
+        - name: DATASTORE_ACCESSKEY
+          value: "{{ .Values.storage.accesskey }}"
+        - name: DATASTORE_SECRETKEY
+          value: "{{ .Values.storage.secretkey }}"
        {{- end }}
-       {{- if .Values.minio.bucketPrefix }}
-        - name: RP_BINARYSTORE_MINIO_BUCKETPREFIX
-          value: "{{ .Values.minio.bucketPrefix }}"
-       {{- end }}
-       {{- if .Values.minio.defaultBucketName }}
-        - name: RP_BINARYSTORE_MINIO_DEFAULTBUCKETNAME
-          value: "{{ .Values.minio.defaultBucketName }}"
-       {{- end }}
-       {{- if .Values.minio.integrationSaltPath }}
+       {{- if eq .Values.bucket.type "multi" }}
+        - name: DATASTORE_BUCKETPREFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: RP_INTEGRATION_SALT_PATH
-          value: "{{ .Values.minio.integrationSaltPath }}"
+          value: "{{ .Values.storage.bucket.bucketMultiSaltName }}"
        {{- end }}
-       {{- end }}
+        - name: DATASTORE_DEFAULTBUCKETNAME
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
           value: "false"
         image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
