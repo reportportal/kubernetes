@@ -448,11 +448,11 @@ storage:
   ## env[].valueFrom.secretKeyRef.key
   accesskeyName: "access-key"
   secretkeyName: "secret-key"
+  accesskey: <minio-accesskey>
+  secretkey: <minio-secretkey>
   endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
-  accesskey: <minio-accesskey>
-  secretkey: <minio-secretkey>
   bucket:
     ##
     ## Switching between multi and single buckets. If you are upgrading an already installed Report Portal, 
