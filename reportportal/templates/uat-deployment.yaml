@@ -67,9 +67,6 @@ spec:
         {{- if eq .Values.bucket.type "single" }}
         - name: RP_FEATURE_FLAGS
           value: "singleBucket"
-        {{- else if eq .Values.bucket.type "multi" }}
-        - name: RP_FEATURE_FLAGS
-          value: ""
         {{- end }}
         - name: DATASTORE_TYPE
           value: "{{ .Values.storage.type }}"
