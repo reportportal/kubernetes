@@ -29,4 +29,4 @@ dependencies:
   - name: minio
     version: 7.1.9
     repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
-    condition: minio.installdep.enable
+    condition: storage.installdep.enable
