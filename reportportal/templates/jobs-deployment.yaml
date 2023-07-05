@@ -108,7 +108,7 @@ spec:
         {{- end }}
         - name: DATASTORE_TYPE
           value: "{{ .Values.storage.type }}"
-        {{- if .Values.storage.type "minio" }}
+        {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
           value: "{{ .Values.storage.endpoint }}"
         {{- end }}
