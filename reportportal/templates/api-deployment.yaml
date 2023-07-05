@@ -94,8 +94,10 @@ spec:
         {{- end }}
         - name: DATASTORE_TYPE
           value: "{{ .Values.storage.type }}"
+        {{- if .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
           value: "{{ .Values.storage.endpoint }}"
+        {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION
           value: "{{ .Values.storage.region }}"
