@@ -31,7 +31,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: 5.8.0
+  tag: 5.8.1
   name: uat
   pullPolicy: Always
   readinessProbe:
@@ -105,7 +105,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.8.0
+  tag: 5.9.0
   name: ui
   pullPolicy: Always
   resources:
@@ -129,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.8.0
+  tag: 5.9.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -201,7 +201,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.8.0
+  tag: 5.8.1
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -260,7 +260,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.8.0
+  tag: 5.9.0
   pullPolicy: Always
   resources:
     requests:
@@ -286,7 +286,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.5
+  tag: 5.7.6
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -352,7 +352,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 5.7.4
+  tag: 5.7.5
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
