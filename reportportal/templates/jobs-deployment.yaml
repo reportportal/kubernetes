@@ -136,6 +136,8 @@ spec:
        {{- if eq .Values.storage.bucket.type "multi" }}
         - name: DATASTORE_BUCKETPREFIX
           value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
+        - name: DATASTORE_BUCKETPOSTFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPostfix }}"
         - name: RP_INTEGRATION_SALT_PATH
           value: "{{ .Values.storage.bucket.bucketMultiSaltName }}"
        {{- end }}

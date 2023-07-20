@@ -465,8 +465,9 @@ storage:
     bucketDefaultName: "rp-bucket"
     ##
     ## Multi-bucket values, works when storage.bucket.type=multi
-    ## Prefix for all multi-buckets
+    ## Prefix and Postfix for all multi-buckets
     bucketMultiPrefix: "prj-"
+    bucketMultiPostfix: ""
     ## Integration Salt bucket name for multi-bucket
     bucketMultiSaltName: "keystore"
 
