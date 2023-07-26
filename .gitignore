@@ -4,3 +4,6 @@
 *.iml
 .vscode/
 .DS_Store
+/tmp/
+/reportportal/charts/
+/reportportal/Chart.lock
