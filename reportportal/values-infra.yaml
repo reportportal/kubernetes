@@ -2,10 +2,34 @@ postgresql:
   # Custom values
   installdep:
     enable: true
-  
+  endpoint:
+    address: <release-name>-postgresql.default.svc.cluster.local
   # Overload the default values for the PostgreSQL chart
   postgresqlUsername: postgres
   postgresqlPassword: rppassword
   postgresqlDatabase: reportportal
   servicePort: 5432
   postgresqlMaxConnections: ""
+
+rabbitmq:
+  installdep:
+    enable: true
+  endpoint:
+    address: <release-name>-rabbitmq.default.svc.cluster.local
+    port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
+    password:
+
+minio:
+  enabled: true
+  type: minio
+  installdep:
+    enable: true
+  endpoint: http://<release-name>-minio.default.svc.cluster.local:9000
+  endpointshort: <release-name>-minio.default.svc.cluster.local:9000
+  accesskey: <minio-accesskey>
+  secretkey: <minio-secretkey>
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"

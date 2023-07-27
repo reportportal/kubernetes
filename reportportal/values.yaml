@@ -281,7 +281,7 @@ migrations:
   metadataAnnotations:
     enabled: true
     hooks:
-      "helm.sh/hook": post-install,pre-upgrade
+      "helm.sh/hook": post-install,post-upgrade
       "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
       "helm.sh/hook-weight": "-5"
 
@@ -390,22 +390,7 @@ metricsgatherer:
   service:
     portName: ""
 
-rabbitmq:
-  SecretName: ""
-  installdep:
-    enable: true
-  endpoint:
-    ## Enable HTTPS and AMQPS
-    ssl: false
-    address: reportportal-rabbitmq.default.svc.cluster.local
-    port: 5672
-    user: rabbitmq
-    apiport: 15672
-    apiuser: rabbitmq
-    password:
-  ## Virtual hosts provide logical grouping and separation of resources.
-  ## ref: https://www.rabbitmq.com/vhosts.html
-  vhost: analyzer
+# Infrastructure values
 
 postgresql:
   # Custom values
@@ -413,9 +398,8 @@ postgresql:
     enable: false
   SecretName: ""
   endpoint:
-    address: reportportal-postgresql.default.svc.cluster.local
+    address: <release-name>-postgresql.default.svc.cluster.local
     ssl: disable
-
     # Legacy values for backward compatibility
     port: &servicePort 5432
     user: &postgresqlUser rpuser
@@ -424,13 +408,29 @@ postgresql:
     password: &postgresqlPassword
     ## Number of database connections
     connections: &postgresqlConnections ""
-
   # Overload the default values for the PostgreSQL chart
   postgresqlUsername: *postgresqlUser
   postgresqlPassword: *postgresqlPassword
   postgresqlDatabase: *postgresqlDbName
   servicePort: *servicePort
   postgresqlMaxConnections: *postgresqlConnections
+
+rabbitmq:
+  SecretName: ""
+  installdep:
+    enable: false
+  endpoint:
+    ## Enable HTTPS and AMQPS
+    ssl: false
+    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
+    port: 5672
+    user: rabbitmq
+    apiport: 15672
+    apiuser: rabbitmq
+    password:
+  ## Virtual hosts provide logical grouping and separation of resources.
+  ## ref: https://www.rabbitmq.com/vhosts.html
+  vhost: analyzer
 
 elasticsearch:
   secretName: ""
@@ -453,8 +453,8 @@ minio:
   type: minio
   secretName: ""
   installdep:
-    enable: true
-  endpoint: http://reportportal-minio.default.svc.cluster.local:9000
+    enable: false
+  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
   accesskey: <minio-accesskey>
