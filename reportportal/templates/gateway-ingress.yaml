@@ -10,6 +10,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  ingressClassName: {{ .Values.ingress.class }}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
@@ -21,35 +22,35 @@ spec:
     http:
       paths:
       - path: /()?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: /(ui)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: /(uat)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: /(api)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
       - path: /(jobs)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-jobs
@@ -60,35 +61,35 @@ spec:
   - http:
       paths:
       - path: /()?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: /(ui)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: /(uat)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: /(api)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
       - path: /(jobs)/?(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: {{ $fullName }}-jobs
