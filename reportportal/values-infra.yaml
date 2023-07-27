@@ -1,0 +1,11 @@
+postgresql:
+  # Custom values
+  installdep:
+    enable: true
+  
+  # Overload the default values for the PostgreSQL chart
+  postgresqlUsername: postgres
+  postgresqlPassword: rppassword
+  postgresqlDatabase: reportportal
+  servicePort: 5432
+  postgresqlMaxConnections: ""

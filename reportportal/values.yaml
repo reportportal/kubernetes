@@ -281,8 +281,9 @@ migrations:
   metadataAnnotations:
     enabled: true
     hooks:
-      "helm.sh/hook": "pre-install,pre-upgrade"
-      "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+      "helm.sh/hook": post-install,pre-upgrade
+      "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+      "helm.sh/hook-weight": "-5"
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
@@ -392,11 +393,11 @@ metricsgatherer:
 rabbitmq:
   SecretName: ""
   installdep:
-    enable: false
+    enable: true
   endpoint:
     ## Enable HTTPS and AMQPS
     ssl: false
-    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
+    address: reportportal-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -407,20 +408,29 @@ rabbitmq:
   vhost: analyzer
 
 postgresql:
-  SecretName: ""
+  # Custom values
   installdep:
     enable: false
+  SecretName: ""
   endpoint:
-    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
-    port: 5432
-    user: rpuser
-    dbName: reportportal
-    ## Whether to use SSL
+    address: reportportal-postgresql.default.svc.cluster.local
     ssl: disable
+
+    # Legacy values for backward compatibility
+    port: &servicePort 5432
+    user: &postgresqlUser rpuser
+    dbName: &postgresqlDbName reportportal
     # ssl: disable / require
-    password:
+    password: &postgresqlPassword
     ## Number of database connections
-    connections: 
+    connections: &postgresqlConnections ""
+
+  # Overload the default values for the PostgreSQL chart
+  postgresqlUsername: *postgresqlUser
+  postgresqlPassword: *postgresqlPassword
+  postgresqlDatabase: *postgresqlDbName
+  servicePort: *servicePort
+  postgresqlMaxConnections: *postgresqlConnections
 
 elasticsearch:
   secretName: ""
@@ -443,8 +453,8 @@ minio:
   type: minio
   secretName: ""
   installdep:
-    enable: false
-  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
+    enable: true
+  endpoint: http://reportportal-minio.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
   accesskey: <minio-accesskey>
@@ -465,8 +475,8 @@ ingress:
   usedomainname: false
   hosts:
     - reportportal.k8.com
+  class: nginx
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
@@ -513,4 +523,3 @@ extraInitContainers: {}
   #     - sh
   #     - "-c"
   #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
-

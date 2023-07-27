@@ -31,11 +31,11 @@ spec:
         - name: POSTGRES_SERVER
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: POSTGRES_DB
-          value: "{{ .Values.postgresql.endpoint.dbName }}"
+          value: "{{ .Values.postgresql.postgresqlDatabase }}"
         - name: POSTGRES_PORT
-          value: "{{ .Values.postgresql.endpoint.port }}"
+          value: "{{ .Values.postgresql.servicePort }}"
         - name: POSTGRES_USER
-          value: "{{ .Values.postgresql.endpoint.user }}"
+          value: "{{ .Values.postgresql.postgresqlUsername }}"
         - name: POSTGRES_PASSWORD
         {{ if .Values.postgresql.SecretName }}
           valueFrom:
@@ -43,7 +43,7 @@ spec:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
         {{ else }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
+          value: "{{ .Values.postgresql.postgresqlPassword }}"
         {{ end }}
         image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
         name: migrations

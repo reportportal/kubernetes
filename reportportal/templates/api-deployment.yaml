@@ -19,6 +19,9 @@ spec:
         {{- range $key, $value := .Values.serviceapi.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
+        "helm.sh/hook": post-install,post-upgrade
+        "helm.sh/hook-weight": "5"
+        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     spec:
       initContainers:
       {{- if .Values.extraInitContainers }}
@@ -70,15 +73,15 @@ spec:
         - name: RP_DB_HOST
           value: "{{ .Values.postgresql.endpoint.address }}"
         - name: RP_DB_PORT
-          value: "{{ .Values.postgresql.endpoint.port }}"
+          value: "{{ .Values.postgresql.servicePort }}"
         - name: RP_DB_NAME
-          value: "{{ .Values.postgresql.endpoint.dbName }}"
-        {{- if .Values.postgresql.endpoint.connections }}
+          value: "{{ .Values.postgresql.postgresqlDatabase }}"
+        {{- if .Values.postgresql.postgresqlMaxConnections }}
         - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
-          value: "{{ .Values.postgresql.endpoint.connections }}"
+          value: "{{ .Values.postgresql.postgresqlMaxConnections }}"
         {{- end }}
         - name: RP_DB_USER
-          value: "{{ .Values.postgresql.endpoint.user }}"
+          value: "{{ .Values.postgresql.postgresqlUsername }}"
         - name: RP_DB_PASS
         {{- if .Values.postgresql.SecretName }}
           valueFrom:
@@ -86,7 +89,7 @@ spec:
               name: "{{ .Values.postgresql.SecretName }}"
               key: "postgresql-password"
         {{- else }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
+          value: "{{ .Values.postgresql.postgresqlPassword }}"
         {{- end }}
         {{- if .Values.minio.enabled }}
         - name: RP_BINARYSTORE_TYPE
