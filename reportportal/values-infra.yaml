@@ -1,37 +1,5 @@
-postgresql:
-  # Custom values
-  installdep:
-    enable: true
-  # Overload the default values for the PostgreSQL chart
-  postgresqlUsername: postgres
-  postgresqlPassword: rppassword
-  postgresqlDatabase: reportportal
-  servicePort: 5432
-  postgresqlMaxConnections: ""
-
-rabbitmq:
-  installdep:
-    enable: true
-  endpoint:
-    port: &port 5672
-    user: &user rabbitmq
-    apiport: &apiport 15672
-    apiuser: &apiuser rabbitmq
-    password: &password rabbitmq
-  auth:
-    username: *user
-    password: *password
-  containerPorts:
-    amqp: *port
-    manager: *apiport
-  serviceAccount:
-    name: *apiuser
-
 minio:
-  enabled: true
   type: minio
-  installdep:
-    enable: true
   accesskey: &accesskey <minio-accesskey>
   secretkey: &secretkey <minio-secretkey>
   accessKey:

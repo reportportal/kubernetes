@@ -59,9 +59,9 @@ uat:
   ## this value can't change the password on redeployments.
   superadminInitPasswd:
     ## If 'true', the secret will be generated from 20 random characters.
-    auto: true
+    auto: false
     ## Specify if auto = false
-    password: ""
+    password: "erebus"
   podLabels: {}
   podAnnotations: {}
   ## jvmArgs
@@ -392,52 +392,45 @@ metricsgatherer:
 
 # Infrastructure values
 
+dependencies: &depInstall true
+
 postgresql:
-  # Custom values
-  installdep:
-    enable: false
+  ## Custom values
+  install: *depInstall
   SecretName: ""
+  ## @param postgresql.endpoint By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
-    ## @param postgresql.endpoint.address By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
-    address:
-    ssl: disable
-    # Legacy values for backward compatibility
-    port: &servicePort 5432
-    user: &postgresqlUser rpuser
-    dbName: &postgresqlDbName reportportal
-    # ssl: disable / require
-    password: &postgresqlPassword
-    ## Number of database connections
-    connections: &postgresqlConnections ""
-  # Overload the default values for the PostgreSQL chart
-  postgresqlUsername: *postgresqlUser
-  postgresqlPassword: *postgresqlPassword
-  postgresqlDatabase: *postgresqlDbName
-  servicePort: *servicePort
-  postgresqlMaxConnections: *postgresqlConnections
+  ssl: disable
+  
+  ## Overload the default values for the PostgreSQL chart
+  postgresqlUsername: postgres
+  postgresqlPassword: rppassword
+  postgresqlDatabase: reportportal
+  servicePort: 5432
+  postgresqlMaxConnections: ""
 
 rabbitmq:
+  install: *depInstall
   SecretName: ""
-  installdep:
-    enable: false
+  ## @param rabbitmq.endpoint By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
-    ## Enable HTTPS and AMQPS
-    ssl: false
-    ## @param rabbitmq.endpoint.address By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
-    address:
-    port: 5672
-    user: rabbitmq
-    apiport: 15672
-    apiuser: rabbitmq
-    password:
+  ## Enable HTTPS and AMQPS
+  ssl: false 
   ## Virtual hosts provide logical grouping and separation of resources.
   ## ref: https://www.rabbitmq.com/vhosts.html
   vhost: analyzer
 
+  ##  Overload the default values for the RabbitMQ chart
+  auth:
+    username: rabbitmq
+    password: rabbitmq
+  containerPorts:
+    amqp: 5672
+    manager: 15672
+
 elasticsearch:
+  install: false
   secretName: ""
-  installdep:
-    enable: false
   ## Double entry moves test logs from PostgreSQL to Elastic-type engines
   ## Ref: https://reportportal.io/blog/double-entry-in-5.7.2
   ##
@@ -451,23 +444,27 @@ elasticsearch:
   password:
 
 minio:
+  install: *depInstall
   enabled: true
   type: minio
   secretName: ""
-  installdep:
-    enable: false
   ## @param minio.endpoint By default http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
   endpoint:
   ## @param minio.endpointshort By default {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
   endpointshort:
   region: ""
-  accesskey: <minio-accesskey>
-  secretkey: <minio-secretkey>
+  accessKey:
+    password: &accessKey <minio-accesskey>
+  secretKey:
+    password: &secretKey <minio-secretkey>
+  accesskey: *accessKey
+  secretkey: *secretKey
   accesskeyName: "access-key"
   secretkeyName: "secret-key"
   bucketPrefix: ""
   defaultBucketName: ""
   integrationSaltPath: ""
+
 
 ## Ingress configuration for the ui
 ## If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.

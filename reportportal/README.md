@@ -395,9 +395,9 @@ Edit `api-deployment.yaml` in `reportportal/templates/` folder
 
 ```yaml
 - name: RP_AMQP_ADDRESSES
-  value: "amqps://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}"
+  value: "amqps://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Values.rabbitmq.endpoint }}:{{ .Values.rabbitmq.containerPorts.amqp }}"
 - name: RP_AMQP_API_ADDRESS
-  value: "https://{{ .Values.rabbitmq.endpoint.user }}:{{ .Values.rabbitmq.endpoint.password }}@{{ .Values.rabbitmq.endpoint.address }}/api"
+  value: "https://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Values.rabbitmq.endpoint }}/api"
 ```
 
 Edit values.yaml in `reportportal/` folder

@@ -60,10 +60,10 @@ spec:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
         {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
+          value: "{{ .Values.rabbitmq.auth.password }}"
         {{- end }}
         - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.port }}/
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.ssl }}://{{ .Values.rabbitmq.auth.username }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.containerPorts.amqp }}/
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: AMQP_VIRTUAL_HOST

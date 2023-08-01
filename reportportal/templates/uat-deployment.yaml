@@ -51,7 +51,7 @@ spec:
         - name: RP_SESSION_LIVE
           value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
-          value: {{ .Values.postgresql.endpoint.address | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.postgresql.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.servicePort }}"
         - name: RP_DB_NAME

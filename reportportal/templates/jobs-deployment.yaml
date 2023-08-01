@@ -78,14 +78,14 @@ spec:
               name: "{{ .Values.rabbitmq.SecretName }}"
               key: "rabbitmq-password"
         {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
+          value: "{{ .Values.rabbitmq.auth.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
+          value: {{ ternary "https" "http" .Values.rabbitmq.ssl }}://{{ .Values.rabbitmq.auth.username }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.containerPorts.manager }}/api
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.port }}
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.ssl }}://{{ .Values.rabbitmq.auth.username }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.containerPorts.amqp }}
         - name: RP_DB_HOST
-          value: {{ .Values.postgresql.endpoint.address | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.postgresql.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.servicePort }}"
         - name: RP_DB_NAME

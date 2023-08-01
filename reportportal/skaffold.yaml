@@ -40,12 +40,12 @@ deploy:
         setValues:
           ingress.hosts: kubernetes.docker.internal
 
-          rabbitmq.endpoint.address: rabbitmq.default.svc.cluster.local
+          rabbitmq.endpoint: rabbitmq.default.svc.cluster.local
           rabbitmq.SecretName: rabbitmq
           rabbitmq.installdep.enable: false
 
           postgresql.SecretName: postgresql
-          postgresql.endpoint.address: postgresql.default.svc.cluster.local
+          postgresql.endpoint: postgresql.default.svc.cluster.local
           postgresql.installdep.enable: false
 
           minio.secretName: minio

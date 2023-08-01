@@ -27,9 +27,9 @@ spec:
       containers:
       - env:
         - name: POSTGRES_SSLMODE
-          value: "{{ .Values.postgresql.endpoint.ssl }}"
+          value: "{{ .Values.postgresql.ssl }}"
         - name: POSTGRES_SERVER
-          value: {{ .Values.postgresql.endpoint.address | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.postgresql.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: POSTGRES_DB
           value: "{{ .Values.postgresql.postgresqlDatabase }}"
         - name: POSTGRES_PORT
