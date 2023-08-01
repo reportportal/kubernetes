@@ -38,7 +38,7 @@ spec:
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.minio.endpointshort }}"
+          value: "{{ .Values.minio.endpointshort | default (printf "%s-minio.%s.svc.cluster.local:9000" .Release.Name .Release.Namespace) }}"
         {{- if .Values.minio.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -67,7 +67,7 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{- end }}
         - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.port }}/
         - name: AMQP_EXCHANGE_NAME
           value: "analyzer-default"
         - name: AMQP_VIRTUAL_HOST

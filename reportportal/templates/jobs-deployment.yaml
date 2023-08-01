@@ -81,11 +81,11 @@ spec:
           value: "{{ .Values.rabbitmq.endpoint.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
+          value: {{ ternary "https" "http" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.rabbitmq.endpoint.port }}
         - name: RP_DB_HOST
-          value: "{{ .Values.postgresql.endpoint.address }}"
+          value: {{ .Values.postgresql.endpoint.address | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.servicePort }}"
         - name: RP_DB_NAME
@@ -109,7 +109,7 @@ spec:
         - name: DATASTORE_TYPE
           value: "{{ .Values.minio.type }}"
         - name: DATASTORE_MINIO_ENDPOINT
-          value: "{{ .Values.minio.endpoint }}"
+          value: "{{ .Values.minio.endpoint | default (printf "http://%s-minio.%s.svc.cluster.local:9000" .Release.Name .Release.Namespace) }}"
         {{- if .Values.minio.bucketPrefix }}
         - name: DATASTORE_S3_BUCKETPREFIX
           value: "{{ .Values.minio.bucketPrefix }}"

@@ -398,7 +398,8 @@ postgresql:
     enable: false
   SecretName: ""
   endpoint:
-    address: <release-name>-postgresql.default.svc.cluster.local
+    ## @param postgresql.endpoint.address By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+    address:
     ssl: disable
     # Legacy values for backward compatibility
     port: &servicePort 5432
@@ -422,7 +423,8 @@ rabbitmq:
   endpoint:
     ## Enable HTTPS and AMQPS
     ssl: false
-    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
+    ## @param rabbitmq.endpoint.address By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
+    address:
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -454,8 +456,10 @@ minio:
   secretName: ""
   installdep:
     enable: false
-  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
-  endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
+  ## @param minio.endpoint By default http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+  endpoint:
+  ## @param minio.endpointshort By default {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+  endpointshort:
   region: ""
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>

@@ -51,7 +51,7 @@ spec:
         - name: RP_SESSION_LIVE
           value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
-          value: "{{ .Values.postgresql.endpoint.address }}"
+          value: {{ .Values.postgresql.endpoint.address | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
           value: "{{ .Values.postgresql.servicePort }}"
         - name: RP_DB_NAME
@@ -71,7 +71,7 @@ spec:
         - name: RP_BINARYSTORE_TYPE
           value: "{{ .Values.minio.type }}"
         - name: RP_BINARYSTORE_MINIO_ENDPOINT
-          value: "{{ .Values.minio.endpoint }}"
+          value: "{{ .Values.minio.endpoint | default (printf "http://%s-minio.%s.svc.cluster.local:9000" .Release.Name .Release.Namespace) }}"
         {{- if .Values.minio.region }}
         - name: RP_BINARYSTORE_MINIO_REGION
           value: "{{ .Values.minio.region }}"

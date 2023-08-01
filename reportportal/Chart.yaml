@@ -18,7 +18,7 @@ dependencies:
 
   - name: rabbitmq
     version: 10.3.9
-    repository: https://charts.bitnami.com/bitnami  
+    repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
