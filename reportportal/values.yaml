@@ -451,11 +451,9 @@ extraInitContainers: {}
 
 # Infrastructure values
 
-dependencies: &installDep true
-
 postgresql:
   ## Custom values
-  install: *installDep
+  install: true
   SecretName: ""
   ## @param postgresql.endpoint By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
@@ -469,13 +467,13 @@ postgresql:
   postgresqlMaxConnections: ""
 
 rabbitmq:
-  install: *installDep
+  install: true
   SecretName: ""
   ## @param rabbitmq.endpoint By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   ## Enable HTTPS and AMQPS
   ssl: false 
-  ## Virtual hosts provide logical grouping and separation of resources.
+  ## @param rabbitmq.vhost Virtual hosts provide logical grouping and separation of resources.
   ## ref: https://www.rabbitmq.com/vhosts.html
   vhost: analyzer
 
@@ -488,7 +486,7 @@ rabbitmq:
     manager: 15672
 
 minio:
-  install: *installDep
+  install: true
   enabled: true
   type: minio
   secretName: ""
@@ -510,7 +508,7 @@ minio:
   integrationSaltPath: ""
 
 opensearch:
-  install: *installDep
+  install: true
   secretName: ""
   doubleEntry: true
   ## @param opensearch.endpoint URL without protocol and port
