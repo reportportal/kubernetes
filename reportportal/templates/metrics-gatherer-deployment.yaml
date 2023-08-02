@@ -45,23 +45,23 @@ spec:
         - name: LOGGING_LEVEL
           value: "{{ .Values.metricsgatherer.loggingLevel }}"
         - name: ES_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
+          value: "{{ .Values.opensearch.protocol }}://{{ .Values.opensearch.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.opensearch.httpPort }}"
+        {{- if .Values.opensearch.secretName }}
         - name: ES_USER
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.opensearch.secretName }}"
               key: "username"
         - name: ES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.opensearch.secretName }}"
               key: "password"
         {{- else }}
         - name: ES_USER
-          value: "{{ .Values.elasticsearch.user }}"
+          value: "{{ .Values.opensearch.user }}"
         - name: ES_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}" 
+          value: "{{ .Values.opensearch.password }}" 
         {{- end }}
         - name: POSTGRES_HOST
           value: "{{ .Values.postgresql.endpoint }}"

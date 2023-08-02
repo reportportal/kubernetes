@@ -390,82 +390,6 @@ metricsgatherer:
   service:
     portName: ""
 
-# Infrastructure values
-
-dependencies: &depInstall true
-
-postgresql:
-  ## Custom values
-  install: *depInstall
-  SecretName: ""
-  ## @param postgresql.endpoint By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
-  endpoint:
-  ssl: disable
-  
-  ## Overload the default values for the PostgreSQL chart
-  postgresqlUsername: postgres
-  postgresqlPassword: rppassword
-  postgresqlDatabase: reportportal
-  servicePort: 5432
-  postgresqlMaxConnections: ""
-
-rabbitmq:
-  install: *depInstall
-  SecretName: ""
-  ## @param rabbitmq.endpoint By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
-  endpoint:
-  ## Enable HTTPS and AMQPS
-  ssl: false 
-  ## Virtual hosts provide logical grouping and separation of resources.
-  ## ref: https://www.rabbitmq.com/vhosts.html
-  vhost: analyzer
-
-  ##  Overload the default values for the RabbitMQ chart
-  auth:
-    username: rabbitmq
-    password: rabbitmq
-  containerPorts:
-    amqp: 5672
-    manager: 15672
-
-elasticsearch:
-  install: false
-  secretName: ""
-  ## Double entry moves test logs from PostgreSQL to Elastic-type engines
-  ## Ref: https://reportportal.io/blog/double-entry-in-5.7.2
-  ##
-  ## ElasticSearch Performance tuning
-  ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
-  ##
-  doubleEntry:
-    enable: true
-  endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
-  user: elastic
-  password:
-
-minio:
-  install: *depInstall
-  enabled: true
-  type: minio
-  secretName: ""
-  ## @param minio.endpoint By default http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
-  endpoint:
-  ## @param minio.endpointshort By default {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
-  endpointshort:
-  region: ""
-  accessKey:
-    password: &accessKey <minio-accesskey>
-  secretKey:
-    password: &secretKey <minio-secretkey>
-  accesskey: *accessKey
-  secretkey: *secretKey
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  bucketPrefix: ""
-  defaultBucketName: ""
-  integrationSaltPath: ""
-
-
 ## Ingress configuration for the ui
 ## If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
 ## If you have some domain name set INGRESS.USEDOMAINNAME variable to true and set this fqdn to INGRESS.HOSTS
@@ -524,3 +448,129 @@ extraInitContainers: {}
   #     - sh
   #     - "-c"
   #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
+# Infrastructure values
+
+dependencies: &installDep true
+
+postgresql:
+  ## Custom values
+  install: *installDep
+  SecretName: ""
+  ## @param postgresql.endpoint By default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  ssl: disable
+  
+  ## Overload the default values for the PostgreSQL chart
+  postgresqlUsername: postgres
+  postgresqlPassword: rppassword
+  postgresqlDatabase: reportportal
+  servicePort: 5432
+  postgresqlMaxConnections: ""
+
+rabbitmq:
+  install: *installDep
+  SecretName: ""
+  ## @param rabbitmq.endpoint By default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  ## Enable HTTPS and AMQPS
+  ssl: false 
+  ## Virtual hosts provide logical grouping and separation of resources.
+  ## ref: https://www.rabbitmq.com/vhosts.html
+  vhost: analyzer
+
+  ##  Overload the default values for the RabbitMQ chart
+  auth:
+    username: rabbitmq
+    password: rabbitmq
+  containerPorts:
+    amqp: 5672
+    manager: 15672
+
+minio:
+  install: *installDep
+  enabled: true
+  type: minio
+  secretName: ""
+  ## @param minio.endpoint By default http://{{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+  endpoint:
+  ## @param minio.endpointshort By default {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc.cluster.local:9000
+  endpointshort:
+  region: ""
+  accessKey:
+    password: &accessKey <minio-accesskey>
+  secretKey:
+    password: &secretKey <minio-secretkey>
+  accesskey: *accessKey
+  secretkey: *secretKey
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
+  bucketPrefix: ""
+  defaultBucketName: ""
+  integrationSaltPath: ""
+
+opensearch:
+  install: *installDep
+  secretName: ""
+  doubleEntry: true
+  ## @param opensearch.endpoint By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  user: admin
+  password: admin
+
+  ## Overload the default values for the OpenSearch chart
+  ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
+  singleNode: true
+  protocol: http
+  httpPort: 9200
+  startupProbe:
+    initialDelaySeconds: 30
+  config:
+    opensearch.yml: |
+      cluster.name: opensearch-cluster
+
+      # Bind to all interfaces because we don't know what IP address Docker will assign to us.
+      network.host: 0.0.0.0
+
+      # Setting network.host to a non-loopback address enables the annoying bootstrap checks. "Single-node" mode disables them again.
+      # Implicitly done if ".singleNode" is set to "true".
+      # discovery.type: single-node
+
+      # Start OpenSearch Security Demo Configuration
+      # WARNING: revise all the lines below before you go into production
+      plugins:
+        security:
+          ssl:
+            transport:
+              pemcert_filepath: esnode.pem
+              pemkey_filepath: esnode-key.pem
+              pemtrustedcas_filepath: root-ca.pem
+              enforce_hostname_verification: false
+            http:
+              enabled: false
+          allow_unsafe_democertificates: true
+          allow_default_init_securityindex: true
+          authcz:
+            admin_dn:
+              - CN=kirk,OU=client,O=client,L=test,C=de
+          audit.type: internal_opensearch
+          enable_snapshot_restore_privilege: true
+          check_snapshot_restore_write_privileges: true
+          restapi:
+            roles_enabled: ["all_access", "security_rest_api_access"]
+          system_indices:
+            enabled: true
+            indices:
+              [
+                ".opendistro-alerting-config",
+                ".opendistro-alerting-alert*",
+                ".opendistro-anomaly-results*",
+                ".opendistro-anomaly-detector*",
+                ".opendistro-anomaly-checkpoints",
+                ".opendistro-anomaly-detection-state",
+                ".opendistro-reports-*",
+                ".opendistro-notifications-*",
+                ".opendistro-notebooks",
+                ".opendistro-asynchronous-search-response*",
+              ]
+      ######## End OpenSearch Security Demo Configuration ########

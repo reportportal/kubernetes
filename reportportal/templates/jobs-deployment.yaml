@@ -32,25 +32,25 @@ spec:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
-        {{- if .Values.elasticsearch.doubleEntry.enable }}
+        {{- if .Values.opensearch.doubleEntry }}
         - name: RP_ELASTICSEARCH_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
+          value: "{{ .Values.opensearch.protocol }}://{{ .Values.opensearch.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.opensearch.httpPort }}"
+        {{- if .Values.opensearch.secretName }}
         - name: RP_ELASTICSEARCH_USERNAME
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.opensearch.secretName }}"
               key: "username"
         - name: RP_ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.opensearch.secretName }}"
               key: "password"
         {{- else }}
         - name: RP_ELASTICSEARCH_USERNAME
-          value: "{{ .Values.elasticsearch.user }}"
+          value: "{{ .Values.opensearch.user }}"
         - name: RP_ELASTICSEARCH_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}"
+          value: "{{ .Values.opensearch.password }}"
         {{- end}}
         {{- end}}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON

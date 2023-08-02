@@ -21,10 +21,10 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
 
-  - name: elasticsearch
-    version: 7.10.2
-    repository: https://helm.elastic.co
-    condition: elasticsearch.install
+  - name: opensearch
+    version: 2.14.0
+    repository: https://opensearch-project.github.io/helm-charts/
+    condition: opensearch.install
 
   - name: minio
     version: 7.1.9
