@@ -513,7 +513,8 @@ opensearch:
   install: *installDep
   secretName: ""
   doubleEntry: true
-  ## @param opensearch.endpoint By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  ## @param opensearch.endpoint URL without protocol and port
+  ## By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   user: admin
   password: admin
@@ -521,10 +522,13 @@ opensearch:
   ## Overload the default values for the OpenSearch chart
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
-  protocol: http
+  ## @param opensearch.protocol Protocol for OpenSearch endpoint
+  protocol: https
+  ## @param opensearch.httpPort Port for OpenSearch endpoint
   httpPort: 9200
   startupProbe:
     initialDelaySeconds: 30
+  ## @param opensearch.config Disable SSL for http requests
   config:
     opensearch.yml: |
       cluster.name: opensearch-cluster
