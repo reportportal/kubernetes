@@ -517,6 +517,7 @@ rbac:
     annotations: {}
 
 rp:
+  imagePullSecrets: []
   infoEndpoint: "/info"
   healthEndpoint: "/health"
 
