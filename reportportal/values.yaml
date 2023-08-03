@@ -31,7 +31,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: 5.8.1
+  tag: 5.8.2
   name: uat
   pullPolicy: Always
   readinessProbe:
@@ -107,7 +107,6 @@ uat:
     hooks:
       "helm.sh/hook": post-install,post-upgrade
       "helm.sh/hook-weight": "5"
-      "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 serviceui:
   repository: reportportal/service-ui
@@ -135,7 +134,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.9.0
+  tag: 5.9.1
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -209,11 +208,10 @@ serviceapi:
     hooks:
       "helm.sh/hook": post-install,post-upgrade
       "helm.sh/hook-weight": "5"
-      "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.8.1
+  tag: 5.8.2
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -274,7 +272,6 @@ servicejobs:
     hooks:
       "helm.sh/hook": post-install,post-upgrade
       "helm.sh/hook-weight": "5"
-      "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 migrations:
   repository: reportportal/migrations
@@ -300,7 +297,7 @@ migrations:
     enabled: true
     hooks:
       "helm.sh/hook": post-install,post-upgrade
-      "helm.sh/hook-weight": "-5"
+      "helm.sh/hook-weight": "1"
       "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 
 serviceanalyzer:
@@ -563,7 +560,7 @@ opensearch:
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
   ## @param opensearch.protocol Protocol for OpenSearch endpoint
-  protocol: https
+  protocol: http
   ## @param opensearch.httpPort Port for OpenSearch endpoint
   httpPort: 9200
   startupProbe:
