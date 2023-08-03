@@ -64,7 +64,7 @@ spec:
           value: "{{ .Values.opensearch.password }}" 
         {{- end }}
         - name: POSTGRES_HOST
-          value: "{{ .Values.postgresql.endpoint }}"
+          value: {{ .Values.postgresql.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: POSTGRES_PORT
           value: "{{ .Values.postgresql.servicePort }}"
         - name: POSTGRES_DB

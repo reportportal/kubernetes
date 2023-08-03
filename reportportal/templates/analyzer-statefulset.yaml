@@ -21,6 +21,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.rp.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
       {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
@@ -30,29 +34,34 @@ spec:
 {{- if .Values.serviceanalyzer.extraEnvs }}
 {{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
 {{- end }}
-      {{- if .Values.minio.enabled }}
+        {{- if eq .Values.storage.type "minio"}}
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "minio"
+        - name: ANALYZER_BINARYSTORE_BUCKETPREFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.minio.endpointshort | default (printf "%s-minio.%s.svc.cluster.local:9000" .Release.Name .Release.Namespace) }}"
-        {{- if .Values.minio.secretName }}
+          value: "{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+        {{- if .Values.storage.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.accesskeyName }}"
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.accesskeyName }}"
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.minio.secretName }}"
-              key: "{{ .Values.minio.secretkeyName }}"
-       {{- else }}
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.secretkeyName }}"
+        {{- else }}
         - name: MINIO_ACCESS_KEY
-          value: "{{ .Values.minio.accesskey }}"
+          value: "{{ .Values.storage.accesskey }}"
         - name: MINIO_SECRET_KEY
-          value: "{{ .Values.minio.secretkey }}"
-       {{- end }}
-       {{- end }}
+          value: "{{ .Values.storage.secretkey }}"
+        {{- end }}
+        {{- else }}
+        - name: ANALYZER_BINARYSTORE_TYPE
+          value: "filesystem"
+        {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.rabbitmq.SecretName }}
           valueFrom:
