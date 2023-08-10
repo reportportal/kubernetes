@@ -52,20 +52,34 @@ It describes installation of all mandatory services to run the application, and 
 
 - [`service-authorization`](https://github.com/reportportal/service-authorization) Authorization Service. In charge of access tokens distribution
 - [`service-api`](https://github.com/reportportal/service-api) API Service. Application Backend
+- `service-jobs`
 - [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
 - [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail prob
+- `migrations`
+- 
 
-#### Requirements:
-- `RabbitMQ` (Helm chart installation)
-- `ElasticSearch` (Helm chart installation | Amazon Elasticsearch Service)
-- `PostgreSQL` (Helm chart installation | Amazon PostgreSQL RDS | Azure Database for PostgreSQL)
-- `MinIO` (Helm chart installation)
+#### Dependencies:
 
-All configuration variables are presented in `value.yaml` file.
+ReportPortal install the following dependencies into the Kubernetes cluster by default:
 
-Before you deploy ReportPortal you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.
+- `RabbitMQ` you can turn off with dependency `helm install --set rabbitmq.install=false ...`
+- `OpenSearch` you can turn off with dependency `helm install --set opensearch.install=false ...`
+- `PostgreSQL` you can turn off with dependency `helm install --set postgresql.install=false ...`
+- `MinIO` you can turn off with dependency `helm install --set minio.install=false ...`
 
-You should have Kubernetes cluster is up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.
+The next command disables installing of all dependencies:
+
+```sh
+helm install --set rabbitmq.install=false,opensearch.install=false,postgresql.install=false,minio.install=false <Release.Name> ./reportportal
+```
+
+> **Note:** If you disable dependencies installing, you have to provide new values (e.g., host, port, username, etc) for predeployed dependencies or other SaaS services.
+
+All configuration variables are presented in the `value.yaml` file.
+
+Before you deploy ReportPortal, you should have installed all its dependencies (requirements). Run Amazon RDS PostgreSQL or Azure Database for PostgreSQL, Amazon ES cluster in case you go with an external cloud services option.
+
+You should have the Kubernetes cluster up and running. Please follow the guides below to run your Kubernetes cluster on different platforms.
 
 > For matching the installation commands on this guide with your command line, please download this Helm chart to your machine.
 
@@ -92,38 +106,9 @@ Verify that all pods were started and the NGINX Ingress controller is running:
 ```sh
 kubectl get pods -A  
 ```
-
-Initialize Helm package manager:
+Download necessary dependencies
 ```sh
-helm repo add bitnami https://charts.bitnami.com/bitnami && helm repo update
-```
-
-> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml
-> You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml
-
-```yaml
-rabbitmq:
-  SecretName: ""
-  installdep:
-    enable: false
-  endpoint:
-    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
-    port: 5672
-    user: rabbitmq
-    apiport: 15672
-    apiuser: rabbitmq
-    password:
-
-postgresql:
-  SecretName: ""
-  installdep:
-    enable: false
-  endpoint:
-    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
-    port: 5432
-    user: rpuser
-    dbName: reportportal
-    password:
+helm dependency update ./reportportal
 ```
 
 Deploy the chart:
