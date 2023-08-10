@@ -56,7 +56,6 @@ It describes installation of all mandatory services to run the application, and 
 - [`service-ui`](https://github.com/reportportal/service-ui) UI Service. Application Frontend
 - [`service-analyzer`](https://github.com/reportportal/service-auto-analyzer) Analyzer Service. Finds most relevant test fail prob
 - `migrations`
-- 
 
 #### Dependencies:
 
