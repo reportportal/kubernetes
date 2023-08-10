@@ -126,43 +126,55 @@ helm dependency update ./reportportal
 Deploy the chart:
 
 ```sh
-helm install reportportal ./reportportal
+helm install --set uat.superadminInitPasswd.password=<your_password> reportportal ./reportportal
 ```
 
-Once it's installed please make sure that the PersistentVolumes directories are created
+After successful deployment, get the Ingress IP address:
 
-To create:
-```sh
-minikube ssh
-```
-```sh
-sudo mkdir /mnt/data/db -p
-```
-```sh
-sudo mkdir /mnt/data/console -p
-```
-```sh
-sudo mkdir /mnt/data/elastic -p
-```
-
-Also make sure that the vm.max_map_count is setup:
-```sh
-minikube ssh
-```
-```sh
-sudo sysctl -w vm.max_map_count=262144
-```
-
-The default URL to reach the ReportPortal UI page is http://reportportal.k8.com.
-Make sure that the URL is added to your host file and the IP is the K8s IP address
-
-The command to get an IP address of Minikube:
 ```sh
 minikube ip
 ```
+
+Go to the IP address in your browser and log in using the default user:
+
+```txt
+user: superadmin
+password: <your_password>
+```
+
+The default URL to reach the ReportPortal UI page is http://reportportal.k8.com.
+Make sure that the URL is added to your host file and the IP is the K8s IP address.
+
+The command to get an IP address of Minikube:
+
 Example of the host file:
 ```sh
 192.168.99.100 reportportal.k8.com
+```
+
+You can delete deployment using the following command:
+
+```sh
+helm uninstall reportportall
+```
+
+After deleting deployment, your cluster keeps persistent volume claims. 
+You can check them:
+
+```sh
+kubectl get pvc  -o wide
+```
+
+You can stop your cluster from just performing:
+
+```sh
+minikube stop
+```
+
+For a complete deletion use the following command:
+
+```sh
+minikube delete
 ```
 
 ### Cloud Computing Services platform installation
