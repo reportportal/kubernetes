@@ -72,7 +72,7 @@ The next command disables installing of all dependencies:
 helm install --set rabbitmq.install=false,opensearch.install=false,postgresql.install=false,minio.install=false <Release.Name> ./reportportal
 ```
 
-> **Note:** If you disable dependencies installing, you have to provide new values (e.g., host, port, username, etc) for predeployed dependencies or other SaaS services.
+> **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
 All configuration variables are presented in the `value.yaml` file.
 
