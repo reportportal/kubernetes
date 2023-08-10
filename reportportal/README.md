@@ -71,27 +71,32 @@ You should have Kubernetes cluster is up and running. Please follow the guides b
 
 ### Minikube
 
-Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptopS
+Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside your laptop's Virtual Machine (VM).
 
 #### Prerequisites
 
-Make sure you have kubectl installed. You can install kubectl according to the instructions in [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux) guide
+[Install Minikube](https://minikube.sigs.k8s.io/docs/start/)
+
+You can use kubectl or use built-in [minikube kubectal](https://minikube.sigs.k8s.io/docs/handbook/kubectl/) `minikube kubectl -- <kubectl commands>`.
+
+You can install kubectl according to the instructions in [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux) guide.
 
 #### Run ReportPortal in Minikube
 
-Start Minikube with the options:
+Setup Minikube with options:
 ```sh
-minikube --memory 4096 --cpus 2 start
+minikube config set cpu 2
+minikube config set memory 4096
 ```
 
-Install the Ingress plugin:
+Start Minikube with the Ingress plugin:
 ```sh
-minikube addons enable ingress
+minikube start --addons=ingress
 ```
 
-Verify that the NGINX Ingress controller is running:
+Verify that all pods were started and the NGINX Ingress controller is running:
 ```sh
-kubectl get pods -n kube-system
+kubectl get pods -A  
 ```
 
 Initialize Helm package manager:
