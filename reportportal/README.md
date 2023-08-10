@@ -83,15 +83,9 @@ You can install kubectl according to the instructions in [Install and Set Up kub
 
 #### Run ReportPortal in Minikube
 
-Setup Minikube with options:
+Start Minikube with the Ingress plugin and enough resources:
 ```sh
-minikube config set cpu 2
-minikube config set memory 4096
-```
-
-Start Minikube with the Ingress plugin:
-```sh
-minikube start --addons=ingress
+minikube start --addons=ingress --cpus=2 --memory=4096
 ```
 
 Verify that all pods were started and the NGINX Ingress controller is running:
