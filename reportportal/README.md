@@ -98,22 +98,35 @@ You can install kubectl according to the instructions in [Install and Set Up kub
 #### Run ReportPortal in Minikube
 
 Start Minikube with the Ingress plugin and enough resources:
+
 ```sh
 minikube start --addons=ingress --cpus=2 --memory=4096
 ```
 
 Verify that all pods were started and the NGINX Ingress controller is running:
+
 ```sh
 kubectl get pods -A  
 ```
+
+Add helm repositories:
+
+```sh
+helm repo add opensearch https://opensearch-project.github.io/helm-charts/
+helm repo add bitnami  https://charts.bitnami.com/bitnami
+helm repo update
+```
+
 Download necessary dependencies
+
 ```sh
 helm dependency update ./reportportal
 ```
 
 Deploy the chart:
+
 ```sh
-helm install ./<project folder>
+helm install reportportal ./reportportal
 ```
 
 Once it's installed please make sure that the PersistentVolumes directories are created
