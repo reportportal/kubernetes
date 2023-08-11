@@ -169,7 +169,7 @@ serviceapi:
     perPodNumber:
   ## External environment variables
   ##
-  extraEnvs: []
+  extraEnvs:
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -177,6 +177,8 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+    - name: RP_ENVIRONMENT_VARIABLE_GA_MEASUREMENT_ID
+      value: "G-Z22WZS0E4E"
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
