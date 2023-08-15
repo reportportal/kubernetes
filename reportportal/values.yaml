@@ -540,8 +540,8 @@ opensearch:
   ## @param opensearch.endpoint URL without protocol and port
   ## By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
-  user: admin
-  password: admin
+  user:
+  password:
 
   ## Overload the default values for the OpenSearch chart
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
