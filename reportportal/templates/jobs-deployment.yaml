@@ -3,12 +3,6 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-jobs
   labels: {{ include "labels" . | indent 4 }}
-  {{- if .Values.servicejobs.metadataAnnotations.enabled }}
-  annotations:
-    {{- range $key, $value := .Values.servicejobs.metadataAnnotations.hooks }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- end }}
 spec:
   replicas: {{ .Values.servicejobs.replicaCount | default 1 }}
   selector:
