@@ -31,7 +31,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: 5.8.0
+  tag: 5.8.2
   name: uat
   pullPolicy: Always
   readinessProbe:
@@ -55,13 +55,13 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
-  ## The initial password for superadmin user on FIRST launch. If the password was changed from the UI, 
-  ## this value can't change the password on redeployments.
+  ## RP_INITIAL_ADMIN_PASSWORD. The initial password for superadmin user. 
+  ## If the password was changed from the UI, this value can't change the password on redeployments.
+  ##
   superadminInitPasswd:
-    ## If 'true', the secret will be generated from 20 random characters.
-    auto: true
-    ## Specify if auto = false
-    password: ""
+    secretName: ""
+    passwordKeyName: "superadmin-password"
+    password: "erebus"
   podLabels: {}
   podAnnotations: {}
   ## jvmArgs
@@ -105,7 +105,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.8.0
+  tag: 5.9.0
   name: ui
   pullPolicy: Always
   resources:
@@ -129,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.8.0
+  tag: 5.9.2
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -201,7 +201,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.8.0
+  tag: 5.8.2
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -260,7 +260,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.8.0
+  tag: 5.9.0
   pullPolicy: Always
   resources:
     requests:
@@ -286,7 +286,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.5
+  tag: 5.7.6
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -352,7 +352,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 5.7.4
+  tag: 5.7.5
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -438,22 +438,38 @@ elasticsearch:
   user: elastic
   password:
 
-minio:
-  enabled: true
+storage:
   type: minio
-  secretName: ""
+  # type: minio / s3
   installdep:
     enable: false
+  secretName: ""
+  ##
+  ## env[].valueFrom.secretKeyRef.key
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
+  accesskey: <minio-accesskey>
+  secretkey: <minio-secretkey>
   endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
   endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
   region: ""
-  accesskey: <minio-accesskey>
-  secretkey: <minio-secretkey>
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  bucketPrefix: ""
-  defaultBucketName: ""
-  integrationSaltPath: ""
+  bucket:
+    ##
+    ## Switching between multi and single buckets. If you are upgrading an already installed Report Portal, 
+    ## a migration is required. Ref: https://reportportal.io
+    type: multi
+    # type: multi / single
+    ##
+    ## When bucket.type=multi 'bucketDefaultName' defines plugins bucket,
+    ## when bucket.type=single 'bucketDefaultName' defines default single bucket name
+    bucketDefaultName: "rp-bucket"
+    ##
+    ## Multi-bucket values, works when storage.bucket.type=multi
+    ## Prefix and Postfix for all multi-buckets
+    bucketMultiPrefix: "prj-"
+    bucketMultiPostfix: ""
+    ## Integration Salt bucket name for multi-bucket
+    bucketMultiSaltName: "keystore"
 
 ## Ingress configuration for the ui
 ## If you have installed ingress controller and want to expose application - set INGRESS.ENABLE to true.
@@ -501,6 +517,7 @@ rbac:
     annotations: {}
 
 rp:
+  imagePullSecrets: []
   infoEndpoint: "/info"
   healthEndpoint: "/health"
 
