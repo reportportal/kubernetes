@@ -31,7 +31,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: 5.8.1
+  tag: 5.8.2
   name: uat
   pullPolicy: Always
   readinessProbe:
@@ -129,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.9.0
+  tag: 5.9.2
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -201,7 +201,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.8.1
+  tag: 5.8.2
   name: jobs
   pullPolicy: Always
   readinessProbe:
