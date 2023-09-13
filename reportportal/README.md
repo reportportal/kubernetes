@@ -99,7 +99,7 @@ Initialize Helm package manager:
 helm repo add bitnami https://charts.bitnami.com/bitnami && helm repo update
 ```
 
-> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in requirements.yaml
+> Before you deploy ReportPortal you should have installed all its requirements. Their versions are described in `Chart.yaml`
 > You should also specify correct PostgreSQL and RabbitMQ addresses and ports in values.yaml
 
 ```yaml
@@ -269,7 +269,7 @@ Add the elastic helm charts repo:
 helm repo add elastic https://helm.elastic.co && helm repo update
 ```
 
-The following command will use your ReportPortal dependency file requirements.yaml to download all the specified charts into your charts/ directory for you:
+The following command will use ReportPortal dependencies located in `Chart.yaml` file to download all the specified charts into your charts/ directory for you:
 ```sh
 helm dependency build ./reportportal/
 ```
