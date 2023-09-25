@@ -33,6 +33,17 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        - name: RP_AMQP_PASS
+        {{- if .Values.rabbitmq.SecretName }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.rabbitmq.SecretName }}"
+              key: "rabbitmq-password"
+        {{- else }}
+          value: "{{ .Values.rabbitmq.endpoint.password }}"
+        {{- end }}
+        - name: RP_AMQP_ADDRESSES
+          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
         {{- if .Values.uat.superadminInitPasswd.secretName }}
         - name: RP_INITIAL_ADMIN_PASSWORD
           valueFrom:

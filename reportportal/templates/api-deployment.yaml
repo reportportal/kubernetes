@@ -33,6 +33,10 @@ spec:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
+        - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
+          value: ""
+        - name: AUDIT_LOGGER
+          value: ""
         {{- if .Values.elasticsearch.doubleEntry.enable }}
         - name: RP_ELASTICSEARCHLOGMESSAGE_HOST
           value: "true"
