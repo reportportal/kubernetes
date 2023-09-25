@@ -433,7 +433,7 @@ elasticsearch:
   ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
   ##
   doubleEntry:
-    enable: true
+    enable: false
   endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
   user: elastic
   password:
