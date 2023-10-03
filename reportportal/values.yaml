@@ -227,7 +227,7 @@ servicejobs:
     cleanLaunchCron: 0 0 */24 * * *
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
-  chunksize: 1000
+  chunksize: 200000
   ## Used for Double Entry. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
   ## Processing logs by Jobs service (log per ms).
   logProcessing:
@@ -522,6 +522,8 @@ rbac:
     annotations: {}
 
 rp:
+  logging:
+      auditlogs: on
   imagePullSecrets: []
   infoEndpoint: "/info"
   healthEndpoint: "/health"
