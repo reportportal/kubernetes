@@ -152,6 +152,9 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
+  ## Enable audit logs written to the API container's directory /var/log/reportportal/audit.log
+  auditLogs: off
+  # auditLogs: on
   ##
   ## jvmArgs
   ## If you need to use a custom java keystore you can use it through jvmArgs
@@ -522,8 +525,6 @@ rbac:
     annotations: {}
 
 rp:
-  logging:
-      auditlogs: on
   imagePullSecrets: []
   infoEndpoint: "/info"
   healthEndpoint: "/health"

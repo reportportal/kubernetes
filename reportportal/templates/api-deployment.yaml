@@ -34,7 +34,7 @@ spec:
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
         - name: AUDIT_LOGGER
-          value: "{{ .Values.rp.logging.auditlogs }}"
+          value: "{{ .Values.serviceapi.auditLogs }}"
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
         {{- if .Values.elasticsearch.doubleEntry.enable }}
