@@ -8,7 +8,7 @@
 
 serviceindex:
   repository: reportportal/service-index
-  tag: 5.8.0
+  tag: 5.10.0
   name: index
   pullPolicy: Always
   resources:
@@ -21,9 +21,9 @@ serviceindex:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   service:
@@ -31,7 +31,7 @@ serviceindex:
 
 uat:
   repository: reportportal/service-authorization
-  tag: 5.8.2
+  tag: 5.10.0
   name: uat
   pullPolicy: Always
   readinessProbe:
@@ -55,9 +55,9 @@ uat:
       memory: 2048Mi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
+  ##
   ## RP_INITIAL_ADMIN_PASSWORD. The initial password for superadmin user. 
   ## If the password was changed from the UI, this value can't change the password on redeployments.
-  ##
   superadminInitPasswd:
     secretName: ""
     passwordKeyName: "superadmin-password"
@@ -68,8 +68,8 @@ uat:
   ## If you need to use a custom java keystore you can use it through jvmArgs
   ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -79,9 +79,9 @@ uat:
     #       name: "additional-credentials"
     #       key: username
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -105,7 +105,7 @@ uat:
 
 serviceui:
   repository: reportportal/service-ui
-  tag: 5.9.0
+  tag: 5.10.0
   name: ui
   pullPolicy: Always
   resources:
@@ -118,9 +118,9 @@ serviceui:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -129,7 +129,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.9.2
+  tag: 5.10.0
   name: api
   pullPolicy: Always
   replicaCount: 1
@@ -152,18 +152,26 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2048Mi
+  ## Enable audit logs written to the API container's directory /var/log/reportportal/audit.log
+  auditLogs: off
+  # auditLogs: on
+  ##
   ## jvmArgs
   ## If you need to use a custom java keystore you can use it through jvmArgs
   ## eg. : -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks 
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  ##
+  ## Enable the "Delete Account" button in profile UI
+  allowDeleteAccount: true
+  ##
   ## Number of queues
   ## Where "totalNumber" is the total number of queues
   ## Сalculation formula: perPodNumber = totalNumber / serviceapi.replicaCount
   queues:
     totalNumber:
     perPodNumber:
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -175,9 +183,9 @@ serviceapi:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -201,7 +209,7 @@ serviceapi:
 
 servicejobs:
   repository: reportportal/service-jobs
-  tag: 5.8.2
+  tag: 5.10.0
   name: jobs
   pullPolicy: Always
   readinessProbe:
@@ -222,7 +230,7 @@ servicejobs:
     cleanLaunchCron: 0 0 */24 * * *
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
-  chunksize: 1000
+  chunksize: 200000
   ## Used for Double Entry. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
   ## Processing logs by Jobs service (log per ms).
   logProcessing:
@@ -236,8 +244,8 @@ servicejobs:
       cpu: 100m
       memory: 372Mi
   jvmArgs: ""
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -249,9 +257,9 @@ servicejobs:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -260,7 +268,7 @@ servicejobs:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.9.0
+  tag: 5.10.0
   pullPolicy: Always
   resources:
     requests:
@@ -272,9 +280,9 @@ migrations:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -286,7 +294,7 @@ migrations:
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
-  tag: 5.7.6
+  tag: 5.10.0
   name: analyzer
   pullPolicy: Always
   uwsgiWorkers: 2
@@ -300,8 +308,8 @@ serviceanalyzer:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -331,8 +339,8 @@ serviceanalyzertrain:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -341,9 +349,9 @@ serviceanalyzertrain:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  ##
   ## Define which Nodes the Pods are scheduled on.
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
@@ -352,7 +360,7 @@ serviceanalyzertrain:
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
-  tag: 5.7.5
+  tag: 5.10.0
   name: metrics-gatherer
   loggingLevel: debug
   timeManagement:
@@ -370,8 +378,8 @@ metricsgatherer:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  ## External environment variables
   ##
+  ## External environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
     #   value: "TRUE"
@@ -426,14 +434,14 @@ elasticsearch:
   secretName: ""
   installdep:
     enable: false
+  ##
   ## Double entry moves test logs from PostgreSQL to Elastic-type engines
   ## Ref: https://reportportal.io/blog/double-entry-in-5.7.2
   ##
   ## ElasticSearch Performance tuning
   ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
-  ##
   doubleEntry:
-    enable: true
+    enable: false
   endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
   user: elastic
   password:
