@@ -417,7 +417,7 @@ msgbroker:
   password: &msgbrokerPass rabbitmqpassword
 # External RabbitMQ Helm Chart as dependency
 rabbitmq:
-  install: true
+  install: true   # set to `false` if using a Cloud/On-Premise managed RabbitMQ.
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
@@ -443,7 +443,7 @@ searchengine:
   password:
 # External OpenSearch Helm Chart as dependency
 opensearch:
-  install: true
+  install: true   # set to `false` if using a Cloud/On-Premise managed OpenSearch.
   # @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
   # @param opensearch.protocol Protocol for OpenSearch endpoint
@@ -492,7 +492,7 @@ storage:
     bucketMultiSaltName: "keystore"
 # External MinIO Helm Chart as dependency
 minio:
-  install: true
+  install: true   # set to `false` if using a Cloud/On-Premise managed storage.
   accessKey:
     password: *storageAccessKey
   secretKey:
