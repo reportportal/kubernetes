@@ -1,0 +1,12 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+ReportPortal is now available at:
+{{ toYaml .Values.ingress.hosts | indent 4 }}
+
+Welcome to ReportPortal, a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
+
+ReportPortal is a great addition to the Continuous Integration and Continuous Testing process. 
+
+ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.

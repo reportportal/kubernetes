@@ -29,7 +29,8 @@ spec:
         - name: RP_SERVER_PORT
           value: "8080"
         image: "{{ .Values.serviceui.repository }}:{{ .Values.serviceui.tag }}"
-        name: ui
+        imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
+        name: {{ $.Values.serviceui.name | default "ui" }}
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -55,7 +56,7 @@ spec:
 {{- end }}
       securityContext:
 {{ toYaml .Values.serviceui.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceui.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceui.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}

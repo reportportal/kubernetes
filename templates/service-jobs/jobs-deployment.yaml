@@ -25,33 +25,39 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
+      - name: migrations-waiting-init
+        image: ghcr.io/groundnuty/k8s-wait-for:no-root-v2.0
+        imagePullPolicy: IfNotPresent
+        args:
+          - "job-wr"
+          - {{ .Release.Name }}-migrations
+{{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
-      {{- end }}
+{{- end }}
       containers:
       - env:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
-        {{- if .Values.elasticsearch.doubleEntry.enable }}
+        {{- if .Values.searchengine.doubleEntry }}
         - name: RP_ELASTICSEARCH_HOST
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+        {{- if .Values.searchengine.secretName }}
         - name: RP_ELASTICSEARCH_USERNAME
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.searchengine.secretName }}"
               key: "username"
         - name: RP_ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.searchengine.secretName }}"
               key: "password"
         {{- else }}
         - name: RP_ELASTICSEARCH_USERNAME
-          value: "{{ .Values.elasticsearch.user }}"
+          value: "{{ .Values.searchengine.user }}"
         - name: RP_ELASTICSEARCH_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}"
+          value: "{{ .Values.searchengine.password }}"
         {{- end}}
         {{- end}}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
@@ -71,40 +77,40 @@ spec:
           value: "{{ .Values.servicejobs.jvmArgs }}"
         {{- end }}
         - name: RP_AMQP_ANALYZER-VHOST
-          value: "{{ .Values.rabbitmq.vhost }}"
+          value: "{{ .Values.msgbroker.vhost }}"
         - name: RP_AMQP_PASS
-        {{- if .Values.rabbitmq.SecretName }}
+        {{- if .Values.msgbroker.secretName }}
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.rabbitmq.SecretName }}"
+              name: "{{ .Values.msgbroker.secretName }}"
               key: "rabbitmq-password"
         {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
+          value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.apiport }}/api
+          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
         - name: RP_DB_HOST
-          value: "{{ .Values.postgresql.endpoint.address }}"
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
-          value: "{{ .Values.postgresql.endpoint.port }}"
+          value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
-          value: "{{ .Values.postgresql.endpoint.dbName }}"
-        {{- if .Values.postgresql.endpoint.connections }}
+          value: "{{ .Values.database.dbName }}"
+        {{- if .Values.database.connections }}
         - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
-          value: "{{ .Values.postgresql.endpoint.connections }}"
+          value: "{{ .Values.database.connections }}"
         {{- end }}
         - name: RP_DB_USER
-          value: "{{ .Values.postgresql.endpoint.user }}"
+          value: "{{ .Values.database.user }}"
         - name: RP_DB_PASS
-        {{- if .Values.postgresql.SecretName }}
+        {{- if .Values.database.secretName }}
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.postgresql.SecretName }}"
+              name: "{{ .Values.database.secretName }}"
               key: "postgresql-password"
         {{- else }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
+          value: "{{ .Values.database.password }}"
         {{- end }}
         {{- if eq .Values.storage.bucket.type "single" }}
         - name: RP_FEATURE_FLAGS
@@ -114,7 +120,7 @@ spec:
           value: "{{ .Values.storage.type }}"
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ .Values.storage.endpoint }}"
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION
@@ -154,7 +160,8 @@ spec:
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
         image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
-        name: jobs
+        imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
+        name: "{{ $.Values.servicejobs.name | default "jobs" }}"
         ports:
         - containerPort: 8686
           protocol: TCP
@@ -197,7 +204,7 @@ spec:
 {{- end }}
       securityContext:
 {{ toYaml .Values.servicejobs.securityContext | indent 8 }}
-      serviceAccountName: {{ .Values.servicejobs.serviceAccountName }}
+      serviceAccountName: {{ .Values.servicejobs.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.tolerations }}
       tolerations:
 {{- toYaml . | nindent 8 }}
