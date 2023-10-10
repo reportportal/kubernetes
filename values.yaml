@@ -446,8 +446,6 @@ opensearch:
   install: true   # set to `false` if using a Cloud/On-Premise managed OpenSearch.
   # @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
-  # @param opensearch.protocol Protocol for OpenSearch endpoint
-  protocol: http
   # @param opensearch.httpPort Port for OpenSearch endpoint
   httpPort: *searchenginePort
   startupProbe:
