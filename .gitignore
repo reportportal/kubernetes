@@ -5,7 +5,6 @@
 .vscode/
 .DS_Store
 *.old
-*.tpl
 *.backup
 *.bak
 *.orig
