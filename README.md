@@ -17,7 +17,7 @@ ReportPortal is distributed under the Apache v2.0 license, and it is free to use
 If a company is interested in our services, we can provide support hours to deploy, integrate, configure, or customize the tool, as well as SaaS options.
 
 ## Requirements
-* Kubernetes v1.19-1.24
+* Kubernetes v1.19-v1.27.4
 * Helm Package Manager v3.4+
 
 ## Usage notes and getting started
@@ -41,6 +41,9 @@ Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Installation
 
+From 
+
 ```bash
-helm upgrade --install reportportal --set uat.superadminInitPasswd.password=erebus  ./kubernetes/ --wait
+helm dependency build  ./kubernetes/
+helm upgrade --install reportportal --set uat.superadminInitPasswd.password="erebus" ./kubernetes/ --wait
 ```
