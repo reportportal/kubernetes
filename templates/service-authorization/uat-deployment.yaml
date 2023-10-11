@@ -25,25 +25,31 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
+      - name: migrations-waiting-init
+        image: ghcr.io/groundnuty/k8s-wait-for:no-root-v2.0
+        imagePullPolicy: IfNotPresent
+        args:
+          - "job-wr"
+          - {{ .Release.Name }}-migrations
+{{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
-      {{- end }}
+{{- end }}
       containers:
       - env:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
         - name: RP_AMQP_PASS
-        {{- if .Values.rabbitmq.SecretName }}
+        {{- if .Values.msgbroker.secretName }}
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.rabbitmq.SecretName }}"
+              name: "{{ .Values.msgbroker.secretName }}"
               key: "rabbitmq-password"
         {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
+          value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
         {{- if .Values.uat.superadminInitPasswd.secretName }}
         - name: RP_INITIAL_ADMIN_PASSWORD
           valueFrom:
@@ -63,21 +69,21 @@ spec:
         - name: RP_SESSION_LIVE
           value: "{{ .Values.uat.sessionLiveTime }}"
         - name: RP_DB_HOST
-          value: "{{ .Values.postgresql.endpoint.address }}"
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
-          value: "{{ .Values.postgresql.endpoint.port }}"
+          value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
-          value: "{{ .Values.postgresql.endpoint.dbName }}"
+          value: "{{ .Values.database.dbName }}"
         - name: RP_DB_USER
-          value: "{{ .Values.postgresql.endpoint.user }}"
+          value: "{{ .Values.database.user }}"
         - name: RP_DB_PASS
-        {{- if .Values.postgresql.SecretName }}
+        {{- if .Values.database.secretName }}
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.postgresql.SecretName }}"
+              name: "{{ .Values.database.secretName }}"
               key: "postgresql-password"
         {{- else }}
-          value: "{{ .Values.postgresql.endpoint.password }}"
+          value: "{{ .Values.database.password }}"
         {{- end }}
         {{- if eq .Values.storage.bucket.type "single" }}
         - name: RP_FEATURE_FLAGS
@@ -87,7 +93,7 @@ spec:
           value: "{{ .Values.storage.type }}"
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ .Values.storage.endpoint }}"
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION
@@ -120,8 +126,9 @@ spec:
        {{- end }}
         - name: DATASTORE_DEFAULTBUCKETNAME
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
-        name: uat
+        name: "{{ $.Values.uat.name | default "uat" }}"
         image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
+        imagePullPolicy: "{{ .Values.uat.pullPolicy }}"
         ports:
         - containerPort: 9999
           protocol: TCP
@@ -170,7 +177,7 @@ spec:
 {{- end }}
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.uat.serviceAccountName }}
+      serviceAccountName: {{ .Values.uat.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
       tolerations:
 {{- with .Values.tolerations }}
       tolerations: 

@@ -26,9 +26,15 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
+      - name: migrations-waiting-init
+        image: ghcr.io/groundnuty/k8s-wait-for:no-root-v2.0
+        imagePullPolicy: IfNotPresent
+        args:
+          - "pod-wr"
+          - "-lcomponent={{ .Release.Name }}-api"
+{{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
-      {{- end }}
+{{- end }}
       containers:
       - env:
 {{- if .Values.serviceanalyzertrain.extraEnvs }}
@@ -40,7 +46,7 @@ spec:
         - name: ANALYZER_BINARYSTORE_BUCKETPREFIX
           value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.storage.endpointshort }}"
+          value: "{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- if .Values.storage.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -65,43 +71,44 @@ spec:
         - name: INSTANCE_TASK_TYPE
           value: "train"
         - name: UWSGI_WORKERS
-          value: "1"
+          value: "{{ .Values.serviceanalyzertrain.uwsgiWorkers }}"
         - name: RP_AMQP_PASS
-        {{- if .Values.rabbitmq.SecretName }}
+        {{- if .Values.msgbroker.secretName }}
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.rabbitmq.SecretName }}"
+              name: "{{ .Values.msgbroker.secretName }}"
               key: "rabbitmq-password"
         {{- else }}
-          value: "{{ .Values.rabbitmq.endpoint.password }}"
+          value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.rabbitmq.endpoint.ssl }}://{{ .Values.rabbitmq.endpoint.user }}:$(RP_AMQP_PASS)@{{ .Values.rabbitmq.endpoint.address }}:{{ .Values.rabbitmq.endpoint.port }}/
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}/
         - name: AMQP_EXCHANGE_NAME
-          value: "analyzer-default"
+          value: "{{ .Values.msgbroker.analyzerExchangeName | default "analyzer-default" }}"
         - name: AMQP_VIRTUAL_HOST
-          value: "{{ .Values.rabbitmq.vhost }}"
+          value: "{{ .Values.msgbroker.vhost }}"
         - name: ES_HOSTS
-          value: "{{ .Values.elasticsearch.endpoint }}"
-        {{- if .Values.elasticsearch.secretName }}
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+        {{- if .Values.searchengine.secretName }}
         - name: ES_USER
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.searchengine.secretName }}"
               key: "username"
         - name: ES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: "{{ .Values.elasticsearch.secretName }}"
+              name: "{{ .Values.searchengine.secretName }}"
               key: "password"
         {{- else }}
         - name: ES_USER
-          value: "{{ .Values.elasticsearch.user }}"
+          value: "{{ .Values.searchengine.user }}"
         - name: ES_PASSWORD
-          value: "{{ .Values.elasticsearch.password }}" 
+          value: "{{ .Values.searchengine.password }}" 
         {{- end }}
         image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
-        name: analyzer
+        imagePullPolicy: "{{ .Values.serviceanalyzertrain.pullPolicy }}"
+        name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
         ports:
         - containerPort: 5001
           name: analyzertrain
@@ -120,7 +127,7 @@ spec:
 {{- end }}
       securityContext:
 {{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.tolerations }}
       tolerations:
 {{- toYaml . | nindent 8 }}

@@ -14,19 +14,19 @@ dependencies:
   - name: postgresql
     version: 10.9.4
     repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
-    condition: postgresql.installdep.enable
+    condition: postgresql.install
 
   - name: rabbitmq
     version: 10.3.9
     repository: https://charts.bitnami.com/bitnami  
-    condition: rabbitmq.installdep.enable
+    condition: rabbitmq.install
 
-  - name: elasticsearch
-    version: 7.10.2
-    repository: https://helm.elastic.co
-    condition: elasticsearch.installdep.enable
+  - name: opensearch
+    version: 2.14.0
+    repository: https://opensearch-project.github.io/helm-charts/
+    condition: opensearch.install
 
   - name: minio
     version: 7.1.9
     repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
-    condition: storage.installdep.enable
+    condition: storage.install
