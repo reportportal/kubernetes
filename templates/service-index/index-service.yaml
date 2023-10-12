@@ -6,6 +6,7 @@ metadata:
   annotations:
     service: {{ $.Values.serviceindex.name | default "index" }}
     infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+    healthEndpoint: {{ $.Values.rp.healthEndpoint | default "/health"}}
 spec:
   ports:
   - name: {{ $.Values.serviceindex.service.portName | default "headless" }}

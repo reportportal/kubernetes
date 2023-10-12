@@ -21,29 +21,29 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - path: /()?(.*)
-        pathType: ImplementationSpecific
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /ui
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /uat
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /api
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
@@ -53,29 +53,29 @@ spec:
 {{ else }}
   - http:
       paths:
-      - path: /()?(.*)
-        pathType: ImplementationSpecific
+      - path: /
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /ui
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /uat
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
-        pathType: ImplementationSpecific
+      - path: /api
+        pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api

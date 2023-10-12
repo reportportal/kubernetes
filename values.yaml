@@ -4,7 +4,7 @@
 
 serviceindex:
   repository: reportportal/service-index
-  tag: 5.10.0
+  tag: 5.10.1
   name: index
   pullPolicy: Always
   resources:
@@ -23,7 +23,6 @@ serviceindex:
   #  disktype: ssd
   service:
     portName: ""
-
 
 uat:
   repository: reportportal/service-authorization
@@ -511,8 +510,6 @@ ingress:
   class: nginx
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
     nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
@@ -552,8 +549,8 @@ rbac:
 
 rp:
   imagePullSecrets: []
-  infoEndpoint: "/info"
-  healthEndpoint: "/health"
+  infoEndpoint:
+  healthEndpoint:
 
 # Extra init containers (e.g. wait for minio)
 extraInitContainers: {}

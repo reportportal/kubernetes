@@ -6,6 +6,7 @@ metadata:
   annotations:
     service: {{ $.Values.metricsgatherer.name | default "metrics-gatherer" }}
     infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+    healthEndpoint: {{ $.Values.rp.healthEndpoint | default "/health"}}
 spec:
   ports:
   - name: {{ $.Values.metricsgatherer.service.portName | default "headless" }}

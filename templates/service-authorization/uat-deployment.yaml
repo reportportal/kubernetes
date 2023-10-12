@@ -39,6 +39,8 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "/uat"
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
           valueFrom:
@@ -143,7 +145,7 @@ spec:
         {{- if .Values.uat.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: {{ $.Values.rp.healthEndpoint | default "/uat/health"}}
             port: 9999
           initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 40 }}
@@ -155,7 +157,7 @@ spec:
         {{- if .Values.uat.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: {{ $.Values.rp.healthEndpoint | default "/uat/health"}}
             port: 9999
           initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
