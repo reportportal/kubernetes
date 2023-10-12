@@ -20,7 +20,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.rp.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -178,7 +178,7 @@ spec:
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: {{ $.Values.rp.healthEndpoint | default "/jobs/health"}}
+            path: "/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
@@ -190,7 +190,7 @@ spec:
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: {{ $.Values.rp.healthEndpoint | default "/jobs/health"}}
+            path: "/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}

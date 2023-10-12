@@ -5,8 +5,8 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceui.name | default "ui" }}
-    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/ui/info"}}
-    healthEndpoint: {{ $.Values.rp.healthEndpoint | default "/ui/health"}}
+    infoEndpoint: "/ui/info"
+    healthEndpoint: "/ui/health"
 spec:
   ports:
   - name: {{ $.Values.serviceui.service.portName | default "headless" }}

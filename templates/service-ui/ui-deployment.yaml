@@ -43,7 +43,7 @@ spec:
             memory: {{ .Values.serviceui.resources.limits.memory }}
         readinessProbe:
           httpGet:
-            path: {{ $.Values.rp.healthEndpoint | default "/ui/health"}}
+            path: "/ui/health"
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10

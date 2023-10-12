@@ -20,7 +20,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.rp.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -158,7 +158,7 @@ spec:
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: {{ $.Values.rp.healthEndpoint | default "/api/health"}}
+            path: "/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
@@ -170,7 +170,7 @@ spec:
         {{- if .Values.serviceapi.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: {{ $.Values.rp.healthEndpoint | default "/api/health"}}
+            path: "/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
