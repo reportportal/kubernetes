@@ -39,7 +39,7 @@ spec:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
-        # TODO: remove SERVER_SERVLET_CONTEXT_PATH env variable after migration to new version of api-service
+        # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
         - name: AUDIT_LOGGER

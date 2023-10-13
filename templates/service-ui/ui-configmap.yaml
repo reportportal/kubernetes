@@ -1,3 +1,4 @@
+#TODO: delete this file after release new service-ui version
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -38,8 +39,8 @@ data:
                 root	/usr/share/nginx/html;
                 index  index.html;
 
-            #fallback
-            location / {
+                #fallback
+                location / {
                     add_header Cache-Control "no-cache";
                     add_header X-Frame-Options "DENY";
                     add_header X-Content-Type-Options "nosniff";
