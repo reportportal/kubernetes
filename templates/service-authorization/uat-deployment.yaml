@@ -39,6 +39,7 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-authtorization
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/uat"
         - name: RP_AMQP_PASS

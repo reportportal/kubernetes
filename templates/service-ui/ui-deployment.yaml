@@ -48,6 +48,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 3
+        #TODO: deletre volumeMounts after release new service-ui version
         volumeMounts:
           - name: ui-nginx-conf
             mountPath: /etc/nginx/nginx.conf
@@ -56,6 +57,7 @@ spec:
         # - mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
         #   readOnly: true
         #   name: ui-nginx-conf
+      #TODO: deletre volumes after release new service-ui version
       volumes:
       - name: ui-nginx-conf
         configMap:

@@ -384,14 +384,6 @@ database:
   password: &dbpassword rppassword
   # Number of database connections
   connections: &dbconnections
-# External PostgreSQL Helm Chart as dependency
-postgresql: 
-  install: true   # set to `false` if using a Cloud/On-Premise managed database.
-  postgresqlUsername: *dbuser
-  postgresqlPassword: *dbpassword
-  postgresqlDatabase: *dbname
-  servicePort: *dbport
-  postgresqlMaxConnections: *dbconnections
 
 msgbroker:
   secretName: ""
@@ -399,22 +391,13 @@ msgbroker:
   vhost: analyzer
   analyzerExchangeName: analyzer-default
   ssl: false    # set to `true` if use HTTPS and AMQPS
-  # @param rabbitmq.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
+  # @param msgbroker.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   port: &msgbrokerPort 5672
   user: &msgbrokerUser rabbitmq
   apiport: &msgbrokerApiPort 15672
   apiuser: *msgbrokerUser
   password: &msgbrokerPass rabbitmqpassword
-# External RabbitMQ Helm Chart as dependency
-rabbitmq:
-  install: true   # set to `false` if using a Cloud/On-Premise managed RabbitMQ.
-  auth:
-    username: *msgbrokerUser
-    password: *msgbrokerPass
-  containerPorts:
-    amqp: *msgbrokerPort
-    manager: *msgbrokerApiPort
 
 searchengine:
   secretName: ""
@@ -425,27 +408,13 @@ searchengine:
   ##
   doubleEntry:
     enable: true
-  # @param opensearch.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  # @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
-  # ref. to @param opensearch.protocol
+  # ref. to @param searchengine.protocol
   ssl: false  # set to `true` if use HTTPS
   port: &searchenginePort 9200
   user:
   password:
-# External OpenSearch Helm Chart as dependency
-opensearch:
-  install: true   # set to `false` if using a Cloud/On-Premise managed OpenSearch.
-  # @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
-  singleNode: true
-  # @param opensearch.httpPort Port for OpenSearch endpoint
-  httpPort: *searchenginePort
-  startupProbe:
-    initialDelaySeconds: 30
-  extraEnvs:
-    - name: DISABLE_INSTALL_DEMO_CONFIG
-      value: "true"
-    - name: DISABLE_SECURITY_PLUGIN
-      value: "true"
 
 storage:
   # @param storage.type Possible storage types: minio, s3
@@ -479,13 +448,6 @@ storage:
     bucketMultiPostfix: ""
     # @param storage.bucket.bucketMultiSaltName storing auth keystor
     bucketMultiSaltName: "keystore"
-# External MinIO Helm Chart as dependency
-minio:
-  install: true   # set to `false` if using a Cloud/On-Premise managed storage.
-  accessKey:
-    password: *storageAccessKey
-  secretKey:
-    password: *storageSecretKey
 
 ##
 # Ingress configuration for the UI
@@ -512,7 +474,6 @@ ingress:
   # - hosts:
   #   - reportportal.k8.com
   #   secretName: reportportal.k8.com-tls
-
 
 ##
 # tolerations for all components, if any (requires Kubernetes >= 1.6)
@@ -547,3 +508,47 @@ extraInitContainers: {}
   #     - sh
   #     - "-c"
   #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
+# External dependencies installation configuration
+
+# @param.postgresql External PostgreSQL Helm Chart as dependency
+postgresql: 
+  install: true   # set to `false` if using a Cloud/On-Premise managed database.
+  postgresqlUsername: *dbuser
+  postgresqlPassword: *dbpassword
+  postgresqlDatabase: *dbname
+  servicePort: *dbport
+  postgresqlMaxConnections: *dbconnections
+
+# @param.rabbitmq External RabbitMQ Helm Chart as dependency
+rabbitmq:
+  install: true   # set to `false` if using a Cloud/On-Premise managed RabbitMQ.
+  auth:
+    username: *msgbrokerUser
+    password: *msgbrokerPass
+  containerPorts:
+    amqp: *msgbrokerPort
+    manager: *msgbrokerApiPort
+
+# @param.opensearch External OpenSearch Helm Chart as dependency
+opensearch:
+  install: true   # set to `false` if using a Cloud/On-Premise managed OpenSearch.
+  # @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
+  singleNode: true
+  # @param opensearch.httpPort Port for OpenSearch endpoint
+  httpPort: *searchenginePort
+  startupProbe:
+    initialDelaySeconds: 30
+  extraEnvs:
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+
+# @param.minio External MinIO Helm Chart as dependency
+minio:
+  install: true   # set to `false` if using a Cloud/On-Premise managed storage.
+  accessKey:
+    password: *storageAccessKey
+  secretKey:
+    password: *storageSecretKey
