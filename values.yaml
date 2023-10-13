@@ -498,6 +498,8 @@ ingress:
   usedomainname: false  # set to `true` if you have domian name
   hosts:
     - reportportal.k8.com
+  # Application path as a prefix, should start from '/' and be without trailing '/'
+  path:
   class: nginx
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
