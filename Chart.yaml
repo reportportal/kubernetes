@@ -1,0 +1,32 @@
+apiVersion: v2
+appVersion: "23.2"
+description: ReportPortal.io AI-powered Test Automation Dashboard
+name: reportportal
+version: 5.10.0
+sources:
+  - https://github.com/reportportal/kubernetes
+keywords:
+  - reportportal
+maintainers:
+  - name: reportportal
+    email: support@reportportal.io
+dependencies:
+  - name: postgresql
+    version: 10.9.4
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    condition: postgresql.install
+
+  - name: rabbitmq
+    version: 10.3.9
+    repository: https://charts.bitnami.com/bitnami  
+    condition: rabbitmq.install
+
+  - name: opensearch
+    version: 2.14.0
+    repository: https://opensearch-project.github.io/helm-charts/
+    condition: opensearch.install
+
+  - name: minio
+    version: 7.1.9
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    condition: storage.install

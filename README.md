@@ -1,6 +1,6 @@
 # [ReportPortal.io](http://ReportPortal.io)
 
-[![Join Slack chat!](https://reportportal-slack-auto.herokuapp.com/badge.svg)](https://reportportal-slack-auto.herokuapp.com)
+[![Join Slack chat!](https://slack.epmrpp.reportportal.io/badge.svg)](https://slack.epmrpp.reportportal.io/)
 [![stackoverflow](https://img.shields.io/badge/reportportal-stackoverflow-orange.svg?style=flat)](http://stackoverflow.com/questions/tagged/reportportal)
 [![GitHub contributors](https://img.shields.io/badge/contributors-102-blue.svg)](https://reportportal.io/community)
 [![Docker Pulls](https://img.shields.io/docker/pulls/reportportal/service-api.svg?maxAge=25920)](https://hub.docker.com/u/reportportal/)
@@ -8,28 +8,24 @@
 [![Build with Love](https://img.shields.io/badge/build%20with-❤%EF%B8%8F%E2%80%8D-lightgrey.svg)](http://reportportal.io?style=flat)
 
 
-Application Core based on micro-services architecture and includes next mandatory services:
-![structure](https://github.com/reportportal/reportportal/blob/master/public/rp_repo_structure.png)
+ReportPortal is a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
-ReportPortal is a service that provides great capabilities for speeding up results analysis and reporting by means of built-in analytical features.
+ReportPortal is a great addition to Continuous Integration and Continuous Testing process.
 
-## Introduction
-These charts bootstraps a ReportPortal deployment on a Kubernetes cluster using the Helm package manager
+ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes. We offer the only paid premium feature – Quality Gates.
 
-The repo includes a number of Kubernetes and Helm configurations for installation ReportPortal v5
+If a company is interested in our services, we can provide support hours to deploy, integrate, configure, or customize the tool, as well as SaaS options.
 
 ## Requirements
-* Kubernetes v1.19-1.24
+* Kubernetes v1.19-v1.27.4
 * Helm Package Manager v3.4+
 
 ## Usage notes and getting started
-* [ReportPortal v5](https://github.com/reportportal/kubernetes/tree/master/reportportal)
-
+* [ReportPortal](https://github.com/reportportal/kubernetes/tree/master/reportportal)
 
 ## Documentation
 * [User Manual](http://reportportal.io/#documentation)
 * [Wiki and Guides](https://github.com/reportportal/reportportal/wiki)
-
 
 ## Community / Support
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
@@ -38,8 +34,16 @@ The repo includes a number of Kubernetes and Helm configurations for installatio
 * [Stackoverflow Questions](http://stackoverflow.com/questions/tagged/reportportal)
 * [Twitter](http://twitter.com/ReportPortal_io)
 * [Facebook](https://www.facebook.com/ReportPortal.io)
-* [VK](https://vk.com/reportportal_io)
 * [YouTube Channel](https://www.youtube.com/channel/UCsZxrHqLHPJcrkcgIGRG-cQ)
 
 ## License
 Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Installation
+
+From 
+
+```bash
+helm dependency build  ./kubernetes/
+helm upgrade --install reportportal --set uat.superadminInitPasswd.password="erebus" ./kubernetes/ --wait
+```

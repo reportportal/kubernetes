@@ -1,6 +1,0 @@
-replicas: 1
-extraEnvs:
-  - name: discovery.type
-    value: single-node
-  - name: cluster.initial_master_nodes
-    value: ""
