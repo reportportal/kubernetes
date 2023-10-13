@@ -42,7 +42,7 @@ spec:
           protocol: TCP
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "/health"
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10

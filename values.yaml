@@ -4,7 +4,7 @@
 
 serviceindex:
   repository: reportportal/service-index
-  tag: 5.10.0
+  tag: 5.10.1
   name: index
   pullPolicy: Always
   resources:
@@ -23,7 +23,6 @@ serviceindex:
   #  disktype: ssd
   service:
     portName: ""
-
 
 uat:
   repository: reportportal/service-authorization
@@ -99,7 +98,6 @@ uat:
   service:
     portName: ""
 
-
 serviceui:
   repository: reportportal/service-ui
   tag: 5.10.0
@@ -121,7 +119,6 @@ serviceui:
   serviceAccountName: ""
   service:
     portName: ""
-
 
 serviceapi:
   repository: reportportal/service-api
@@ -199,7 +196,6 @@ serviceapi:
     data: {}
     #  custom-pki.jks: <base64-data>
 
-
 servicejobs:
   repository: reportportal/service-jobs
   tag: 5.10.0
@@ -258,7 +254,6 @@ servicejobs:
   service:
     portName: ""
 
-
 migrations:
   repository: reportportal/migrations
   tag: 5.10.0
@@ -277,7 +272,6 @@ migrations:
   nodeSelector: {}
   #  disktype: ssd
   serviceAccountName: ""
-
 
 serviceanalyzer:
   repository: reportportal/service-auto-analyzer
@@ -311,7 +305,6 @@ serviceanalyzer:
   service:
     portName: ""
 
-
 serviceanalyzertrain:
   name: analyzer-train
   pullPolicy: Always
@@ -341,7 +334,6 @@ serviceanalyzertrain:
   serviceAccountName: ""
   service:
     portName: ""
-
 
 metricsgatherer:
   repository: reportportal/service-metrics-gatherer
@@ -379,7 +371,6 @@ metricsgatherer:
   serviceAccountName: ""
   service:
     portName: ""
-
 
 # Components configuration
 database:
@@ -496,7 +487,6 @@ minio:
   secretKey:
     password: *storageSecretKey
 
-
 ##
 # Ingress configuration for the UI
 # If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
@@ -511,8 +501,6 @@ ingress:
   class: nginx
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
     nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
@@ -536,7 +524,6 @@ tolerations: []
   #   value: "value"
   #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
-
 # RBAC is required for service-index in order to collect status/info over all services
 rbac:
   create: true
@@ -549,11 +536,7 @@ rbac:
     ##
     annotations: {}
 
-
-rp:
-  imagePullSecrets: []
-  infoEndpoint: "/info"
-  healthEndpoint: "/health"
+imagePullSecrets: []
 
 # Extra init containers (e.g. wait for minio)
 extraInitContainers: {}

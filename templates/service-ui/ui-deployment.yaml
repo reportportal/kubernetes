@@ -25,12 +25,12 @@ spec:
 {{ toYaml .Values.extraInitContainers | indent 8 }}
       {{- end }}
       containers:
-      - env:
-        - name: RP_SERVER_PORT
-          value: "8080"
+      - name: {{ $.Values.serviceui.name | default "ui" }}
         image: "{{ .Values.serviceui.repository }}:{{ .Values.serviceui.tag }}"
         imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
-        name: {{ $.Values.serviceui.name | default "ui" }}
+        env:
+        - name: RP_SERVER_PORT
+          value: "8080"
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -43,11 +43,26 @@ spec:
             memory: {{ .Values.serviceui.resources.limits.memory }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "/ui/health"
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 3
+        volumeMounts:
+          - name: ui-nginx-conf
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+        # - mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
+        #   readOnly: true
+        #   name: ui-nginx-conf
+      volumes:
+      - name: ui-nginx-conf
+        configMap:
+          name: ui-nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceui.nodeSelector }}
