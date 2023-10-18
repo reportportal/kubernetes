@@ -41,7 +41,7 @@ helm uninstall my-release
 
 ## Configuration
 
-### Dependencies
+### Install the chart with dependencies
 
 ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives. 
 
@@ -69,6 +69,39 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
+### Install from sources
+
+For fetching chart dependencies, use the command:
+
+```bash
+helm dependency build .
+```
+
+> This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/Chart.yaml) by the chart.
+
+To install the chart directly from local sources, use:
+
+
+```bash
+helm install my-release --set uat.superadminInitPasswd.password="MyPassword" .
+```
+
+### Install specific version
+
+To search for available versions of a chart, use:
+
+```bash
+helm search repo reportportal --versions
+```
+
+To install a specific version of a chart, use:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  reportportal/reportportal \
+  --version 23.2
+```
 
 ## Community / Support
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
