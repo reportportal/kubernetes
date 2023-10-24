@@ -54,11 +54,9 @@ spec:
           requests:
             cpu: {{ .Values.servicejobs.resources.requests.cpu }}
             memory: {{ .Values.servicejobs.resources.requests.memory }}
-            ephemeral-storage: {{ .Values.servicejobs.resources.requests.ephemeralStorage }}
           limits:
             cpu: {{ .Values.servicejobs.resources.limits.cpu }}
             memory: {{ .Values.servicejobs.resources.limits.memory }}
-            ephemeral-storage: {{ .Values.servicejobs.resources.limits.ephemeralStorage }}
         env:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}

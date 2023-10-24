@@ -55,11 +55,9 @@ spec:
           requests:
             cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
             memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
-            ephemeral-storage: {{ .Values.serviceanalyzertrain.resources.requests.ephemeralStorage }}
           limits:
             cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
             memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
-            ephemeral-storage: {{ .Values.serviceanalyzertrain.resources.limits.ephemeralStorage }}
         env:
 {{- if .Values.serviceanalyzertrain.extraEnvs }}
 {{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 8 }}

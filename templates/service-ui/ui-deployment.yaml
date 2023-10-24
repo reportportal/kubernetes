@@ -38,11 +38,9 @@ spec:
           requests:
             cpu: {{ .Values.serviceui.resources.requests.cpu }}
             memory: {{ .Values.serviceui.resources.requests.memory }}
-            ephemeral-storage: {{ .Values.serviceui.resources.requests.ephemeralStorage }}
           limits:
             cpu: {{ .Values.serviceui.resources.limits.cpu }}
             memory: {{ .Values.serviceui.resources.limits.memory }}
-            ephemeral-storage: {{ .Values.serviceui.resources.limits.ephemeralStorage }}
         readinessProbe:
           httpGet:
             path: "/ui/health"

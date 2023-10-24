@@ -9,11 +9,9 @@ serviceindex:
     requests:
       cpu: 150m
       memory: 128Mi
-      ephemeralStorage: 128Mi
     limits:
       cpu: 200m
       memory: 256Mi
-      ephemeralStorage: 256Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -36,11 +34,9 @@ serviceui:
     requests:
       cpu: 100m
       memory: 64Mi
-      ephemeralStorage: 128Mi
     limits:
       cpu: 200m
       memory: 128Mi
-      ephemeralStorage: 128Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -75,11 +71,9 @@ serviceapi:
     requests:
       cpu: 500m
       memory: 1Gi
-      ephemeralStorage: 512Gi
     limits:
       cpu: 1000m
       memory: 2Gi
-      ephemeralStorage: 512Gi
   ## Audit logs. written to the API container's directory /var/log/reportportal/audit.log
   auditLogs: off  ## set `on` to enable
   ## "Delete Account" button in UI
@@ -153,11 +147,9 @@ uat:
     requests:
       cpu: 100m
       memory: 512Mi
-      ephemeralStorage: 512Gi
     limits:
       cpu: 500m
       memory: 1Gi
-      ephemeralStorage: 512Gi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
   
@@ -244,11 +236,9 @@ servicejobs:
     requests:
       cpu: 100m
       memory: 248Mi
-      ephemeralStorage: 248Mi
     limits:
       cpu: 250m
       memory: 512Mi
-      ephemeralStorage: 512Mi
   jvmArgs: ""
   
   ## Extra environment variables
@@ -282,11 +272,9 @@ serviceanalyzer:
     requests:
       cpu: 500m
       memory: 512Mi
-      ephemeralStorage: 512Mi
     limits:
       cpu: 500m
       memory: 1Gi
-      ephemeralStorage: 512Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -316,11 +304,9 @@ serviceanalyzertrain:
     requests:
       cpu: 100m
       memory: 256Mi
-      ephemeralStorage: 256Mi
     limits:
       cpu: 200m
       memory: 512Mi
-      ephemeralStorage: 256Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -357,11 +343,9 @@ metricsgatherer:
     requests:
       cpu: 8m
       memory: 128Mi
-      ephemeralStorage: 128Mi
     limits:
       cpu: 16m
       memory: 256Mi
-      ephemeralStorage: 256Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -390,11 +374,9 @@ migrations:
     requests:
       cpu: 100m
       memory: 128Mi
-      ephemeralStorage: 128Mi
     limits:
       cpu: 100m
       memory: 128Mi
-      ephemeralStorage: 128Mi
   pullPolicy: Always
   podLabels: {}
   podAnnotations: {}
@@ -406,7 +388,8 @@ migrations:
   nodeSelector: {}
   serviceAccountName: ""
 
-## Components configuration
+## @section Infrastructure configuration
+
 database:
   secretName: ""
   ## @param database.endpoint by default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
@@ -482,30 +465,46 @@ storage:
     ## @param storage.bucket.bucketMultiSaltName storing auth keystor
     bucketMultiSaltName: "keystore"
 
-## Ingress configuration for the UI
+## @section Ingress configuration
+
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
-## If you have some domain name set @param ingress.usedomainname variable to `true` and set this fqdn to @param ingress.hosts
+## If you have some domain name set @param ingress.usedomainname variable to `true` and set this FQDN to @param ingress.hosts
 ## If you don't have any domain names set @param ingress.usedomainname to `false`
+
+## @param ingress.class set to `nginx` if you have nginx ingress controller.
+## @param ingress.class set to `gke` if you want to use GKE ingress controller.
+## @param ingress.class set to `aws` if you want to use AWS ALB ingress controller.
+## @param ingress.class set to any other ingress controller name if you want to use it.
+## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
+
+## @param ingress.tls example of tls configuration:
+## tls:
+## - hosts:
+##     - reportportal.k8.com
+##   secretName: reportportal.k8.com-tls
 
 ingress:
   enable: true
-  usedomainname: false  ## set to `true` if you have domian name
+  usedomainname: false
   hosts:
     - reportportal.k8.com
   class: nginx
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/proxy-body-size: 128m
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
-    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-    nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+    nginx:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 128m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+    gke: {}
+    aws: {}
+    custom: {}
   tls: []
-  ## - hosts:
-  ##   - reportportal.k8.com
-  ##   secretName: reportportal.k8.com-tls
+
+## @section Additional configuration
 
 ## tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -539,7 +538,7 @@ extraInitContainers: {}
   ##     - "-c"
   ##     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
-## External dependencies installation configuration
+## @section External dependencies installation configuration
 
 ## @param postgresql External PostgreSQL Helm Chart as dependency
 postgresql: 

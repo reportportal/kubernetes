@@ -54,11 +54,9 @@ spec:
           requests:
             cpu: {{ .Values.uat.resources.requests.cpu }}
             memory: {{ .Values.uat.resources.requests.memory }}
-            ephemeral-storage: {{ .Values.uat.resources.requests.ephemeralStorage }}
           limits:
             cpu: {{ .Values.uat.resources.limits.cpu }}
             memory: {{ .Values.uat.resources.limits.memory }}
-            ephemeral-storage: {{ .Values.uat.resources.limits.ephemeralStorage }}
         env:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}

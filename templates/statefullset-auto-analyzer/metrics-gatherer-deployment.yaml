@@ -50,11 +50,9 @@ spec:
           requests:
             cpu: {{ .Values.metricsgatherer.resources.requests.cpu }}
             memory: {{ .Values.metricsgatherer.resources.requests.memory }}
-            ephemeral-storage: {{ .Values.metricsgatherer.resources.requests.ephemeralStorage }}
           limits:
             cpu: {{ .Values.metricsgatherer.resources.limits.cpu }}
             memory: {{ .Values.metricsgatherer.resources.limits.memory }}
-            ephemeral-storage: {{ .Values.metricsgatherer.resources.limits.ephemeralStorage }}
         env:
 {{- if .Values.metricsgatherer.extraEnvs }}
 {{ toYaml .Values.metricsgatherer.extraEnvs | indent 8 }}
