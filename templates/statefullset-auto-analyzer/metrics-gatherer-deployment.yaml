@@ -31,11 +31,9 @@ spec:
           requests:
             cpu: 50m
             memory: 100Mi
-            ephemeral-storage: 100Mi
           limits:
             cpu: 50m
             memory: 100Mi
-            ephemeral-storage: 100Mi
 {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
 {{- end }}

@@ -26,16 +26,15 @@ helm install \
 https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster#gcloud
 
 ```bash
-gcloud container clusters create example-cluster-4 \
+gcloud container clusters create example-cluster \
     --zone us-central1-a \
-    --num-nodes=4
+    --machine-type=e2-standard-2 --num-nodes=3
 ```
 
 ```bash
 helm install \
     --set ingress.class="gke" \
     --set uat.superadminInitPasswd.password="erebus" \
-    --set opensearch.resources.requests.cpu="500m" \
     reportportal \
     oci://us-central1-docker.pkg.dev/or2-msq-epm-rpp-b2iylu/reportportal-helm-repo/reportportal \
     --version 23.2.1-develop
