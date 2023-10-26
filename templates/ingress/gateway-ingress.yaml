@@ -6,15 +6,33 @@ metadata:
   name: {{ $fullName }}-gateway-ingress
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
+  {{- if eq .Values.ingress.class "nginx" }}
+    {{- range $key, $value := .Values.ingress.annotations.nginx }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+  {{- else if eq .Values.ingress.class "gke" }}
+    {{- range $key, $value := .Values.ingress.annotations.gke }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- else if eq .Values.ingress.class "aws" }}
+    {{- range $key, $value := .Values.ingress.annotations.aws }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- else }}
+    {{- range $key, $value := .Values.ingress.annotations.custom }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
+  {{- if eq .Values.ingress.class "gke" }}
+  {{- else if eq .Values.ingress.class "aws "}}
+  {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end}}
+{{- end }}
   rules:
 {{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}

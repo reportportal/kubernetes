@@ -31,11 +31,31 @@ spec:
         args:
           - "job-wr"
           - {{ .Release.Name }}-migrations
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
 {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
 {{- end }}
       containers:
-      - env:
+      - name: "{{ $.Values.servicejobs.name | default "jobs" }}"
+        image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
+        imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
+        ports:
+        - containerPort: 8686
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.servicejobs.resources.requests.cpu }}
+            memory: {{ .Values.servicejobs.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.servicejobs.resources.limits.cpu }}
+            memory: {{ .Values.servicejobs.resources.limits.memory }}
+        env:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
@@ -162,19 +182,6 @@ spec:
           value: "{{ .Values.servicejobs.logProcessing.maxBatchTimeout }}"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
-        image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
-        imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
-        name: "{{ $.Values.servicejobs.name | default "jobs" }}"
-        ports:
-        - containerPort: 8686
-          protocol: TCP
-        resources:
-          requests:
-            cpu: {{ .Values.servicejobs.resources.requests.cpu }}
-            memory: {{ .Values.servicejobs.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.servicejobs.resources.limits.cpu }}
-            memory: {{ .Values.servicejobs.resources.limits.memory }}
         {{- if .Values.servicejobs.readinessProbe }}
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:

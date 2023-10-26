@@ -54,9 +54,6 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
-        # - mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
-        #   readOnly: true
-        #   name: ui-nginx-conf
       #TODO: deletre volumes after release new service-ui version
       volumes:
       - name: ui-nginx-conf

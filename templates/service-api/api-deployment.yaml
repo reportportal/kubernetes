@@ -31,11 +31,31 @@ spec:
         args:
           - "job-wr"
           - {{ .Release.Name }}-migrations
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
 {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
 {{- end }}
       containers:
-      - env:
+      - name: "{{ $.Values.serviceapi.name | default "api" }}"
+        image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
+        imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
+        ports:
+        - containerPort: 8585
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
+            memory: {{ .Values.serviceapi.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
+            memory: {{ .Values.serviceapi.resources.limits.memory }}
+        env:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
@@ -141,19 +161,6 @@ spec:
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
           value: "false"
-        image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
-        imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
-        name: "{{ $.Values.serviceapi.name | default "api" }}"
-        ports:
-        - containerPort: 8585
-          protocol: TCP
-        resources:
-          requests:
-            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
-            memory: {{ .Values.serviceapi.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
-            memory: {{ .Values.serviceapi.resources.limits.memory }}
         {{- if .Values.serviceapi.readinessProbe }}
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:

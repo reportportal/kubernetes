@@ -11,3 +11,4 @@
 *.rej
 charts/
 Chart.lock
+*.tgz

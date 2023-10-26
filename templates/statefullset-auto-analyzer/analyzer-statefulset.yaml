@@ -32,11 +32,31 @@ spec:
         args:
           - "pod-wr"
           - "-lcomponent={{ .Release.Name }}-api"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
 {{- if .Values.extraInitContainers }}
 {{ toYaml .Values.extraInitContainers | indent 8 }}
 {{- end }}
       containers:
-      - env:
+      - name: "{{ $.Values.serviceanalyzer.name | default "analyzer" }}"
+        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+        imagePullPolicy: "{{ .Values.serviceanalyzer.pullPolicy }}"
+        ports:
+        - containerPort: 5001
+          name: analyzercore
+        resources:
+          requests:
+            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+        env:
 {{- if .Values.serviceanalyzer.extraEnvs }}
 {{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
 {{- end }}
@@ -106,19 +126,6 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
-        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
-        imagePullPolicy: "{{ .Values.serviceanalyzer.pullPolicy }}"
-        name: "{{ $.Values.serviceanalyzer.name | default "analyzer" }}"
-        ports:
-        - containerPort: 5001
-          name: analyzercore
-        resources:
-          requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
 {{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
