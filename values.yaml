@@ -75,7 +75,7 @@ serviceapi:
       cpu: 1000m
       memory: 2Gi
   ## Audit logs. written to the API container's directory /var/log/reportportal/audit.log
-  auditLogs: false  ## set `on` to enable
+  auditLogs: false  ## set `true` to enable
   ## "Delete Account" button in UI
   allowDeleteAccount: true  ## set `false` to disable feature
   
