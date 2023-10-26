@@ -51,7 +51,7 @@ serviceui:
 
 serviceapi:
   repository: reportportal/service-api
-  tag: 5.10.0
+  tag: 5.10.1
   name: api
   pullPolicy: Always
   replicaCount: 1
