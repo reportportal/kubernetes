@@ -62,8 +62,10 @@ spec:
         # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
+        {{- if .Values.serviceapi.auditLogs }}
         - name: AUDIT_LOGGER
-          value: "{{ .Values.serviceapi.auditLogs }}"
+          value: "on"
+        {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
         {{- if .Values.searchengine.doubleEntry }}
@@ -191,6 +193,26 @@ spec:
             name: {{ template "reportportal.name" . }}-serviceapi-secret
             readOnly: {{ .Values.serviceapi.secret.readOnly }}
           {{- end }}
+          {{- if .Values.serviceapi.auditLogs }}
+          - name: audit-log-volume
+            mountPath: /var/log
+          {{- end }}
+      {{- if .Values.serviceapi.auditLogs }}
+      - name: auditlogstreamer
+        image: busybox:latest
+        command: ['/bin/sh']
+        args: ['-c', 'while true; do if [ -e "/var/log/reportportal/audit.log" ]; then tail -f /var/log/reportportal/audit.log; else sleep 60; fi; done']
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+          - name: audit-log-volume
+            mountPath: /var/log
+      {{- end }}
 {{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceapi.nodeSelector }}
@@ -209,4 +231,8 @@ spec:
         - name: {{ template "reportportal.name" . }}-serviceapi-secret
           secret:
             secretName: {{ template "reportportal.name" . }}-serviceapi-secret
+        {{- end }}
+        {{- if .Values.serviceapi.auditLogs }}
+        - name: audit-log-volume
+          emptyDir: {}
         {{- end }}
