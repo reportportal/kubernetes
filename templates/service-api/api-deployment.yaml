@@ -48,13 +48,7 @@ spec:
         ports:
         - containerPort: 8585
           protocol: TCP
-        resources:
-          requests:
-            cpu: {{ .Values.serviceapi.resources.requests.cpu }}
-            memory: {{ .Values.serviceapi.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceapi.resources.limits.cpu }}
-            memory: {{ .Values.serviceapi.resources.limits.memory }}
+        resources: {{- toYaml .Values.serviceapi.resources | nindent 10 }}
         env:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
@@ -62,8 +56,10 @@ spec:
         # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
+        {{- if .Values.serviceapi.auditLogs.enable }}
         - name: AUDIT_LOGGER
-          value: "{{ .Values.serviceapi.auditLogs }}"
+          value: "on"
+        {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
         {{- if .Values.searchengine.doubleEntry }}
@@ -191,6 +187,24 @@ spec:
             name: {{ template "reportportal.name" . }}-serviceapi-secret
             readOnly: {{ .Values.serviceapi.secret.readOnly }}
           {{- end }}
+          {{- if .Values.serviceapi.auditLogs.enable }}
+          - name: audit-log-volume
+            mountPath: /var/log
+          {{- end }}
+      {{- if .Values.serviceapi.auditLogs.enable }}
+      - name: auditlogstreamer
+        image: "{{ .Values.serviceapi.auditLogs.sidecar.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.tag }}"
+        command:
+          - /bin/sh
+        args: 
+          - -c
+          - while true; do if [ -e "/var/log/reportportal/audit.log" ]; then tail -f /var/log/reportportal/audit.log; else sleep 60; fi; done
+        imagePullPolicy: IfNotPresent
+        resources: {{- toYaml .Values.serviceapi.auditLogs.sidecar.resources | nindent 10 }}
+        volumeMounts:
+          - name: audit-log-volume
+            mountPath: /var/log
+      {{- end }}
 {{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceapi.nodeSelector }}
@@ -209,4 +223,8 @@ spec:
         - name: {{ template "reportportal.name" . }}-serviceapi-secret
           secret:
             secretName: {{ template "reportportal.name" . }}-serviceapi-secret
+        {{- end }}
+        {{- if .Values.serviceapi.auditLogs.enable }}
+        - name: audit-log-volume
+          emptyDir: {}
         {{- end }}
