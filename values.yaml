@@ -250,7 +250,7 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
-  jvmArgs: ""
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   
   ## Extra environment variables
   extraEnvs: []
