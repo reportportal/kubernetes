@@ -24,9 +24,9 @@
 Before you begin, you need to have a Google Cloud account, a project and install the following
 tools:
 
-* [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) 1.28 or later
-* [Helm](https://helm.sh/docs/intro/install/) 3.11 or later
-* [google-cloud-cli](https://cloud.google.com/sdk/docs/install-sdk) and
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) 1.28 or later
+- [Helm](https://helm.sh/docs/intro/install/) 3.11 or later
+- [google-cloud-cli](https://cloud.google.com/sdk/docs/install-sdk) and
 [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin)
 
 > **Note:** For some operation systems we recommend install `google-cloud-sdk` package instead of `google-cloud-cli`.
@@ -204,7 +204,7 @@ For installing ReportPortal on GKE Autopilot Cluster, you need to set the:
 ```bash
 helm install \
     --set ingress.class="gke" \
-    --set uat.superadminInitPasswd.password="${SUPERADMIN_PASSWORD}" \
+    --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
     --set uat.resources.requests.memory="1Gi" \
     --set serviceapi.resources.requests.cpu="1000m" \
     --set serviceapi.resources.requests.memory="2Gi" \
@@ -224,7 +224,7 @@ For installing ReportPortal on GKE Standard Cluster you need to set:
 ```bash
 helm install \
     --set ingress.class="gke" \
-    --set uat.superadminInitPasswd.password="${SUPERADMIN_PASSWORD}" \
+    --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
     reportportal \
     oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo/reportportal \
     --version ${VERSION}
