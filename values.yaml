@@ -380,7 +380,7 @@ metricsgatherer:
 
 migrations:
   repository: reportportal/migrations
-  tag: 5.10.0
+  tag: 5.10.1
   resources:
     requests:
       cpu: 100m
