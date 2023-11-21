@@ -45,9 +45,9 @@ app: {{ $.Chart.Name | quote }}
 Create the name of the service account to use
 */}}
 {{- define "reportportal.serviceAccountName" -}}
-{{- if .Values.rbac.serviceAccount.create -}}
-    {{ default "reportportal" .Values.rbac.serviceAccount.name }}
+{{- if .Values.serviceAccount.create -}}
+    {{ default "reportportal" .Values.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.rbac.serviceAccount.name }}
+    {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
