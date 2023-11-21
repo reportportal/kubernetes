@@ -1,5 +1,10 @@
 ## ReportPortal.io AI-powered Test Automation Dashboard
 
+## @param nameOverride expand the name of the chart
+## @param fullnameOverride expand the fully qualified app name
+nameOverride: ""
+fullnameOverride: ""
+
 serviceindex:
   repository: reportportal/service-index
   tag: 5.10.1
@@ -525,17 +530,17 @@ tolerations: []
   ##   value: "value"
   ##   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
+serviceAccount:
+  create: true
+  name: reportportal
+  ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
+  ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+  annotations: {}
+
+
 ## RBAC is required for service-index in order to collect status/info over all services
 rbac:
   create: true
-  serviceAccount:
-    create: true
-    name: reportportal
-    ##
-    ## For AWS IAM role association use the following annotations
-    ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-    ##
-    annotations: {}
 
 imagePullSecrets: []
 
