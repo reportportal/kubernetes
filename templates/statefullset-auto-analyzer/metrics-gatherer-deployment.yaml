@@ -26,7 +26,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "pod-wr"
-          - "-lcomponent={{ .Release.Name }}-api"
+          - "-lcomponent={{ include "reportportal.fullname" . }}-api"
         resources:
           requests:
             cpu: 50m

@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "job-wr"
-          - {{ .Release.Name }}-migrations
+          - {{ include "reportportal.fullname" . }}-migrations
         resources:
           requests:
             cpu: 50m
