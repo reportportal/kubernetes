@@ -6,9 +6,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceindex:
-  repository: reportportal/service-index
-  tag: 5.10.1
   name: index
+  image:
+    repository: reportportal/service-index
+    tag: 5.10.1
   pullPolicy: Always
   resources:
     requests:
@@ -31,9 +32,10 @@ serviceindex:
     portName: ""
 
 serviceui:
-  repository: reportportal/service-ui
-  tag: 5.10.0
   name: ui
+  image:
+    repository: reportportal/service-ui
+    tag: 5.10.0
   pullPolicy: Always
   resources:
     requests:
@@ -55,9 +57,10 @@ serviceui:
     portName: ""
 
 serviceapi:
-  repository: reportportal/service-api
-  tag: 5.10.1
   name: api
+  image:
+    repository: reportportal/service-api
+    tag: 5.10.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -143,9 +146,10 @@ serviceapi:
     ##  custom-pki.jks: <base64-data>
 
 uat:
-  repository: reportportal/service-authorization
-  tag: 5.10.0
   name: uat
+  image:
+    repository: reportportal/service-authorization
+    tag: 5.10.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -219,9 +223,10 @@ uat:
     portName: ""
 
 servicejobs:
-  repository: reportportal/service-jobs
-  tag: 5.10.0
   name: jobs
+  image:
+    repository: reportportal/service-jobs
+    tag: 5.10.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -279,9 +284,10 @@ servicejobs:
     portName: ""
 
 serviceanalyzer:
-  repository: reportportal/service-auto-analyzer
-  tag: 5.10.0
   name: analyzer
+  image:
+    repository: reportportal/service-auto-analyzer
+    tag: 5.10.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -345,9 +351,10 @@ serviceanalyzertrain:
     portName: ""
 
 metricsgatherer:
-  repository: reportportal/service-metrics-gatherer
-  tag: 5.10.0
   name: metrics-gatherer
+  image:
+    repository: reportportal/service-metrics-gatherer
+    tag: 5.10.0
   pullPolicy: Always
   loggingLevel: debug
   timeManagement:
@@ -384,8 +391,9 @@ metricsgatherer:
     portName: ""
 
 migrations:
-  repository: reportportal/migrations
-  tag: 5.10.1
+  image:
+    repository: reportportal/migrations
+    tag: 5.10.1
   resources:
     requests:
       cpu: 100m
@@ -559,6 +567,10 @@ extraInitContainers: {}
 ## @param postgresql External PostgreSQL Helm Chart as dependency
 postgresql: 
   install: true   ## set to `false` if using a Cloud/On-Premise managed database.
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 11.22.0
   postgresqlUsername: *dbuser
   postgresqlPassword: *dbpassword
   postgresqlDatabase: *dbname
@@ -568,6 +580,10 @@ postgresql:
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 rabbitmq:
   install: true   ## set to `false` if using a Cloud/On-Premise managed RabbitMQ.
+  image:
+    registry: docker.io
+    repository: bitnami/rabbitmq
+    tag: 3.10.25
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
@@ -578,6 +594,9 @@ rabbitmq:
 ## @param opensearch External OpenSearch Helm Chart as dependency
 opensearch:
   install: true   ## set to `false` if using a Cloud/On-Premise managed OpenSearch.
+  image:
+    repository: opensearchproject/opensearch
+    tag: 2.11.1
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
   ## @param opensearch.httpPort Port for OpenSearch endpoint
@@ -590,9 +609,26 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param minio External MinIO Helm Chart as dependency
+## AGPLv3 license version
+## @param minio External MinIO Helm Chart as dependency latest
+#minio:
+#  install: true   ## set to `false` if using a Cloud/On-Premise managed storage.
+#  image:
+#    repository: bitnami/minio
+#    registry: docker.io
+#    tag: 2023.11.20
+#  auth:
+#    rootUser: *storageAccessKey
+#    rootPassword: *storageSecretKey
+
+## Apache 2.0 license version
+## @param minio External MinIO Helm Chart as dependency 6.7.7
 minio:
-  install: true   ## set to `false` if using a Cloud/On-Premise managed storage.
+  install: true   ## set to `true` if using a Cloud/On-Premise managed storage.
+  image:
+    registry: docker.io
+    repository: bitnami/minio
+    tag: 2021.4.22-debian-10-r6
   accessKey:
     password: *storageAccessKey
   secretKey:

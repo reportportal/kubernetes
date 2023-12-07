@@ -26,7 +26,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ $.Values.serviceui.name | default "ui" }}
-        image: "{{ .Values.serviceui.repository }}:{{ .Values.serviceui.tag }}"
+        image: "{{ .Values.serviceui.image.repository }}:{{ .Values.serviceui.image.tag }}"
         imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
         env:
         - name: RP_SERVER_PORT

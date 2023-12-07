@@ -44,7 +44,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
-        image: "{{ .Values.serviceanalyzer.repository }}:{{ .Values.serviceanalyzer.tag }}"
+        image: "{{ .Values.serviceanalyzer.image.repository }}:{{ .Values.serviceanalyzer.image.tag }}"
         imagePullPolicy: "{{ .Values.serviceanalyzertrain.pullPolicy }}"
         ports:
         - containerPort: 5001
