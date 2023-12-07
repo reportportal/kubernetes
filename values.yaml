@@ -5,10 +5,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-k8sWaitFor:
-  repository: ghcr.io/groundnuty/k8s-wait-for
-  tag: no-root-v2.0
-
 serviceindex:
   name: index
   image:
