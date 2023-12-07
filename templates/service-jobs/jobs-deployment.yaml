@@ -113,7 +113,7 @@ spec:
         - name: RP_AMQP_API_ADDRESS
           value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
         - name: RP_DB_HOST
           value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
@@ -182,7 +182,6 @@ spec:
           value: "{{ .Values.servicejobs.logProcessing.maxBatchTimeout }}"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
-        {{- if .Values.servicejobs.readinessProbe }}
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
@@ -193,8 +192,6 @@ spec:
           timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 10 }}
         {{- end }}
-        {{- end }}
-        {{- if .Values.servicejobs.livenessProbe }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
@@ -204,7 +201,6 @@ spec:
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
           timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 10 }}
-        {{- end }}
         {{- end }}
 {{- if .Values.servicejobs.nodeSelector }}
       nodeSelector:
