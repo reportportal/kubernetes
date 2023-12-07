@@ -26,7 +26,7 @@ spec:
       {{- end }}
       initContainers:
       - name: migrations-waiting-init
-        image: ghcr.io/groundnuty/k8s-wait-for:no-root-v2.0
+        image: "{{ .Values.k8sWaitFor.images.repository }}:{{ .Values.k8sWaitFor.images.tag }}"
         imagePullPolicy: IfNotPresent
         args:
           - "job-wr"
