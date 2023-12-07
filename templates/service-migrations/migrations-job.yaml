@@ -1,4 +1,3 @@
-{{- if or (not (hasKey .Values.migrations "enabled")) .Values.migrations.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -68,7 +67,6 @@ spec:
       securityContext:
 {{ toYaml .Values.migrations.securityContext | indent 8}}
       serviceAccountName: {{ .Values.migrations.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- end }}
 {{- with .Values.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}

@@ -27,7 +27,7 @@ spec:
       {{- end }}
       initContainers:
       - name: migrations-waiting-init
-        image: "{{ .Values.k8sWaitFor.repository }}:{{ .Values.k8sWaitFor.tag }}"
+        image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
         imagePullPolicy: IfNotPresent
         args:
           - "pod-wr"
