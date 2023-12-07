@@ -39,7 +39,7 @@ spec:
 {{- end }}
       containers:
       - name: metrics-gatherer
-        image: "{{ .Values.metricsgatherer.repository }}:{{ .Values.metricsgatherer.tag }}"
+        image: "{{ .Values.metricsgatherer.image.repository }}:{{ .Values.metricsgatherer.image.tag }}"
         imagePullPolicy: "{{ .Values.metricsgatherer.pullPolicy }}"
         ports:
         - containerPort: 5000

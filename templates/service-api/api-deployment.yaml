@@ -43,7 +43,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.serviceapi.name | default "api" }}"
-        image: "{{ .Values.serviceapi.repository }}:{{ .Values.serviceapi.tag }}"
+        image: "{{ .Values.serviceapi.image.repository }}:{{ .Values.serviceapi.image.tag }}"
         imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
         ports:
         - containerPort: 8585

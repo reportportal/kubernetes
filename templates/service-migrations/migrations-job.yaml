@@ -49,7 +49,7 @@ spec:
           value: "{{ .Values.searchengine.user }}"
         - name: OS_PASSWORD
           value: "{{ .Values.searchengine.password }}"
-        image: "{{ .Values.migrations.repository }}:{{ .Values.migrations.tag }}"
+        image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
         imagePullPolicy: "{{ .Values.migrations.pullPolicy }}"
         name: migrations
         resources:

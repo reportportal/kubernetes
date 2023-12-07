@@ -33,7 +33,7 @@ spec:
         {{ if .Values.serviceindex.image }}
         image: "{{ .Values.serviceindex.image }}"
         {{ else }}
-        image: "{{ .Values.serviceindex.repository }}:{{ .Values.serviceindex.tag }}"
+        image: "{{ .Values.serviceindex.image.repository }}:{{ .Values.serviceindex.image.tag }}"
         {{ end }}
         imagePullPolicy: "{{ .Values.serviceindex.pullPolicy }}"
         name: {{ $.Values.serviceindex.name | default "index" }}

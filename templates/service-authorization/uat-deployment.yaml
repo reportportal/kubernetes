@@ -43,7 +43,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.uat.name | default "uat" }}"
-        image: "{{ .Values.uat.repository }}:{{ .Values.uat.tag }}"
+        image: "{{ .Values.uat.image.repository }}:{{ .Values.uat.image.tag }}"
         imagePullPolicy: "{{ .Values.uat.pullPolicy }}"
         ports:
         - containerPort: 9999

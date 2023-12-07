@@ -4,7 +4,7 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-jobs
   labels: {{ include "labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.servicejobs.replicaCount | default 1 }}
+  replicas: 1
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-jobs
@@ -43,7 +43,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.servicejobs.name | default "jobs" }}"
-        image: "{{ .Values.servicejobs.repository }}:{{ .Values.servicejobs.tag }}"
+        image: "{{ .Values.servicejobs.image.repository }}:{{ .Values.servicejobs.image.tag }}"
         imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
         ports:
         - containerPort: 8686
