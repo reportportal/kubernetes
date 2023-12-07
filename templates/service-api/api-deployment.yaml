@@ -92,7 +92,7 @@ spec:
         - name: RP_AMQP_API_ADDRESS
           value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
         - name: RP_DB_HOST
           value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
@@ -157,7 +157,6 @@ spec:
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
           value: "false"
-        {{- if .Values.serviceapi.readinessProbe }}
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
@@ -168,8 +167,6 @@ spec:
           timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds | default 3 }}
           failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold | default 20 }}
         {{- end }}
-        {{- end }}
-        {{- if .Values.serviceapi.livenessProbe }}
         {{- if .Values.serviceapi.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
@@ -179,7 +176,6 @@ spec:
           periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
           timeoutSeconds: {{ .Values.serviceapi.livenessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 5 }}
-        {{- end }}
         {{- end }}
         volumeMounts:
           {{- if .Values.serviceapi.secret.enabled }}

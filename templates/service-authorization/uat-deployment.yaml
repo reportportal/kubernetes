@@ -72,7 +72,7 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_ADDRESSES
-          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
         {{- if .Values.uat.superadminInitPasswd.secretName }}
         - name: RP_INITIAL_ADMIN_PASSWORD
           valueFrom:
@@ -149,7 +149,6 @@ spec:
        {{- end }}
         - name: DATASTORE_DEFAULTBUCKETNAME
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
-        {{- if .Values.uat.readinessProbe }}
         {{- if .Values.uat.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
@@ -160,8 +159,6 @@ spec:
           timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold | default 10 }}
         {{- end }}
-        {{- end }}
-        {{- if .Values.uat.livenessProbe }}
         {{- if .Values.uat.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
@@ -171,7 +168,6 @@ spec:
           periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
           timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 10 }}
-        {{- end }}
         {{- end }}
         volumeMounts:
           {{- if .Values.uat.secret.enabled }}
