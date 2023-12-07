@@ -431,8 +431,7 @@ msgbroker:
   ## Virtual hosts provide logical grouping and separation of resources. Ref: https://www.rabbitmq.com/vhosts.html
   vhost: analyzer
   analyzerExchangeName: analyzer-default
-  ## @param msgbroker.ssl set to `true` if use HTTPS and AMQPS
-  ssl: false
+  ssl: false    ## set to `true` if use HTTPS and AMQPS
   ## @param msgbroker.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   port: &msgbrokerPort 5672
