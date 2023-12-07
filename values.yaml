@@ -5,11 +5,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-k8sWaitFor:
-  images:
-    repository: ghcr.io/groundnuty/k8s-wait-for
-    tag: no-root-v2.0
-
 serviceindex:
   name: index
   image:
@@ -639,3 +634,8 @@ minio:
     password: *storageAccessKey
   secretKey:
     password: *storageSecretKey
+
+k8sWaitFor:
+  image:
+    repository: ghcr.io/groundnuty/k8s-wait-for
+    tag: no-root-v2.0
