@@ -8,11 +8,17 @@ metadata:
     infoEndpoint: "/ui/info"
     healthEndpoint: "/ui/health"
 spec:
+  type: {{ $.Values.serviceui.service.type | default "ClusterIP"}}
   ports:
   - name: {{ $.Values.serviceui.service.portName | default "headless" }}
     port: 8080
     protocol: TCP
     targetPort: 8080
+{{- if and (or (eq .Values.serviceui.service.type "NodePort") (eq .Values.serviceui.service.type "LoadBalancer")) (not (empty .Values.serviceui.service.nodePort)) }}
+    nodePort: {{ .Values.serviceui.service.nodePort }}
+{{- end }}
+{{- if .Values.serviceui.service.extraPorts }}
+  {{ toYaml .Values.serviceui.service.extraPorts | indent 2 }}
+{{- end }}
   selector:
     component: {{ include "reportportal.fullname" . }}-ui
-  type: {{ $.Values.serviceui.service.type | default "ClusterIP"}}
