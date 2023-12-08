@@ -15,4 +15,4 @@ spec:
     targetPort: 8080
   selector:
     component: {{ include "reportportal.fullname" . }}-index
-  type: ClusterIP
+  type: {{ $.Values.serviceindex.service.type | default "ClusterIP" }}

@@ -11,4 +11,4 @@ spec:
     targetPort: analyzertrain
   selector:
     component: {{ include "reportportal.fullname" . }}-analyzer-train
-  type: ClusterIP
+  type: {{ $.Values.serviceanalyzertrain.service.type | default "ClusterIP" }}

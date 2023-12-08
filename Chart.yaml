@@ -33,9 +33,3 @@ dependencies:
     version: 6.7.7
     repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: minio.install
-
-  # MinIO with AGPLv3 license
-#  - name: minio
-#    version: 12.10.4
-#    repository: https://charts.bitnami.com/bitnami
-#    condition: minio.install

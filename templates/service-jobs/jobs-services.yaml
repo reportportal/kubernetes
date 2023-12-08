@@ -15,4 +15,4 @@ spec:
     targetPort: 8686
   selector:
     component: {{ include "reportportal.fullname" . }}-jobs
-  type: ClusterIP
+  type: {{ $.Values.servicejobs.service.type | default "ClusterIP"}}

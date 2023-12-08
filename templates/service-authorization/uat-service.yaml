@@ -15,4 +15,4 @@ spec:
     targetPort: 9999
   selector:
     component: {{ include "reportportal.fullname" . }}-uat
-  type: ClusterIP
+  type: {{ $.Values.uat.service.type | default "ClusterIP"}}

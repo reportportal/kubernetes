@@ -29,6 +29,7 @@ serviceindex:
   ## Use disktype: "ssd" for specific disk type.
   nodeSelector: {}
   service:
+    type: ""
     portName: ""
 
 serviceui:
@@ -54,6 +55,7 @@ serviceui:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
 serviceapi:
@@ -129,6 +131,7 @@ serviceapi:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
   ## Provide a secret containing sensitives data
@@ -220,6 +223,7 @@ uat:
     data: {}
     ##  custom-pki.jks: <base64-data>
   service:
+    type: ""
     portName: ""
 
 servicejobs:
@@ -281,6 +285,7 @@ servicejobs:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
 serviceanalyzer:
@@ -316,6 +321,7 @@ serviceanalyzer:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
 serviceanalyzertrain:
@@ -348,6 +354,7 @@ serviceanalyzertrain:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
 metricsgatherer:
@@ -388,6 +395,7 @@ metricsgatherer:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
 
 migrations:
@@ -609,18 +617,6 @@ opensearch:
       value: "true"
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
-
-## AGPLv3 license version
-## @param minio External MinIO Helm Chart as dependency latest
-#minio:
-#  install: true   ## set to `false` if using a Cloud/On-Premise managed storage.
-#  image:
-#    repository: bitnami/minio
-#    registry: docker.io
-#    tag: 2023.11.20
-#  auth:
-#    rootUser: *storageAccessKey
-#    rootPassword: *storageSecretKey
 
 ## Apache 2.0 license version
 ## @param minio External MinIO Helm Chart as dependency 6.7.7

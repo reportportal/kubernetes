@@ -15,4 +15,4 @@ spec:
     targetPort: 8585
   selector:
     component: {{ include "reportportal.fullname" . }}-api
-  type: ClusterIP
+  type: {{ $.Values.serviceapi.service.type | default "ClusterIP" }}
