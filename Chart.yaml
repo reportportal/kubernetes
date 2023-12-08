@@ -28,8 +28,7 @@ dependencies:
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
 
-  # MinIO with Apache 2.0 license
   - name: minio
-    version: 6.7.7
-    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    version: 12.10.4
+    repository: https://charts.bitnami.com/bitnami
     condition: minio.install

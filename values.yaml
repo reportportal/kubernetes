@@ -634,18 +634,16 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## Apache 2.0 license version
-## @param minio External MinIO Helm Chart as dependency 6.7.7
+## @param minio External MinIO Helm Chart
 minio:
-  install: true   ## set to `true` if using a Cloud/On-Premise managed storage.
+  install: true
   image:
-    registry: docker.io
     repository: bitnami/minio
-    tag: 2021.4.22-debian-10-r6
-  accessKey:
-    password: *storageAccessKey
-  secretKey:
-    password: *storageSecretKey
+    registry: docker.io
+    tag: 2023.11.20
+  auth:
+    rootUser: *storageAccessKey
+    rootPassword: *storageSecretKey
 
 k8sWaitFor:
   image:
