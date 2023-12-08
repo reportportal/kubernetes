@@ -29,7 +29,10 @@ serviceindex:
   ## Use disktype: "ssd" for specific disk type.
   nodeSelector: {}
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 serviceui:
   name: ui
@@ -54,7 +57,10 @@ serviceui:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 serviceapi:
   name: api
@@ -129,7 +135,10 @@ serviceapi:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
   ## Provide a secret containing sensitives data
   ## e.g. provide a custom java keystore used in jvmArgs:
@@ -220,7 +229,10 @@ uat:
     data: {}
     ##  custom-pki.jks: <base64-data>
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 servicejobs:
   name: jobs
@@ -281,7 +293,10 @@ servicejobs:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 serviceanalyzer:
   name: analyzer
@@ -316,7 +331,10 @@ serviceanalyzer:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 serviceanalyzertrain:
   name: analyzer-train
@@ -348,7 +366,10 @@ serviceanalyzertrain:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 metricsgatherer:
   name: metrics-gatherer
@@ -388,7 +409,10 @@ metricsgatherer:
   nodeSelector: {}
   serviceAccountName: ""
   service:
+    type: ""
     portName: ""
+    nodePort: ""
+    extraPorts: []
 
 migrations:
   image:
@@ -610,18 +634,6 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## AGPLv3 license version
-## @param minio External MinIO Helm Chart as dependency latest
-#minio:
-#  install: true   ## set to `false` if using a Cloud/On-Premise managed storage.
-#  image:
-#    repository: bitnami/minio
-#    registry: docker.io
-#    tag: 2023.11.20
-#  auth:
-#    rootUser: *storageAccessKey
-#    rootPassword: *storageSecretKey
-
 ## Apache 2.0 license version
 ## @param minio External MinIO Helm Chart as dependency 6.7.7
 minio:
@@ -637,5 +649,5 @@ minio:
 
 k8sWaitFor:
   image:
-    repository: ghcr.io/groundnuty/k8s-wait-for
-    tag: no-root-v2.0
+    repository: pegasystems/k8s-wait-for
+    tag: latest
