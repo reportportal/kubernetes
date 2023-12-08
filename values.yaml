@@ -649,5 +649,5 @@ minio:
 
 k8sWaitFor:
   image:
-    repository: ghcr.io/groundnuty/k8s-wait-for
-    tag: no-root-v2.0
+    repository: pegasystems/k8s-wait-for
+    tag: latest
