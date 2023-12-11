@@ -34,7 +34,7 @@ spec:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
   {{- else if and .Values.ingress.tls.secret.base64EncodedPrivateKey .Values.ingress.tls.secret.base64EncodedCertificate }}
   tls:
-    - secretName: {{ $fullName }}-gateway-tls
+    - secretName: {{ .Release.Name }}-gateway-tls
   {{- end }}
   rules:
 {{ if .Values.ingress.usedomainname }}
