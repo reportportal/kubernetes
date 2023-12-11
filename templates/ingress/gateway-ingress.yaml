@@ -29,10 +29,13 @@ spec:
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
-{{- if .Values.ingress.tls }}
+  {{- if .Values.ingress.tls.certificates }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end }}
+    {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
+  {{- else if and .Values.ingress.tls.secret.base64EncodedPrivateKey .Values.ingress.tls.secret.base64EncodedCertificate }}
+  tls:
+    - secretName: {{ $fullName }}-gateway-tls
+  {{- end }}
   rules:
 {{ if .Values.ingress.usedomainname }}
   {{- range $host := .Values.ingress.hosts }}
