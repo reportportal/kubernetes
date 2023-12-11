@@ -526,11 +526,12 @@ storage:
 ## @param ingress.class set to any other ingress controller name if you want to use it.
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 
-## @param ingress.tls example of tls configuration:
+## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
 ## tls:
 ## - hosts:
 ##     - reportportal.k8.com
 ##   secretName: reportportal.k8.com-tls
+## @param ingress.tls.secret provide a base64-encoded private key and certificate for TLS instead of using predefined secret names
 
 ingress:
   enable: true
@@ -552,9 +553,10 @@ ingress:
     aws: {}
     custom: {}
   tls:
-    enable: false
-    base64EncodedPrivateKey: ""
-    base64EncodedCertificate: ""
+    certificates: null
+    secret:
+      base64EncodedPrivateKey: ""
+      base64EncodedCertificate: ""
 
 ## @section Additional configuration
 
