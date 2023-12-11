@@ -551,7 +551,10 @@ ingress:
     gke: {}
     aws: {}
     custom: {}
-  tls: []
+  tls:
+    enable: false
+    base64EncodedPrivateKey: ""
+    base64EncodedCertificate: ""
 
 ## @section Additional configuration
 

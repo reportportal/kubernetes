@@ -29,9 +29,9 @@ spec:
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
-{{- if .Values.ingress.tls }}
+{{- if .Values.ingress.tls.enable }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
+    - secretName: {{ template "reportportal.name" . }}-gateway-tls
 {{- end }}
   rules:
 {{ if .Values.ingress.usedomainname }}
