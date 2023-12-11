@@ -1,10 +1,5 @@
 ## ReportPortal.io AI-powered Test Automation Dashboard
 
-## @param nameOverride expand the name of the chart
-## @param fullnameOverride expand the fully qualified app name
-nameOverride: ""
-fullnameOverride: ""
-
 serviceindex:
   name: index
   image:

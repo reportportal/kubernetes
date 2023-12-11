@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enable }}
-{{- $fullName := include "reportportal.fullname" . -}}
+{{- $fullName := .Release.Name -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

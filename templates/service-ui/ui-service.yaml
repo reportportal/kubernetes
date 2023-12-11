@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "reportportal.fullname" . }}-ui
+  name: {{ .Release.Name }}-ui
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceui.name | default "ui" }}
@@ -21,4 +21,4 @@ spec:
   {{ toYaml .Values.serviceui.service.extraPorts | indent 2 }}
 {{- end }}
   selector:
-    component: {{ include "reportportal.fullname" . }}-ui
+    component: {{ .Release.Name }}-ui

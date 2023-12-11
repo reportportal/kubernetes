@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "reportportal.fullname" . }}-api
+  name: {{ .Release.Name }}-api
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceapi.name | default "api" }}
@@ -21,4 +21,4 @@ spec:
   {{ toYaml .Values.serviceapi.service.extraPorts | indent 2 }}
 {{- end }}
   selector:
-    component: {{ include "reportportal.fullname" . }}-api
+    component: {{ .Release.Name }}-api

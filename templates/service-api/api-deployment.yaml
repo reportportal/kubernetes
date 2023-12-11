@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "reportportal.fullname" . }}-api
+  name: {{ .Release.Name }}-api
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.serviceapi.replicaCount | default 1 }}
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-api
+      component: {{ .Release.Name }}-api
   template:
     metadata:
       labels:
         {{- range $key, $value := .Values.serviceapi.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-api
+        component: {{ .Release.Name }}-api
       annotations:
         {{- range $key, $value := .Values.serviceapi.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "job-wr"
-          - {{ include "reportportal.fullname" . }}-migrations
+          - {{ .Release.Name }}-migrations
         resources:
           requests:
             cpu: 50m
@@ -180,7 +180,7 @@ spec:
         volumeMounts:
           {{- if .Values.serviceapi.secret.enabled }}
           - mountPath: {{ .Values.serviceapi.secret.mountPath }}
-            name: {{ template "reportportal.name" . }}-serviceapi-secret
+            name: {{ .Chart.Name }}-serviceapi-secret
             readOnly: {{ .Values.serviceapi.secret.readOnly }}
           {{- end }}
           {{- if .Values.serviceapi.auditLogs.enable }}
@@ -216,9 +216,9 @@ spec:
 {{- end }}
       volumes:
         {{- if .Values.serviceapi.secret.enabled }}
-        - name: {{ template "reportportal.name" . }}-serviceapi-secret
+        - name: {{ .Chart.Name }}-serviceapi-secret
           secret:
-            secretName: {{ template "reportportal.name" . }}-serviceapi-secret
+            secretName: {{ .Chart.Name }}-serviceapi-secret
         {{- end }}
         {{- if .Values.serviceapi.auditLogs.enable }}
         - name: audit-log-volume

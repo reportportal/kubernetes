@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "reportportal.fullname" . }}-migrations
+  name: {{ .Release.Name }}-migrations
   labels: {{ include "labels" . | indent 4 }}
 spec:
   template:
@@ -10,7 +10,7 @@ spec:
         {{- range $key, $value := .Values.migrations.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-migrations
+        component: {{ .Release.Name }}-migrations
       annotations:
         {{- range $key, $value := .Values.migrations.podAnnotations }}
         {{ $key }}: {{ $value | quote }}

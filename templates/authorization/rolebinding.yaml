@@ -2,12 +2,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-    name: {{ include "reportportal.fullname" . }}-user-binding
+    name: {{ .Release.Name }}-user-binding
     namespace: {{ .Release.Namespace }}
 roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: {{ include "reportportal.fullname" . }}-service-reader
+    name: {{ .Release.Name }}-service-reader
 subjects:
     - kind: ServiceAccount
       name: {{ template "reportportal.serviceAccountName" . }}

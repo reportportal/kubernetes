@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "reportportal.fullname" . }}-index
+  name: {{ .Release.Name }}-index
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-index
+      component: {{ .Release.Name }}-index
   template:
     metadata:
       labels:
         {{- range $key, $value := .Values.serviceindex.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-index
+        component: {{ .Release.Name }}-index
       annotations:
         {{- range $key, $value := .Values.serviceindex.podAnnotations }}
         {{ $key }}: {{ $value | quote }}

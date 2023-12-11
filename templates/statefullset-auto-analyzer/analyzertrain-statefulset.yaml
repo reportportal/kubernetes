@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "reportportal.fullname" . }}-analyzer-train
+  name: {{ .Release.Name }}-analyzer-train
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-analyzer-train
-  serviceName: {{ include "reportportal.fullname" . }}-analyzertrain
+      component: {{ .Release.Name }}-analyzer-train
+  serviceName: {{ .Release.Name }}-analyzertrain
   template:
     metadata:
       labels:
         {{- range $key, $value := .Values.serviceanalyzertrain.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-analyzer-train
+        component: {{ .Release.Name }}-analyzer-train
       annotations:
         {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
@@ -31,7 +31,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "pod-wr"
-          - "-lcomponent={{ include "reportportal.fullname" . }}-api"
+          - "-lcomponent={{ .Release.Name }}-api"
         resources:
           requests:
             cpu: 50m

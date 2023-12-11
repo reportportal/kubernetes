@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "reportportal.fullname" . }}-metrics-gatherer
+  name: {{ .Release.Name }}-metrics-gatherer
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.metricsgatherer.name | default "metrics-gatherer" }}
@@ -19,6 +19,6 @@ spec:
   {{ toYaml .Values.metricsgatherer.service.extraPorts | indent 2 }}
 {{- end }}
   selector:
-    component: {{ include "reportportal.fullname" . }}-metrics-gatherer
+    component: {{ .Release.Name }}-metrics-gatherer
 
   

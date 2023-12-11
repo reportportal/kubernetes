@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "reportportal.fullname" . }}-uat
+  name: {{ .Release.Name }}-uat
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-uat
+      component: {{ .Release.Name }}-uat
   template:
     metadata:
       labels:
         {{- range $key, $value := .Values.uat.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-uat
+        component: {{ .Release.Name }}-uat
       annotations:
         {{- range $key, $value := .Values.uat.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
           - "job-wr"
-          - {{ include "reportportal.fullname" . }}-migrations
+          - {{ .Release.Name }}-migrations
         resources:
           requests:
             cpu: 50m
@@ -172,7 +172,7 @@ spec:
         volumeMounts:
           {{- if .Values.uat.secret.enabled }}
           - mountPath: {{ .Values.uat.secret.mountPath }}
-            name: {{ template "reportportal.name" . }}-uat-secret
+            name: {{ .Chart.Name }}-uat-secret
             readOnly: {{ .Values.uat.secret.readOnly }}
           {{- end }}
 {{- if .Values.uat.nodeSelector }}
@@ -191,7 +191,7 @@ spec:
 {{- end }}
       volumes:
         {{- if .Values.uat.secret.enabled }}
-        - name: {{ template "reportportal.name" . }}-uat-secret
+        - name: {{ .Chart.Name }}-uat-secret
           secret:
-            secretName: {{ template "reportportal.name" . }}-uat-secret
+            secretName: {{ .Chart.Name }}-uat-secret
         {{- end }}
