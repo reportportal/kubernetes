@@ -56,6 +56,16 @@ spec:
         # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
+        - name: RP_JOBS_BASEURL
+          value: {{ printf "%s-jobs.%s.svc.cluster.local" .Chart.Name .Release.Namespace }}:8686
+        - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
+          value: {{ .Values.serviceapi.cronJobs.interruptBrockenLaunches }}
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_BATCH-SIZE
+          value: {{ .Values.serviceapi.patternAnalysis.batchSize }}
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_PREFETCH-COUNT
+          value: {{ .Values.serviceapi.patternAnalysis.prefetchCount }}
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_CONSUMERS-COUNT
+          value: {{ .Values.serviceapi.patternAnalysis.consumersCount }}
         {{- if .Values.serviceapi.auditLogs.enable }}
         - name: AUDIT_LOGGER
           value: "on"

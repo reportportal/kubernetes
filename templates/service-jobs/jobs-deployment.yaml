@@ -93,6 +93,10 @@ spec:
           value: "{{ .Values.servicejobs.coreJobs.cleanStorageCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_STORAGE_PROJECT_CRON
           value: "{{ .Values.servicejobs.coreJobs.storageProjectCron }}"
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_EVENTS_RETENTIONPERIOD
+          value: "{ .Values.servicejobs.coreJobs.cleanEventsRetention }"
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_EVENTS_CRON
+          value: "{{ .Values.servicejobs.coreJobs.cleanEventsCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CHUNKSIZE
           value: "{{ .Values.servicejobs.chunksize }}"
         {{- if .Values.servicejobs.jvmArgs }}

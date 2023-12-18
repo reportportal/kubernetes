@@ -104,6 +104,19 @@ serviceapi:
   ## "Delete Account" button in UI
   allowDeleteAccount: true  ## set `false` to disable feature
   
+  ## CRON Jobs
+  cronJobs:
+    ## ISO 8601 duration format
+    interruptBrockenLaunches: PT1M
+  
+  ## Pattern Analysis and Immediate IA configuration
+  patternAnalysis:
+    batchSize: 100
+    ## @param patternAnalysis.prefetchCount define of the prefetch count for 'analysis.pattern.string' and 'analysis.pattern.regex' queues.
+    prefetchCount: 1
+    ## @param patternAnalysis.consumersCount define of the 'analysis.pattern.string' and 'analysis.pattern.regex' queues. Consumers count per each queue
+    consumersCount: 1
+
   ## JAVA_OPTS
   ## If you need to use a custom java keystore you can use it through jvmArgs (e.g. jvmArgs: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks)
   
@@ -253,6 +266,8 @@ servicejobs:
     timeoutSeconds: 5
     failureThreshold: 10
   coreJobs:
+    cleanEventsRetention: 365
+    cleanEventsCron: 0 0 */24 * * *
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
     cleanLaunchCron: 0 0 */24 * * *
