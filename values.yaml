@@ -542,10 +542,11 @@ storage:
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
-## tls:
-## - hosts:
-##     - reportportal.k8.com
-##   secretName: reportportal.k8.com-tls
+##  tls:
+##    certificates:
+##      - hosts:
+##       - reportportal.k8.com
+##       secretName: reportportal.k8.com-tls
 ## @param ingress.tls.secret provide a base64-encoded private key and certificate for TLS instead of using predefined secret names
 
 ingress:
