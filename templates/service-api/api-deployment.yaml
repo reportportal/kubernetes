@@ -57,7 +57,7 @@ spec:
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
         - name: RP_JOBS_BASEURL
-          value: {{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686
+          value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686/jobs
         - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
           value: "{{ .Values.serviceapi.cronJobs.interruptBrockenLaunches }}"
         - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_BATCH-SIZE

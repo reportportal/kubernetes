@@ -672,3 +672,9 @@ k8sWaitFor:
   image:
     repository: pegasystems/k8s-wait-for
     tag: latest
+
+
+## Networking between pods
+k8s:
+  networking:
+    ssl: false # set to `true` if SSL enabled between pods inside Kubernetes cluster
