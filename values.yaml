@@ -88,12 +88,19 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2Gi
-  ## Audit logs written to the API container's directory /var/log/reportportal/audit.log
-  auditLogs: 
-    enable: false  ## set `true` to enable the sidecar log streamer container
+
+  ## Configure Audit logs to be written to the API container's directory /var/log/reportportal/audit.log
+  auditLogs:
+    ## Enable or disable the sidecar log streamer container
+    enable: false 
+    ## Set the log level for audit logs (info, debug, etc.)
+    loglevel: info
+
+    # Configure sidecar container settings for Audit logs
     sidecar:
-      repository: busybox
-      tag: latest
+      image:
+        repository: busybox
+        tag: latest
       resources:
         requests:
           cpu: 10m
@@ -101,6 +108,7 @@ serviceapi:
         limits:
           cpu: 100m
           memory: 100Mi
+  
   ## "Delete Account" button in UI
   allowDeleteAccount: true  ## set `false` to disable feature
   

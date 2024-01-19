@@ -68,7 +68,7 @@ spec:
           value: "{{ .Values.serviceapi.patternAnalysis.consumersCount }}"
         {{- if .Values.serviceapi.auditLogs.enable }}
         - name: AUDIT_LOGGER
-          value: "on"
+          value: "{{ .Values.serviceapi.auditLogs.loglevel }}"
         {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
@@ -199,7 +199,7 @@ spec:
           {{- end }}
       {{- if .Values.serviceapi.auditLogs.enable }}
       - name: auditlogstreamer
-        image: "{{ .Values.serviceapi.auditLogs.sidecar.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.tag }}"
+        image: "{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}"
         command:
           - /bin/sh
         args: 
