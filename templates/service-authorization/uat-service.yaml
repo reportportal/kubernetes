@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-uat
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.uat.name | default "uat" }}
+    infoEndpoint: "/uat/info"
+    healthEndpoint: "/uat/health"
+spec:
+  type: {{ $.Values.uat.service.type | default "ClusterIP"}}
+  ports:
+  - name: {{ $.Values.uat.service.portName | default "headless" }}
+    port: 9999
+    protocol: TCP
+    targetPort: 9999
+{{- if and (or (eq .Values.uat.service.type "NodePort") (eq .Values.uat.service.type "LoadBalancer")) (not (empty .Values.uat.service.nodePort)) }}
+    nodePort: {{ .Values.uat.service.nodePort }}
+{{- end }}
+{{- if .Values.uat.service.extraPorts }}
+  {{ toYaml .Values.uat.service.extraPorts | indent 2 }}
+{{- end }}
+  selector:
+    component: {{ include "reportportal.fullname" . }}-uat
+

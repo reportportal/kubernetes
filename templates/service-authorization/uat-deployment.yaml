@@ -1,0 +1,197 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reportportal.fullname" . }}-uat
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-uat
+  template:
+    metadata:
+      labels:
+        {{- range $key, $value := .Values.uat.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        component: {{ include "reportportal.fullname" . }}-uat
+      annotations:
+        {{- range $key, $value := .Values.uat.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: migrations-waiting-init
+        image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        args:
+          - "job-wr"
+          - {{ include "reportportal.fullname" . }}-migrations
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+{{- if .Values.extraInitContainers }}
+{{ toYaml .Values.extraInitContainers | indent 8 }}
+{{- end }}
+      containers:
+      - name: "{{ $.Values.uat.name | default "uat" }}"
+        image: "{{ .Values.uat.image.repository }}:{{ .Values.uat.image.tag }}"
+        imagePullPolicy: "{{ .Values.uat.pullPolicy }}"
+        ports:
+        - containerPort: 9999
+          protocol: TCP
+        resources:
+          requests:
+            cpu: {{ .Values.uat.resources.requests.cpu }}
+            memory: {{ .Values.uat.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.uat.resources.limits.cpu }}
+            memory: {{ .Values.uat.resources.limits.memory }}
+        env:
+{{- if .Values.uat.extraEnvs }}
+{{ toYaml .Values.uat.extraEnvs | indent 8 }}
+{{- end }}
+        # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-authtorization
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "/uat"
+        - name: RP_AMQP_PASS
+        {{- if .Values.msgbroker.secretName }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.msgbroker.secretName }}"
+              key: "rabbitmq-password"
+        {{- else }}
+          value: "{{ .Values.msgbroker.password }}"
+        {{- end }}
+        - name: RP_AMQP_ADDRESSES
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+        {{- if .Values.uat.superadminInitPasswd.secretName }}
+        - name: RP_INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.uat.superadminInitPasswd.secretName }}"
+              key: "{{ .Values.uat.superadminInitPasswd.passwordKeyName }}"
+        {{ else }}
+        - name: RP_INITIAL_ADMIN_PASSWORD
+          value: "{{ .Values.uat.superadminInitPasswd.password }}"
+        {{- end }}
+        - name: RP_SAML_SESSION-LIVE
+          value: "{{ .Values.uat.samlSessionLiveTime }}"
+        {{- if .Values.uat.jvmArgs }}
+        - name: JAVA_OPTS
+          value: "{{ .Values.uat.jvmArgs }}"
+        {{- end }}
+        - name: RP_SESSION_LIVE
+          value: "{{ .Values.uat.sessionLiveTime }}"
+        - name: RP_DB_HOST
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+        - name: RP_DB_PORT
+          value: "{{ .Values.database.port }}"
+        - name: RP_DB_NAME
+          value: "{{ .Values.database.dbName }}"
+        - name: RP_DB_USER
+          value: "{{ .Values.database.user }}"
+        - name: RP_DB_PASS
+        {{- if .Values.database.secretName }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.database.secretName }}"
+              key: "postgresql-password"
+        {{- else }}
+          value: "{{ .Values.database.password }}"
+        {{- end }}
+        {{- if eq .Values.storage.bucket.type "single" }}
+        - name: RP_FEATURE_FLAGS
+          value: "singleBucket"
+        {{- end }}
+        - name: DATASTORE_TYPE
+          value: "{{ .Values.storage.type }}"
+        {{- if eq .Values.storage.type "minio" }}
+        - name: DATASTORE_ENDPOINT
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+        {{- end }}
+        {{- if .Values.storage.region }}
+        - name: DATASTORE_REGION
+          value: "{{ .Values.storage.region }}"
+        {{- end }}
+        {{- if .Values.storage.secretName }}
+        - name: DATASTORE_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.accesskeyName }}"
+        - name: DATASTORE_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.storage.secretName }}"
+              key: "{{ .Values.storage.secretkeyName }}"
+       {{- else }}
+        - name: DATASTORE_ACCESSKEY
+          value: "{{ .Values.storage.accesskey }}"
+        - name: DATASTORE_SECRETKEY
+          value: "{{ .Values.storage.secretkey }}"
+       {{- end }}
+       {{- if eq .Values.storage.bucket.type "multi" }}
+        - name: DATASTORE_BUCKETPREFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
+        - name: DATASTORE_BUCKETPOSTFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPostfix }}"
+        - name: RP_INTEGRATION_SALT_PATH
+          value: "{{ .Values.storage.bucket.bucketMultiSaltName }}"
+       {{- end }}
+        - name: DATASTORE_DEFAULTBUCKETNAME
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}"
+        {{- if .Values.uat.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: "/uat/health"
+            port: 9999
+          initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 60 }}
+          periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 40 }}
+          timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold | default 10 }}
+        {{- end }}
+        {{- if .Values.uat.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: "/uat/health"
+            port: 9999
+          initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
+          periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
+          timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 10 }}
+        {{- end }}
+        volumeMounts:
+          {{- if .Values.uat.secret.enabled }}
+          - mountPath: {{ .Values.uat.secret.mountPath }}
+            name: {{ template "reportportal.name" . }}-uat-secret
+            readOnly: {{ .Values.uat.secret.readOnly }}
+          {{- end }}
+{{- if .Values.uat.nodeSelector }}
+      nodeSelector:
+        {{- range $key, $value := .Values.uat.nodeSelector }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+{{- end }}
+      securityContext:
+{{ toYaml .Values.uat.securityContext | indent 8}}
+      serviceAccountName: {{ .Values.uat.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
+      tolerations:
+{{- with .Values.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}
+      volumes:
+        {{- if .Values.uat.secret.enabled }}
+        - name: {{ template "reportportal.name" . }}-uat-secret
+          secret:
+            secretName: {{ template "reportportal.name" . }}-uat-secret
+        {{- end }}
