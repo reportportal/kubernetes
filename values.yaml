@@ -115,7 +115,7 @@ serviceapi:
   ## CRON Jobs
   cronJobs:
     ## ISO 8601 duration format
-    interruptBrockenLaunches: PT1M
+    interruptBrockenLaunches: PT1H
   
   ## Pattern Analysis and Immediate IA configuration
   patternAnalysis:
