@@ -423,6 +423,7 @@ metricsgatherer:
     extraPorts: []
 
 migrations:
+  enabled: true
   image:
     repository: reportportal/migrations
     tag: 5.10.1
