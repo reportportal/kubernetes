@@ -1,0 +1,53 @@
+## HOW-TO
+## Install dependencies
+#  helm install postgresql --set postgresqlUsername=rpuser,postgresqlPassword=rppass,postgresqlDatabase=reportportal,postgresqlPostgresPassword=rppass -f ./postgresql/values.yaml ./charts/postgresql-10.9.4.tgz
+#  helm install rabbitmq --set auth.username=rabbitmq,auth.password=rabbitmqPassword,replicaCount=1 ./charts/rabbitmq-7.5.6.tgz
+#  helm install minio --set accessKey=accessKey,secretKey=secretKey,persistence.size=2Gi stable/minio
+
+# Run dev environment (make sure skaffold is installed)
+# skaffold dev --status-check=false
+apiVersion: skaffold/v2beta8
+kind: Config
+metadata:
+  name: reportportal
+build:
+  artifacts:
+    - image: reportportal/service-index
+      context: ../../service-index
+      docker:
+        dockerfile: Dockerfile-develop
+        buildArgs:
+          version: dev
+    - image: reportportal/service-ui
+      context: ../../service-ui
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          version: dev
+  local:
+    useBuildkit: true
+deploy:
+  statusCheckDeadlineSeconds: 600
+  helm:
+    flags:
+      upgrade: [ "-i" ]
+    releases:
+      - name: reportportal-dev
+        chartPath: ./v5/
+        artifactOverrides:
+          serviceindex.image: reportportal/service-index
+          serviceui.image: reportportal/service-ui
+        setValues:
+          ingress.hosts: kubernetes.docker.internal
+
+          rabbitmq.endpoint.address: rabbitmq.default.svc.cluster.local
+          rabbitmq.SecretName: rabbitmq
+          rabbitmq.installdep.enable: false
+
+          postgresql.SecretName: postgresql
+          postgresql.endpoint.address: postgresql.default.svc.cluster.local
+          postgresql.installdep.enable: false
+
+          minio.secretName: minio
+          minio.endpoint: http://minio.default.svc.cluster.local:9000
+          minio.installdep.enable: false

@@ -1,0 +1,100 @@
+{{- if .Values.ingress.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-gateway-ingress
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end}}
+  rules:
+{{ if .Values.ingress.usedomainname }}
+  {{- range $host := .Values.ingress.hosts }}
+  - host: {{ $host }}
+    http:
+      paths:
+      - path: /()?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
+      - path: /(ui)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
+      - path: /(uat)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: {{ $.Values.uat.service.portName | default "headless" }}
+      - path: /(api)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
+  {{- end -}}
+{{ else }}
+  - http:
+      paths:
+      - path: /()?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
+      - path: /(ui)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
+      - path: /(uat)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: {{ $.Values.uat.service.portName | default "headless" }}
+      - path: /(api)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: /(jobs)/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-jobs
+            port:
+              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
+{{ end }}
+status:
+  loadBalancer: {}
+{{- end }}
