@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-jobs
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.servicejobs.name | default "jobs" }}
+    infoEndpoint: "/jobs/info"
+    healthEndpoint: "/jobs/health"
+spec:
+  type: {{ $.Values.servicejobs.service.type | default "ClusterIP"}}
+  ports:
+  - name: {{ $.Values.servicejobs.service.portName | default "headless" }}
+    port: 8686
+    protocol: TCP
+    targetPort: 8686
+{{- if and (or (eq .Values.servicejobs.service.type "NodePort") (eq .Values.servicejobs.service.type "LoadBalancer")) (not (empty .Values.servicejobs.service.nodePort)) }}
+    nodePort: {{ .Values.servicejobs.service.nodePort }}
+{{- end }}
+{{- if .Values.servicejobs.service.extraPorts }}
+  {{ toYaml .Values.servicejobs.service.extraPorts | indent 2 }}
+{{- end }}
+  selector:
+    component: {{ include "reportportal.fullname" . }}-jobs

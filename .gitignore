@@ -4,3 +4,11 @@
 *.iml
 .vscode/
 .DS_Store
+*.old
+*.backup
+*.bak
+*.orig
+*.rej
+charts/
+Chart.lock
+*.tgz
