@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-uat
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.uat.name | default "uat" }}
+    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+spec:
+  ports:
+  - name: {{ $.Values.uat.service.portName | default "headless" }}
+    port: 9999
+    protocol: TCP
+    targetPort: 9999
+  selector:
+    component: {{ include "reportportal.fullname" . }}-uat
+  type: ClusterIP

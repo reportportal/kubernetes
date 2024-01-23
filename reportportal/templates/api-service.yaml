@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-api
+  labels: {{ include "labels" . | indent 4 }}
+  annotations:
+    service: {{ $.Values.serviceapi.name | default "api" }}
+    infoEndpoint: {{ $.Values.rp.infoEndpoint | default "/info"}}
+spec:
+  ports:
+  - name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+    port: 8585
+    protocol: TCP
+    targetPort: 8585
+  selector:
+    component: {{ include "reportportal.fullname" . }}-api
+  type: ClusterIP

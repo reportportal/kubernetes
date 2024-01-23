@@ -1,0 +1,12 @@
+apiVersion: v1
+description: Aggregator
+name: reportportal
+version: 1.0.0
+sources:
+- https://github.com/reportportal/aggregator-chart
+keywords:
+- reportportal
+maintainers:
+  - name: reportportal
+    email:
+engine: gotpl
