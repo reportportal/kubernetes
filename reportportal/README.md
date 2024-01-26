@@ -15,11 +15,6 @@ ReportPortal is a TestOps service, that provides increased capabilities to speed
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
-## Documentation
-* [General User Manual](https://reportportal.io/docs/)
-* [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/DeployWithKubernetes)
-* [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
-
 ## Installing the Chart
 
 Add the official ReportPortal Helm Chart repository:
@@ -104,6 +99,11 @@ helm install my-release \
   reportportal/reportportal \
   --version 23.2
 ```
+
+## Documentation
+* [General User Manual](https://reportportal.io/docs/)
+* [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/DeployWithKubernetes)
+* [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
 
 ## Community / Support
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
