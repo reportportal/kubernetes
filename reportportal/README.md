@@ -11,6 +11,7 @@
 ReportPortal is a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
 ## Prerequisites
+> **Note:** The minimal requirements for a ReportPortal 1-node solution are 2 CPUs and 6Gi of memory
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
@@ -32,7 +33,7 @@ Install the chart:
 ```bash
 helm install my-release --set uat.superadminInitPasswd.password="MyPassword" reportportal/reportportal
 ```
-> **Note:** upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
+> **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
 
 ## Uninstalling the Chart
 
