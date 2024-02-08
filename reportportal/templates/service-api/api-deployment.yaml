@@ -72,7 +72,7 @@ spec:
         {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
-        {{- if .Values.searchengine.doubleEntry }}
+        {{- if .Values.searchengine.doubleEntry.enable }}
         - name: RP_ELASTICSEARCH_HOST
           value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
         {{- end }}
