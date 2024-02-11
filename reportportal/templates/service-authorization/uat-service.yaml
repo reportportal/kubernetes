@@ -4,6 +4,7 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
   annotations:
+{{ toYaml .Values.uat.service.annotations | indent 4 }}
     service: {{ $.Values.uat.name | default "uat" }}
     infoEndpoint: "/uat/info"
     healthEndpoint: "/uat/health"

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-api
   labels: {{ include "labels" . | indent 4 }}
   annotations:
+{{ toYaml .Values.serviceapi.service.annotations | indent 4 }}
     service: {{ $.Values.serviceapi.name | default "api" }}
     infoEndpoint: "/api/info"
     healthEndpoint: "/api/health"
