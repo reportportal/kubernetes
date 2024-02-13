@@ -32,6 +32,8 @@ spec:
         env:
         - name: K8S_MODE
           value: "true"
+        - name: RESOURCE_PATH
+          value: {{ .Values.ingress.path }}
         ports:
         - containerPort: 8080
           protocol: TCP

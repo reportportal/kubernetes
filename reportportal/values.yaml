@@ -2,8 +2,8 @@
 
 ## @param nameOverride expand the name of the chart
 ## @param fullnameOverride expand the fully qualified app name
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "reportportal"
+fullnameOverride: "dockyard-reportportal"
 
 serviceindex:
   name: index
@@ -542,10 +542,11 @@ storage:
 ## @param ingress.tls.secret provide a base64-encoded private key and certificate for TLS instead of using predefined secret names
 
 ingress:
-  enable: true
+  enable: false
   usedomainname: false
   hosts:
-    - reportportal.k8.com
+    - beta.oneconvergence.altoslabs.com # This should change to '*.oneconvergence.altoslabs.com' for wildcard subdomain
+  path: /reportportal
   class: nginx
   annotations:
     nginx:
@@ -604,6 +605,8 @@ extraInitContainers: {}
 
 ## @param postgresql External PostgreSQL Helm Chart as dependency
 postgresql: 
+  global:
+    storageClass: gp3
   install: true   ## set to `false` if using a Cloud/On-Premise managed database.
   image:
     registry: docker.io
@@ -617,6 +620,8 @@ postgresql:
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 rabbitmq:
+  global:
+    storageClass: gp3
   install: true   ## set to `false` if using a Cloud/On-Premise managed RabbitMQ.
   image:
     registry: docker.io
@@ -631,6 +636,8 @@ rabbitmq:
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 opensearch:
+  persistence:
+    storageClass: gp3
   install: true   ## set to `false` if using a Cloud/On-Premise managed OpenSearch.
   image:
     repository: opensearchproject/opensearch
@@ -650,6 +657,8 @@ opensearch:
 ## Apache 2.0 license version
 ## @param minio External MinIO Helm Chart as dependency 6.7.7
 minio:
+  global:
+    storageClass: gp3
   install: true   ## set to `true` if using a Cloud/On-Premise managed storage.
   image:
     registry: docker.io
