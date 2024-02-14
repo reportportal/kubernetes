@@ -7,19 +7,21 @@
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Build with Love](https://img.shields.io/badge/build%20with-❤%EF%B8%8F%E2%80%8D-lightgrey.svg)](http://reportportal.io?style=flat)
 
-
 This repository houses the Helm chart for ReportPortal, a powerful and flexible TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
 ## Prerequisites
+
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
 ## Documentation
+
 * [General User Manual](https://reportportal.io/docs/)
 * [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/DeployWithKubernetes)
 * [Quick Start Guide for Google Cloud Platform GKE](./reportportal/docs/quick-start-gcp-gke.md)
 
 ## Community / Support
+
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
 * [**Security Advisories**](https://github.com/reportportal/reportportal/blob/master/SECURITY_ADVISORIES.md)
 * [GitHub Issues](https://github.com/reportportal/reportportal/issues)
@@ -29,5 +31,5 @@ This repository houses the Helm chart for ReportPortal, a powerful and flexible 
 * [YouTube Channel](https://www.youtube.com/channel/UCsZxrHqLHPJcrkcgIGRG-cQ)
 
 ## License
-Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
+Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
