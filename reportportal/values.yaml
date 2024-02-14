@@ -529,8 +529,7 @@ storage:
 ## If you don't have any domain names set @param ingress.usedomainname to `false`
 
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
-## @param ingress.class set to `gke` if you want to use GKE ingress controller.
-## @param ingress.class set to `aws` if you want to use AWS ALB ingress controller.
+## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 
@@ -543,9 +542,7 @@ storage:
 
 ingress:
   enable: true
-  usedomainname: false
-  hosts:
-    - reportportal.k8.com
+  hosts: []
   class: nginx
   annotations:
     nginx:
@@ -557,8 +554,7 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-    gke: {}
-    aws: {}
+    gce: {}
     custom: {}
   tls:
     certificates: null

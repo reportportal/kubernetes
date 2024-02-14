@@ -10,12 +10,8 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations.nginx }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-  {{- else if eq .Values.ingress.class "gke" }}
-    {{- range $key, $value := .Values.ingress.annotations.gke }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- else if eq .Values.ingress.class "aws" }}
-    {{- range $key, $value := .Values.ingress.annotations.aws }}
+  {{- else if eq .Values.ingress.class "gce" }}
+    {{- range $key, $value := .Values.ingress.annotations.gce }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- else }}
@@ -24,8 +20,7 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
-  {{- if eq .Values.ingress.class "gke" }}
-  {{- else if eq .Values.ingress.class "aws "}}
+  {{- if eq .Values.ingress.class "gce" }}
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
