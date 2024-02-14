@@ -557,7 +557,9 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-    gke: {}
+    gke: {
+      kubernetes.io/ingress.class: gce
+      }
     aws: {}
     custom: {}
   tls:
