@@ -543,9 +543,7 @@ storage:
 
 ingress:
   enable: true
-  usedomainname: false
-  hosts:
-    - reportportal.k8.com
+  hosts: []
   class: nginx
   annotations:
     nginx:
@@ -557,9 +555,7 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-    gce:
-      kubernetes.io/ingress.class: gce
-    aws: {}
+    gce: {}
     custom: {}
   tls:
     certificates: null
