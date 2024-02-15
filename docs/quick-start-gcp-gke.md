@@ -3,6 +3,7 @@
 - [Quick Start Guide for Google Cloud Platform GKE](#quick-start-guide-for-google-cloud-platform-gke)
   - [Prerequisites](#prerequisites)
   - [Initialize the gcloud CLI](#initialize-the-gcloud-cli)
+  - [Set up Environment Variables](#set-up-environment-variables)
   - [Set up gcloud credential helper](#set-up-gcloud-credential-helper)
   - [Adjust Google Cloud IAM](#adjust-google-cloud-iam)
   - [Create a GKE cluster](#create-a-gke-cluster)
@@ -41,19 +42,33 @@ tools:
 gcloud init
 ```
 
+## Set up Environment Variables
+
+Set up environment variables:
+
+```bash
+export LOCATION=us-central1
+export PROJECT_ID=your-project-id
+export CLUSTER_NAME=reportportal-cluster
+export REPO_NAME=reportportal-helm-repo
+export RELEASE_NAME=reportportal
+export VERSION=23.2.0
+export SUPERADMIN_PASSWORD=your-superadmin-password
+```
+
 ## Set up gcloud credential helper
 
 If you have Docker, you can use the Docker credential helper to authenticate to Artifact Registry.
-
-> **Note:** Here and below we use `us-central1` region as a location for GKE cluster.
-> However, you can use any other region.
 
 Just perform the following commands:
 
 ```bash
 gcloud auth login
-gcloud auth configure-docker us-central1-docker.pkg.dev
+gcloud auth configure-docker ${LOCATION}-docker.pkg.dev
 ```
+
+> **Note:** Here and below we use `us-central1` region as a location for GKE cluster.
+> However, you can use any other region.
 
 You can find more information about gcloud credential helper
 [here](https://cloud.google.com/artifact-registry/docs/docker/authentication#gcloud-helper).
@@ -91,8 +106,8 @@ of GKE clusters:
 It's pretty simple to create a cluster in Autopilot mode:
 
 ```bash
-gcloud container clusters create-auto reportportal-cluster \
-    --location=${LOCATION}
+gcloud container clusters create-auto ${CLUSTER_NAME} \
+  --location=${LOCATION}
 ```
 
 For more information about creating a cluster in Autopilot mode you can find
@@ -109,9 +124,12 @@ ReportPortal requires at least 3 nodes with 2 vCPU and 4 GB memory for each.
 We recommend using `e2-standard-2` machine type with 2 vCPU and 8 GB memory:
 
 ```bash
-gcloud container clusters create reportportal-cluster \
-    --zone=us-central1-a \
-    --machine-type=e2-standard-2 --num-nodes=3
+export MACHINE_TYPE=e2-standard-2
+
+gcloud container clusters create ${CLUSTER_NAME} \
+  --zone=${LOCATION} \
+  --machine-type=${MACHINE_TYPE} \
+  --num-nodes=3
 ```
 
 More information about creating a cluster in Standard mode you can find
@@ -120,8 +138,8 @@ More information about creating a cluster in Standard mode you can find
 ### Get cluster credentials for kubectl
 
 ```bash
-gcloud container clusters get-credentials reportportal-cluster \
-    --location=us-central1
+gcloud container clusters get-credentials ${CLUSTER_NAME} \
+  --location=${LOCATION}
 ```
 
 ### Verify the cluster mode
@@ -129,8 +147,8 @@ gcloud container clusters get-credentials reportportal-cluster \
 You can verify the cluster:
 
 ```bash
-gcloud container clusters describe reportportal-cluster \
-    --location=us-central1
+gcloud container clusters describe ${CLUSTER_NAME} \
+  --location=${LOCATION}
 ```
 
 ## Prepare Helm package for installation
@@ -143,8 +161,8 @@ develop branch.
 Create a repository in Artifact Registry for ReportPortal Helm charts:
 
 ```bash
-gcloud artifacts repositories create reportportal-helm-repo --repository-format=docker \
---location=us-central1 --description="ReportPortal Helm repository"
+gcloud artifacts repositories create ${REPO_NAME} --repository-format=docker \
+  --location=${LOCATION} --description="ReportPortal Helm repository"
 ```
 
 > More information about Store Helm charts in the Artifact Registry you can find
@@ -160,7 +178,7 @@ Authenticate with the repository:
 
 ```bash
 gcloud auth print-access-token | helm registry login -u oauth2accesstoken \
---password-stdin https://us-central1-docker.pkg.dev
+  --password-stdin https://${LOCATION}-docker.pkg.dev
 ```
 
 ### Build and push Helm chart
@@ -178,7 +196,7 @@ and your project id:
 cd kubernetes/reportportal
 helm dependency update
 helm package .
-helm push reportportal-${VERSION}.tgz oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo
+helm push reportportal-${VERSION}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
 ```
 
 ## Install ReportPortal from Artifact Registry
@@ -206,15 +224,15 @@ For installing ReportPortal on GKE Autopilot Cluster, you need to set the:
 
 ```bash
 helm install \
-    --set ingress.class="gce" \
-    --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-    --set uat.resources.requests.memory="1Gi" \
-    --set serviceapi.resources.requests.cpu="1000m" \
-    --set serviceapi.resources.requests.memory="2Gi" \
-    --set serviceanalyzer.resources.requests.memory="1Gi" \
-    reportportal \
-    oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo/reportportal \
-    --version ${VERSION}
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set uat.resources.requests.memory="1Gi" \
+  --set serviceapi.resources.requests.cpu="1000m" \
+  --set serviceapi.resources.requests.memory="2Gi" \
+  --set serviceanalyzer.resources.requests.memory="1Gi" \
+  ${RELEASE_NAME} \
+  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
 ```
 
 ### Install Helm chart on GKE Standard Cluster
@@ -226,11 +244,11 @@ For installing ReportPortal on GKE Standard Cluster you need to set:
 
 ```bash
 helm install \
-    --set ingress.class="gce" \
-    --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-    reportportal \
-    oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo/reportportal \
-    --version ${VERSION}
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  ${RELEASE_NAME} \
+  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
 ```
 
 ## Ingress configuration
@@ -273,11 +291,11 @@ helm install \
 To delete the cluster:
 
 ```bash
-gcloud artifacts repositories delete reportportal-cluster --location=us-central1
+gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
 ```
 
 To delete the artifacts repository:
 
 ```bash
-gcloud artifacts repositories delete reportportal-helm-repo --location=us-central1
+gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
 ```
