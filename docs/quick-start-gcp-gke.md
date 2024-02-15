@@ -13,10 +13,12 @@
   - [Prepare Helm package for installation](#prepare-helm-package-for-installation)
     - [Create a repository](#create-a-repository)
     - [Build and push Helm chart](#build-and-push-helm-chart)
-  - [Install ReportPortal on GKE Autopilot Cluster via Helm chart](#install-reportportal-on-gke-autopilot-cluster-via-helm-chart)
-    - [Install ReportPortal from Artifact Registry](#install-reportportal-from-artifact-registry)
-  - [Install Helm chart on GKE Standard Cluster](#install-helm-chart-on-gke-standard-cluster)
-    - [Ingress configuration](#ingress-configuration)
+  - [Install ReportPortal from Artifact Registry](#install-reportportal-from-artifact-registry)
+    - [Install Helm chart on GKE Autopilot Cluster](#install-helm-chart-on-gke-autopilot-cluster)
+    - [Install Helm chart on GKE Standard Cluster](#install-helm-chart-on-gke-standard-cluster)
+  - [Ingress configuration](#ingress-configuration)
+  - [Certificate Manager](#certificate-manager)
+    - [Google-managed SSL certificates](#google-managed-ssl-certificates)
   - [Clean up](#clean-up)
 
 ## Prerequisites
@@ -90,7 +92,7 @@ It's pretty simple to create a cluster in Autopilot mode:
 
 ```bash
 gcloud container clusters create-auto reportportal-cluster \
-    --location=us-central1
+    --location=${LOCATION}
 ```
 
 For more information about creating a cluster in Autopilot mode you can find
@@ -173,12 +175,15 @@ Build and push the Helm chart to Artifact Registry using actual helm chart versi
 and your project id:
 
 ```bash
-cd kubernetes
+cd kubernetes/reportportal
+helm dependency update
 helm package .
 helm push reportportal-${VERSION}.tgz oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo
 ```
 
-## Install ReportPortal on GKE Autopilot Cluster via Helm chart
+## Install ReportPortal from Artifact Registry
+
+### Install Helm chart on GKE Autopilot Cluster
 
 By default, ReportPortal Helm chart install with infrastructure dependencies in GKE Autopilot Cluster:
 
@@ -193,17 +198,15 @@ new credentials for your standalone components.
 More information about it you can find here:
 [Install the chart with dependencies](https://github.com/reportportal/kubernetes#install-the-chart-with-dependencies).
 
-### Install ReportPortal from Artifact Registry
-
 For installing ReportPortal on GKE Autopilot Cluster, you need to set the:
 
-- ingress controller as a `gke`
+- ingress controller as a `gce`
 - superadmin password
 - resources requests for api, uat, and analyzer services
 
 ```bash
 helm install \
-    --set ingress.class="gke" \
+    --set ingress.class="gce" \
     --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
     --set uat.resources.requests.memory="1Gi" \
     --set serviceapi.resources.requests.cpu="1000m" \
@@ -214,36 +217,55 @@ helm install \
     --version ${VERSION}
 ```
 
-## Install Helm chart on GKE Standard Cluster
+### Install Helm chart on GKE Standard Cluster
 
 For installing ReportPortal on GKE Standard Cluster you need to set:
 
-- ingress controller as a `gke`
+- ingress controller as a `gce`
 - superadmin password
 
 ```bash
 helm install \
-    --set ingress.class="gke" \
+    --set ingress.class="gce" \
     --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
     reportportal \
     oci://us-central1-docker.pkg.dev/${PROJECT_ID}/reportportal-helm-repo/reportportal \
     --version ${VERSION}
 ```
 
-### Ingress configuration
+## Ingress configuration
 
-You can add custom gke ingress annotations via `ingress.annotations.gke` parameter:
+You can add custom gce ingress annotations via `ingress.annotations.gce` parameter:
 
 ```bash
---set-json='ingress.annotations.gke={"key1":"value1","key2":"value2"}'
+helm install \
+...
+  --set-json='ingress.annotations.gce={"key1":"value1","key2":"value2"}'
+...
 ```
 
-If you have some domain name, set `ingress.usedomainname` variable to `true` and
-set this FQDN to `ingress.hosts`:
+If you have some domain name, set this FQDN to `ingress.hosts`:
 
 ```bash
---set ingress.usedomainname=true \
---set ingress.hosts[0].reportportal.k8.com
+helm install \
+...
+  --set ingress.hosts[0].reportportal.k8.com
+...
+```
+
+## Certificate Manager
+
+### Google-managed SSL certificates
+
+You can use Google-managed SSL certificates for your domain name:
+
+```bash
+helm install \
+...
+  --set ingress.tls.certificate.gcpManaged=true
+  --set ingress.tls.certificate.hosts[0]="example.com"
+...
+
 ```
 
 ## Clean up
