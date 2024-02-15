@@ -11,6 +11,9 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- else if eq .Values.ingress.class "gce" }}
+    {{- if .Values.ingress.tls.certificate.gcpManaged }}
+    networking.gke.io/managed-certificates: {{ .Release.Name }}-gcp-managed-cert
+    {{- end}}
     {{- range $key, $value := .Values.ingress.annotations.gce }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -27,9 +30,13 @@ spec:
   {{- if .Values.ingress.tls.certificates }}
   tls:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
-  {{- else if and .Values.ingress.tls.secret.base64EncodedPrivateKey .Values.ingress.tls.secret.base64EncodedCertificate }}
+  {{- else if and .Values.ingress.tls.certificate.privateKey .Values.ingress.tls.certificate.certificate }}
   tls:
     - secretName: {{ .Release.Name }}-gateway-tls
+      {{- if .Values.ingress.tls.certificate.hosts}}
+      hosts:
+        {{ toYaml .Values.ingress.tls.certificate.hosts | nindent 8 }}
+      {{- end }}
   {{- end }}
   rules:
 {{ if .Values.ingress.usedomainname }}
