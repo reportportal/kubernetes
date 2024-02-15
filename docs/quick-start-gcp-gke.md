@@ -291,7 +291,7 @@ helm install \
 To delete the cluster:
 
 ```bash
-gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
+gcloud container clusters delete ${CLUSTER_NAME} --location=${LOCATION}
 ```
 
 To delete the artifacts repository:
