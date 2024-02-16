@@ -48,13 +48,16 @@ Set up environment variables:
 
 ```bash
 export LOCATION=us-central1
-export PROJECT_ID=your-project-id
-export CLUSTER_NAME=reportportal-cluster
-export REPO_NAME=reportportal-helm-repo
-export RELEASE_NAME=reportportal
-export VERSION=23.2.0
-export SUPERADMIN_PASSWORD=your-superadmin-password
+export PROJECT_ID={your_project_id}
+export CLUSTER_NAME={reportportal_cluster_name}
+export REPO_NAME={reportportal_helm_repo_name}
+export RELEASE_NAME={reportportal_release_name}
+export VERSION={current_chart_version}
+export SUPERADMIN_PASSWORD={your_superadmin_password}
 ```
+
+> **Note:** Here and below we use `us-central1` region as a location for GKE cluster.
+> However, you can use any other region.
 
 ## Set up gcloud credential helper
 
@@ -66,9 +69,6 @@ Just perform the following commands:
 gcloud auth login
 gcloud auth configure-docker ${LOCATION}-docker.pkg.dev
 ```
-
-> **Note:** Here and below we use `us-central1` region as a location for GKE cluster.
-> However, you can use any other region.
 
 You can find more information about gcloud credential helper
 [here](https://cloud.google.com/artifact-registry/docs/docker/authentication#gcloud-helper).
@@ -112,9 +112,6 @@ gcloud container clusters create-auto ${CLUSTER_NAME} \
 
 For more information about creating a cluster in Autopilot mode you can find
 [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster).
-
-> **Note:** Here and below we use `us-central1` region as a location for GKE cluster.
-> However, you can use any other region.
 
 ### Create a cluster in Standard mode
 
