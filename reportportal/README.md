@@ -7,11 +7,12 @@
 [![License](https://img.shields.io/badge/license-Apache-brightgreen.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Build with Love](https://img.shields.io/badge/build%20with-❤%EF%B8%8F%E2%80%8D-lightgrey.svg)](http://reportportal.io?style=flat)
 
-
 ReportPortal is a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
 ## Prerequisites
+
 > **Note:** The minimal requirements for a ReportPortal 1-node solution are 2 CPUs and 6Gi of memory
+
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
@@ -28,6 +29,7 @@ Install the chart:
 ```bash
 helm install my-release --set uat.superadminInitPasswd.password="MyPassword" reportportal/reportportal
 ```
+
 > **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
 
 ## Uninstalling the Chart
@@ -40,7 +42,7 @@ helm uninstall my-release
 
 ### Install the chart with dependencies
 
-ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives. 
+ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives.
 
 The following table lists the configurable parameters of the chart and their default values
 
@@ -62,6 +64,7 @@ helm install my-release \
   --set database.password=my-password \
   reportportal/reportportal
 ```
+
 > **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
@@ -77,7 +80,6 @@ helm dependency build .
 > This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/Chart.yaml) by the chart.
 
 To install the chart directly from local sources, use:
-
 
 ```bash
 helm install my-release --set uat.superadminInitPasswd.password="MyPassword" ./reportportal
@@ -101,11 +103,13 @@ helm install my-release \
 ```
 
 ## Documentation
+
 * [General User Manual](https://reportportal.io/docs/)
 * [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/DeployWithKubernetes)
 * [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
 
 ## Community / Support
+
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
 * [**Security Advisories**](https://github.com/reportportal/reportportal/blob/master/SECURITY_ADVISORIES.md)
 * [GitHub Issues](https://github.com/reportportal/reportportal/issues)
@@ -115,5 +119,5 @@ helm install my-release \
 * [YouTube Channel](https://www.youtube.com/channel/UCsZxrHqLHPJcrkcgIGRG-cQ)
 
 ## License
-Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
+Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
