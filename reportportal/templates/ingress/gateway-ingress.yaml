@@ -44,7 +44,7 @@ spec:
   {{- end }}
   # Define the rules for the ingress
   rules:
-{{ if .Values.ingress.hosts }}
+  {{- if .Values.ingress.hosts }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
@@ -77,8 +77,8 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-  {{- end -}}
-{{ else }}
+  {{- end }}
+  {{- else }}
   - http:
       paths:
       - path: /
@@ -109,7 +109,7 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-{{ end }}
+  {{- end }}
 status:
   loadBalancer: {}
 {{- end }}

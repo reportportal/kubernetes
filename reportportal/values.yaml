@@ -539,7 +539,6 @@ storage:
 ##     hosts:
 ##       - reportportal.k8.com
 ##
-## @param ingress.tls.certificate provide a base64-encoded private key and certificate for TLS instead of using predefined secret names.
 ## @param ingress.tls.certificate.privateKey provide a base64-encoded private key for TLS.
 ## @param ingress.tls.certificate.certificate provide a base64-encoded certificate for TLS.
 ## @param ingress.tls.certificate.gcpManaged set to `true` if you want to use Google Managed Certificate instead of providing your own certificate.
