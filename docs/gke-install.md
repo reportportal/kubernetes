@@ -23,6 +23,7 @@
     - [Google-managed SSL certificates](#google-managed-ssl-certificates)
     - [Cert-Manager](#cert-manager)
   - [Clean up](#clean-up)
+    - [Disable HTTP Load Balancing](#disable-http-load-balancing)
 
 ## Prerequisites
 
@@ -303,4 +304,13 @@ To delete the artifacts repository:
 
 ```bash
 gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
+```
+
+### Disable HTTP Load Balancing
+
+If you want to disable HTTP Load Balancing, you can do it after the certificate
+is attached to the Ingress resource:
+
+```bash
+kubectl annotate ingress ${APP_NAME}-gateway-ingress kubernetes.io/ingress.allow-http: "false"
 ```

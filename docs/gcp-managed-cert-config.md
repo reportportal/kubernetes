@@ -11,6 +11,7 @@
   - [Check the status of the certificate](#check-the-status-of-the-certificate)
     - [Using kubectl](#using-kubectl)
     - [Using the Google Cloud CLI](#using-the-google-cloud-cli)
+  - [Disable HTTP Load Balancing](#disable-http-load-balancing)
   - [Clean up](#clean-up)
 
 You can use Google-managed SSL certificates to secure your custom domain with HTTPS.
@@ -87,13 +88,13 @@ kubectl apply -f gcp-managed-cert.yaml
 If you have tls section in your Ingress resource, remove it.
 
 ```bash
-kubectl edit ingress {APP_NAME}-gateway-ingress
+kubectl edit ingress ${APP_NAME}-gateway-ingress
 ```
 
 Update the Ingress resource to reference the `ManagedCertificate` resource:
 
 ```bash
-kubectl annotate ingress {APP_NAME}-gateway-ingress networking.gke.io/manage-certificates=gcp-managed-certificate
+kubectl annotate ingress ${APP_NAME}-gateway-ingress networking.gke.io/manage-certificates=gcp-managed-certificate
 ```
 
 ## Check the status of the certificate
@@ -120,6 +121,15 @@ gcloud compute ssl-certificates list --global
 You need to find the certificate by the Google generated name and check the `MANAGED_STATUS` column.
 
 You can get Google generated name from the `Certificate Name` [using kubectl](#using-kubectl).
+
+## Disable HTTP Load Balancing
+
+If you want to disable HTTP Load Balancing, you can do it after the certificate
+is attached to the Ingress resource:
+
+```bash
+kubectl annotate ingress ${APP_NAME}-gateway-ingress kubernetes.io/ingress.allow-http: "false"
+```
 
 ## Clean up
 
