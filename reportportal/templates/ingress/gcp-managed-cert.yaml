@@ -7,7 +7,5 @@ metadata:
     {{ include "labels" . | nindent 4 }}
 spec:
   domains:
-    {{- range .Values.ingress.hosts }}
-    - {{ . | quote }}
-    {{- end }}
+    {{ toYaml .Values.ingress.hosts | nindent 4 }}
 {{- end }}
