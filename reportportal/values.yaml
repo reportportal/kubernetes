@@ -526,12 +526,13 @@ storage:
 
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
 ## @param ingress.hosts set variable this you domain names list (FQDN) if you have some domain name and want to use it in ingress rules.
-
+## @param ingress.hosts is required if you want to use Google Managed Certificate.
+##
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
-
+##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
 ## certificates:
 ##   - secretName: reportportal.k8.com-tls 
@@ -542,7 +543,6 @@ storage:
 ## @param ingress.tls.certificate.privateKey provide a base64-encoded private key for TLS.
 ## @param ingress.tls.certificate.certificate provide a base64-encoded certificate for TLS.
 ## @param ingress.tls.certificate.gcpManaged set to `true` if you want to use Google Managed Certificate instead of providing your own certificate.
-## @param ingress.tls.certificate.hosts specify a list of hosts for which the certificate is valid. Required if gcpManaged is set to `true`.
 
 ingress:
   enable: true
@@ -566,7 +566,6 @@ ingress:
       gcpManaged: false
       privateKey: ""
       certificate: ""
-      hosts: []
 
 ## @section Additional configuration
 

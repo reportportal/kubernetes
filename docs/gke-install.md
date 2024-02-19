@@ -13,13 +13,15 @@
     - [Verify the cluster mode](#verify-the-cluster-mode)
   - [Prepare Helm package for installation](#prepare-helm-package-for-installation)
     - [Create a repository](#create-a-repository)
+    - [Authenticate with the repository](#authenticate-with-the-repository)
     - [Build and push Helm chart](#build-and-push-helm-chart)
   - [Install ReportPortal from Artifact Registry](#install-reportportal-from-artifact-registry)
     - [Install Helm chart on GKE Autopilot Cluster](#install-helm-chart-on-gke-autopilot-cluster)
     - [Install Helm chart on GKE Standard Cluster](#install-helm-chart-on-gke-standard-cluster)
   - [Ingress configuration](#ingress-configuration)
-  - [Certificate Manager](#certificate-manager)
+  - [Certificate Management](#certificate-management)
     - [Google-managed SSL certificates](#google-managed-ssl-certificates)
+    - [Cert-Manager](#cert-manager)
   - [Clean up](#clean-up)
 
 ## Prerequisites
@@ -29,8 +31,8 @@ tools:
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) 1.28 or later
 - [Helm](https://helm.sh/docs/intro/install/) 3.11 or later
-- [google-cloud-cli](https://cloud.google.com/sdk/docs/install-sdk) and
-[gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin)
+- [google-cloud-cli](https://cloud.google.com/sdk/docs/install-sdk)
+- [gke-gcloud-auth-plugin](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin)
 
 > **Note:** For some operation systems we recommend install `google-cloud-sdk` package instead of `google-cloud-cli`.
 
@@ -171,7 +173,7 @@ Verify that the repository was created:
 gcloud artifacts repositories list
 ```
 
-Authenticate with the repository:
+### Authenticate with the repository
 
 ```bash
 gcloud auth print-access-token | helm registry login -u oauth2accesstoken \
@@ -268,9 +270,11 @@ helm install \
 ...
 ```
 
-## Certificate Manager
+## Certificate Management
 
 ### Google-managed SSL certificates
+
+> **Note:** This is recommended approach for using SSL certificates in GKE.
 
 You can use Google-managed SSL certificates for your domain name:
 
@@ -278,10 +282,14 @@ You can use Google-managed SSL certificates for your domain name:
 helm install \
 ...
   --set ingress.tls.certificate.gcpManaged=true
-  --set ingress.tls.certificate.hosts[0]="example.com"
+  --set ingress.hosts\[0\]="example.com"
 ...
 
 ```
+
+### Cert-Manager
+
+You can use [Cert-Manager](./cert-manager-config.md) to manage certificates for your domain name.
 
 ## Clean up
 

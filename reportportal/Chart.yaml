@@ -1,8 +1,8 @@
 apiVersion: v2
-appVersion: "23.2"
+appVersion: "23.2-test"
 description: ReportPortal.io AI-powered Test Automation Dashboard
 name: reportportal
-version: 23.2.0
+version: 23.2.0-test
 sources:
   - https://github.com/reportportal/kubernetes
 keywords:
@@ -33,3 +33,10 @@ dependencies:
     version: 6.7.7
     repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: minio.install
+  
+  # If you update version, please update also cert-manager.image.tag in values.yaml
+  - name: cert-manager
+    version: v1.14.2
+    repository: https://charts.jetstack.io
+    alias: cert-manager
+    condition: cert-manager.install

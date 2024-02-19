@@ -1,5 +1,18 @@
 # Use Google-managed SSL certificates
 
+- [Use Google-managed SSL certificates](#use-google-managed-ssl-certificates)
+  - [Limitations](#limitations)
+  - [Before you begin](#before-you-begin)
+  - [Add a Google-managed SSL via Helm chart](#add-a-google-managed-ssl-via-helm-chart)
+  - [Manual adding a Google-managed SSL certificate](#manual-adding-a-google-managed-ssl-certificate)
+    - [Setting up a Google-managed certificate](#setting-up-a-google-managed-certificate)
+      - [Create a `ManagedCertificate` resource](#create-a-managedcertificate-resource)
+      - [Update the Ingress resource](#update-the-ingress-resource)
+  - [Check the status of the certificate](#check-the-status-of-the-certificate)
+    - [Using kubectl](#using-kubectl)
+    - [Using the Google Cloud CLI](#using-the-google-cloud-cli)
+  - [Clean up](#clean-up)
+
 You can use Google-managed SSL certificates to secure your custom domain with HTTPS.
 Google-managed SSL certificates are provisioned, renewed, and managed for your domain by Google.
 You can use Google-managed SSL certificates with Google Kubernetes Engine (GKE) and Google Cloud Load Balancing.
@@ -8,10 +21,18 @@ Comprehensive documentation is available at [Google-managed SSL certificates](ht
 
 ## Limitations
 
-* Don't support wildcard domains.
-* The domain name must be no longer than 63 characters.
-* Your ingressClassName must be "gce".
-* You must apply Ingress and ManagedCertificate resources in the same project and namespace.
+- Don't support wildcard domains.
+- The domain name must be no longer than 63 characters.
+- Your ingressClassName must be "gce".
+- You must apply Ingress and ManagedCertificate resources in the same project and namespace.
+
+## Before you begin
+
+- [Install the Google Cloud CLI](https://cloud.google.com/sdk/docs/install).
+- [Install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+- [Set up default gcloud settings](https://cloud.google.com/sdk/gcloud/reference/init).
+- [Set up Environment Variables](./quick-start-gcp-gke.md#set-up-environment-variables).
+- [Get cluster credentials for kubectl](./quick-start-gcp-gke.md#get-cluster-credentials-for-kubectl)
 
 ## Add a Google-managed SSL via Helm chart
 
@@ -22,7 +43,7 @@ you need to set the following parameters:
 helm install \
 ...
   --set ingress.tls.certificate.gcpManaged=true
-  --set ingress.tls.certificate.hosts[0]="example.com"
+  --set ingress.hosts[0]="example.com"
 ...
 
 ```
@@ -33,17 +54,11 @@ GKE automatically provisions the certificate and configures the load balancer to
 
 ## Manual adding a Google-managed SSL certificate
 
-### Before you begin
-
-* [Install the Google Cloud CLI](https://cloud.google.com/sdk/docs/install).
-* [Install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-* [Set up default gcloud settings](https://cloud.google.com/sdk/gcloud/reference/init).
-* [Set up Environment Variables](./quick-start-gcp-gke.md#set-up-environment-variables).
-* [Get cluster credentials for kubectl](./quick-start-gcp-gke.md#get-cluster-credentials-for-kubectl)
-
 ### Setting up a Google-managed certificate
 
-Create a `ManagedCertificate` resource to request a Google-managed SSL certificate for your domain.
+#### Create a `ManagedCertificate` resource
+
+Create a `ManagedCertificate` resource in gcp-managed-cert.yaml to request a Google-managed SSL certificate for your domain.
 
 ```yaml
 # gcp-managed-cert.yaml
@@ -65,54 +80,20 @@ Apply the configuration:
 kubectl apply -f gcp-managed-cert.yaml
 ```
 
-Create an Ingress resource that references the `ManagedCertificate` resource:
+#### Update the Ingress resource
 
-```yaml
-# ingress.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    networking.gke.io/managed-certificates: gcp-managed-certificate
-  name: {APP_NAME}-gateway-ingress
-spec:
-  rules:
-  - http:
-      paths:
-      - backend:
-          service:
-            name: {APP_NAME}-index
-            port:
-              name: headless
-        path: /
-        pathType: Prefix
-      - backend:
-          service:
-            name: {APP_NAME}-ui
-            port:
-              name: headless
-        path: /ui
-        pathType: Prefix
-      - backend:
-          service:
-            name: {APP_NAME}-uat
-            port:
-              name: headless
-        path: /uat
-        pathType: Prefix
-      - backend:
-          service:
-            name: {APP_NAME}-api
-            port:
-              name: headless
-        path: /api
-        pathType: Prefix
-```
+> **Note:** Replace `{APP_NAME}` with your application name.
 
-Apply the configuration:
+If you have tls section in your Ingress resource, remove it.
 
 ```bash
-kubectl apply -f ingress.yaml
+kubectl edit ingress {APP_NAME}-gateway-ingress
+```
+
+Update the Ingress resource to reference the `ManagedCertificate` resource:
+
+```bash
+kubectl annotate ingress {APP_NAME}-gateway-ingress networking.gke.io/manage-certificates=gcp-managed-certificate
 ```
 
 ## Check the status of the certificate
@@ -128,7 +109,7 @@ kubectl describe managedcertificate
 In the output, look for the `Status`. The status contains `Certificate Status`.
 `Certificate Name` is the GCP managed certificate name.
 
-## Using the Google Cloud Console
+### Using the Google Cloud CLI
 
 To check all GCP managed certificates, run the following command:
 

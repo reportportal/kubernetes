@@ -1,5 +1,14 @@
 # Install ReportPortal on Minikube
 
+- [Install ReportPortal on Minikube](#install-reportportal-on-minikube)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [Start Minikube](#start-minikube)
+    - [Set up hostnames](#set-up-hostnames)
+    - [Install ReportPortal](#install-reportportal)
+    - [Access ReportPortal](#access-reportportal)
+  - [Clean up](#clean-up)
+
 ## Prerequisites
 
 - [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
@@ -11,7 +20,7 @@
 ### Start Minikube
 
 ```bash
-minikube start --cpus 4 --memory 4096
+minikube start --cpus 4 --memory 4096 --addons ingress
 ```
 
 ### Set up hostnames

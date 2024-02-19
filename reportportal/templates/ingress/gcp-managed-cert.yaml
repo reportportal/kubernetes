@@ -7,7 +7,7 @@ metadata:
     {{ include "labels" . | nindent 4 }}
 spec:
   domains:
-    {{- range .Values.ingress.tls.certificate.hosts }}
+    {{- range .Values.ingress.hosts }}
     - {{ . | quote }}
     {{- end }}
 {{- end }}
