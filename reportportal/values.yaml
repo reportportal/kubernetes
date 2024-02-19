@@ -33,6 +33,7 @@ serviceindex:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceui:
   name: ui
@@ -61,6 +62,7 @@ serviceui:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceapi:
   name: api
@@ -147,6 +149,7 @@ serviceapi:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
   ## Provide a secret containing sensitives data
   ## e.g. provide a custom java keystore used in jvmArgs:
@@ -241,6 +244,7 @@ uat:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 servicejobs:
   name: jobs

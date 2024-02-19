@@ -4,10 +4,12 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-{{ toYaml .Values.uat.service.annotations | indent 4 }}
     service: {{ $.Values.uat.name | default "uat" }}
     infoEndpoint: "/uat/info"
     healthEndpoint: "/uat/health"
+{{- with .Values.uat.service.annotations }}
+{{- toYaml . | nindent 4 }}
+{{- end }}
 spec:
   type: {{ $.Values.uat.service.type | default "ClusterIP"}}
   ports:
