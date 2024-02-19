@@ -44,7 +44,7 @@ spec:
   {{- end }}
   # Define the rules for the ingress
   rules:
-  {{ if .Values.ingress.hosts }}
+{{ if .Values.ingress.hosts }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
