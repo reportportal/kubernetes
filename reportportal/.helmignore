@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 .git*
 .idea/
 *.md
 docs/
+=======
+*.md
+reportportal-*.tgz
+>>>>>>> develop
