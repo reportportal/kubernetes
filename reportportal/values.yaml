@@ -549,14 +549,6 @@ storage:
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 ##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
-<<<<<<< HEAD
-##  tls:
-##    certificates:
-##      - hosts:
-##       - reportportal.k8.com
-##       secretName: reportportal.k8.com-tls
-## @param ingress.tls.secret provide a base64-encoded private key and certificate for TLS instead of using predefined secret names
-=======
 ## certificates:
 ##   - secretName: reportportal.k8.com-tls 
 ##     hosts:
@@ -565,7 +557,6 @@ storage:
 ## @param ingress.tls.certificate.privateKey provide a base64-encoded private key for TLS.
 ## @param ingress.tls.certificate.certificate provide a base64-encoded certificate for TLS.
 ## @param ingress.tls.certificate.gcpManaged set to `true` if you want to use Google Managed Certificate instead of providing your own certificate.
->>>>>>> develop
 
 ingress:
   enable: true
