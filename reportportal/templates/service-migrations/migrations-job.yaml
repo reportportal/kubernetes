@@ -44,10 +44,23 @@ spec:
           value: "{{ .Values.searchengine.port | default "9200" }}"
         - name: OS_PROTOCOL
           value: "{{ ternary "https" "http" .Values.searchengine.ssl }}"
+        {{- if .Values.searchengine.secretName }}
+        - name: OS_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.searchengine.secretName }}"
+              key: "username"
+        - name: OS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.searchengine.secretName }}"
+              key: "password"
+        {{- else }}
         - name: OS_USER
           value: "{{ .Values.searchengine.user }}"
         - name: OS_PASSWORD
           value: "{{ .Values.searchengine.password }}"
+        {{- end }}
         image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}"
         imagePullPolicy: "{{ .Values.migrations.pullPolicy }}"
         name: migrations
