@@ -7,6 +7,9 @@ metadata:
     service: {{ $.Values.servicejobs.name | default "jobs" }}
     infoEndpoint: "/jobs/info"
     healthEndpoint: "/jobs/health"
+    {{- with .Values.servicejobs.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ $.Values.servicejobs.service.type | default "ClusterIP"}}
   ports:

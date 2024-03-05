@@ -7,9 +7,9 @@ metadata:
     service: {{ $.Values.serviceui.name | default "ui" }}
     infoEndpoint: "/ui/info"
     healthEndpoint: "/ui/health"
-{{- with .Values.serviceui.service.annotations }}
-{{- toYaml . | nindent 4 }}
-{{- end }}
+    {{- with .Values.serviceui.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ $.Values.serviceui.service.type | default "ClusterIP"}}
   ports:

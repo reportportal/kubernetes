@@ -309,6 +309,7 @@ servicejobs:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzer:
   name: analyzer
@@ -347,6 +348,7 @@ serviceanalyzer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzertrain:
   name: analyzer-train
@@ -382,6 +384,7 @@ serviceanalyzertrain:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 metricsgatherer:
   name: metrics-gatherer
@@ -425,6 +428,7 @@ metricsgatherer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 migrations:
   image:
