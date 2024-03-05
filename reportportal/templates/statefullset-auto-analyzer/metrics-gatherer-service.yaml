@@ -5,6 +5,9 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.metricsgatherer.name | default "metrics-gatherer" }}
+    {{- with .Values.metricsgatherer.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ $.Values.metricsgatherer.service.type | default "ClusterIP" }}
   ports:

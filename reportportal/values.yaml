@@ -33,6 +33,7 @@ serviceindex:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceui:
   name: ui
@@ -61,6 +62,7 @@ serviceui:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceapi:
   name: api
@@ -160,6 +162,7 @@ serviceapi:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
   ## Provide a secret containing sensitives data
   ## e.g. provide a custom java keystore used in jvmArgs:
@@ -254,6 +257,7 @@ uat:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 servicejobs:
   name: jobs
@@ -320,6 +324,7 @@ servicejobs:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzer:
   name: analyzer
@@ -358,6 +363,7 @@ serviceanalyzer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzertrain:
   name: analyzer-train
@@ -393,6 +399,7 @@ serviceanalyzertrain:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 metricsgatherer:
   name: metrics-gatherer
@@ -436,6 +443,7 @@ metricsgatherer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 migrations:
   image:
