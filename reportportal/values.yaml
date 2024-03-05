@@ -504,7 +504,7 @@ searchengine:
   ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
   ##
   doubleEntry:
-    enable: true
+    enable: false
   ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   ## ref. to @param searchengine.protocol
