@@ -1,5 +1,2 @@
-.git*
-.idea/
 *.md
-docs/
 reportportal-*.tgz
