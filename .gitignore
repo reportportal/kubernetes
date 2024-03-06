@@ -1,14 +1,24 @@
-*.xml
+# Idea
 /idea/*
 /.idea/
-*.iml
+
+# VSCode
 .vscode/
+
+# Helm
+charts/
+/reportportal/charts/
+/reportportal/Chart.lock
+
+# Other
+*.xml
+*.iml
 .DS_Store
 *.old
 *.backup
 *.bak
 *.orig
 *.rej
-charts/
-Chart.lock
 *.tgz
+tmp/
+temp/

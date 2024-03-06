@@ -9,7 +9,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.10.1
+    tag: 5.11.0
   pullPolicy: Always
   resources:
     requests:
@@ -33,12 +33,13 @@ serviceindex:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   resources:
     requests:
@@ -61,12 +62,13 @@ serviceui:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.10.1
+    tag: 5.11.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -112,6 +114,19 @@ serviceapi:
   ## "Delete Account" button in UI
   allowDeleteAccount: true  ## set `false` to disable feature
   
+  ## CRON Jobs
+  cronJobs:
+    ## ISO 8601 duration format
+    interruptBrockenLaunches: PT1H
+  
+  ## Pattern Analysis and Immediate IA configuration
+  patternAnalysis:
+    batchSize: 100
+    ## @param patternAnalysis.prefetchCount define of the prefetch count for 'analysis.pattern.string' and 'analysis.pattern.regex' queues.
+    prefetchCount: 1
+    ## @param patternAnalysis.consumersCount define of the 'analysis.pattern.string' and 'analysis.pattern.regex' queues. Consumers count per each queue
+    consumersCount: 1
+
   ## JAVA_OPTS
   ## If you need to use a custom java keystore you can use it through jvmArgs (e.g. jvmArgs: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks)
   
@@ -147,6 +162,7 @@ serviceapi:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
   ## Provide a secret containing sensitives data
   ## e.g. provide a custom java keystore used in jvmArgs:
@@ -166,7 +182,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -241,12 +257,13 @@ uat:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -261,6 +278,8 @@ servicejobs:
     timeoutSeconds: 5
     failureThreshold: 10
   coreJobs:
+    cleanEventsRetention: 365
+    cleanEventsCron: 0 0 */24 * * *
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
     cleanLaunchCron: 0 0 */24 * * *
@@ -305,12 +324,13 @@ servicejobs:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -343,6 +363,7 @@ serviceanalyzer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 serviceanalyzertrain:
   name: analyzer-train
@@ -378,12 +399,13 @@ serviceanalyzertrain:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 metricsgatherer:
   name: metrics-gatherer
   image:
     repository: reportportal/service-metrics-gatherer
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   loggingLevel: debug
   timeManagement:
@@ -421,11 +443,12 @@ metricsgatherer:
     portName: ""
     nodePort: ""
     extraPorts: []
+    annotations: {}
 
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.10.1
+    tag: 5.11.0
   resources:
     requests:
       cpu: 100m
@@ -481,7 +504,7 @@ searchengine:
   ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
   ##
   doubleEntry:
-    enable: true
+    enable: false
   ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   ## ref. to @param searchengine.protocol
@@ -525,27 +548,27 @@ storage:
 ## @section Ingress configuration
 
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
-## If you have some domain name set @param ingress.usedomainname variable to `true` and set this FQDN to @param ingress.hosts
-## If you don't have any domain names set @param ingress.usedomainname to `false`
-
+## @param ingress.hosts set variable this you domain names list (FQDN) if you have some domain name and want to use it in ingress rules.
+## @param ingress.hosts is required if you want to use Google Managed Certificate.
+##
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
-## @param ingress.class set to `gke` if you want to use GKE ingress controller.
-## @param ingress.class set to `aws` if you want to use AWS ALB ingress controller.
+## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
-
+##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
-## tls:
-## - hosts:
-##     - reportportal.k8.com
-##   secretName: reportportal.k8.com-tls
-## @param ingress.tls.secret provide a base64-encoded private key and certificate for TLS instead of using predefined secret names
+## certificates:
+##   - secretName: reportportal.k8.com-tls 
+##     hosts:
+##       - reportportal.k8.com
+##
+## @param ingress.tls.certificate.privateKey provide a base64-encoded private key for TLS.
+## @param ingress.tls.certificate.certificate provide a base64-encoded certificate for TLS.
+## @param ingress.tls.certificate.gcpManaged set to `true` if you want to use Google Managed Certificate instead of providing your own certificate.
 
 ingress:
   enable: true
-  usedomainname: false
-  hosts:
-    - reportportal.k8.com
+  hosts: []
   class: nginx
   annotations:
     nginx:
@@ -557,14 +580,14 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-    gke: {}
-    aws: {}
+    gce: {}
     custom: {}
   tls:
     certificates: null
-    secret:
-      base64EncodedPrivateKey: ""
-      base64EncodedCertificate: ""
+    certificate:
+      gcpManaged: false
+      privateKey: ""
+      certificate: ""
 
 ## @section Additional configuration
 
@@ -664,3 +687,9 @@ k8sWaitFor:
   image:
     repository: pegasystems/k8s-wait-for
     tag: latest
+
+
+## Networking between pods
+k8s:
+  networking:
+    ssl: false # set to `true` if SSL enabled between pods inside Kubernetes cluster

@@ -1,0 +1,11 @@
+{{- if .Values.ingress.tls.certificate.gcpManaged }}
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: {{ .Release.Name }}-gcp-managed-cert
+  labels:
+    {{ include "labels" . | nindent 4 }}
+spec:
+  domains:
+    {{ toYaml .Values.ingress.hosts | nindent 4 }}
+{{- end }}

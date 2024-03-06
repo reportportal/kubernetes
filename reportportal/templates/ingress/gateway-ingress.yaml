@@ -1,5 +1,7 @@
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
+{{- $isTlsCertComplete := and .Values.ingress.tls.certificate.certificate .Values.ingress.tls.certificate.privateKey -}}
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -10,12 +12,11 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations.nginx }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-  {{- else if eq .Values.ingress.class "gke" }}
-    {{- range $key, $value := .Values.ingress.annotations.gke }}
-    {{ $key }}: {{ $value | quote }}
+  {{- else if eq .Values.ingress.class "gce" }}
+    {{- if .Values.ingress.tls.certificate.gcpManaged }}
+    networking.gke.io/managed-certificates: {{ .Release.Name }}-gcp-managed-cert
     {{- end }}
-  {{- else if eq .Values.ingress.class "aws" }}
-    {{- range $key, $value := .Values.ingress.annotations.aws }}
+    {{- range $key, $value := .Values.ingress.annotations.gce }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
   {{- else }}
@@ -24,20 +25,26 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
-  {{- if eq .Values.ingress.class "gke" }}
-  {{- else if eq .Values.ingress.class "aws "}}
+  # Define the ingress class to use
+  {{- if eq .Values.ingress.class "gce" }}
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
+  # Define the TLS settings
   {{- if .Values.ingress.tls.certificates }}
   tls:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
-  {{- else if and .Values.ingress.tls.secret.base64EncodedPrivateKey .Values.ingress.tls.secret.base64EncodedCertificate }}
+  {{- else if or $isTlsCertComplete }}
   tls:
     - secretName: {{ .Release.Name }}-gateway-tls
+      {{- if .Values.ingress.hosts }}
+      hosts:
+        {{ toYaml .Values.ingress.hosts | nindent 8 }}
+      {{- end }}
   {{- end }}
+  # Define the rules for the ingress
   rules:
-{{ if .Values.ingress.usedomainname }}
+  {{- if .Values.ingress.hosts }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
@@ -70,8 +77,8 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-  {{- end -}}
-{{ else }}
+  {{- end }}
+  {{- else }}
   - http:
       paths:
       - path: /
@@ -102,7 +109,7 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-{{ end }}
+  {{- end }}
 status:
   loadBalancer: {}
 {{- end }}

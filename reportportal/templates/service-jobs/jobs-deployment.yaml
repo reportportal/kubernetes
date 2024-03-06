@@ -62,7 +62,7 @@ spec:
         #TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-jobs
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/jobs"
-        {{- if .Values.searchengine.doubleEntry }}
+        {{- if .Values.searchengine.doubleEntry.enable }}
         - name: RP_ELASTICSEARCH_HOST
           value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
         {{- if .Values.searchengine.secretName }}
@@ -93,6 +93,10 @@ spec:
           value: "{{ .Values.servicejobs.coreJobs.cleanStorageCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_STORAGE_PROJECT_CRON
           value: "{{ .Values.servicejobs.coreJobs.storageProjectCron }}"
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_EVENTS_RETENTIONPERIOD
+          value: "{{ .Values.servicejobs.coreJobs.cleanEventsRetention }}"
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_EVENTS_CRON
+          value: "{{ .Values.servicejobs.coreJobs.cleanEventsCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CHUNKSIZE
           value: "{{ .Values.servicejobs.chunksize }}"
         {{- if .Values.servicejobs.jvmArgs }}
