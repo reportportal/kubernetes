@@ -9,7 +9,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.10.1
+    tag: 5.11.0
   pullPolicy: Always
   resources:
     requests:
@@ -39,7 +39,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   resources:
     requests:
@@ -68,7 +68,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.10.1
+    tag: 5.11.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -114,6 +114,19 @@ serviceapi:
   ## "Delete Account" button in UI
   allowDeleteAccount: true  ## set `false` to disable feature
   
+  ## CRON Jobs
+  cronJobs:
+    ## ISO 8601 duration format
+    interruptBrockenLaunches: PT1H
+  
+  ## Pattern Analysis and Immediate IA configuration
+  patternAnalysis:
+    batchSize: 100
+    ## @param patternAnalysis.prefetchCount define of the prefetch count for 'analysis.pattern.string' and 'analysis.pattern.regex' queues.
+    prefetchCount: 1
+    ## @param patternAnalysis.consumersCount define of the 'analysis.pattern.string' and 'analysis.pattern.regex' queues. Consumers count per each queue
+    consumersCount: 1
+
   ## JAVA_OPTS
   ## If you need to use a custom java keystore you can use it through jvmArgs (e.g. jvmArgs: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks)
   
@@ -169,7 +182,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -250,7 +263,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -265,6 +278,8 @@ servicejobs:
     timeoutSeconds: 5
     failureThreshold: 10
   coreJobs:
+    cleanEventsRetention: 365
+    cleanEventsCron: 0 0 */24 * * *
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
     cleanLaunchCron: 0 0 */24 * * *
@@ -315,7 +330,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -390,7 +405,7 @@ metricsgatherer:
   name: metrics-gatherer
   image:
     repository: reportportal/service-metrics-gatherer
-    tag: 5.10.0
+    tag: 5.11.0
   pullPolicy: Always
   loggingLevel: debug
   timeManagement:
@@ -433,7 +448,7 @@ metricsgatherer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.10.1
+    tag: 5.11.0
   resources:
     requests:
       cpu: 100m
@@ -489,7 +504,7 @@ searchengine:
   ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
   ##
   doubleEntry:
-    enable: true
+    enable: false
   ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   ## ref. to @param searchengine.protocol
@@ -672,3 +687,9 @@ k8sWaitFor:
   image:
     repository: pegasystems/k8s-wait-for
     tag: latest
+
+
+## Networking between pods
+k8s:
+  networking:
+    ssl: false # set to `true` if SSL enabled between pods inside Kubernetes cluster

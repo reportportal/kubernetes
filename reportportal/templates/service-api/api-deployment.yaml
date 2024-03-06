@@ -56,14 +56,24 @@ spec:
         # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/api"
+        - name: RP_JOBS_BASEURL
+          value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686/jobs
+        - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
+          value: "{{ .Values.serviceapi.cronJobs.interruptBrockenLaunches }}"
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_BATCH-SIZE
+          value: "{{ .Values.serviceapi.patternAnalysis.batchSize }}"
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_PREFETCH-COUNT
+          value: "{{ .Values.serviceapi.patternAnalysis.prefetchCount }}"
+        - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_CONSUMERS-COUNT
+          value: "{{ .Values.serviceapi.patternAnalysis.consumersCount }}"
         {{- if .Values.serviceapi.auditLogs.enable }}
         - name: AUDIT_LOGGER
           value: "{{ .Values.serviceapi.auditLogs.loglevel }}"
         {{- end }}
         - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
           value: "{{ .Values.serviceapi.allowDeleteAccount }}"
-        {{- if .Values.searchengine.doubleEntry }}
-        - name: RP_ELASTICSEARCHLOGMESSAGE_HOST
+        {{- if .Values.searchengine.doubleEntry.enable }}
+        - name: RP_ELASTICSEARCH_HOST
           value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
         {{- end }}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
