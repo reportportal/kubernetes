@@ -20,6 +20,16 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.uat.hostAliases }}
+      hostAliases:
+        {{- range . }}
+        - ip: "{{ .ip }}"
+          hostnames: 
+            {{- range .hostnames }}
+            - "{{ . }}"
+            {{- end }}
+        {{- end }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

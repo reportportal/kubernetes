@@ -271,6 +271,17 @@ uat:
     extraPorts: []
     annotations: {}
 
+  ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "foo.local"
+  #     - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #     - "foo.remote"
+  #     - "bar.remote"
+
 servicejobs:
   name: jobs
   image:
