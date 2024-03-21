@@ -1,0 +1,720 @@
+## ReportPortal.io AI-powered Test Automation Dashboard
+
+## @param nameOverride expand the name of the chart
+## @param fullnameOverride expand the fully qualified app name
+nameOverride: ""
+fullnameOverride: ""
+
+serviceindex:
+  name: index
+  image:
+    repository: reportportal/service-index
+    tag: 5.11.0
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 150m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  serviceAccountName: ""
+  ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  ## Use disktype: "ssd" for specific disk type.
+  nodeSelector: {}
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+serviceui:
+  name: ui
+  image:
+    repository: reportportal/service-ui
+    tag: 5.11.0
+  pullPolicy: Always
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+serviceapi:
+  name: api
+  image:
+    repository: reportportal/service-api
+    tag: 5.11.0
+  pullPolicy: Always
+  replicaCount: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 3
+    failureThreshold: 20
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 5
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  ## Configure Audit logs to be written to the API container's directory /var/log/reportportal/audit.log
+  auditLogs:
+    ## Enable or disable the sidecar log streamer container
+    enable: false 
+    ## Set the log level for audit logs (info, debug, etc.)
+    loglevel: info
+
+    # Configure sidecar container settings for Audit logs
+    sidecar:
+      image:
+        repository: busybox
+        tag: latest
+      resources:
+        requests:
+          cpu: 10m
+          memory: 10Mi
+        limits:
+          cpu: 100m
+          memory: 100Mi
+  
+  ## "Delete Account" button in UI
+  allowDeleteAccount: true  ## set `false` to disable feature
+  
+  ## CRON Jobs
+  cronJobs:
+    ## ISO 8601 duration format
+    interruptBrockenLaunches: PT1H
+  
+  ## Pattern Analysis and Immediate IA configuration
+  patternAnalysis:
+    batchSize: 100
+    ## @param patternAnalysis.prefetchCount define of the prefetch count for 'analysis.pattern.string' and 'analysis.pattern.regex' queues.
+    prefetchCount: 1
+    ## @param patternAnalysis.consumersCount define of the 'analysis.pattern.string' and 'analysis.pattern.regex' queues. Consumers count per each queue
+    consumersCount: 1
+
+  ## JAVA_OPTS
+  ## If you need to use a custom java keystore you can use it through jvmArgs (e.g. jvmArgs: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks)
+  
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  ##
+  ## Number of queues
+  ## Where "totalNumber" is the total number of queues. Сalculation formula: perPodNumber = totalNumber / serviceapi.replicaCount
+  ##
+  queues:
+    totalNumber: 10
+    perPodNumber: 10
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+
+  ## @param serviceapi.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+  ## Provide a secret containing sensitives data
+  ## e.g. provide a custom java keystore used in jvmArgs:
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## Generate base64 data and paste it in your values.yaml:
+  ## cat custom-pki.jks | base64 -w
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: {}
+    ##  custom-pki.jks: <base64-data>
+  
+  ## @param serviceapi.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "foo.local"
+  #     - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #     - "foo.remote"
+  #     - "bar.remote"
+
+
+uat:
+  name: uat
+  image:
+    repository: reportportal/service-authorization
+    tag: 5.11.0
+  pullPolicy: Always
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  sessionLiveTime: 86400
+  samlSessionLiveTime: 4320
+  
+  ## RP_INITIAL_ADMIN_PASSWORD - the initial password of the superadmin user for the first launch. This value can't change the password on redeployments.
+  ## Create a K8S Secret and set the name to @param superadminInitPasswd.secretName for future redeplyments or upgrades.
+  
+  superadminInitPasswd:
+    secretName: ""
+    passwordKeyName: "superadmin-password"
+    password: ""
+  podLabels: {}
+  podAnnotations: {}
+  
+  ## JAVA_OPTS
+  ## If you need to use a custom java keystore you can use it through jvmArgs (e.g. jvmArgs: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks)
+  
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  securityContext: {}
+
+  ## @param uat.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  
+  ## Provide a secret containing sensitives data
+  ## e.g. provide a custom java keystore used in jvmArgs:
+  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
+  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
+  ## keytool -list -keystore custom-pki.jks -storepass changeit
+  ## Generate base64 data and paste it in your values.yaml:
+  ## cat custom-pki.jks | base64 -w
+
+  secret:
+    enabled: false
+    mountPath: /etc/secret-volume
+    readOnly: true
+    data: {}
+    ##  custom-pki.jks: <base64-data>
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+  ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "foo.local"
+  #     - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #     - "foo.remote"
+  #     - "bar.remote"
+
+servicejobs:
+  name: jobs
+  image:
+    repository: reportportal/service-jobs
+    tag: 5.11.0
+  pullPolicy: Always
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 40
+    timeoutSeconds: 5
+    failureThreshold: 10
+  coreJobs:
+    cleanEventsRetention: 365
+    cleanEventsCron: 0 0 */24 * * *
+    cleanAttachmentCron: 0 0 */24 * * *
+    cleanLogCron: 0 0 */24 * * *
+    cleanLaunchCron: 0 0 */24 * * *
+    cleanStorageCron: 0 0 */24 * * *
+    storageProjectCron: 0 */5 * * * *
+  chunksize: 200000
+
+  ## Double Entry purposes. The Jobs service processes logs at a rate of one log per millisecond.
+  ## Ref: https://reportportal.io/blog/double-entry-in-5.7.2
+  logProcessing:
+    maxBatchSize: 2000
+    maxBatchTimeout: 6000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 248Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## @param servicejobs.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+serviceanalyzer:
+  name: analyzer
+  image:
+    repository: reportportal/service-auto-analyzer
+    tag: 5.11.0
+  pullPolicy: Always
+  uwsgiWorkers: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  ## @param serviceanalyzer.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+serviceanalyzertrain:
+  name: analyzer-train
+  pullPolicy: Always
+  uwsgiWorkers: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  ## @param serviceanalyzertrain.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+metricsgatherer:
+  name: metrics-gatherer
+  image:
+    repository: reportportal/service-metrics-gatherer
+    tag: 5.11.0
+  pullPolicy: Always
+  loggingLevel: debug
+  timeManagement:
+    starttime: 22:00
+    endtime: 08:00
+    timezone: Europe/Minsk
+  maxDaysStore: 500
+  resources:
+    requests:
+      cpu: 8m
+      memory: 128Mi
+    limits:
+      cpu: 16m
+      memory: 256Mi
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## Extra environment variables
+  extraEnvs: []
+    ## - name: EXTRA_ENV
+    ##   value: "TRUE"
+    ## - name: EXTRA_ENV_SECRET
+    ##   valueFrom:
+    ##     secretKeyRef:
+    ##       name: "additional-credentials"
+    ##       key: username
+  ## @param metricsgatherer.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+
+migrations:
+  image:
+    repository: reportportal/migrations
+    tag: 5.11.0
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  pullPolicy: Always
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  ## @param migrations.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
+  nodeSelector: {}
+  serviceAccountName: ""
+
+## @section Infrastructure configuration
+
+database:
+  secretName: ""
+  ## @param database.endpoint by default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  port: &dbport 5432
+  user: &dbuser postgres
+  dbName: &dbname reportportal
+  ssl: disable  ## set @param database.endpoint.ssl to `require` if database connection use SSL
+  password: &dbpassword rppassword
+  ## Number of database connections
+  connections: &dbconnections ""
+
+msgbroker:
+  secretName: ""
+  ## Virtual hosts provide logical grouping and separation of resources. Ref: https://www.rabbitmq.com/vhosts.html
+  vhost: analyzer
+  analyzerExchangeName: analyzer-default
+  ## @param msgbroker.ssl set to `true` if use HTTPS and AMQPS
+  ssl: false
+  ## @param msgbroker.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  port: &msgbrokerPort 5672
+  user: &msgbrokerUser rabbitmq
+  apiport: &msgbrokerApiPort 15672
+  apiuser: *msgbrokerUser
+  password: &msgbrokerPass rabbitmqpassword
+
+searchengine:
+  secretName: ""
+  ##
+  ## Double entry moves test logs from PostgreSQL to Elastic-type engines. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
+  ## ElasticSearch Performance tuning
+  ## Ref: https://reportportal.io/docs/installation-steps/OptimalPerformanceHardwareSetup/#7-elasticsearch-performance-tuning
+  ##
+  doubleEntry:
+    enable: false
+  ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  endpoint:
+  ## ref. to @param searchengine.protocol
+  ssl: false  ## set to `true` if use HTTPS
+  port: &searchenginePort 9200
+  user:
+  password:
+
+storage:
+  ## @param storage.type Possible storage types: minio, s3
+  type: minio
+  secretName: ""
+  ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
+  accesskey: &storageAccessKey rpuser
+  secretkey: &storageSecretKey miniopassword
+  ## @param storage.endpoint URL without protocol and port
+  endpoint:
+  ssl: false  ## set to `true` if use HTTPS
+  port: 9000
+  region: ""
+  bucket:
+    ## @param storage.bucket.type switches between multi and single buckets. 
+    ## If you are upgrading an already installed Report Portal, a migration is required. 
+    ## Ref: https://github.com/reportportal/migrations-complex/tree/master/charts
+    ##
+    type: multi
+    ## type: multi / single
+    ##
+    ## When @param storage.bucket.type=multi @param storage.bucket.bucketDefaultName defines plugins bucket
+    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName' defines default single bucket name
+    ##
+    bucketDefaultName: "rp-bucket"
+    ## Multi-bucket values
+    bucketMultiPrefix: "prj-"
+    bucketMultiPostfix: ""
+    ## @param storage.bucket.bucketMultiSaltName storing auth keystor
+    bucketMultiSaltName: "keystore"
+
+## @section Ingress configuration
+
+## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
+## @param ingress.hosts set variable this you domain names list (FQDN) if you have some domain name and want to use it in ingress rules.
+## @param ingress.hosts is required if you want to use Google Managed Certificate.
+##
+## @param ingress.class set to `nginx` if you have nginx ingress controller.
+## @param ingress.class set to `gce` if you want to use GCE ingress controller.
+## @param ingress.class set to any other ingress controller name if you want to use it.
+## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
+##
+## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
+## certificates:
+##   - secretName: reportportal.k8.com-tls 
+##     hosts:
+##       - reportportal.k8.com
+##
+## @param ingress.tls.certificate.privateKey provide a base64-encoded private key for TLS.
+## @param ingress.tls.certificate.certificate provide a base64-encoded certificate for TLS.
+## @param ingress.tls.certificate.gcpManaged set to `true` if you want to use Google Managed Certificate instead of providing your own certificate.
+
+ingress:
+  enable: true
+  hosts: []
+  # Application path as a prefix, should start from '/' and be without trailing '/'
+  path:
+  class: nginx
+  annotations:
+    nginx:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 128m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+    gce: {}
+    custom: {}
+  tls:
+    certificates: null
+    certificate:
+      gcpManaged: false
+      privateKey: ""
+      certificate: ""
+
+## @section Additional configuration
+
+## tolerations for all components, if any (requires Kubernetes >= 1.6)
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+tolerations: []
+  ## - key: "key"
+  ##   operator: "Equal|Exists"
+  ##   value: "value"
+  ##   effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+serviceAccount:
+  create: true
+  name: reportportal
+  ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
+  ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+  annotations: {}
+
+
+## RBAC is required for service-index in order to collect status/info over all services
+rbac:
+  create: true
+
+imagePullSecrets: []
+
+## Extra init containers (e.g. wait for minio)
+extraInitContainers: {}
+  ## - name: "wait-for-minio"
+  ##   image: "busybox"
+  ##   imagePullPolicy: "IfNotPresent"
+  ##   command:
+  ##     - sh
+  ##     - "-c"
+  ##     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+
+## @section External dependencies installation configuration
+
+## @param postgresql External PostgreSQL Helm Chart as dependency
+postgresql: 
+  install: true   ## set to `false` if using a Cloud/On-Premise managed database.
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 11.22.0
+  postgresqlUsername: *dbuser
+  postgresqlPassword: *dbpassword
+  postgresqlDatabase: *dbname
+  servicePort: *dbport
+  postgresqlMaxConnections: *dbconnections
+
+## @param rabbitmq External RabbitMQ Helm Chart as dependency
+rabbitmq:
+  install: true   ## set to `false` if using a Cloud/On-Premise managed RabbitMQ.
+  image:
+    registry: docker.io
+    repository: bitnami/rabbitmq
+    tag: 3.10.25
+  auth:
+    username: *msgbrokerUser
+    password: *msgbrokerPass
+  containerPorts:
+    amqp: *msgbrokerPort
+    manager: *msgbrokerApiPort
+
+## @param opensearch External OpenSearch Helm Chart as dependency
+opensearch:
+  install: true   ## set to `false` if using a Cloud/On-Premise managed OpenSearch.
+  image:
+    repository: opensearchproject/opensearch
+    tag: 2.11.1
+  ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
+  singleNode: true
+  ## @param opensearch.httpPort Port for OpenSearch endpoint
+  httpPort: *searchenginePort
+  startupProbe:
+    initialDelaySeconds: 30
+  extraEnvs:
+    - name: DISABLE_INSTALL_DEMO_CONFIG
+      value: "true"
+    - name: DISABLE_SECURITY_PLUGIN
+      value: "true"
+
+## Apache 2.0 license version
+## @param minio External MinIO Helm Chart as dependency 6.7.7
+minio:
+  install: true   ## set to `true` if using a Cloud/On-Premise managed storage.
+  image:
+    registry: docker.io
+    repository: bitnami/minio
+    tag: 2021.4.22-debian-10-r6
+  accessKey:
+    password: *storageAccessKey
+  secretKey:
+    password: *storageSecretKey
+
+k8sWaitFor:
+  image:
+    repository: pegasystems/k8s-wait-for
+    tag: latest
+
+
+## Networking between pods
+k8s:
+  networking:
+    ssl: false # set to `true` if SSL enabled between pods inside Kubernetes cluster
