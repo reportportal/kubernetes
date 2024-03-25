@@ -1,3 +1,5 @@
+{{- $path := .Values.ingress.path -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,9 +65,8 @@ spec:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
-        # TODO: remove SERVER_SERVLET_CONTEXT_PATH after change base path in service-api
         - name: SERVER_SERVLET_CONTEXT_PATH
-          value: "/api"
+          value: "{{ $path }}/api"
         - name: RP_JOBS_BASEURL
           value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686/jobs
         - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
@@ -180,7 +181,7 @@ spec:
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "/api/health"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
@@ -190,7 +191,7 @@ spec:
         {{- if .Values.serviceapi.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "/api/health"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
