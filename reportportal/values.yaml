@@ -509,7 +509,7 @@ msgbroker:
   ## Virtual hosts provide logical grouping and separation of resources. Ref: https://www.rabbitmq.com/vhosts.html
   vhost: analyzer
   analyzerExchangeName: analyzer-default
-  ## @param msgbroker.ssl set to `true` if use HTTPS and AMQPS
+  ## @param msgbroker.ssl set to `true` if you want to use HTTPS and AMQPS
   ssl: false
   ## @param msgbroker.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
@@ -565,7 +565,7 @@ storage:
     ## Multi-bucket values
     bucketMultiPrefix: "prj-"
     bucketMultiPostfix: ""
-    ## @param storage.bucket.bucketMultiSaltName storing auth keystor
+    ## @param storage.bucket.bucketMultiSaltName storing auth keystore
     bucketMultiSaltName: "keystore"
 
 ## @section Ingress configuration
@@ -577,6 +577,7 @@ storage:
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
+## @param ingress.path is an Application path as a prefix, should start from '/' and be without trailing '/'. Use to deploy ReportPortal to path, E.G. 'https://example.com/reportportal/'
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 ##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
@@ -592,7 +593,6 @@ storage:
 ingress:
   enable: true
   hosts: []
-  # Application path as a prefix, should start from '/' and be without trailing '/'
   path:
   class: nginx
   annotations:
