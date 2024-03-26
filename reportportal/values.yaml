@@ -5,6 +5,9 @@
 nameOverride: ""
 fullnameOverride: ""
 
+global:
+  imagePullSecrets: []
+
 serviceindex:
   name: index
   image:
@@ -657,6 +660,7 @@ postgresql:
     registry: docker.io
     repository: bitnami/postgresql
     tag: 11.22.0
+    pullSecrets: []
   postgresqlUsername: *dbuser
   postgresqlPassword: *dbpassword
   postgresqlDatabase: *dbname
@@ -670,6 +674,7 @@ rabbitmq:
     registry: docker.io
     repository: bitnami/rabbitmq
     tag: 3.10.25
+    pullSecrets: []
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
@@ -683,6 +688,7 @@ opensearch:
   image:
     repository: opensearchproject/opensearch
     tag: 2.11.1
+  imagePullSecrets: []
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
   ## @param opensearch.httpPort Port for OpenSearch endpoint
@@ -703,6 +709,7 @@ minio:
     registry: docker.io
     repository: bitnami/minio
     tag: 2021.4.22-debian-10-r6
+    pullSecrets: []
   accessKey:
     password: *storageAccessKey
   secretKey:
