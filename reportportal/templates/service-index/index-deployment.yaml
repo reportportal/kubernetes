@@ -1,3 +1,5 @@
+{{- $path := .Values.ingress.path -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,6 +38,8 @@ spec:
         env:
         - name: K8S_MODE
           value: "true"
+        - name: RESOURCE_PATH
+          value: {{ $path }}
         ports:
         - containerPort: 8080
           protocol: TCP
