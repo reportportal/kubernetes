@@ -86,7 +86,24 @@ spec:
         {{- if .Values.searchengine.doubleEntry.enable }}
         - name: RP_ELASTICSEARCH_HOST
           value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
-        {{- end }}
+        {{- if .Values.searchengine.secretName }}
+        - name: RP_ELASTICSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.searchengine.secretName }}"
+              key: "username"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Values.searchengine.secretName }}"
+              key: "password"
+        {{- else }}
+        - name: RP_ELASTICSEARCH_USERNAME
+          value: "{{ .Values.searchengine.user }}"
+        - name: RP_ELASTICSEARCH_PASSWORD
+          value: "{{ .Values.searchengine.password }}"
+        {{- end}}
+        {{- end}}
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
         - name: RP_REQUESTLOGGING
