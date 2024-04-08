@@ -5,6 +5,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
+clusterDomain: cluster.test
+
 serviceindex:
   name: index
   image:

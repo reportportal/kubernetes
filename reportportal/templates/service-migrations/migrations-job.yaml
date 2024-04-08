@@ -26,7 +26,7 @@ spec:
         - name: POSTGRES_SSLMODE
           value: "{{ .Values.database.ssl }}"
         - name: POSTGRES_SERVER
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}
         - name: POSTGRES_DB
           value: "{{ .Values.database.dbName }}"
         - name: POSTGRES_PORT
@@ -43,7 +43,7 @@ spec:
           value: "{{ .Values.database.password }}"
         {{ end }}
         - name: OS_HOST
-          value: "{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}"
+          value: "{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.clusterDomain) }}"
         - name: OS_PORT
           value: "{{ .Values.searchengine.port | default "9200" }}"
         - name: OS_PROTOCOL

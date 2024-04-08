@@ -64,7 +64,7 @@ spec:
           value: "/jobs"
         {{- if .Values.searchengine.doubleEntry.enable }}
         - name: RP_ELASTICSEARCH_HOST
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.clusterDomain) }}:{{ .Values.searchengine.port }}"
         {{- if .Values.searchengine.secretName }}
         - name: RP_ELASTICSEARCH_USERNAME
           valueFrom:
@@ -115,11 +115,11 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
+          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}:{{ .Values.msgbroker.port }}'
         - name: RP_DB_HOST
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}
         - name: RP_DB_PORT
           value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
@@ -147,7 +147,7 @@ spec:
           value: "{{ .Values.storage.type }}"
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}:{{ .Values.storage.port }}"
         {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION

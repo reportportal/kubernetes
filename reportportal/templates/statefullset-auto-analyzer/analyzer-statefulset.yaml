@@ -66,7 +66,7 @@ spec:
         - name: ANALYZER_BINARYSTORE_BUCKETPREFIX
           value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: MINIO_SHORT_HOST
-          value: "{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+          value: "{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}:{{ .Values.storage.port }}"
         {{- if .Values.storage.secretName }}
         - name: MINIO_ACCESS_KEY
           valueFrom:
@@ -98,13 +98,13 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}/
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.clusterDomain) }}:{{ .Values.msgbroker.port }}/
         - name: AMQP_EXCHANGE_NAME
           value: "{{ .Values.msgbroker.analyzerExchangeName | default "analyzer-default" }}"
         - name: AMQP_VIRTUAL_HOST
           value: "{{ .Values.msgbroker.vhost }}"
         - name: ES_HOSTS
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.clusterDomain) }}:{{ .Values.searchengine.port }}"
         {{- if .Values.searchengine.secretName }}
         - name: ES_USER
           valueFrom:
