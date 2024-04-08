@@ -5,7 +5,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-clusterDomain: &clusterDomain cluster.1
+clusterDomain: &clusterDomain cluster.local
 
 serviceindex:
   name: index
