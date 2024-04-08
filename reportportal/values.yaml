@@ -5,7 +5,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-clusterDomain: cluster.test
+clusterDomain: &clusterDomain cluster.1
 
 serviceindex:
   name: index
@@ -678,6 +678,7 @@ rabbitmq:
   containerPorts:
     amqp: *msgbrokerPort
     manager: *msgbrokerApiPort
+  clusterDomain: *clusterDomain
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 opensearch:
