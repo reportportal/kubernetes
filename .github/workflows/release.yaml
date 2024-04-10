@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup git credentials
-        uses: oleksiyrudenko/gha-git-credentials@v2
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
           name: 'reportportal.io'
           email: 'support@reportportal.io'
