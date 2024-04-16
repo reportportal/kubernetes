@@ -195,7 +195,6 @@ spec:
       securityContext:
 {{ toYaml .Values.uat.securityContext | indent 8}}
       serviceAccountName: {{ .Values.uat.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-      tolerations:
 {{- with .Values.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}
