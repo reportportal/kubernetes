@@ -20,7 +20,7 @@
 ### Start Minikube
 
 ```bash
-minikube start --cpus 4 --memory 4096 --addons ingress
+minikube start --cpus 4 --memory 8192 --addons ingress
 ```
 
 ### Set up hostnames
@@ -28,10 +28,12 @@ minikube start --cpus 4 --memory 4096 --addons ingress
 Add the following line to your `/etc/hosts` file:
 
 ```bash
-echo "$(minikube ip) reportportal.local" | sudo tee -a /etc/hosts
+echo "$(minikube ip) minikube.local" | sudo tee -a /etc/hosts
 ```
 
 ### Install ReportPortal
+
+#### Install from Helm repo
 
 ```bash
 helm repo add reportportal https://reportportal.io/kubernetes && helm repo update reportportal
@@ -40,14 +42,32 @@ helm repo add reportportal https://reportportal.io/kubernetes && helm repo updat
 ```bash
 export SUPERADMIN_PASSWORD=superadmin
 
-helm install reportportal reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-   ${RELEASE_NAME}
+helm install reportportal \
+  reportportal/reportportal \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+```
+
+#### Install from GitHub repo
+
+Call the following commands from the downloaded [kubernetes](https://github.com/reportportal/kubernetes/) repository.
+
+```bash
+# Dowload the chart dependencies
+helm dependency build ./reportportal 
+```
+
+```bash
+# Install ReportPortal from ./reportportal/Chart.yaml
+export SUPERADMIN_PASSWORD=superadmin
+
+helm install reportportal \
+  ./reportportal
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 ### Access ReportPortal
 
-Open your browser and navigate to [http://reportportal.local](http://reportportal.local).
+Open your browser and navigate to [http://reportportal.local](http://minikube.local).
 
 ## Clean up
 
