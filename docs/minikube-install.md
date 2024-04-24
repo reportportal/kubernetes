@@ -61,7 +61,7 @@ helm dependency build ./reportportal
 export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
-  ./reportportal
+  ./reportportal \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
