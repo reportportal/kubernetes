@@ -3,6 +3,7 @@
 - [Install ReportPortal on Minikube](#install-reportportal-on-minikube)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+    - [Overview](#overview)
     - [Start Minikube](#start-minikube)
     - [Set up hostnames](#set-up-hostnames)
     - [Install ReportPortal](#install-reportportal)
@@ -18,6 +19,17 @@
 - [Helm](https://helm.sh/docs/intro/install/)
 
 ## Installation
+
+### Overview
+
+In this guide, we will install ReportPortal on Minikube using Helm with
+ReportPortal's services and the following dependencies:
+
+- PostgreSQL
+- OpenSearch
+- RabbitMQ
+
+Instead of Minio, we will use a Persistent Volume as a filesystem storage.
 
 ### Start Minikube
 
@@ -46,7 +58,9 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set storage.type=filesystem \
+  --set minio.install=false
 ```
 
 #### Install from GitHub repo
