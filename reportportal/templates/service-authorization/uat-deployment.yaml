@@ -119,12 +119,10 @@ spec:
         {{- else }}
           value: "{{ .Values.database.password }}"
         {{- end }}
-        {{- if eq .Values.storage.bucket.type "single" }}
-        - name: RP_FEATURE_FLAGS
-          value: "singleBucket"
-        {{- end }}
+        # Datastore settings
         - name: DATASTORE_TYPE
           value: "{{ .Values.storage.type }}"
+        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
@@ -144,22 +142,27 @@ spec:
             secretKeyRef:
               name: "{{ .Values.storage.secretName }}"
               key: "{{ .Values.storage.secretkeyName }}"
-       {{- else }}
+        {{- else }}
         - name: DATASTORE_ACCESSKEY
           value: "{{ .Values.storage.accesskey }}"
         - name: DATASTORE_SECRETKEY
           value: "{{ .Values.storage.secretkey }}"
-       {{- end }}
-       {{- if eq .Values.storage.bucket.type "multi" }}
+        {{- end }}
+        {{- if eq .Values.storage.bucket.type "single" }}
+        - name: RP_FEATURE_FLAGS
+          value: "singleBucket"
+        {{- end }}
+        {{- if eq .Values.storage.bucket.type "multi" }}
         - name: DATASTORE_BUCKETPREFIX
           value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix }}"
         - name: RP_INTEGRATION_SALT_PATH
           value: "{{ .Values.storage.bucket.bucketMultiSaltName }}"
-       {{- end }}
+        {{- end }}
         - name: DATASTORE_DEFAULTBUCKETNAME
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
+        {{- end }}
         {{- if .Values.uat.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
@@ -182,9 +185,13 @@ spec:
         {{- end }}
         volumeMounts:
           {{- if .Values.uat.secret.enabled }}
-          - mountPath: {{ .Values.uat.secret.mountPath }}
-            name: {{ template "reportportal.name" . }}-uat-secret
+          - name: {{ template "reportportal.name" . }}-uat-secret
+            mountPath: {{ .Values.uat.secret.mountPath }}
             readOnly: {{ .Values.uat.secret.readOnly }}
+          {{- end }}
+          {{- if eq .Values.storage.type "filesystem" }}
+          - name: shared-volume
+            mountPath: /data/storage
           {{- end }}
 {{- if .Values.uat.nodeSelector }}
       nodeSelector:
@@ -204,4 +211,9 @@ spec:
         - name: {{ template "reportportal.name" . }}-uat-secret
           secret:
             secretName: {{ template "reportportal.name" . }}-uat-secret
+        {{- end }}
+        {{- if eq .Values.storage.type "filesystem" }}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-shared-volume-claim
         {{- end }}

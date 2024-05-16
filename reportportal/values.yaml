@@ -537,7 +537,7 @@ searchengine:
   password:
 
 storage:
-  ## @param storage.type Possible storage types: minio, s3
+  ## @param storage.type Possible storage types: minio, s3, filesystem
   type: minio
   secretName: ""
   ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key

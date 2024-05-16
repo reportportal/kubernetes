@@ -126,6 +126,11 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
+        volumeMounts:
+          {{ if eq .Values.storage.type "filesystem" }}
+          - name: shared-volume
+            mountPath: /data/storage
+          {{- end }}
 {{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
@@ -139,3 +144,9 @@ spec:
       tolerations: 
 {{- toYaml . | nindent 8 }}
 {{- end }}
+      volumes:
+        {{- if eq .Values.storage.type "filesystem" }}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-shared-volume-claim
+        {{- end }}

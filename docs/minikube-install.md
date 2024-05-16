@@ -6,6 +6,8 @@
     - [Start Minikube](#start-minikube)
     - [Set up hostnames](#set-up-hostnames)
     - [Install ReportPortal](#install-reportportal)
+      - [Install from Helm repo](#install-from-helm-repo)
+      - [Install from GitHub repo](#install-from-github-repo)
     - [Access ReportPortal](#access-reportportal)
   - [Clean up](#clean-up)
 
@@ -62,7 +64,9 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set storage.type=filesystem \
+  --set minio.install=false
 ```
 
 ### Access ReportPortal

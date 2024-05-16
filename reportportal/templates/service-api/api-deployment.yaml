@@ -1,5 +1,4 @@
 {{- $path := .Values.ingress.path -}}
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -91,14 +90,15 @@ spec:
           value: "info"
         - name: RP_REQUESTLOGGING
           value: "false"
-        - name: RP_AMQP_QUEUES
-          value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
-        - name: RP_AMQP_QUEUESPERPOD
-          value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
         {{- if .Values.serviceapi.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.serviceapi.jvmArgs }}"
         {{- end }}
+        # AMQP settings
+        - name: RP_AMQP_QUEUES
+          value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
+        - name: RP_AMQP_QUEUESPERPOD
+          value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
         - name: RP_AMQP_ANALYZER-VHOST
           value: "{{ .Values.msgbroker.vhost }}"
         - name: RP_AMQP_PASS
@@ -113,7 +113,8 @@ spec:
         - name: RP_AMQP_API_ADDRESS
           value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
+        # Database settings
         - name: RP_DB_HOST
           value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
         - name: RP_DB_PORT
@@ -135,12 +136,9 @@ spec:
         {{- else }}
           value: "{{ .Values.database.password }}"
         {{- end }}
-        {{- if eq .Values.storage.bucket.type "single" }}
-        - name: RP_FEATURE_FLAGS
-          value: "singleBucket"
-        {{- end }}
         - name: DATASTORE_TYPE
           value: "{{ .Values.storage.type }}"
+        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
@@ -160,22 +158,27 @@ spec:
             secretKeyRef:
               name: "{{ .Values.storage.secretName }}"
               key: "{{ .Values.storage.secretkeyName }}"
-       {{- else }}
+        {{- else }}
         - name: DATASTORE_ACCESSKEY
           value: "{{ .Values.storage.accesskey }}"
         - name: DATASTORE_SECRETKEY
           value: "{{ .Values.storage.secretkey }}"
-       {{- end }}
-       {{- if eq .Values.storage.bucket.type "multi" }}
+        {{- end }}
+        {{- if eq .Values.storage.bucket.type "single" }}
+        - name: RP_FEATURE_FLAGS
+          value: "singleBucket"
+        {{- end }}
+        {{- if eq .Values.storage.bucket.type "multi" }}
         - name: DATASTORE_BUCKETPREFIX
           value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix }}"
         - name: RP_INTEGRATION_SALT_PATH
           value: "{{ .Values.storage.bucket.bucketMultiSaltName }}"
-       {{- end }}
+        {{- end }}
         - name: DATASTORE_DEFAULTBUCKETNAME
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
+        {{- end }}
         - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
           value: "false"
         {{- if .Values.serviceapi.readinessProbe.enabled }}
@@ -200,13 +203,17 @@ spec:
         {{- end }}
         volumeMounts:
           {{- if .Values.serviceapi.secret.enabled }}
-          - mountPath: {{ .Values.serviceapi.secret.mountPath }}
-            name: {{ template "reportportal.name" . }}-serviceapi-secret
+          - name: {{ template "reportportal.name" . }}-serviceapi-secret
+            mountPath: {{ .Values.serviceapi.secret.mountPath }}
             readOnly: {{ .Values.serviceapi.secret.readOnly }}
           {{- end }}
           {{- if .Values.serviceapi.auditLogs.enable }}
           - name: audit-log-volume
             mountPath: /var/log
+          {{- end }}
+          {{- if eq .Values.storage.type "filesystem" }}
+          - name: shared-volume
+            mountPath: /data/storage
           {{- end }}
       {{- if .Values.serviceapi.auditLogs.enable }}
       - name: auditlogstreamer
@@ -244,4 +251,9 @@ spec:
         {{- if .Values.serviceapi.auditLogs.enable }}
         - name: audit-log-volume
           emptyDir: {}
+        {{- end }}
+        {{- if eq .Values.storage.type "filesystem" }}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-shared-volume-claim
         {{- end }}
