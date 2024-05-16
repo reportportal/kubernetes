@@ -2,11 +2,14 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-shared-volume-claim
-  annotations: {}
+  annotations: 
+    {{ .Values.storage.filesystem.volume.annotations | toYaml | nindent 4 }}
 spec:
   accessModes:
-    - ReadWriteMany
+    {{- range .Values.storage.filesystem.volume.accessModes }}
+    - {{ . }}
+    {{- end }}
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: "standard"
+      storage: {{ .Values.storage.filesystem.volume.capacity }}
+  storageClassName: {{ .Values.storage.filesystem.volume.storageClassName }}

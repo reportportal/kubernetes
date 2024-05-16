@@ -567,6 +567,24 @@ storage:
     bucketMultiPostfix: ""
     ## @param storage.bucket.bucketMultiSaltName storing auth keystore
     bucketMultiSaltName: "keystore"
+  ## @param storage.filesystem defines the storage properties for the filesystem storage type
+  filesystem:
+    ## @param storage.filesystem.volume defines the common persistent volume parameters.
+    ## Some parameters are not applicable if @param storage.filesystem.gcpFilestore
+    ## or @param storage.filesystem.awsEfs is enabled.
+    volume:
+      ## @param storage.filesystem.volume.capacity defines the size of the storage.
+      capacity: 5Gi
+      ## @param storage.filesystem.annotations defines the common annotations. 
+      annotations: {}
+      storageClassName: "standard"
+      accessModes:
+        - ReadWriteMany
+      reclaimPolicy: Retain
+    gcpFilestore:
+      enabled: false
+    awsEfs:
+      enabled: false
 
 ## @section Ingress configuration
 
