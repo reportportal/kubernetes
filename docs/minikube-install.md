@@ -63,12 +63,20 @@ helm install reportportal \
   --set minio.install=false
 ```
 
+If you want to use Minio as a storage:
+
+```bash
+helm install reportportal \
+  reportportal/reportportal \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+```
+
 #### Install from GitHub repo
 
 Call the following commands from the downloaded [kubernetes](https://github.com/reportportal/kubernetes/) repository.
 
 ```bash
-# Dowload the chart dependencies
+# Download the chart dependencies
 helm dependency build ./reportportal 
 ```
 
@@ -81,6 +89,14 @@ helm install reportportal \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
   --set minio.install=false
+```
+
+If you want to use Minio as a storage:
+
+```bash
+helm install reportportal \
+  ./reportportal \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 ### Access ReportPortal
