@@ -578,11 +578,7 @@ storage:
     annotations: {}
     ## @param storage.volume.volumeConfig contains objects for creating
     ## a persistent volume configuration.
-    ## @param storage.volume.type defines the PersistentVolume type.
-    ## If you don't want to use a dynamic provisioner, set the type for
-    ## cases when you have a pre-existing volume.
     ## Possible values: hostPath, local, csi.
-    ## We recommend using the hostPath provider for development purposes only.
     volumeConfig:
       type: ""
       hostPath: {}
