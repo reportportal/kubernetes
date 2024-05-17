@@ -567,24 +567,45 @@ storage:
     bucketMultiPostfix: ""
     ## @param storage.bucket.bucketMultiSaltName storing auth keystore
     bucketMultiSaltName: "keystore"
-  ## @param storage.filesystem defines the storage properties for the filesystem storage type
-  filesystem:
-    ## @param storage.filesystem.volume defines the common persistent volume parameters.
-    ## Some parameters are not applicable if @param storage.filesystem.gcpFilestore
-    ## or @param storage.filesystem.awsEfs is enabled.
-    volume:
-      ## @param storage.filesystem.volume.capacity defines the size of the storage.
-      capacity: 5Gi
-      ## @param storage.filesystem.annotations defines the common annotations. 
-      annotations: {}
-      storageClassName: "standard"
-      accessModes:
-        - ReadWriteMany
-      reclaimPolicy: Retain
-    gcpFilestore:
-      enabled: false
-    awsEfs:
-      enabled: false
+  ## @param storage.volume defines the persistent volume claim properties
+  ## for the filesystem storage type.
+  volume:
+    ## @param storage.volume.capacity defines the size of the storage.
+    capacity: 5Gi
+    ## @param storage.volume.storageClassName defines the storage class name.
+    storageClassName: "standard"
+    ## @param storage.volume.annotations defines the common annotations.
+    annotations: {}
+    ## @param storage.volume.volumeConfig contains objects for creating
+    ## a persistent volume configuration.
+    ## @param storage.volume.type defines the PersistentVolume type.
+    ## If you don't want to use a dynamic provisioner, set the type for
+    ## cases when you have a pre-existing volume.
+    ## Possible values: hostPath, local, csi.
+    ## We recommend using the hostPath provider for development purposes only.
+    volumeConfig:
+      type: ""
+      hostPath: {}
+      local:
+        nodeSelectorNames: []
+      ## @param storage.volume.volumeConfig.csi defines
+      ## the Container Storage Interface (CSI) properties.
+      csi:
+        ## @param storage.volume.volumeConfig.csi.driver defines
+        ## the CSI driver name.
+        driver: ""
+        ## @param storage.volume.volumeConfig.csi.volumeHandle defines
+        ## the volume handle.
+        volumeHandle: ""
+        ## @param storage.volume.volumeConfig.csi.fsType defines
+        ## the filesystem type. Provide ext4, xfs, etc.
+        fsType: ""
+        ## @param storage.volume.volumeConfig.csi.readOnly defines if
+        ## the volume is read-only. Provide true or false.
+        readOnly: ""
+        ## @param storage.volume.volumeConfig.csi.volumeAttributes defines
+        ## additional volume attributes.
+        volumeAttributes: {}
 
 ## @section Ingress configuration
 

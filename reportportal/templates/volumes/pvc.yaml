@@ -1,15 +1,15 @@
+{{- if eq .Values.storage.type "filesystem" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}-shared-volume-claim
   annotations: 
-    {{ .Values.storage.filesystem.volume.annotations | toYaml | nindent 4 }}
+    {{ .Values.storage.volume.annotations | toYaml | nindent 4 }}
 spec:
-  accessModes:
-    {{- range .Values.storage.filesystem.volume.accessModes }}
-    - {{ . }}
-    {{- end }}
+  accessModes: 
+    - {{ .Values.storage.volume.accessMode | default "ReadWriteMany" }}
   resources:
     requests:
-      storage: {{ .Values.storage.filesystem.volume.capacity }}
-  storageClassName: {{ .Values.storage.filesystem.volume.storageClassName }}
+      storage: {{ .Values.storage.volume.capacity }}
+  storageClassName: {{ .Values.storage.volume.storageClassName }}
+{{- end }}
