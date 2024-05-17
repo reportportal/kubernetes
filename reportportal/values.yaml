@@ -576,10 +576,11 @@ storage:
     storageClassName: "standard"
     ## @param storage.volume.annotations defines the common annotations.
     annotations: {}
-    ## @param storage.volume.volumeConfig contains objects for creating
-    ## a persistent volume configuration.
-    ## Possible values: hostPath, local, csi.
+    ## @param storage.volume.volumeConfig contains configuration for creating
+    ## a persistent volume.
     volumeConfig:
+      ## @param storage.volume.volumeConfig.type defines the Persistent Volume type.
+      ## Possible values: hostPath, local, csi. If empty, PV is not created.
       type: ""
       hostPath: {}
       local:
