@@ -15,15 +15,15 @@ jobs:
           fetch-depth: 0
 
       - name: Setup git credentials
-        uses: oleksiyrudenko/gha-git-credentials@v2
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
           name: 'reportportal.io'
           email: 'support@reportportal.io'
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        uses: helm/chart-releaser-action@v1.6.0
         with:
           charts_dir: .
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
