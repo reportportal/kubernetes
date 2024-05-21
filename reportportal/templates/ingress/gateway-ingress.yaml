@@ -35,7 +35,7 @@ spec:
   {{- if .Values.ingress.tls.certificates }}
   tls:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
-  {{- else if or $isTlsCertComplete }}
+  {{- else if and $isTlsCertComplete (ne .Values.ingress.tls.certificate.gcpManaged)}}
   tls:
     - secretName: {{ .Release.Name }}-gateway-tls
       {{- if .Values.ingress.hosts }}
