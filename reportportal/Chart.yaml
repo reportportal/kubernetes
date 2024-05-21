@@ -13,22 +13,22 @@ maintainers:
 dependencies:
     # If you update version, please update also postgresql.image.tag in values.yaml
   - name: postgresql
-    version: 10.16.2
-    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+    version: 15.3.5
+    repository: https://charts.bitnami.com/bitnami
     condition: postgresql.install
 
     # If you update version, please update also rabbitmq.image.tag in values.yaml
   - name: rabbitmq
-    version: 10.3.9
-    repository: https://charts.bitnami.com/bitnami  
+    version: 14.1.5
+    repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
 
   - name: opensearch
-    version: 2.17.0
+    version: 2.20.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
 
   - name: minio
-    version: 12.10.4
+    version: 14.5.0
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
