@@ -97,18 +97,6 @@ helm install reportportal \
 If you want to use Minio as a storage:
 
 ```bash
-export SUPERADMIN_PASSWORD=superadmin
-
-helm install reportportal \
-  ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set storage.type=filesystem \
-  --set minio.install=false
-```
-
-If you want to use Minio as a storage:
-
-```bash
 helm install reportportal \
   ./reportportal \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
