@@ -618,7 +618,7 @@ storage:
 ##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
 ## certificates:
-##   - secretName: reportportal.k8.com-tls 
+##   - secretName: reportportal.k8.com-tls
 ##     hosts:
 ##       - reportportal.k8.com
 ##
@@ -628,8 +628,9 @@ storage:
 
 ingress:
   enable: true
-  hosts: []
-  path:
+  ## @param ingress.hosts can be a list or a single string.
+  hosts: null
+  path: null
   class: nginx
   annotations:
     nginx:
@@ -647,8 +648,8 @@ ingress:
     certificates: null
     certificate:
       gcpManaged: false
-      privateKey: ""
-      certificate: ""
+      privateKey: null
+      certificate: null
 
 ## @section Additional configuration
 
