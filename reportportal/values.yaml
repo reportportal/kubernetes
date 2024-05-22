@@ -537,7 +537,7 @@ searchengine:
   password:
 
 storage:
-  ## @param storage.type Possible storage types: minio, s3
+  ## @param storage.type Possible storage types: minio, s3, filesystem
   type: minio
   secretName: ""
   ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key
@@ -567,6 +567,42 @@ storage:
     bucketMultiPostfix: ""
     ## @param storage.bucket.bucketMultiSaltName storing auth keystore
     bucketMultiSaltName: "keystore"
+  ## @param storage.volume defines the persistent volume claim properties
+  ## for the filesystem storage type.
+  volume:
+    ## @param storage.volume.capacity defines the size of the storage.
+    capacity: 5Gi
+    ## @param storage.volume.storageClassName defines the storage class name.
+    storageClassName: "standard"
+    ## @param storage.volume.annotations defines the common annotations.
+    annotations: {}
+    ## @param storage.volume.volumeConfig contains configuration for creating
+    ## a persistent volume.
+    volumeConfig:
+      ## @param storage.volume.volumeConfig.type defines the Persistent Volume type.
+      ## Possible values: hostPath, local, csi. If empty, PV is not created.
+      type: ""
+      hostPath: {}
+      local:
+        nodeSelectorNames: []
+      ## @param storage.volume.volumeConfig.csi defines
+      ## the Container Storage Interface (CSI) properties.
+      csi:
+        ## @param storage.volume.volumeConfig.csi.driver defines
+        ## the CSI driver name.
+        driver: ""
+        ## @param storage.volume.volumeConfig.csi.volumeHandle defines
+        ## the volume handle.
+        volumeHandle: ""
+        ## @param storage.volume.volumeConfig.csi.fsType defines
+        ## the filesystem type. Provide ext4, xfs, etc.
+        fsType: ""
+        ## @param storage.volume.volumeConfig.csi.readOnly defines if
+        ## the volume is read-only. Provide true or false.
+        readOnly: ""
+        ## @param storage.volume.volumeConfig.csi.volumeAttributes defines
+        ## additional volume attributes.
+        volumeAttributes: {}
 
 ## @section Ingress configuration
 

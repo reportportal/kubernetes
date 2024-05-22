@@ -113,6 +113,11 @@ gcloud container clusters create-auto ${CLUSTER_NAME} \
   --location=${LOCATION}
 ```
 
+> **Note:** You can use the Google Filestore CSI driver for the Autopilot cluster.
+> It is enabled by default.
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
+
 For more information about creating a cluster in Autopilot mode you can find
 [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster).
 
@@ -120,17 +125,37 @@ For more information about creating a cluster in Autopilot mode you can find
 
 For a standard cluster you need to specify a machine type and a number of nodes.
 
-ReportPortal requires at least 3 nodes with 2 vCPU and 4 GB memory for each.
-We recommend using `e2-standard-2` machine type with 2 vCPU and 8 GB memory:
+ReportPortal requires at least 3 nodes with 4 vCPU and 6 GB memory for each in
+the Kubernetes with infrastructure dependencies.
+We recommend using `custom-4-6144` machine type with 4 vCPU and 6 GB memory
+as a minimal configuration.
 
 ```bash
-export MACHINE_TYPE=e2-standard-2
+
+If you want avoid using MinIO or Google Cloud Storage, you can use a filesystem storage type
+and Google Filestore as a storage class.
+
+For this, you need to enable the `Google Filestore CSI driver` when creating a cluster:
+
+```bash
+export MACHINE_TYPE=custom-4-6144
 
 gcloud container clusters create ${CLUSTER_NAME} \
+  --addons=GcpFilestoreCsiDriver \
   --zone=${LOCATION} \
-  --machine-type=${MACHINE_TYPE} \
-  --num-nodes=3
+  --machine-type=${MACHINE_TYPE}
 ```
+
+or you can enable it after the cluster creation:
+
+```bash
+gcloud container clusters update ${CLUSTER_NAME} \
+  --update-addons=GcpFilestoreCsiDriver=ENABLED
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 More information about creating a cluster in Standard mode you can find
 [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster#gcloud).
@@ -235,6 +260,30 @@ helm install \
   --version ${VERSION}
 ```
 
+If you want to use Google Filestore instead of MinIO, you need to set
+the `storage.type` to `filesystem`, `storage.volume.storageClassName`
+to `standard-rwx`, and disable MinIO installation:
+
+```bash
+helm install \
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set uat.resources.requests.memory="1Gi" \
+  --set serviceapi.resources.requests.cpu="1000m" \
+  --set serviceapi.resources.requests.memory="2Gi" \
+  --set serviceanalyzer.resources.requests.memory="1Gi" \
+  --set storage.type="filesystem" \
+  --set storage.volume.storageClassName="standard-rwx" \
+  --set minio.install=false \
+  ${RELEASE_NAME} \
+  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
+
 ### Install Helm chart on GKE Standard Cluster
 
 For installing ReportPortal on GKE Standard Cluster you need to set:
@@ -250,6 +299,26 @@ helm install \
   oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
+
+If you want to use Google Filestore instead of MinIO, you need to set
+the `storage.type` to `filesystem`, `storage.volume.storageClassName`
+to `standard-rwx`, and disable MinIO installation:
+
+```bash
+helm install \
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set storage.type="filesystem" \
+  --set storage.volume.storageClassName="standard-rwx" \
+  --set minio.install=false \
+  ${RELEASE_NAME} \
+  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 ## Ingress configuration
 
