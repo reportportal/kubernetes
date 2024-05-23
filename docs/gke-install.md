@@ -130,8 +130,6 @@ the Kubernetes with infrastructure dependencies.
 We recommend using `custom-4-6144` machine type with 4 vCPU and 6 GB memory
 as a minimal configuration.
 
-```bash
-
 If you want avoid using MinIO or Google Cloud Storage, you can use a filesystem storage type
 and Google Filestore as a storage class.
 
