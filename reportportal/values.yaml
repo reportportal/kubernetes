@@ -750,9 +750,8 @@ minio:
 
 k8sWaitFor:
   image:
-    repository: pegasystems/k8s-wait-for
-    tag: latest
-
+    repository: reportportal/k8s-wait-for
+    tag: no-root-latest
 
 ## Networking between pods
 k8s:

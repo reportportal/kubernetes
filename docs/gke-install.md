@@ -50,7 +50,8 @@ gcloud init
 Set up environment variables:
 
 ```bash
-export LOCATION=us-central1
+export REPO_LOCATION=us-central1
+export CLUSTER_LOCATION=us-central1-a
 export PROJECT_ID={your_project_id}
 export CLUSTER_NAME={reportportal_cluster_name}
 export REPO_NAME={reportportal_helm_repo_name}
@@ -70,7 +71,7 @@ Just perform the following commands:
 
 ```bash
 gcloud auth login
-gcloud auth configure-docker ${LOCATION}-docker.pkg.dev
+gcloud auth configure-docker ${REPO_LOCATION}-docker.pkg.dev
 ```
 
 You can find more information about gcloud credential helper
@@ -110,7 +111,7 @@ It's pretty simple to create a cluster in Autopilot mode:
 
 ```bash
 gcloud container clusters create-auto ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${REPO_LOCATION}
 ```
 
 > **Note:** You can use the Google Filestore CSI driver for the Autopilot cluster.
@@ -140,7 +141,7 @@ export MACHINE_TYPE=custom-4-6144
 
 gcloud container clusters create ${CLUSTER_NAME} \
   --addons=GcpFilestoreCsiDriver \
-  --zone=${LOCATION} \
+  --zone=${ZONE} \
   --machine-type=${MACHINE_TYPE}
 ```
 
@@ -162,7 +163,7 @@ More information about creating a cluster in Standard mode you can find
 
 ```bash
 gcloud container clusters get-credentials ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${CLUSTER_LOCATION}
 ```
 
 ### Verify the cluster mode
@@ -171,7 +172,7 @@ You can verify the cluster:
 
 ```bash
 gcloud container clusters describe ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${CLUSTER_LOCATION}
 ```
 
 ## Prepare Helm package for installation
@@ -185,7 +186,7 @@ Create a repository in Artifact Registry for ReportPortal Helm charts:
 
 ```bash
 gcloud artifacts repositories create ${REPO_NAME} --repository-format=docker \
-  --location=${LOCATION} --description="ReportPortal Helm repository"
+  --location=${REPO_LOCATION} --description="ReportPortal Helm repository"
 ```
 
 > More information about Store Helm charts in the Artifact Registry you can find
@@ -201,7 +202,7 @@ gcloud artifacts repositories list
 
 ```bash
 gcloud auth print-access-token | helm registry login -u oauth2accesstoken \
-  --password-stdin https://${LOCATION}-docker.pkg.dev
+  --password-stdin https://${REPO_LOCATION}-docker.pkg.dev
 ```
 
 ### Build and push Helm chart
@@ -219,7 +220,7 @@ and your project id:
 cd kubernetes/reportportal
 helm dependency update
 helm package .
-helm push reportportal-${VERSION}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
+helm push reportportal-${VERSION}.tgz oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
 ```
 
 ## Install ReportPortal from Artifact Registry
@@ -254,7 +255,7 @@ helm install \
   --set serviceapi.resources.requests.memory="2Gi" \
   --set serviceanalyzer.resources.requests.memory="1Gi" \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
 
@@ -274,7 +275,7 @@ helm install \
   --set storage.volume.storageClassName="standard-rwx" \
   --set minio.install=false \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
 
@@ -294,7 +295,7 @@ helm install \
   --set ingress.class="gce" \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
 
@@ -310,7 +311,7 @@ helm install \
   --set storage.volume.storageClassName="standard-rwx" \
   --set minio.install=false \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
 
@@ -364,13 +365,13 @@ You can use [Cert-Manager](./cert-manager-config.md) to manage certificates for 
 To delete the cluster:
 
 ```bash
-gcloud container clusters delete ${CLUSTER_NAME} --location=${LOCATION}
+gcloud container clusters delete ${CLUSTER_NAME} --location=${CLUSTER_LOCATION}
 ```
 
 To delete the artifacts repository:
 
 ```bash
-gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
+gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${REPO_LOCATION}
 ```
 
 ### Disable HTTP Load Balancing
