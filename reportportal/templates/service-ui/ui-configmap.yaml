@@ -71,6 +71,16 @@ data:
                     try_files $uri /buildInfo.json 404;
                 }
 
+                location /health {
+                    default_type application/json;
+                    return 200 '{"status": "UP"}';
+                }
+
+                location /ui/health {
+                    default_type application/json;
+                    return 200 '{"status": "UP"}';
+                }
+
                 # media, fonts
                 location ~* ([^/\\&\?]+\.+(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2))$ {
                     add_header Cache-Control "public, must-revalidate";

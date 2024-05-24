@@ -751,7 +751,7 @@ minio:
 k8sWaitFor:
   image:
     repository: reportportal/k8s-wait-for
-    tag: no-root-latest
+    tag: latest
 
 ## Networking between pods
 k8s:
