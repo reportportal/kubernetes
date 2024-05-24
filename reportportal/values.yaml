@@ -471,7 +471,7 @@ metricsgatherer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.11.0
+    tag: 5.11.1
   resources:
     requests:
       cpu: 100m
