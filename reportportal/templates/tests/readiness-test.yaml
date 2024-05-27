@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-readiness-test
+  labels:
+    {{ include "labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+  - name: test-container
+    image: curlimages/curl:latest
+    command: ["/bin/sh", "-c"]
+    args:
+    - >
+      for url in \
+        "http://{{ include "reportportal.fullname" . }}-index:8080/health" \
+        "http://{{ include "reportportal.fullname" . }}-ui:8080/ui/health" \
+        "http://{{ include "reportportal.fullname" . }}-api:8585/api/health" \
+        "http://{{ include "reportportal.fullname" . }}-uat:9999/uat/health" \
+        "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"
+      do
+        echo "Checking $url";
+        response=$(curl --write-out "%{http_code}" --silent --output /dev/null $url);
+        if [ $response -ne 200 ]; then
+          echo "Health check failed for $url with response code $response";
+          exit 1;
+        else
+          echo "Health check succeeded for $url";
+        fi;
+      done;
+      echo "All health checks passed.";
+  restartPolicy: Never

@@ -2,8 +2,10 @@ CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
 
+{{- if .Values.ingress.hosts}}
 ReportPortal is now available at:
 {{ toYaml .Values.ingress.hosts | indent 4 }}
+{{- end}}
 
 Welcome to ReportPortal, a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
