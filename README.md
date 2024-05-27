@@ -17,7 +17,7 @@ This repository houses the Helm chart for ReportPortal, a powerful and flexible 
 ## Documentation
 
 * [General User Manual](https://reportportal.io/docs/)
-* [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/DeployWithKubernetes)
+* [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/deploy-with-kubernetes/)
 * [Quick Start Guide for Google Cloud Platform GKE](./reportportal/docs/quick-start-gcp-gke.md)
 
 ## Community / Support
