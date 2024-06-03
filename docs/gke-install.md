@@ -89,7 +89,7 @@ Read about it [here](https://cloud.google.com/kubernetes-engine/docs/how-to/role
 You can use [Predefined GKE Roles](https://cloud.google.com/kubernetes-engine/docs/how-to/iam#predefined) and update
 your account role. To set a service account on nodes, you must also have the Service Account User role (roles/iam.serviceAccountUser).
 
-> **Impotent** We recommend to create a separate [IAM Service Account](https://cloud.google.com/iam/docs/service-accounts-create)
+> **Importent** We recommend to create a separate [IAM Service Account](https://cloud.google.com/iam/docs/service-accounts-create)
 > for working with GKE cluster.
 
 ## Create a GKE cluster
