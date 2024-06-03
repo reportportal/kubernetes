@@ -126,6 +126,11 @@ spec:
         - name: ES_PASSWORD
           value: "{{ .Values.searchengine.password }}" 
         {{- end }}
+        volumeMounts:
+          {{- if eq .Values.storage.type "filesystem" }}
+          - name: shared-volume
+            mountPath: /data/storage
+          {{- end }}
 {{- if .Values.serviceanalyzertrain.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzertrain.nodeSelector }}
@@ -139,3 +144,9 @@ spec:
       tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}
+      volumes:
+        {{- if eq .Values.storage.type "filesystem" }}
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-shared-volume-claim
+        {{- end }}

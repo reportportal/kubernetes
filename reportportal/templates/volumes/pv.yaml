@@ -1,0 +1,53 @@
+# This snippet creates a PersistentVolume when ReportPortal uses
+# filesystem as a storage type instead of a bucket.
+# If you set a type of volume to 'gcp' or 'aws' in values.yaml
+# this snippet won't be used for creating a PersistentVolume.
+# GCP and AWS provides dynamic provisioning of volumes.
+# However, you can use a CSI type to get an access to pre-existing volumes.
+{{- if and (eq .Values.storage.type "filesystem") (ne .Values.storage.volume.volumeConfig.type "") }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-shared-volume
+  annotations: 
+    {{ .Values.storage.volume.annotations | toYaml | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ .Values.storage.volume.capacity }}
+  volumeMode: Filesystem
+  accessModes:
+    - {{ .Values.storage.volume.accessModes | default "ReadWriteMany" }}
+  persistentVolumeReclaimPolicy: {{ .Values.storage.volume.reclaimPolicy | default "Retain" }}
+  storageClassName: {{ .Values.storage.volume.storageClassName }}
+
+# Connection type specific configuration
+{{- if eq .Values.storage.volume.volumeConfig.type "hostPath" }}
+  hostPath:
+    path: {{ .Values.storage.volume.volumeConfig.hostPath.path | default (printf "/data/%s-shared-volume" .Release.Name) }}
+{{- else if eq .Values.storage.volume.volumeConfig.type "local" }}
+  local:
+    path: {{ .Values.storage.volume.volumeConfig.local.path | default (printf "/data/%s-shared-volume" .Release.Name) }}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                {{ .Values.storage.volume.volumeConfig.local.nodeSelectorNames | toYaml | nindent 16 }}
+{{- else if eq .Values.storage.volume.volumeConfig.type "csi" }}
+  csi:
+    driver: {{ .Values.storage.volume.volumeConfig.csi.driver }}
+    volumeHandle: {{ .Values.storage.volume.volumeConfig.csi.volumeHandle }}
+    {{- with .Values.storage.volume.volumeConfig.csi.fsType }}
+    fsType: {{ . }}
+    {{- end }}
+    {{- with .Values.storage.volume.volumeConfig.csi.readOnly }}
+    readOnly: {{ . }}
+    {{- end }}
+    volumeAttributes:
+      {{- range $key, $value := .Values.storage.volume.volumeConfig.csi.volumeAttributes }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+{{- end }}
+{{- end }}

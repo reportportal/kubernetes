@@ -50,7 +50,8 @@ gcloud init
 Set up environment variables:
 
 ```bash
-export LOCATION=us-central1
+export REPO_LOCATION=us-central1
+export CLUSTER_LOCATION=us-central1-a
 export PROJECT_ID={your_project_id}
 export CLUSTER_NAME={reportportal_cluster_name}
 export REPO_NAME={reportportal_helm_repo_name}
@@ -70,7 +71,7 @@ Just perform the following commands:
 
 ```bash
 gcloud auth login
-gcloud auth configure-docker ${LOCATION}-docker.pkg.dev
+gcloud auth configure-docker ${REPO_LOCATION}-docker.pkg.dev
 ```
 
 You can find more information about gcloud credential helper
@@ -110,8 +111,13 @@ It's pretty simple to create a cluster in Autopilot mode:
 
 ```bash
 gcloud container clusters create-auto ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${REPO_LOCATION}
 ```
+
+> **Note:** You can use the Google Filestore CSI driver for the Autopilot cluster.
+> It is enabled by default.
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 For more information about creating a cluster in Autopilot mode you can find
 [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-an-autopilot-cluster).
@@ -120,17 +126,35 @@ For more information about creating a cluster in Autopilot mode you can find
 
 For a standard cluster you need to specify a machine type and a number of nodes.
 
-ReportPortal requires at least 3 nodes with 2 vCPU and 4 GB memory for each.
-We recommend using `e2-standard-2` machine type with 2 vCPU and 8 GB memory:
+ReportPortal requires at least 3 nodes with 4 vCPU and 6 GB memory for each in
+the Kubernetes with infrastructure dependencies.
+We recommend using `custom-4-6144` machine type with 4 vCPU and 6 GB memory
+as a minimal configuration.
+
+If you want avoid using MinIO or Google Cloud Storage, you can use a filesystem storage type
+and Google Filestore as a storage class.
+
+For this, you need to enable the `Google Filestore CSI driver` when creating a cluster:
 
 ```bash
-export MACHINE_TYPE=e2-standard-2
+export MACHINE_TYPE=custom-4-6144
 
 gcloud container clusters create ${CLUSTER_NAME} \
-  --zone=${LOCATION} \
-  --machine-type=${MACHINE_TYPE} \
-  --num-nodes=3
+  --addons=GcpFilestoreCsiDriver \
+  --zone=${ZONE} \
+  --machine-type=${MACHINE_TYPE}
 ```
+
+or you can enable it after the cluster creation:
+
+```bash
+gcloud container clusters update ${CLUSTER_NAME} \
+  --update-addons=GcpFilestoreCsiDriver=ENABLED
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 More information about creating a cluster in Standard mode you can find
 [here](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster#gcloud).
@@ -139,7 +163,7 @@ More information about creating a cluster in Standard mode you can find
 
 ```bash
 gcloud container clusters get-credentials ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${CLUSTER_LOCATION}
 ```
 
 ### Verify the cluster mode
@@ -148,7 +172,7 @@ You can verify the cluster:
 
 ```bash
 gcloud container clusters describe ${CLUSTER_NAME} \
-  --location=${LOCATION}
+  --location=${CLUSTER_LOCATION}
 ```
 
 ## Prepare Helm package for installation
@@ -162,7 +186,7 @@ Create a repository in Artifact Registry for ReportPortal Helm charts:
 
 ```bash
 gcloud artifacts repositories create ${REPO_NAME} --repository-format=docker \
-  --location=${LOCATION} --description="ReportPortal Helm repository"
+  --location=${REPO_LOCATION} --description="ReportPortal Helm repository"
 ```
 
 > More information about Store Helm charts in the Artifact Registry you can find
@@ -178,7 +202,7 @@ gcloud artifacts repositories list
 
 ```bash
 gcloud auth print-access-token | helm registry login -u oauth2accesstoken \
-  --password-stdin https://${LOCATION}-docker.pkg.dev
+  --password-stdin https://${REPO_LOCATION}-docker.pkg.dev
 ```
 
 ### Build and push Helm chart
@@ -196,7 +220,7 @@ and your project id:
 cd kubernetes/reportportal
 helm dependency update
 helm package .
-helm push reportportal-${VERSION}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
+helm push reportportal-${VERSION}.tgz oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
 ```
 
 ## Install ReportPortal from Artifact Registry
@@ -231,9 +255,33 @@ helm install \
   --set serviceapi.resources.requests.memory="2Gi" \
   --set serviceanalyzer.resources.requests.memory="1Gi" \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
+
+If you want to use Google Filestore instead of MinIO, you need to set
+the `storage.type` to `filesystem`, `storage.volume.storageClassName`
+to `standard-rwx`, and disable MinIO installation:
+
+```bash
+helm install \
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set uat.resources.requests.memory="1Gi" \
+  --set serviceapi.resources.requests.cpu="1000m" \
+  --set serviceapi.resources.requests.memory="2Gi" \
+  --set serviceanalyzer.resources.requests.memory="1Gi" \
+  --set storage.type="filesystem" \
+  --set storage.volume.storageClassName="standard-rwx" \
+  --set minio.install=false \
+  ${RELEASE_NAME} \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 ### Install Helm chart on GKE Standard Cluster
 
@@ -247,9 +295,29 @@ helm install \
   --set ingress.class="gce" \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   ${RELEASE_NAME} \
-  oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --version ${VERSION}
 ```
+
+If you want to use Google Filestore instead of MinIO, you need to set
+the `storage.type` to `filesystem`, `storage.volume.storageClassName`
+to `standard-rwx`, and disable MinIO installation:
+
+```bash
+helm install \
+  --set ingress.class="gce" \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set storage.type="filesystem" \
+  --set storage.volume.storageClassName="standard-rwx" \
+  --set minio.install=false \
+  ${RELEASE_NAME} \
+  oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --version ${VERSION}
+```
+
+> **Note:**
+> Minimal storage size for Google Filestore is 1 TB.
+> Check the [pricing](https://cloud.google.com/filestore/pricing).
 
 ## Ingress configuration
 
@@ -297,13 +365,13 @@ You can use [Cert-Manager](./cert-manager-config.md) to manage certificates for 
 To delete the cluster:
 
 ```bash
-gcloud container clusters delete ${CLUSTER_NAME} --location=${LOCATION}
+gcloud container clusters delete ${CLUSTER_NAME} --location=${CLUSTER_LOCATION}
 ```
 
 To delete the artifacts repository:
 
 ```bash
-gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${LOCATION}
+gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${REPO_LOCATION}
 ```
 
 ### Disable HTTP Load Balancing

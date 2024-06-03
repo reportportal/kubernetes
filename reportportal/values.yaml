@@ -39,7 +39,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.11.0
+    tag: 5.11.1
   pullPolicy: Always
   resources:
     requests:
@@ -68,7 +68,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.11.0
+    tag: 5.11.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -177,12 +177,24 @@ serviceapi:
     readOnly: true
     data: {}
     ##  custom-pki.jks: <base64-data>
+  
+  ## @param serviceapi.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "foo.local"
+  #     - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #     - "foo.remote"
+  #     - "bar.remote"
+
 
 uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.11.0
+    tag: 5.11.1
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -259,11 +271,22 @@ uat:
     extraPorts: []
     annotations: {}
 
+  ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
+  hostAliases: []
+  # - ip: "127.0.0.1"
+  #   hostnames:
+  #     - "foo.local"
+  #     - "bar.local"
+  # - ip: "10.1.2.3"
+  #   hostnames:
+  #     - "foo.remote"
+  #     - "bar.remote"
+
 servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.11.0
+    tag: 5.11.1
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -448,7 +471,7 @@ metricsgatherer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.11.0
+    tag: 5.11.1
   resources:
     requests:
       cpu: 100m
@@ -486,7 +509,7 @@ msgbroker:
   ## Virtual hosts provide logical grouping and separation of resources. Ref: https://www.rabbitmq.com/vhosts.html
   vhost: analyzer
   analyzerExchangeName: analyzer-default
-  ## @param msgbroker.ssl set to `true` if use HTTPS and AMQPS
+  ## @param msgbroker.ssl set to `true` if you want to use HTTPS and AMQPS
   ssl: false
   ## @param msgbroker.endpoint by default {{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
@@ -514,7 +537,7 @@ searchengine:
   password:
 
 storage:
-  ## @param storage.type Possible storage types: minio, s3
+  ## @param storage.type Possible storage types: minio, s3, filesystem
   type: minio
   secretName: ""
   ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key
@@ -542,8 +565,44 @@ storage:
     ## Multi-bucket values
     bucketMultiPrefix: "prj-"
     bucketMultiPostfix: ""
-    ## @param storage.bucket.bucketMultiSaltName storing auth keystor
+    ## @param storage.bucket.bucketMultiSaltName storing auth keystore
     bucketMultiSaltName: "keystore"
+  ## @param storage.volume defines the persistent volume claim properties
+  ## for the filesystem storage type.
+  volume:
+    ## @param storage.volume.capacity defines the size of the storage.
+    capacity: 5Gi
+    ## @param storage.volume.storageClassName defines the storage class name.
+    storageClassName: "standard"
+    ## @param storage.volume.annotations defines the common annotations.
+    annotations: {}
+    ## @param storage.volume.volumeConfig contains configuration for creating
+    ## a persistent volume.
+    volumeConfig:
+      ## @param storage.volume.volumeConfig.type defines the Persistent Volume type.
+      ## Possible values: hostPath, local, csi. If empty, PV is not created.
+      type: ""
+      hostPath: {}
+      local:
+        nodeSelectorNames: []
+      ## @param storage.volume.volumeConfig.csi defines
+      ## the Container Storage Interface (CSI) properties.
+      csi:
+        ## @param storage.volume.volumeConfig.csi.driver defines
+        ## the CSI driver name.
+        driver: ""
+        ## @param storage.volume.volumeConfig.csi.volumeHandle defines
+        ## the volume handle.
+        volumeHandle: ""
+        ## @param storage.volume.volumeConfig.csi.fsType defines
+        ## the filesystem type. Provide ext4, xfs, etc.
+        fsType: ""
+        ## @param storage.volume.volumeConfig.csi.readOnly defines if
+        ## the volume is read-only. Provide true or false.
+        readOnly: ""
+        ## @param storage.volume.volumeConfig.csi.volumeAttributes defines
+        ## additional volume attributes.
+        volumeAttributes: {}
 
 ## @section Ingress configuration
 
@@ -554,11 +613,12 @@ storage:
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
+## @param ingress.path is an Application path as a prefix, should start from '/' and be without trailing '/'. Use to deploy ReportPortal to path, E.G. 'https://example.com/reportportal/'
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
 ##
 ## @param ingress.tls.certificates specify a list of predefined secret names for TLS certificates present in the same namespace
 ## certificates:
-##   - secretName: reportportal.k8.com-tls 
+##   - secretName: reportportal.k8.com-tls
 ##     hosts:
 ##       - reportportal.k8.com
 ##
@@ -568,7 +628,9 @@ storage:
 
 ingress:
   enable: true
-  hosts: []
+  ## @param ingress.hosts can be a list or a single string.
+  hosts: null
+  path: null
   class: nginx
   annotations:
     nginx:
@@ -586,8 +648,8 @@ ingress:
     certificates: null
     certificate:
       gcpManaged: false
-      privateKey: ""
-      certificate: ""
+      privateKey: null
+      certificate: null
 
 ## @section Additional configuration
 
@@ -626,17 +688,22 @@ extraInitContainers: {}
 ## @section External dependencies installation configuration
 
 ## @param postgresql External PostgreSQL Helm Chart as dependency
-postgresql: 
-  install: true   ## set to `false` if using a Cloud/On-Premise managed database.
+postgresql:
+  ## set to `false` if using a Cloud/On-Premise managed database.
+  install: true
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 11.22.0
-  postgresqlUsername: *dbuser
-  postgresqlPassword: *dbpassword
-  postgresqlDatabase: *dbname
-  servicePort: *dbport
-  postgresqlMaxConnections: *dbconnections
+    tag: 16.3.0
+  auth:
+    postgresPassword: *dbpassword
+    username: *dbuser
+    password: *dbpassword
+    database: *dbname
+  primary:
+    service:
+      ports:
+        postgresql: *dbport
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 rabbitmq:
@@ -644,7 +711,7 @@ rabbitmq:
   image:
     registry: docker.io
     repository: bitnami/rabbitmq
-    tag: 3.10.25
+    tag: 3.13.2
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
@@ -657,7 +724,7 @@ opensearch:
   install: true   ## set to `false` if using a Cloud/On-Premise managed OpenSearch.
   image:
     repository: opensearchproject/opensearch
-    tag: 2.11.1
+    tag: 2.14.0
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   singleNode: true
   ## @param opensearch.httpPort Port for OpenSearch endpoint
@@ -670,24 +737,21 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## Apache 2.0 license version
-## @param minio External MinIO Helm Chart as dependency 6.7.7
+## @param minio External MinIO Helm Chart
 minio:
-  install: true   ## set to `true` if using a Cloud/On-Premise managed storage.
+  install: true
   image:
-    registry: docker.io
     repository: bitnami/minio
-    tag: 2021.4.22-debian-10-r6
-  accessKey:
-    password: *storageAccessKey
-  secretKey:
-    password: *storageSecretKey
+    registry: docker.io
+    tag: 2024.5.10-debian-12-r2
+  auth:
+    rootUser: *storageAccessKey
+    rootPassword: *storageSecretKey
 
 k8sWaitFor:
   image:
-    repository: pegasystems/k8s-wait-for
+    repository: reportportal/k8s-wait-for
     tag: latest
-
 
 ## Networking between pods
 k8s:
