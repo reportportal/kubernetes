@@ -718,6 +718,7 @@ rabbitmq:
   containerPorts:
     amqp: *msgbrokerPort
     manager: *msgbrokerApiPort
+  extraPlugins: "rabbitmq_auth_backend_ldap rabbitmq_consistent_hash_exchange"
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 opensearch:
