@@ -6,7 +6,7 @@ metadata:
   annotations:
     service: {{ $.Values.uat.name | default "uat" }}
     infoEndpoint: "{{- $path := .Values.ingress.path -}}/uat/info"
-    healthEndpoint: "/uat/health"
+    healthEndpoint: "{{- $path := .Values.ingress.path -}}/uat/health"
     {{- with .Values.uat.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
