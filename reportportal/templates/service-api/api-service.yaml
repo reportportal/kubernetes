@@ -5,8 +5,8 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.serviceapi.name | default "api" }}
-    infoEndpoint: "/api/info"
-    healthEndpoint: "/api/health"
+    infoEndpoint: "{{- $path := .Values.ingress.path -}}/api/info"
+    healthEndpoint: "{{- $path := .Values.ingress.path -}}/api/health"
     {{- with .Values.serviceapi.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
