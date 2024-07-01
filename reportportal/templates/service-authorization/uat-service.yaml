@@ -5,7 +5,7 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
   annotations:
     service: {{ $.Values.uat.name | default "uat" }}
-    infoEndpoint: "/uat/info"
+    infoEndpoint: "{{- $path := .Values.ingress.path -}}/uat/info"
     healthEndpoint: "/uat/health"
     {{- with .Values.uat.service.annotations }}
     {{- toYaml . | nindent 4 }}
