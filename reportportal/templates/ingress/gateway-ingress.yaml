@@ -57,7 +57,7 @@ spec:
     http:
       paths:
       {{- if $path }}
-      - path: {{ $path }}/
+      - path: {{ $path }}
       {{- else }}
       - path: /
       {{- end }}
@@ -94,7 +94,7 @@ spec:
     http:
       paths:
       {{- if $path }}
-        - path: {{ $path }}/
+        - path: {{ $path }}
       {{- else }}
         - path: /
       {{- end }}
@@ -130,7 +130,7 @@ spec:
   - http:
       paths:
       {{- if $path }}
-      - path: {{ $path }}/
+      - path: {{ $path }}
       {{- else }}
       - path: /
       {{- end }}

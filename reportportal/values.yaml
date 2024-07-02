@@ -9,7 +9,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.11.0
+    tag: 5.11.1
   pullPolicy: Always
   resources:
     requests:
@@ -68,7 +68,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.11.1
+    tag: 5.11.2
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -194,7 +194,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.11.1
+    tag: 5.11.2
   pullPolicy: Always
   readinessProbe:
     enabled: true
