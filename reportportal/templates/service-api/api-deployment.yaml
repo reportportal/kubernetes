@@ -133,7 +133,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.database.secretName }}"
-                  key: "postgresql-password"
+                  key: "{{ .Values.database.passwordKeyName }}"
           {{- else }}
               value: "{{ .Values.database.password }}"
           {{- end }}
