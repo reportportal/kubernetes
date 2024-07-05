@@ -19,7 +19,7 @@ dependencies:
 
     # If you update version, please update also rabbitmq.image.tag in values.yaml
   - name: rabbitmq
-    version: 14.1.5
+    version: 14.4.4
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
 

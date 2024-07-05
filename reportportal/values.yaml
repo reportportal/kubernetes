@@ -712,7 +712,7 @@ rabbitmq:
   image:
     registry: docker.io
     repository: bitnami/rabbitmq
-    tag: 3.13.2
+    tag: 3.13.3-debian-12-r0
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
