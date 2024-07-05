@@ -494,6 +494,7 @@ migrations:
 
 database:
   secretName: ""
+  passwordKeyName: "postgresql-password"
   ## @param database.endpoint by default {{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local
   endpoint:
   port: &dbport 5432
