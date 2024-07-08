@@ -1,11 +1,22 @@
 ## ReportPortal.io AI-powered Test Automation Dashboard
 ##
 
-## @param nameOverride expand the name of the chart
-## @param fullnameOverride expand the fully qualified app name
+## @section Global configuration
 ##
-nameOverride: ""
-fullnameOverride: ""
+## @param global.image.registry Global image registry
+## @param global.imageRegistry Global image registry
+## @param global.imagePullSecrets Global registry secret names as an array
+## @param global.nameOverride expand the name of the chart
+## @param global.fullnameOverride expand the fully qualified app name
+##
+global:
+  image:
+    registry: ""
+  imagePullSecrets: []
+
+  nameOverride: ""
+  fullnameOverride: ""
+
 
 ## @param serviceindex Core ReportPortal service for the indexing
 ##
@@ -780,10 +791,6 @@ serviceAccount:
 rbac:
   create: true
 
-## @param imagePullSecrets is an optional list of references to secrets to use for pulling any images
-##
-imagePullSecrets: []
-
 ## @param extraInitContainers init containers (e.g. wait for minio)
 ##
 extraInitContainers: {}
@@ -879,6 +886,7 @@ minio:
 
 k8sWaitFor:
   image:
+    registry: docker.io
     repository: reportportal/k8s-wait-for
     tag: latest
 

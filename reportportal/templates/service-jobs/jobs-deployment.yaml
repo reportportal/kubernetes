@@ -20,13 +20,13 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: migrations-waiting-init
-        image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
         args:
           - "job-wr"
@@ -43,7 +43,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.servicejobs.name | default "jobs" }}"
-        image: "{{ .Values.servicejobs.image.repository }}:{{ .Values.servicejobs.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "servicejobs") }}"
         imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
         ports:
         - containerPort: 8686
