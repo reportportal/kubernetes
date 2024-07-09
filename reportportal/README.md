@@ -57,7 +57,7 @@ These dependencies are integrated into the distribution by default. To deactivat
 
 ```bash
 helm install my-release \
-  --set postgresql.install=fasle \
+  --set postgresql.install=false \
   --set database.endpoint=my-postgresql.host.local \
   --set database.port=5432 \
   --set database.user=my-user \
