@@ -52,17 +52,20 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
-
+{{/*
+Create image name
+*/}}
 {{- define "reportportal.image" -}}
 {{- $service := .service -}}
-{{- $globalRegistry := .Values.global.image.registry -}}
-{{- $serviceRegistry := index .Values $service "image" "registry" -}}
-{{- $repository := index .Values $service "image" "repository" -}}
-{{- $tag := index .Values $service "image" "tag" -}}
+{{- $globalRegistry := .Values.global.imageRegistry -}}
+{{- $imageRepository := index .Values $service "image" "repository" -}}
+{{- $imageTag := index .Values $service "image" "tag" -}}
 {{- if $globalRegistry }}
-{{- printf "%s/%s:%s" $globalRegistry $repository $tag -}}
+{{- printf "%s/%s:%s" $globalRegistry $imageRepository $imageTag -}}
 {{- else -}}
-{{- printf "%s/%s:%s" $serviceRegistry $repository $tag -}}
+{{- printf "%s:%s" $imageRepository $imageTag -}}
 {{- end -}}
 {{- end -}}
+
+
 
