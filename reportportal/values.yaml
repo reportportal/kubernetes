@@ -113,7 +113,7 @@ serviceapi:
   ## @param serviceapi.auditLogs.loglevel define log level
   ##
   auditLogs:
-    enable: true 
+    enable: false 
     loglevel: info
 
     ## @param serviceapi.auditLogs.sidecar define sidecar container configuration
