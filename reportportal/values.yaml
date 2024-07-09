@@ -782,7 +782,7 @@ serviceAccount:
 rbac:
   ## @param rbac is required for service-index in order to collect status/info over all services
   ##
-  create: false
+  create: true
   ## @param rbac.rules define the rules for ReportPortal
   ##
   rules: []
