@@ -2,10 +2,15 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-    name: {{ include "reportportal.fullname" . }}-service-reader
-    namespace: {{ .Release.Namespace }}
+  name: {{ include "reportportal.fullname" . }}-service-reader
+  namespace: {{ .Release.Namespace }}
 rules:
-    - apiGroups: ["", "batch"]
-      resources: ["pods","services", "jobs"]
-      verbs: ["get", "list", "watch"]
+  {{- if .Values.rbac.rules }}
+    {{- toYaml .Values.rbac.rules | nindent 4 }}
+  {{- else }}
+  - apiGroups: ["", "batch"]
+    resources: ["pods","services", "jobs"]
+    verbs: ["get", "list", "watch"]
+  {{- end}}
+    
 {{- end }}

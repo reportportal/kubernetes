@@ -22,7 +22,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -33,7 +33,7 @@ spec:
       serviceAccountName: {{ .Values.serviceindex.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
       containers:
       - name: {{ $.Values.serviceindex.name | default "index" }}
-        image: "{{ .Values.serviceindex.image.repository }}:{{ .Values.serviceindex.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceindex") }}"
         imagePullPolicy: "{{ .Values.serviceindex.pullPolicy }}"
         env:
         - name: K8S_MODE

@@ -21,13 +21,13 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: migrations-waiting-init
-        image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
         args:
           - "pod-wr"
@@ -44,7 +44,7 @@ spec:
 {{- end }}
       containers:
       - name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
-        image: "{{ .Values.serviceanalyzer.image.repository }}:{{ .Values.serviceanalyzer.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"
         imagePullPolicy: "{{ .Values.serviceanalyzertrain.pullPolicy }}"
         ports:
         - containerPort: 5001

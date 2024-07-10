@@ -20,7 +20,7 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ $.Values.serviceui.name | default "ui" }}
-        image: "{{ .Values.serviceui.image.repository }}:{{ .Values.serviceui.image.tag }}"
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceui") }}"
         imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
         env:
         - name: RP_SERVER_PORT
