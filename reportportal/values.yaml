@@ -856,7 +856,7 @@ rabbitmq:
   ## @param rabbitmq.extraPlugins define additional RabbitMQ plugins to be enabled
   ## Required for the ReportPortal to work
   ##
-  extraPlugins: |
+  extraPlugins: >
     rabbitmq_auth_backend_ldap
     rabbitmq_consistent_hash_exchange
     rabbitmq_shovel
