@@ -854,9 +854,13 @@ rabbitmq:
     amqp: *msgbrokerPort
     manager: *msgbrokerApiPort
   ## @param rabbitmq.extraPlugins define additional RabbitMQ plugins to be enabled
-  ## Consistent Hash Exchange is required for the ReportPortal
+  ## Required for the ReportPortal to work
   ##
-  extraPlugins: "rabbitmq_auth_backend_ldap rabbitmq_consistent_hash_exchange"
+  extraPlugins: >
+    rabbitmq_auth_backend_ldap
+    rabbitmq_consistent_hash_exchange
+    rabbitmq_shovel
+    rabbitmq_shovel_management
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
