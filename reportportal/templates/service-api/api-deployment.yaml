@@ -96,10 +96,8 @@ spec:
               value: "{{ .Values.serviceapi.jvmArgs }}"
           {{- end }}
           # AMQP settings
-            - name: RP_AMQP_QUEUES
-              value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
-            - name: RP_AMQP_QUEUESPERPOD
-              value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
+            - name: REPORTING_QUEUES_COUNT
+              value: "{{ .Values.serviceapi.queues }}"
             - name: RP_AMQP_ANALYZER-VHOST
               value: "{{ .Values.msgbroker.vhost }}"
             - name: RP_AMQP_PASS
