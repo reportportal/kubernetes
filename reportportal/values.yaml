@@ -249,7 +249,7 @@ uat:
   superadminInitPasswd:
     secretName: ""
     passwordKeyName: "superadmin-password"
-    password: ""
+    password: "erebus"
   
   ## @param serviceapi.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
