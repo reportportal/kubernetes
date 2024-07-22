@@ -543,6 +543,7 @@ migrations:
       cpu: 100m
       memory: 128Mi
   pullPolicy: Always
+  ttlSecondsAfterFinished: 600
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
