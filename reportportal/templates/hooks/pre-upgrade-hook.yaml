@@ -16,6 +16,7 @@ spec:
         {{- end }}
         component: {{ include "reportportal.fullname" . }}-pre-upgrade-delete-job
     spec:
+      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
       restartPolicy: OnFailure
       containers:
       - name: delete-job
