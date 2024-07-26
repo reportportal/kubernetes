@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "reportportal.fullname" . }}-pre-upgrade-delete-job
+  labels:
+    {{ include "labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- range $key, $value := .Values.migrations.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        component: {{ include "reportportal.fullname" . }}-pre-upgrade-delete-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: delete-job
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
