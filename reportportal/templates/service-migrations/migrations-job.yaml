@@ -4,7 +4,6 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-migrations
   labels: {{ include "labels" . | indent 4 }}
 spec:
-  ttlSecondsAfterFinished: {{ .Values.migrations.ttlSecondsAfterFinished }}
   template:
     metadata:
       labels:
