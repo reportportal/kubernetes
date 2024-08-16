@@ -3,7 +3,7 @@
 Expand the name of the chart.
 */}}
 {{- define "reportportal.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.global.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -13,9 +13,9 @@ If release name contains chart name it will be used as a full name.
 */}}
 {{- define "reportportal.fullname" -}}
 {{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- .Values.global.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- $name := default .Chart.Name .Values.global.nameOverride -}}
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -51,3 +51,21 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create image name
+*/}}
+{{- define "reportportal.image" -}}
+{{- $service := .service -}}
+{{- $globalRegistry := .Values.global.imageRegistry -}}
+{{- $imageRepository := index .Values $service "image" "repository" -}}
+{{- $imageTag := index .Values $service "image" "tag" -}}
+{{- if $globalRegistry }}
+{{- printf "%s/%s:%s" $globalRegistry $imageRepository $imageTag -}}
+{{- else -}}
+{{- printf "%s:%s" $imageRepository $imageTag -}}
+{{- end -}}
+{{- end -}}
+
+
+

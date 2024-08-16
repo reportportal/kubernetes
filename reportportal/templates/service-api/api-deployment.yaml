@@ -31,13 +31,13 @@ spec:
             {{- end }}
         {{- end }}
     {{- end }}
-    {{- with .Values.imagePullSecrets }}
+    {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       initContainers:
         - name: migrations-waiting-init
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
           imagePullPolicy: IfNotPresent
           args:
             - "job-wr"
@@ -54,7 +54,7 @@ spec:
       {{- end }}
       containers:
         - name: "{{ $.Values.serviceapi.name | default "api" }}"
-          image: "{{ .Values.serviceapi.image.repository }}:{{ .Values.serviceapi.image.tag }}"
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceapi") }}"
           imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
           ports:
             - containerPort: 8585
@@ -96,10 +96,8 @@ spec:
               value: "{{ .Values.serviceapi.jvmArgs }}"
           {{- end }}
           # AMQP settings
-            - name: RP_AMQP_QUEUES
-              value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
-            - name: RP_AMQP_QUEUESPERPOD
-              value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
+            - name: REPORTING_QUEUES_COUNT
+              value: "{{ .Values.serviceapi.queues }}"
             - name: RP_AMQP_ANALYZER-VHOST
               value: "{{ .Values.msgbroker.vhost }}"
             - name: RP_AMQP_PASS
@@ -133,7 +131,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.database.secretName }}"
-                  key: "postgresql-password"
+                  key: "{{ .Values.database.passwordKeyName }}"
           {{- else }}
               value: "{{ .Values.database.password }}"
           {{- end }}
@@ -220,7 +218,7 @@ spec:
           {{- end }}
       {{- if .Values.serviceapi.auditLogs.enable }}
         - name: auditlogstreamer
-          image: "{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}"
+          image: "{{ if .Values.global.imageRegistry }}{{ .Values.global.imageRegistry }}/{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ else }}{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ end }}"
           command:
             - /bin/sh
           args:
