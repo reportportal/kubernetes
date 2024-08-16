@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: "24.1"
 description: ReportPortal.io AI-powered Test Automation Dashboard
 name: reportportal
-version: 24.1.2
+version: 24.1.3
 sources:
   - https://github.com/reportportal/kubernetes
 keywords:
