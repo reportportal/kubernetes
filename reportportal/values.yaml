@@ -810,7 +810,12 @@ extraInitContainers: {}
   #     - "-c"
   #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
-
+hooks:
+  enabled: true
+  test:
+    enabled: true
+  preUpgrade:
+    enabled: true
 
 ## @section External dependencies installation configuration
 ##
