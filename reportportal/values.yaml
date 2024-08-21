@@ -155,8 +155,11 @@ serviceapi:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
 
   ## @param serviceapi.queues define the number for the queues
+  ## Where "totalNumber" is the total number of queues. Сalculation formula: perPodNumber = totalNumber / serviceapi.replicaCount
   ##
-  queues: 10
+  queues:
+    totalNumber: 10
+    perPodNumber: 10
 
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
