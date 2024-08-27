@@ -815,8 +815,8 @@ extraInitContainers: {}
 
 ## @param hooks Helm 3+ hooks toggles
 hooks:
-  enable: true
-  pre-upgrade:
+  enabled: true
+  preUpgrade:
     enabled: true
   test:
     enabled: true
