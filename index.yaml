@@ -3,6 +3,39 @@ entries:
   reportportal:
   - apiVersion: v2
     appVersion: "24.1"
+    created: "2024-08-27T13:02:07.890447378Z"
+    dependencies:
+    - condition: postgresql.install
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.26
+    - condition: rabbitmq.install
+      name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 14.6.7
+    - condition: opensearch.install
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts/
+      version: 2.23.0
+    - condition: minio.install
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 14.7.2
+    description: ReportPortal.io AI-powered Test Automation Dashboard
+    digest: c295d36c960cbcd97482331f5faec76bd435844a4e49f07dd0d99d581956a912
+    keywords:
+    - reportportal
+    maintainers:
+    - email: support@reportportal.io
+      name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/kubernetes
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-24.1.4/reportportal-24.1.4.tgz
+    version: 24.1.4
+  - apiVersion: v2
+    appVersion: "24.1"
     created: "2024-08-16T14:22:03.871283328Z"
     dependencies:
     - condition: postgresql.install
@@ -576,4 +609,4 @@ entries:
     urls:
     - https://github.com/reportportal/kubernetes/releases/download/reportportal-1.0.0/reportportal-1.0.0.tgz
     version: 1.0.0
-generated: "2024-08-16T14:22:03.871407419Z"
+generated: "2024-08-27T13:02:07.890558958Z"
