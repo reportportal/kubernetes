@@ -1,3 +1,4 @@
+{{- if and .Values.hooks.enabled .Values.hooks.test.enabled }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -31,3 +32,4 @@ spec:
       done;
       echo "All health checks passed.";
   restartPolicy: Never
+{{- end }}

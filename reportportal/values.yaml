@@ -813,7 +813,13 @@ extraInitContainers: {}
   #     - "-c"
   #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
-
+## @param hooks Helm 3+ hooks toggles
+hooks:
+  enable: true
+  pre-upgrade:
+    enabled: true
+  test:
+    enabled: true
 
 ## @section External dependencies installation configuration
 ##
