@@ -405,7 +405,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.11.0-r2
+    tag: 5.11.0-r3
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -491,7 +491,7 @@ metricsgatherer:
   name: metrics-gatherer
   image:
     repository: reportportal/service-metrics-gatherer
-    tag: 5.11.0-r2
+    tag: 5.11.0-r3
   pullPolicy: Always
   loggingLevel: debug
   timeManagement:
