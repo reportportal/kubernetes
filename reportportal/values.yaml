@@ -137,7 +137,14 @@ serviceapi:
   ## @param serviceapi.cronJobs define the configuration for the cron jobs
   ##
   cronJobs:
-    interruptBrockenLaunches: PT1H ## ISO8601 duration format
+    ## @param serviceapi.cronJobs.interruptBrockenLaunches define the duration for the cron job to interrupt broken launches
+    ## ISO8601 duration format
+    ## 
+    interruptBrockenLaunches: PT1H
+    ## @param serviceapi.cronJobs.loadPlugins define the duration for the cron job to load plugins
+    ## ISO8601 duration format
+    ##
+    loadPlugins: PT10S
   
   ## @param serviceapi.patternAnalysis define the configuration for the pattern analysis and Immediate IA
   ## @paran serviceapi.patternAnalysis.batchSize define the number of logs to be processed in one batch

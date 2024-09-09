@@ -67,6 +67,8 @@ spec:
           {{- end }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "{{ $path }}/api"
+            - name: COM_TA_REPORTPORTAL_JOB_LOAD_PLUGINS_CRON
+              value: "{{ .Values.serviceapi.cronJobs.loadPlugins }}"
             - name: RP_JOBS_BASEURL
               value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686/jobs
             - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
