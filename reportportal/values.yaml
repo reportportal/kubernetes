@@ -261,7 +261,7 @@ uat:
   ## @param serviceapi.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0"
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
 
   ## @param uat.extraEnvs define the extra environment variables
   ##
