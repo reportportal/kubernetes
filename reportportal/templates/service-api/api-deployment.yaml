@@ -99,7 +99,11 @@ spec:
           {{- end }}
           # AMQP settings
             - name: REPORTING_QUEUES_COUNT
-              value: "{{ .Values.serviceapi.queues }}"
+              value: "{{ .Values.serviceapi.amqp.queues }}"
+            - name: REPORTING_PARKINGLOT_TTL_DAYS
+              value: "{{ .Values.serviceapi.amqp.parkingLotTtlDays }}"
+            - name: REPORTING_CONSUMER_PREFETCHCOUNT
+              value: "{{ .Values.serviceapi.amqp.prefetchCount }}"
             - name: RP_AMQP_ANALYZER-VHOST
               value: "{{ .Values.msgbroker.vhost }}"
             - name: RP_AMQP_PASS
