@@ -1,9 +1,8 @@
 {{- if and .Values.hooks.enabled .Values.hooks.preUpgrade.enabled }}
-
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "reportportal.fullname" . }}-pre-upgrade-delete-job
+  name: {{ include "reportportal.fullname" . }}-pre-upgrade-cleanup
   labels:
     {{ include "labels" . | indent 4 }}
   annotations:
@@ -16,7 +15,7 @@ spec:
         {{- range $key, $value := .Values.migrations.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-pre-upgrade-delete-job
+        component: {{ include "reportportal.fullname" . }}-pre-upgrade-cleanup
     spec:
       serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
       restartPolicy: OnFailure
@@ -28,5 +27,4 @@ spec:
         - -c
         - |
           kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
-
 {{- end }}
