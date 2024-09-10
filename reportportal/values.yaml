@@ -161,9 +161,18 @@ serviceapi:
   ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
 
-  ## @param serviceapi.queues define the number for the queues
+  ## @param serviceapi.amqp define the configuration for the AMQP
   ##
-  queues: 10
+  amqp:
+    ## @param serviceapi.amqp.queues define the number for the queues
+    ##
+    queues: 10
+    ## @param serviceapi.amqp.prefetchCount define the prefetch count per consumer
+    ## 
+    prefetchCount: 10
+    ## @param serviceapi.amqp.consumersCount define time to live in parking lot queue
+    ## 
+    parkingLotTtlDays: 7
 
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
