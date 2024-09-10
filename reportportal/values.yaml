@@ -54,7 +54,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.11.1
+    tag: 5.11.1-r1
   pullPolicy: Always
   resources:
     requests:
