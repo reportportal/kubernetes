@@ -4,7 +4,7 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-ui
   labels: {{ include "labels" . | indent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.serviceui.replicaCount | default 1 }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-ui

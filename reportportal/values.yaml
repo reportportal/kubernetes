@@ -56,6 +56,7 @@ serviceui:
     repository: reportportal/service-ui
     tag: 5.11.1
   pullPolicy: Always
+  replicaCount: 1
   resources:
     requests:
       cpu: 100m
@@ -237,6 +238,7 @@ uat:
     repository: reportportal/service-authorization
     tag: 5.11.2
   pullPolicy: Always
+  replicaCount: 1
   readinessProbe:
     enabled: true
     initialDelaySeconds: 60
