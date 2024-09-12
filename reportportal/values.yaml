@@ -368,12 +368,6 @@ servicejobs:
     storageProjectCron: 0 */5 * * * *
   chunksize: 200000
 
-  ## @param servicejobs.logProcessing define the configuration for the log processing (a rate of one log per millisecond)
-  ## Use the double entry to move test logs from PostgreSQL to Elastic-type engines. Ref: https://reportportal.io/blog/double-entry-in-5.7.2
-  ##
-  logProcessing:
-    maxBatchSize: 2000
-    maxBatchTimeout: 6000
   resources:
     requests:
       cpu: 100m
@@ -614,11 +608,6 @@ msgbroker:
 
 searchengine:
   secretName: ""
-  ## @param searchengine.doubleEntry enable double entry moves test logs from PostgreSQL to Elastic-type engines
-  ## Ref: https://reportportal.io/blog/double-entry-in-5.7.2
-  ##
-  doubleEntry:
-    enable: false
   ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   ##
   endpoint:

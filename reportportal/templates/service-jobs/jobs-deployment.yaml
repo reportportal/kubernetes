@@ -61,27 +61,6 @@ spec:
 {{- end }}
         - name: SERVER_SERVLET_CONTEXT_PATH
           value: "/jobs"
-        {{- if .Values.searchengine.doubleEntry.enable }}
-        - name: RP_ELASTICSEARCH_HOST
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
-        {{- if .Values.searchengine.secretName }}
-        - name: RP_ELASTICSEARCH_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.searchengine.secretName }}"
-              key: "username"
-        - name: RP_ELASTICSEARCH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.searchengine.secretName }}"
-              key: "password"
-        {{- else }}
-        - name: RP_ELASTICSEARCH_USERNAME
-          value: "{{ .Values.searchengine.user }}"
-        - name: RP_ELASTICSEARCH_PASSWORD
-          value: "{{ .Values.searchengine.password }}"
-        {{- end}}
-        {{- end}}
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
@@ -184,10 +163,6 @@ spec:
         - name: DATASTORE_DEFAULTBUCKETNAME
           value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         {{- end }}
-        - name: RP_PROCESSING_LOG_MAXBATCHSIZE
-          value: "{{ .Values.servicejobs.logProcessing.maxBatchSize }}"
-        - name: RP_PROCESSING_LOG_MAXBATCHTIMEOUT
-          value: "{{ .Values.servicejobs.logProcessing.maxBatchTimeout }}"
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
         {{- if .Values.servicejobs.readinessProbe.enabled }}
