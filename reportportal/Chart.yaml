@@ -19,7 +19,7 @@ keywords:
   - automation test report
   - test execution dashboard
 home: https://reportportal.io
-icon: data:image/png;base64,{{ .Files.Get "logo.png" | b64enc }}
+icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
 annotations:
   category: Infrastructure
   licenses: Apache-2.0
