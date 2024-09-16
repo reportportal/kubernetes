@@ -1,12 +1,28 @@
 apiVersion: v2
-appVersion: "24.1"
-description: ReportPortal.io AI-powered Test Automation Dashboard
+appVersion: "24.1.0"
+description: |
+  ReportPortal.io is a TestOps service, that provides increased capabilities
+  to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 24.1.5
+version: 24.1.6
 sources:
-  - https://github.com/reportportal/kubernetes
+  - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
   - reportportal
+  - report portal
+  - test results reporting service
+  - test report dashboard
+  - test automation reporting tools
+  - test automation results dashboard
+  - qa automation dashboard
+  - qa metrics dashboard
+  - automation test report
+  - test execution dashboard
+home: https://reportportal.io
+icon: data:image/png;base64,{{ .Files.Get "logo.png" | b64enc }}
+annotations:
+  category: Infrastructure
+  licenses: Apache-2.0
 maintainers:
   - name: reportportal
     email: support@reportportal.io
