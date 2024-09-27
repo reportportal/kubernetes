@@ -67,6 +67,8 @@ spec:
           {{- end }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "{{ $path }}/api"
+            - name: COM_TA_REPORTPORTAL_JOB_LOAD_PLUGINS_CRON
+              value: "{{ .Values.serviceapi.cronJobs.loadPlugins }}"
             - name: RP_JOBS_BASEURL
               value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.cluster.local" .Release.Namespace }}:8686/jobs
             - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
@@ -83,10 +85,6 @@ spec:
           {{- end }}
             - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
               value: "{{ .Values.serviceapi.allowDeleteAccount }}"
-          {{- if .Values.searchengine.doubleEntry.enable }}
-            - name: RP_ELASTICSEARCH_HOST
-              value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
-          {{- end }}
             - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
               value: "info"
             - name: RP_REQUESTLOGGING
@@ -96,10 +94,12 @@ spec:
               value: "{{ .Values.serviceapi.jvmArgs }}"
           {{- end }}
           # AMQP settings
-            - name: RP_AMQP_QUEUES
-              value: {{ .Values.serviceapi.queues.totalNumber | default "10" | quote }}
-            - name: RP_AMQP_QUEUESPERPOD
-              value: {{ .Values.serviceapi.queues.perPodNumber | default "10" | quote }}
+            - name: REPORTING_QUEUES_COUNT
+              value: "{{ .Values.serviceapi.amqp.queues }}"
+            - name: REPORTING_PARKINGLOT_TTL_DAYS
+              value: "{{ .Values.serviceapi.amqp.parkingLotTtlDays }}"
+            - name: REPORTING_CONSUMER_PREFETCHCOUNT
+              value: "{{ .Values.serviceapi.amqp.prefetchCount }}"
             - name: RP_AMQP_ANALYZER-VHOST
               value: "{{ .Values.msgbroker.vhost }}"
             - name: RP_AMQP_PASS

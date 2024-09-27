@@ -52,7 +52,7 @@ Set up environment variables:
 ```bash
 export REPO_LOCATION=us-central1
 export CLUSTER_LOCATION=us-central1-a
-export PROJECT_ID={your_project_id}
+export PROJECT_ID=$(gcloud config get-value project | tr ':' '/')
 export CLUSTER_NAME={reportportal_cluster_name}
 export REPO_NAME={reportportal_helm_repo_name}
 export RELEASE_NAME={reportportal_release_name}
