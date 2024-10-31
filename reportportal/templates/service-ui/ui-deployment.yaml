@@ -32,6 +32,8 @@ spec:
       - name: {{ $.Values.serviceui.name | default "ui" }}
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceui") }}"
         imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
+        securityContext:
+{{ toYaml .Values.serviceui.containerSecurityContext | indent 10}}
         env:
         - name: RP_SERVER_PORT
           value: "8080"
