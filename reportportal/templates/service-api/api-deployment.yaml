@@ -39,6 +39,8 @@ spec:
         - name: migrations-waiting-init
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
           imagePullPolicy: IfNotPresent
+          securityContext:
+{{ toYaml .Values.serviceapi.containerSecurityContext | indent 12}}
           args:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
@@ -56,6 +58,8 @@ spec:
         - name: "{{ $.Values.serviceapi.name | default "api" }}"
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceapi") }}"
           imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
+          securityContext:
+{{ toYaml .Values.serviceapi.containerSecurityContext | indent 12 }}
           ports:
             - containerPort: 8585
               protocol: TCP
