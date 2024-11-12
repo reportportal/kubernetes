@@ -36,7 +36,7 @@ spec:
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceindex") }}"
         imagePullPolicy: "{{ .Values.serviceindex.pullPolicy }}"
         securityContext:
-{{ toYaml .Values.serviceindex.containerSecurityContext | indent 10}}
+{{ toYaml .Values.serviceindex.containerSecurityContext | nindent 10}}
         env:
         - name: K8S_MODE
           value: "true"

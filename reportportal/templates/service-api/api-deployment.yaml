@@ -40,7 +40,7 @@ spec:
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
           imagePullPolicy: IfNotPresent
           securityContext:
-{{ toYaml .Values.serviceapi.containerSecurityContext | indent 12}}
+{{ toYaml .Values.serviceapi.containerSecurityContext | nindent 12}}
           args:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
@@ -59,7 +59,7 @@ spec:
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceapi") }}"
           imagePullPolicy: "{{ .Values.serviceapi.pullPolicy }}"
           securityContext:
-{{ toYaml .Values.serviceapi.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.serviceapi.containerSecurityContext | nindent 12 }}
           ports:
             - containerPort: 8585
               protocol: TCP
