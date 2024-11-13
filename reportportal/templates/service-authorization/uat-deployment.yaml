@@ -22,6 +22,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+    {{- with .Values.uat.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+    {{- end }}
     {{- with .Values.uat.hostAliases }}
       hostAliases:
         {{- range . }}

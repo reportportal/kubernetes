@@ -30,6 +30,7 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -64,6 +65,7 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -185,6 +187,7 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -284,6 +287,7 @@ uat:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -389,6 +393,7 @@ servicejobs:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -424,6 +429,7 @@ serviceanalyzer:
     limits:
       cpu: 500m
       memory: 1Gi
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -466,6 +472,7 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -515,6 +522,7 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -555,6 +563,7 @@ migrations:
       cpu: 100m
       memory: 128Mi
   pullPolicy: Always
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
