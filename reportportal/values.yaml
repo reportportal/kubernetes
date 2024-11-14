@@ -48,6 +48,7 @@ serviceindex:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
   serviceAccountName: ""
   ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
@@ -101,6 +102,7 @@ serviceui:
   affinity: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
@@ -233,6 +235,7 @@ serviceapi:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
 
   ## @param serviceapi.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
@@ -464,6 +467,7 @@ servicejobs:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
 
   ## @param servicejobs.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
@@ -512,6 +516,7 @@ serviceanalyzer:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
   
   ## @param serviceanalyzer.extraEnvs define the extra environment variables
   ##
@@ -567,6 +572,7 @@ serviceanalyzertrain:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
   
   ## @param serviceanalyzertrain.extraEnvs define the extra environment variables
   extraEnvs: []
@@ -622,6 +628,7 @@ metricsgatherer:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
   
   ## @param metricsgatherer.extraEnvs define the extra environment variables
   extraEnvs: []
@@ -664,6 +671,7 @@ migrations:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
+  containerSecurityContext: {}
 
   ## @param migrations.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes

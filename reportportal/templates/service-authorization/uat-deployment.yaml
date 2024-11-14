@@ -44,6 +44,8 @@ spec:
         - name: migrations-waiting-init
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
           imagePullPolicy: IfNotPresent
+          securityContext:
+{{ toYaml .Values.uat.containerSecurityContext | indent 12}}
           args:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
@@ -61,6 +63,8 @@ spec:
         - name: "{{ $.Values.uat.name | default "uat" }}"
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "uat") }}"
           imagePullPolicy: "{{ .Values.uat.pullPolicy }}"
+          securityContext:
+{{ toYaml .Values.uat.containerSecurityContext | indent 12}}
           ports:
             - containerPort: 9999
               protocol: TCP
