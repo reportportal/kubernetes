@@ -27,8 +27,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- if .Values.serviceindex.extraInitContainers }}
+        {{ toYaml .Values.serviceindex.extraInitContainers | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ .Values.serviceindex.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
       containers:

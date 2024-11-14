@@ -25,8 +25,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- if .Values.serviceui.extraInitContainers }}
+        {{ toYaml .Values.serviceui.extraInitContainers | nindent 8 }}
       {{- end }}
       containers:
       - name: {{ $.Values.serviceui.name | default "ui" }}

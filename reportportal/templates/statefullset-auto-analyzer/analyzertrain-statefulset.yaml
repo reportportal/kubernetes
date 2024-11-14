@@ -39,9 +39,9 @@ spec:
           limits:
             cpu: 50m
             memory: 100Mi
-{{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
-{{- end }}
+      {{- if .Values.serviceanalyzertrain.extraInitContainers }}
+        {{ toYaml .Values.serviceanalyzertrain.extraInitContainers | nindent 8 }}
+      {{- end }}
       containers:
       - name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"

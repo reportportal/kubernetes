@@ -50,8 +50,8 @@ spec:
             limits:
               cpu: 50m
               memory: 100Mi
-      {{- if .Values.extraInitContainers }}
-        {{ toYaml .Values.extraInitContainers | nindent 8 }}
+      {{- if .Values.uat.extraInitContainers }}
+        {{ toYaml .Values.uat.extraInitContainers | nindent 8 }}
       {{- end }}
       containers:
         - name: "{{ $.Values.uat.name | default "uat" }}"

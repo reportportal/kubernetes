@@ -30,6 +30,21 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "Hello, World!"']
+    #   resources:
+    #     requests:
+    #       cpu: 10m
+    #       memory: 10Mi
+    #     limits:
+    #       cpu: 100m
+    #       memory: 100Mi
+  
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -64,6 +79,11 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -109,8 +129,11 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2Gi
-
-  ## @param serviceapi.auditLogs.enable enable sidecar container logs to write audit logs in the core container /var/log/reportportal/audit.log.
+  
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+    
   ## @param serviceapi.auditLogs.loglevel define log level
   ##
   auditLogs:
@@ -260,6 +283,10 @@ uat:
       memory: 1Gi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
   
   ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
   ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
@@ -269,7 +296,7 @@ uat:
     passwordKeyName: "superadmin-password"
     password: ""
   
-  ## @param serviceapi.javaArgs define the configuration for the JVM.
+  ## @param uat.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
@@ -377,8 +404,16 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
   
+  ## @param servicjobs.javaArgs define the configuration for the JVM.
+  ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
+  ##
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -424,6 +459,11 @@ serviceanalyzer:
     limits:
       cpu: 500m
       memory: 1Gi
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -466,6 +506,11 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -515,6 +560,11 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
+
+  ## @param extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -805,17 +855,6 @@ k8sWaitFor:
 k8s:
   networking:
     ssl: false 
-
-## @param extraInitContainers init containers (e.g. wait for minio)
-##
-extraInitContainers: {}
-  # - name: "wait-for-minio"
-  #   image: "busybox"
-  #   imagePullPolicy: "IfNotPresent"
-  #   command:
-  #     - sh
-  #     - "-c"
-  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
 ## @param hooks Helm 3+ hooks toggles
 hooks:
