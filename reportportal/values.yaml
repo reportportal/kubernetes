@@ -31,7 +31,7 @@ serviceindex:
       cpu: 200m
       memory: 256Mi
 
-  ## @param extraInitContainers init containers
+  ## @param serviceindex.extraInitContainers init containers
   ##
   extraInitContainers: {}
     # - name: init-container
@@ -80,9 +80,16 @@ serviceui:
       cpu: 200m
       memory: 128Mi
 
-  ## @param extraInitContainers init containers
+  ## @param serviceui.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param serviceui.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+    # - name: extra-volume
+    #   mountPath: /path/to/mount
+    #   readOnly: true
 
   podLabels: {}
   podAnnotations: {}
@@ -130,9 +137,13 @@ serviceapi:
       cpu: 1000m
       memory: 2Gi
   
-  ## @param extraInitContainers init containers
+  ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param serviceapi.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
     
   ## @param serviceapi.auditLogs.loglevel define log level
   ##
@@ -284,9 +295,13 @@ uat:
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
 
-  ## @param extraInitContainers init containers
+  ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param uat.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   
   ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
   ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
@@ -405,9 +420,13 @@ servicejobs:
       cpu: 250m
       memory: 512Mi
 
-  ## @param extraInitContainers init containers
+  ## @param servicjobs.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param servicjobs.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   
   ## @param servicjobs.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
@@ -460,9 +479,13 @@ serviceanalyzer:
       cpu: 500m
       memory: 1Gi
 
-  ## @param extraInitContainers init containers
+  ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
 
   podLabels: {}
   podAnnotations: {}
@@ -507,9 +530,13 @@ serviceanalyzertrain:
       cpu: 200m
       memory: 512Mi
 
-  ## @param extraInitContainers init containers
+  ## @param serviceanalyzertrain.extraInitContainers init containers
   ##
   extraInitContainers: {}
+
+  ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
 
   podLabels: {}
   podAnnotations: {}
@@ -561,10 +588,10 @@ metricsgatherer:
       cpu: 16m
       memory: 256Mi
 
-  ## @param extraInitContainers init containers
+  ## @param metricsgatherer.extraInitContainers init containers
   ##
   extraInitContainers: {}
-  
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}

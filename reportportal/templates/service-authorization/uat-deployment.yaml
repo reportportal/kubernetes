@@ -194,6 +194,9 @@ spec:
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
+          {{- if .Values.serviceapi.extraVolumeMounts }}
+            {{ toYaml .Values.serviceapi.extraVolumeMounts | nindent 12 }}
+          {{- end }}
     {{- if .Values.uat.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.uat.nodeSelector }}
