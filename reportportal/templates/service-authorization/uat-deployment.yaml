@@ -50,8 +50,8 @@ spec:
             limits:
               cpu: 50m
               memory: 100Mi
-      {{- if .Values.extraInitContainers }}
-        {{ toYaml .Values.extraInitContainers | nindent 8 }}
+      {{- if .Values.uat.extraInitContainers }}
+        {{ toYaml .Values.uat.extraInitContainers | nindent 8 }}
       {{- end }}
       containers:
         - name: "{{ $.Values.uat.name | default "uat" }}"
@@ -194,6 +194,9 @@ spec:
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
+          {{- if .Values.uat.extraVolumeMounts }}
+            {{ toYaml .Values.uat.extraVolumeMounts | nindent 12 }}
+          {{- end }}
     {{- if .Values.uat.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.uat.nodeSelector }}
@@ -217,4 +220,7 @@ spec:
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
+      {{- end }}
+      {{- if .Values.uat.extraVolumes }}
+        {{ toYaml .Values.serviceapi.extraVolumes | nindent 8 }}
       {{- end }}
