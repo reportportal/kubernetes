@@ -58,8 +58,8 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
-          {{- if .Values.serviceapi.extraVolumeMounts }}
-            {{ toYaml .Values.serviceapi.extraVolumeMounts | nindent 12 }}
+          {{- if .Values.serviceui.extraVolumeMounts }}
+            {{ toYaml .Values.serviceui.extraVolumeMounts | nindent 12 }}
           {{- end }}
       #TODO: delete volumes after release new service-ui version
       volumes:
@@ -69,6 +69,9 @@ spec:
           items:
             - key: nginx.conf
               path: nginx.conf
+        {{- if .Values.serviceui.extraVolumes }}
+          {{ toYaml .Values.serviceui.extraVolumes | nindent 8 }}
+        {{- end }}
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceui.nodeSelector }}

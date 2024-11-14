@@ -194,8 +194,8 @@ spec:
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
-          {{- if .Values.serviceapi.extraVolumeMounts }}
-            {{ toYaml .Values.serviceapi.extraVolumeMounts | nindent 12 }}
+          {{- if .Values.uat.extraVolumeMounts }}
+            {{ toYaml .Values.uat.extraVolumeMounts | nindent 12 }}
           {{- end }}
     {{- if .Values.uat.nodeSelector }}
       nodeSelector:
@@ -220,4 +220,7 @@ spec:
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
+      {{- end }}
+      {{- if .Values.uat.extraVolumes }}
+        {{ toYaml .Values.serviceapi.extraVolumes | nindent 8 }}
       {{- end }}

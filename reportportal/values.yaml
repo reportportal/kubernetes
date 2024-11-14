@@ -84,6 +84,11 @@ serviceui:
   ##
   extraInitContainers: {}
 
+  ## @param serviceui.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+    # - name: extra-volume
+    #   emptyDir: {}
   ## @param serviceui.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
@@ -144,8 +149,6 @@ serviceapi:
   ## @param serviceapi.extraVolumes define the extra volumes
   ##
   extraVolumes: []
-    # - name: extra-volume
-    #   emptyDir: {}
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
@@ -304,6 +307,9 @@ uat:
   ##
   extraInitContainers: {}
 
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
   ## @param uat.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
@@ -429,6 +435,9 @@ servicejobs:
   ##
   extraInitContainers: {}
 
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
   ## @param servicjobs.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
@@ -488,6 +497,9 @@ serviceanalyzer:
   ##
   extraInitContainers: {}
 
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
   ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
@@ -539,6 +551,9 @@ serviceanalyzertrain:
   ##
   extraInitContainers: {}
 
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
   ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
