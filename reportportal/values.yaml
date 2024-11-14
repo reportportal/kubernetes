@@ -30,7 +30,21 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
-  affinity: {}
+
+  ## @param serviceindex.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "Hello, World!"']
+    #   resources:
+    #     requests:
+    #       cpu: 10m
+    #       memory: 10Mi
+    #     limits:
+    #       cpu: 100m
+    #       memory: 100Mi
+  
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -42,6 +56,7 @@ serviceindex:
   ## Use disktype: "ssd" for specific disk type.
   ##
   nodeSelector: {}
+  affinity: {}
   service:
     type: ""
     portName: ""
@@ -65,8 +80,25 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
-  affinity: {}
+
+  ## @param serviceui.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param serviceui.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+    # - name: extra-volume
+    #   emptyDir: {}
+  ## @param serviceui.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+    # - name: extra-volume
+    #   mountPath: /path/to/mount
+    #   readOnly: true
+  
   podLabels: {}
+  affinity: {}
   podAnnotations: {}
   securityContext: {}
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
@@ -89,7 +121,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.12.0
+    tag: 5.12.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -111,8 +143,18 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2Gi
+  
+  ## @param serviceapi.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
 
-  ## @param serviceapi.auditLogs.enable enable sidecar container logs to write audit logs in the core container /var/log/reportportal/audit.log.
+  ## @param serviceapi.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceapi.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+    
   ## @param serviceapi.auditLogs.loglevel define log level
   ##
   auditLogs:
@@ -263,6 +305,17 @@ uat:
       memory: 1Gi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
+
+  ## @param uat.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param uat.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   
   ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
   ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
@@ -272,7 +325,7 @@ uat:
     passwordKeyName: "superadmin-password"
     password: ""
   
-  ## @param serviceapi.javaArgs define the configuration for the JVM.
+  ## @param uat.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
@@ -287,7 +340,6 @@ uat:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
-  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -298,6 +350,7 @@ uat:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   
   ## @param uat.secret define the secret configuration
@@ -381,8 +434,23 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+
+  ## @param servicjobs.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param servicjobs.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   
+  ## @param servicjobs.javaArgs define the configuration for the JVM.
+  ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
+  ##
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -393,7 +461,6 @@ servicejobs:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
-  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -404,6 +471,7 @@ servicejobs:
   ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
 
   service:
@@ -429,7 +497,18 @@ serviceanalyzer:
     limits:
       cpu: 500m
       memory: 1Gi
-  affinity: {}
+
+  ## @param serviceanalyzer.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -451,6 +530,7 @@ serviceanalyzer:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -472,7 +552,18 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
-  affinity: {}
+
+  ## @param serviceanalyzertrain.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -493,6 +584,7 @@ serviceanalyzertrain:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -522,7 +614,11 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
-  affinity: {}
+
+  ## @param metricsgatherer.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -543,6 +639,7 @@ metricsgatherer:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -814,17 +911,6 @@ k8sWaitFor:
 k8s:
   networking:
     ssl: false 
-
-## @param extraInitContainers init containers (e.g. wait for minio)
-##
-extraInitContainers: {}
-  # - name: "wait-for-minio"
-  #   image: "busybox"
-  #   imagePullPolicy: "IfNotPresent"
-  #   command:
-  #     - sh
-  #     - "-c"
-  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
 
 ## @param hooks Helm 3+ hooks toggles
 hooks:
