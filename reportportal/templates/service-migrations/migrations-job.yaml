@@ -17,6 +17,10 @@ spec:
         {{- end }}
     spec:
       restartPolicy: OnFailure
+      {{- with .Values.migrations.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

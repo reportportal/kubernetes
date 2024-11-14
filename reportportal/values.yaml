@@ -56,6 +56,7 @@ serviceindex:
   ## Use disktype: "ssd" for specific disk type.
   ##
   nodeSelector: {}
+  affinity: {}
   service:
     type: ""
     portName: ""
@@ -95,8 +96,9 @@ serviceui:
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
-
+  
   podLabels: {}
+  affinity: {}
   podAnnotations: {}
   securityContext: {}
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
@@ -227,6 +229,7 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -347,6 +350,7 @@ uat:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   
   ## @param uat.secret define the secret configuration
@@ -467,6 +471,7 @@ servicejobs:
   ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
 
   service:
@@ -525,6 +530,7 @@ serviceanalyzer:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -578,6 +584,7 @@ serviceanalyzertrain:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -632,6 +639,7 @@ metricsgatherer:
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -652,6 +660,7 @@ migrations:
       cpu: 100m
       memory: 128Mi
   pullPolicy: Always
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
