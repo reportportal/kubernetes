@@ -141,6 +141,11 @@ serviceapi:
   ##
   extraInitContainers: {}
 
+  ## @param serviceapi.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+    # - name: extra-volume
+    #   emptyDir: {}
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
