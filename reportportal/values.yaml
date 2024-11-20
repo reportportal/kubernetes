@@ -126,16 +126,16 @@ serviceapi:
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     periodSeconds: 20
-    timeoutSeconds: 3
+    timeoutSeconds: 5
     failureThreshold: 20
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 500m
@@ -716,7 +716,7 @@ msgbroker:
 
 searchengine:
   secretName: ""
-  ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   ##
   endpoint:
   ## @param searchengine.ssl configure SSL connection to the search engine
@@ -754,7 +754,7 @@ storage:
     ##
     ## Incoming parameters: single, multi
     ## When @param storage.bucket.type=multi @param storage.bucket.bucketDefaultName defines plugins bucket
-    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName' defines default single bucket name
+    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName defines default single bucket name
     ##
     type: multi
     bucketDefaultName: "rp-bucket"
