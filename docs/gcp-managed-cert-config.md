@@ -94,7 +94,7 @@ kubectl edit ingress ${APP_NAME}-gateway-ingress
 Update the Ingress resource to reference the `ManagedCertificate` resource:
 
 ```bash
-kubectl annotate ingress ${APP_NAME}-gateway-ingress networking.gke.io/manage-certificates=gcp-managed-certificate
+kubectl annotate ingress ${APP_NAME}-gateway-ingress networking.gke.io/managed-certificates=gcp-managed-certificate
 ```
 
 ## Check the status of the certificate
