@@ -905,6 +905,11 @@ k8sWaitFor:
     repository: reportportal/k8s-wait-for
     tag: latest
 
+kubectl:
+  image:
+    repository: bitnami/kubectl
+    tag: latest
+
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
 ##
