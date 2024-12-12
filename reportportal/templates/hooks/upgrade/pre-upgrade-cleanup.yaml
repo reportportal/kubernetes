@@ -21,7 +21,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: delete-job
-        image: bitnami/kubectl:latest
+        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "kubectl") }}"
         command:
         - /bin/sh
         - -c

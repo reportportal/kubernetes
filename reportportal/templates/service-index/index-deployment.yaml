@@ -22,13 +22,17 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.serviceindex.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- if .Values.serviceindex.extraInitContainers }}
+        {{ toYaml .Values.serviceindex.extraInitContainers | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ .Values.serviceindex.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
       containers:

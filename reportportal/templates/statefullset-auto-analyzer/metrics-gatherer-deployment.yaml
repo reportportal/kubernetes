@@ -20,6 +20,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.metricsgatherer.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -38,9 +42,9 @@ spec:
           limits:
             cpu: 50m
             memory: 100Mi
-{{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
-{{- end }}
+      {{- if .Values.metricsgatherer.extraInitContainers }}
+        {{ toYaml .Values.metricsgatherer.extraInitContainers | nindent 8 }}
+      {{- end }}
       containers:
       - name: metrics-gatherer
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "metricsgatherer") }}"

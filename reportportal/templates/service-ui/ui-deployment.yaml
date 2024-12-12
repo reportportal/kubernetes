@@ -20,13 +20,17 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.serviceui.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
+      {{- if .Values.serviceui.extraInitContainers }}
+        {{ toYaml .Values.serviceui.extraInitContainers | nindent 8 }}
       {{- end }}
       containers:
       - name: {{ $.Values.serviceui.name | default "ui" }}
@@ -58,6 +62,9 @@ spec:
             mountPath: /etc/nginx/nginx.conf
             subPath: nginx.conf
             readOnly: true
+          {{- if .Values.serviceui.extraVolumeMounts }}
+            {{ toYaml .Values.serviceui.extraVolumeMounts | nindent 12 }}
+          {{- end }}
       #TODO: delete volumes after release new service-ui version
       volumes:
       - name: ui-nginx-conf
@@ -66,6 +73,9 @@ spec:
           items:
             - key: nginx.conf
               path: nginx.conf
+        {{- if .Values.serviceui.extraVolumes }}
+          {{ toYaml .Values.serviceui.extraVolumes | nindent 8 }}
+        {{- end }}
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceui.nodeSelector }}

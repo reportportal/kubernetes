@@ -94,7 +94,7 @@ kubectl edit ingress ${APP_NAME}-gateway-ingress
 Update the Ingress resource to reference the `ManagedCertificate` resource:
 
 ```bash
-kubectl annotate ingress ${APP_NAME}-gateway-ingress networking.gke.io/manage-certificates=gcp-managed-certificate
+kubectl annotate ingress ${APP_NAME}-gateway-ingress networking.gke.io/managed-certificates=gcp-managed-certificate
 ```
 
 ## Check the status of the certificate
@@ -128,7 +128,7 @@ If you want to disable HTTP Load Balancing, you can do it after the certificate
 is attached to the Ingress resource:
 
 ```bash
-kubectl annotate ingress ${APP_NAME}-gateway-ingress kubernetes.io/ingress.allow-http: "false"
+kubectl annotate ingress ${APP_NAME}-gateway-ingress kubernetes.io/ingress.allow-http=false
 ```
 
 ## Clean up

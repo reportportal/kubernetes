@@ -20,6 +20,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
+      {{- with .Values.servicejobs.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -38,9 +42,9 @@ spec:
           limits:
             cpu: 50m
             memory: 100Mi
-{{- if .Values.extraInitContainers }}
-{{ toYaml .Values.extraInitContainers | indent 8 }}
-{{- end }}
+      {{- if .Values.servicejobs.extraInitContainers }}
+        {{ toYaml .Values.servicejobs.extraInitContainers | nindent 8 }}
+      {{- end }}
       containers:
       - name: "{{ $.Values.servicejobs.name | default "jobs" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "servicejobs") }}"
@@ -190,6 +194,9 @@ spec:
           - name: shared-volume
             mountPath: /data/storage
           {{- end }}
+          {{- if .Values.servicejobs.extraVolumeMounts }}
+            {{ toYaml .Values.servicejobs.extraVolumeMounts | nindent 12 }}
+          {{- end }}
 {{- if .Values.servicejobs.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.servicejobs.nodeSelector }}
@@ -204,8 +211,11 @@ spec:
 {{- toYaml . | nindent 8 }}
 {{- end }}
       volumes:
-        {{- if eq .Values.storage.type "filesystem" }}
+      {{- if eq .Values.storage.type "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
-        {{- end }}
+      {{- end }}
+      {{- if .Values.servicejobs.extraVolumes }}
+        {{ toYaml .Values.servicejobs.extraVolumes | nindent 8 }}
+      {{- end }}

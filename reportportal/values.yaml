@@ -21,7 +21,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.12.0
+    tag: 5.13.0
   pullPolicy: Always
   resources:
     requests:
@@ -30,6 +30,20 @@ serviceindex:
     limits:
       cpu: 200m
       memory: 256Mi
+
+  ## @param serviceindex.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+    # - name: init-container
+    #   image: busybox
+    #   command: ['sh', '-c', 'echo "Hello, World!"']
+    #   resources:
+    #     requests:
+    #       cpu: 10m
+    #       memory: 10Mi
+    #     limits:
+    #       cpu: 100m
+    #       memory: 100Mi
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -41,6 +55,7 @@ serviceindex:
   ## Use disktype: "ssd" for specific disk type.
   ##
   nodeSelector: {}
+  affinity: {}
   service:
     type: ""
     portName: ""
@@ -54,7 +69,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.12.0
+    tag: 5.12.1
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -64,7 +79,24 @@ serviceui:
     limits:
       cpu: 200m
       memory: 128Mi
+
+  ## @param serviceui.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+
+  ## @param serviceui.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+    # - name: extra-volume
+    #   emptyDir: {}
+  ## @param serviceui.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+    # - name: extra-volume
+    #   mountPath: /path/to/mount
+    #   readOnly: true
   podLabels: {}
+  affinity: {}
   podAnnotations: {}
   securityContext: {}
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
@@ -87,21 +119,21 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.12.1
+    tag: 5.13.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     periodSeconds: 20
-    timeoutSeconds: 3
+    timeoutSeconds: 5
     failureThreshold: 20
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 40
     periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 500m
@@ -109,14 +141,20 @@ serviceapi:
     limits:
       cpu: 1000m
       memory: 2Gi
-
-  ## @param serviceapi.auditLogs.enable enable sidecar container logs to write audit logs in the core container /var/log/reportportal/audit.log.
+  ## @param serviceapi.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  ## @param serviceapi.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceapi.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   ## @param serviceapi.auditLogs.loglevel define log level
   ##
   auditLogs:
-    enable: false 
+    enable: false
     loglevel: info
-
     ## @param serviceapi.auditLogs.sidecar define sidecar container configuration
     ##
     sidecar:
@@ -130,23 +168,20 @@ serviceapi:
         limits:
           cpu: 100m
           memory: 100Mi
-
   ## @param serviceapi.allowDeleteAccount enable or disable "Delete Account" button in UI
   ##
   allowDeleteAccount: true
-
   ## @param serviceapi.cronJobs define the configuration for the cron jobs
   ##
   cronJobs:
     ## @param serviceapi.cronJobs.interruptBrockenLaunches define the duration for the cron job to interrupt broken launches
     ## ISO8601 duration format
-    ## 
+    ##
     interruptBrockenLaunches: PT1H
     ## @param serviceapi.cronJobs.loadPlugins define the duration for the cron job to load plugins
     ## ISO8601 duration format
     ##
     loadPlugins: PT10S
-  
   ## @param serviceapi.patternAnalysis define the configuration for the pattern analysis and Immediate IA
   ## @paran serviceapi.patternAnalysis.batchSize define the number of logs to be processed in one batch
   ## @param serviceapi.patternAnalysis.prefetchCount define of the prefetch count for 'analysis.pattern.string' and 'analysis.pattern.regex' queues.
@@ -156,12 +191,10 @@ serviceapi:
     batchSize: 100
     prefetchCount: 1
     consumersCount: 1
-
   ## @param serviceapi.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
-
   ## @param serviceapi.amqp define the configuration for the AMQP
   ##
   amqp:
@@ -169,12 +202,11 @@ serviceapi:
     ##
     queues: 10
     ## @param serviceapi.amqp.prefetchCount define the prefetch count per consumer
-    ## 
+    ##
     prefetchCount: 10
     ## @param serviceapi.amqp.consumersCount define time to live in parking lot queue
-    ## 
+    ##
     parkingLotTtlDays: 7
-
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -185,10 +217,10 @@ serviceapi:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-
   ## @param serviceapi.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
@@ -202,7 +234,6 @@ serviceapi:
     nodePort: ""
     extraPorts: []
     annotations: {}
-
   ## @param serviceapi.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -210,14 +241,13 @@ serviceapi:
   ## keytool -list -keystore custom-pki.jks -storepass changeit
   ## Generate base64 data and paste it in your values.yaml:
   ## cat custom-pki.jks | base64 -w
-  ## 
+  ##
   secret:
     enabled: false
     mountPath: /etc/secret-volume
     readOnly: true
     data: {}
     #  custom-pki.jks: <base64-data>
-  
   ## @param serviceapi.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
   hostAliases: []
@@ -236,7 +266,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.12.0
+    tag: 5.13.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -260,7 +290,15 @@ uat:
       memory: 1Gi
   sessionLiveTime: 86400
   samlSessionLiveTime: 4320
-  
+  ## @param uat.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param uat.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
   ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
   ##
@@ -268,12 +306,10 @@ uat:
     secretName: ""
     passwordKeyName: "superadmin-password"
     password: ""
-  
-  ## @param serviceapi.javaArgs define the configuration for the JVM.
+  ## @param uat.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
-
   ## @param uat.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -287,15 +323,14 @@ uat:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-
   ## @param uat.nodeSelector define which Nodes the Pods are scheduled on
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
-  
   ## @param uat.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -303,7 +338,7 @@ uat:
   ## keytool -list -keystore custom-pki.jks -storepass changeit
   ## Generate base64 data and paste it in your values.yaml:
   ## cat custom-pki.jks | base64 -w
-  ## 
+  ##
   secret:
     enabled: false
     mountPath: /etc/secret-volume
@@ -316,7 +351,6 @@ uat:
     nodePort: ""
     extraPorts: []
     annotations: {}
-
   ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
   hostAliases: []
@@ -335,7 +369,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.12.0
+    tag: 5.13.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -349,7 +383,6 @@ servicejobs:
     periodSeconds: 40
     timeoutSeconds: 5
     failureThreshold: 10
-
   ## @param servicejobs.coreJobs define the configuration for the core jobs that clean the database and storage
   ## @param servicejobs.cleanEventsRetention define the number of days to keep events in the database
   ## @param servicejobs.cleanEventsCron define the cron expression for the clean events job
@@ -368,8 +401,9 @@ servicejobs:
     cleanLaunchCron: 0 0 */24 * * *
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
+  ## @param servicejobs.chunksize define the number of binaries to be removed from binary storage by servicejobs.storageProjectCron within one job execution
   chunksize: 200000
-
+  ## @param.servicejobs.resources define the resources for the service jobs
   resources:
     requests:
       cpu: 100m
@@ -377,8 +411,19 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
+  ## @param servicjobs.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param servicjobs.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
+  ## @param servicjobs.javaArgs define the configuration for the JVM.
+  ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
+  ##
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
-  
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -392,15 +437,14 @@ servicejobs:
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-
   ## @param servicejobs.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
   ## Use kubernetes.io/arch: ARCHITECTURE for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
-
   service:
     type: ""
     portName: ""
@@ -414,7 +458,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.12.0-r1
+    tag: 5.13.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -424,10 +468,18 @@ serviceanalyzer:
     limits:
       cpu: 500m
       memory: 1Gi
+  ## @param serviceanalyzer.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  
   ## @param serviceanalyzer.extraEnvs define the extra environment variables
   ##
   extraEnvs: []
@@ -438,13 +490,13 @@ serviceanalyzer:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
-
   ## @param serviceanalyzer.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -466,10 +518,18 @@ serviceanalyzertrain:
     limits:
       cpu: 200m
       memory: 512Mi
+  ## @param serviceanalyzertrain.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
+  ## @param uat.extraVolumes define the extra volumes
+  ##
+  extraVolumes: []
+  ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
+  ##
+  extraVolumeMounts: []
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  
   ## @param serviceanalyzertrain.extraEnvs define the extra environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
@@ -479,13 +539,13 @@ serviceanalyzertrain:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
-
   ## @param serviceanalyzertrain.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -500,7 +560,7 @@ metricsgatherer:
   name: metrics-gatherer
   image:
     repository: reportportal/service-metrics-gatherer
-    tag: 5.12.0-r1
+    tag: 5.13.0
   pullPolicy: Always
   loggingLevel: debug
   timeManagement:
@@ -515,10 +575,12 @@ metricsgatherer:
     limits:
       cpu: 16m
       memory: 256Mi
+  ## @param metricsgatherer.extraInitContainers init containers
+  ##
+  extraInitContainers: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-  
   ## @param metricsgatherer.extraEnvs define the extra environment variables
   extraEnvs: []
     # - name: EXTRA_ENV
@@ -528,13 +590,13 @@ metricsgatherer:
     #     secretKeyRef:
     #       name: "additional-credentials"
     #       key: username
-
   ## @param metricsgatherer.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
   ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
   ##
   nodeSelector: {}
+  affinity: {}
   serviceAccountName: ""
   service:
     type: ""
@@ -555,10 +617,10 @@ migrations:
       cpu: 100m
       memory: 128Mi
   pullPolicy: Always
+  affinity: {}
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
-
   ## @param migrations.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: COMPUTE_CLASS for specific GKE Autopilot compute class.
@@ -569,7 +631,6 @@ migrations:
 
 
 ## @section Infrastructure configuration
-
 database:
   secretName: ""
   passwordKeyName: "postgresql-password"
@@ -582,7 +643,7 @@ database:
   ## @param database.endpoint.ssl configure SSL connection to the database
   ## Incoming parameters: require, disable
   ##
-  ssl: disable  
+  ssl: disable
   password: &dbpassword rppassword
   ## @param database.connections define the number of connections to the database
   ##
@@ -610,7 +671,7 @@ msgbroker:
 
 searchengine:
   secretName: ""
-  ## @param searchengine.endpoint URL without protocol and port. By default opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   ##
   endpoint:
   ## @param searchengine.ssl configure SSL connection to the search engine
@@ -642,13 +703,13 @@ storage:
   port: 9000
   region: ""
   bucket:
-    ## @param storage.bucket.type switches between multi and single buckets. 
-    ## If you are upgrading an already installed Report Portal, a migration is required. 
+    ## @param storage.bucket.type switches between multi and single buckets.
+    ## If you are upgrading an already installed Report Portal, a migration is required.
     ## Ref: https://github.com/reportportal/migrations-complex/tree/master/charts
     ##
     ## Incoming parameters: single, multi
     ## When @param storage.bucket.type=multi @param storage.bucket.bucketDefaultName defines plugins bucket
-    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName' defines default single bucket name
+    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName defines default single bucket name
     ##
     type: multi
     bucketDefaultName: "rp-bucket"
@@ -757,7 +818,6 @@ ingress:
       certificate: null
 
 
-
 ## @section Additional configuration
 ##
 
@@ -799,23 +859,19 @@ k8sWaitFor:
     repository: reportportal/k8s-wait-for
     tag: latest
 
+## @param kubectl image for templates/hooks/pre-upgrade-cleanup.yaml
+##
+kubectl:
+  image:
+    repository: bitnami/kubectl
+    tag: latest
+
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
 ##
 k8s:
   networking:
-    ssl: false 
-
-## @param extraInitContainers init containers (e.g. wait for minio)
-##
-extraInitContainers: {}
-  # - name: "wait-for-minio"
-  #   image: "busybox"
-  #   imagePullPolicy: "IfNotPresent"
-  #   command:
-  #     - sh
-  #     - "-c"
-  #     - "for i in `seq 1 300`; do sleep 1; if wget http://<minio-release-name>-minio.default.svc.cluster.local:9000/minio/health/live -q -O /dev/null ; then exit 0; fi; done; exit 1"
+    ssl: false
 
 ## @param hooks Helm 3+ hooks toggles
 hooks:
@@ -849,7 +905,7 @@ postgresql:
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 ## Set @param rabbitmq.install to `false` if using a Cloud/On-Premise managed RabbitMQ
-## 
+##
 rabbitmq:
   install: true
   image:
