@@ -860,7 +860,7 @@ k8sWaitFor:
     tag: latest
 
 ## @param kubectl image for templates/hooks/pre-upgrade-cleanup.yaml
-## 
+##
 kubectl:
   image:
     repository: bitnami/kubectl
