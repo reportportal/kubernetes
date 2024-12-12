@@ -33,6 +33,8 @@ spec:
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
+        securityContext:
+{{ toYaml .Values.serviceanalyzertrain.containerSecurityContext | indent 10}}
         args:
           - "pod-wr"
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
@@ -50,6 +52,8 @@ spec:
       - name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"
         imagePullPolicy: "{{ .Values.serviceanalyzertrain.pullPolicy }}"
+        securityContext:
+{{ toYaml .Values.serviceanalyzertrain.containerSecurityContext | indent 10}}
         ports:
         - containerPort: 5001
           name: analyzertrain

@@ -32,6 +32,8 @@ spec:
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
+        securityContext:
+{{ toYaml .Values.metricsgatherer.containerSecurityContext | indent 10}}
         args:
           - "pod-wr"
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
@@ -49,6 +51,8 @@ spec:
       - name: metrics-gatherer
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "metricsgatherer") }}"
         imagePullPolicy: "{{ .Values.metricsgatherer.pullPolicy }}"
+        securityContext:
+{{ toYaml .Values.metricsgatherer.containerSecurityContext | indent 10}}
         ports:
         - containerPort: 5000
           name: metricsgatherer
