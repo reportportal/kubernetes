@@ -1,10 +1,10 @@
 apiVersion: v2
-appVersion: "24.2.0"
+appVersion: "24.2.2"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 24.2.2
+version: 24.12.13
 sources:
   - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
@@ -31,19 +31,19 @@ maintainers:
 dependencies:
   # If you update version, please update also postgresql.image.tag in values.yaml
   - name: postgresql
-    version: 15.5.28
+    version: 15.5.38
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.install
     # If you update version, please update also rabbitmq.image.tag in values.yaml
   - name: rabbitmq
-    version: 14.6.9
+    version: 14.7.0
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
   - name: opensearch
-    version: 2.24.0
+    version: 2.27.1
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
   - name: minio
-    version: 14.7.7
+    version: 14.10.0
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
