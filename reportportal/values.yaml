@@ -13,7 +13,7 @@ global:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
-  security: 
+  security:
     allowInsecureImages: true
 
 
