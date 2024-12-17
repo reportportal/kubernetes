@@ -13,6 +13,8 @@ global:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
+  security: 
+    allowInsecureImages: true
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -119,7 +121,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.13.0
+    tag: 5.13.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
