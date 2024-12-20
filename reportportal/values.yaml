@@ -460,7 +460,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.13.0
+    tag: 5.13.1
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
