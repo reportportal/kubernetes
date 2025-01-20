@@ -45,10 +45,10 @@ app: {{ $.Chart.Name | quote }}
 Create the name of the service account to use
 */}}
 {{- define "reportportal.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default "reportportal" .Values.serviceAccount.name }}
+{{- if .Values.global.serviceAccount.create -}}
+    {{ default "reportportal" .Values.global.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+    {{ default "default" .Values.global.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 
