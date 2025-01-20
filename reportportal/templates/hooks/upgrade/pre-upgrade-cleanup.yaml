@@ -16,6 +16,10 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
         component: {{ include "reportportal.fullname" . }}-pre-upgrade-cleanup
+      annotations:
+        {{- range $key, $value := .Values.migrations.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
       restartPolicy: OnFailure
