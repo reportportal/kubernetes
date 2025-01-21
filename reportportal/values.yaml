@@ -926,6 +926,10 @@ rabbitmq:
     rabbitmq_consistent_hash_exchange
     rabbitmq_shovel
     rabbitmq_shovel_management
+  featureFlags: >
+    rabbitmq_4.0.0
+    khepri_db
+    rabbit_exchange_type_local_random
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
