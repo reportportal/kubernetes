@@ -15,6 +15,13 @@ global:
   fullnameOverride: ""
   security:
     allowInsecureImages: true
+  serviceAccount:
+    create: true
+    name: reportportal
+    ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
+    ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+    ##
+    annotations: {}
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -831,14 +838,6 @@ tolerations: []
   #   operator: "Equal|Exists"
   #   value: "value"
   #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
-
-serviceAccount:
-  create: true
-  name: reportportal
-  ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
-  ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-  ##
-  annotations: {}
 
 ## Role Based Access
 ## ref: https://kubernetes.io/docs/admin/authorization/rbac/
