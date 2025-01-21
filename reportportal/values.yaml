@@ -927,11 +927,11 @@ rabbitmq:
     rabbitmq_shovel
     rabbitmq_shovel_management
   featureFlags: >
-    rabbitmq_4.0.0
-    detailed_queues_endpoint
-    message_containers_deaths_v2
-    quorum_queue_non_voters
-    rabbit_exchange_type_local_random
+    rabbitmq_4.0.0,
+    detailed_queues_endpoint,
+    message_containers_deaths_v2,
+    quorum_queue_non_voters,
+    rabbit_exchange_type_local_random,
     khepri_db
  
     
