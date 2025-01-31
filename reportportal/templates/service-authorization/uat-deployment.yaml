@@ -226,5 +226,5 @@ spec:
             claimName: {{ .Release.Name }}-shared-volume-claim
       {{- end }}
       {{- if .Values.uat.extraVolumes }}
-        {{ toYaml .Values.serviceapi.extraVolumes | nindent 8 }}
+        {{ toYaml .Values.uat.extraVolumes | nindent 8 }}
       {{- end }}

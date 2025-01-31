@@ -128,7 +128,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.13.2
+    tag: 5.13.3
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -275,7 +275,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.13.0
+    tag: 5.13.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -378,7 +378,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.13.0
+    tag: 5.13.1
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -579,10 +579,10 @@ metricsgatherer:
   maxDaysStore: 500
   resources:
     requests:
-      cpu: 8m
+      cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 16m
+      cpu: 250m
       memory: 256Mi
   ## @param metricsgatherer.extraInitContainers init containers
   ##
