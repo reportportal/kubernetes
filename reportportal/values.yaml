@@ -563,57 +563,6 @@ serviceanalyzertrain:
     extraPorts: []
     annotations: {}
 
-## @param serviceanalyzerpredict Core ReportPortal service for the prediction of the analysis of test results
-##
-metricsgatherer:
-  name: metrics-gatherer
-  image:
-    repository: reportportal/service-metrics-gatherer
-    tag: 5.13.0
-  pullPolicy: Always
-  loggingLevel: debug
-  timeManagement:
-    starttime: 22:00
-    endtime: 08:00
-    timezone: Europe/Minsk
-  maxDaysStore: 500
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
-      memory: 256Mi
-  ## @param metricsgatherer.extraInitContainers init containers
-  ##
-  extraInitContainers: {}
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  ## @param metricsgatherer.extraEnvs define the extra environment variables
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
-  ## @param metricsgatherer.nodeSelector define which Nodes the Pods are scheduled on.
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  serviceAccountName: ""
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
-
 migrations:
   image:
     repository: reportportal/migrations
