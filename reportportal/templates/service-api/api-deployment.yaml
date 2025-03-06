@@ -245,6 +245,10 @@ spec:
             - -c
             - while true; do if [ -e "/var/log/reportportal/audit.log" ]; then tail -f /var/log/reportportal/audit.log; else sleep 60; fi; done
           imagePullPolicy: IfNotPresent
+          {{- if .Values.global.securityContext }}
+          securityContext:
+            {{ toYaml .Values.global.securityContext | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.serviceapi.auditLogs.sidecar.resources | nindent 12 }}
           volumeMounts:
