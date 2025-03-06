@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-ui
   labels: {{ include "labels" . | indent 4 }}
+  {{- if .Values.global.annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.global.annotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.serviceui.replicaCount | default 1 }}
   selector:
@@ -36,6 +39,10 @@ spec:
       - name: {{ $.Values.serviceui.name | default "ui" }}
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceui") }}"
         imagePullPolicy: "{{ .Values.serviceui.pullPolicy }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         env:
         - name: RP_SERVER_PORT
           value: "8080"
@@ -63,7 +70,7 @@ spec:
             subPath: nginx.conf
             readOnly: true
           {{- if .Values.serviceui.extraVolumeMounts }}
-            {{ toYaml .Values.serviceui.extraVolumeMounts | nindent 12 }}
+            {{ toYaml .Values.serviceui.extraVolumeMounts | nindent 10 }}
           {{- end }}
       #TODO: delete volumes after release new service-ui version
       volumes:
@@ -74,7 +81,7 @@ spec:
             - key: nginx.conf
               path: nginx.conf
         {{- if .Values.serviceui.extraVolumes }}
-          {{ toYaml .Values.serviceui.extraVolumes | nindent 8 }}
+          {{ toYaml .Values.serviceui.extraVolumes | nindent 6 }}
         {{- end }}
 {{- if .Values.serviceui.nodeSelector }}
       nodeSelector:

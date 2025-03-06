@@ -71,6 +71,10 @@ spec:
         {{- end }}
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "migrations") }}"
         imagePullPolicy: "{{ .Values.migrations.pullPolicy }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         name: migrations
         resources:
           requests:

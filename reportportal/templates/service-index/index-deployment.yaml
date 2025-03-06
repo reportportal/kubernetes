@@ -5,6 +5,9 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-index
   labels: {{ include "labels" . | indent 4 }}
+  {{- if .Values.global.annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.global.annotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   selector:
@@ -39,6 +42,10 @@ spec:
       - name: {{ $.Values.serviceindex.name | default "index" }}
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceindex") }}"
         imagePullPolicy: "{{ .Values.serviceindex.pullPolicy }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         env:
         - name: K8S_MODE
           value: "true"

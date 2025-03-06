@@ -10,7 +10,7 @@ metadata:
 spec:
   containers:
   - name: test-container
-    image: curlimages/curl:latest
+    image: "{{ include "reportportal.image" (dict "Values" .Values "service" "curl") }}"
     command: ["/bin/sh", "-c"]
     args:
     - >
@@ -31,5 +31,12 @@ spec:
         fi;
       done;
       echo "All health checks passed.";
+    resources:
+      requests:
+        cpu: {{ .Values.hooks.resources.requests.cpu }}
+        memory: {{ .Values.hooks.resources.requests.memory }}
+      limits:
+        cpu: {{ .Values.hooks.resources.limits.cpu }}
+        memory: {{ .Values.hooks.resources.limits.memory }}
   restartPolicy: Never
 {{- end }}

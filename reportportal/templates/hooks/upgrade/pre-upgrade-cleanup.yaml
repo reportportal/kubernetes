@@ -26,9 +26,20 @@ spec:
       containers:
       - name: delete-job
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "kubectl") }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         command:
         - /bin/sh
         - -c
         - |
           kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
+        resources:
+          requests:
+            cpu: {{ .Values.hooks.resources.requests.cpu }}
+            memory: {{ .Values.hooks.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.hooks.resources.limits.cpu }}
+            memory: {{ .Values.hooks.resources.limits.memory }}
 {{- end }}

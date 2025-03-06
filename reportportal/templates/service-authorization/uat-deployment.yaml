@@ -5,6 +5,9 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
+  {{- if .Values.global.annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.global.annotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.uat.replicaCount | default 1 }}
   selector:
@@ -44,6 +47,10 @@ spec:
         - name: migrations-waiting-init
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
           imagePullPolicy: IfNotPresent
+          {{- if .Values.global.securityContext }}
+          securityContext:
+            {{ toYaml .Values.global.securityContext | nindent 12 }}
+          {{- end }}
           args:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
@@ -61,6 +68,10 @@ spec:
         - name: "{{ $.Values.uat.name | default "uat" }}"
           image: "{{ include "reportportal.image" (dict "Values" .Values "service" "uat") }}"
           imagePullPolicy: "{{ .Values.uat.pullPolicy }}"
+          {{- if .Values.global.securityContext }}
+          securityContext:
+            {{ toYaml .Values.global.securityContext | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: 9999
               protocol: TCP

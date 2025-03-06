@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-jobs
   labels: {{ include "labels" . | indent 4 }}
+  {{- if .Values.global.annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.global.annotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   selector:
@@ -32,6 +35,10 @@ spec:
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         args:
           - "job-wr"
           - {{ include "reportportal.fullname" . }}-migrations
@@ -49,6 +56,10 @@ spec:
       - name: "{{ $.Values.servicejobs.name | default "jobs" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "servicejobs") }}"
         imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 8686
           protocol: TCP

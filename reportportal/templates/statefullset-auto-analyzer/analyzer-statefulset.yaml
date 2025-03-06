@@ -3,6 +3,9 @@ kind: StatefulSet
 metadata:
   name: {{ include "reportportal.fullname" . }}-analyzer
   labels: {{ include "labels" . | indent 4 }}
+  {{- if .Values.global.annotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.global.annotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   selector:
@@ -33,6 +36,10 @@ spec:
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         args:
           - "pod-wr"
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
@@ -50,6 +57,10 @@ spec:
       - name: "{{ $.Values.serviceanalyzer.name | default "analyzer" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"
         imagePullPolicy: "{{ .Values.serviceanalyzer.pullPolicy }}"
+        {{- if .Values.global.securityContext }}
+        securityContext:
+          {{ toYaml .Values.global.securityContext | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: 5001
           name: analyzercore
