@@ -22,6 +22,11 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
+  securityContext:
+    allowPrivilegeEscalation: False
+    capabilities:
+      drop:
+        - ALL
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -95,12 +100,23 @@ serviceui:
 
   ## @param serviceui.extraVolumes define the extra volumes
   ##
-  extraVolumes: []
+  extraVolumes:
+    - name: var-volume
+      emptyDir: { }
     # - name: extra-volume
     #   emptyDir: {}
   ## @param serviceui.extraVolumeMounts define the extra volume mounts
   ##
-  extraVolumeMounts: []
+  extraVolumeMounts:
+    - name: var-volume
+      mountPath: /var/log/nginx
+      readOnly: false
+    - name: var-volume
+      mountPath: /var/cache/nginx
+      readOnly: false
+    - name: var-volume
+      mountPath: /var/run
+      readOnly: false
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
@@ -807,14 +823,21 @@ rbac:
 k8sWaitFor:
   image:
     repository: reportportal/k8s-wait-for
-    tag: latest
+    tag: 2.1.2
 
 ## @param kubectl image for templates/hooks/pre-upgrade-cleanup.yaml
 ##
 kubectl:
   image:
     repository: bitnami/kubectl
-    tag: latest
+    tag: "1.30"
+
+## @param curl image for templates/hooks/tests/readiness-test.yaml
+##
+curl:
+  image:
+    repository: curlimages/curl
+    tag: "8.11.0"
 
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
@@ -830,6 +853,13 @@ hooks:
     enabled: true
   test:
     enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 248Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
 
 ## @section External dependencies installation configuration
 ##
