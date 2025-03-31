@@ -828,8 +828,22 @@ hooks:
   enabled: true
   preUpgrade:
     enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
   test:
     enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
 
 ## @section External dependencies installation configuration
 ##
