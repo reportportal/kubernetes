@@ -1,10 +1,10 @@
 apiVersion: v2
-appVersion: "25.0.4"
+appVersion: "25.0.6"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 25.2.27
+version: 25.4.8
 sources:
   - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
