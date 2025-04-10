@@ -31,4 +31,6 @@ spec:
         - -c
         - |
           kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
+        resources:
+          {{- toYaml .Values.hooks.preUpgrade.resources | nindent 10 }}
 {{- end }}

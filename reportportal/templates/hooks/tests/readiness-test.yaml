@@ -31,5 +31,7 @@ spec:
         fi;
       done;
       echo "All health checks passed.";
+    resources:
+      {{- toYaml .Values.hooks.test.resources | nindent 6 }}
   restartPolicy: Never
 {{- end }}
