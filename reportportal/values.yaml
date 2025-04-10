@@ -378,7 +378,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.13.1
+    tag: 5.13.2
   pullPolicy: Always
   readinessProbe:
     enabled: true
