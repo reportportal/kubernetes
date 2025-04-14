@@ -68,7 +68,7 @@ helm install my-release \
 
 > **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
-All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
+All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/reportportal/values.yaml) file.
 
 ### Install from sources
 
@@ -78,7 +78,7 @@ For fetching chart dependencies, use the command:
 helm dependency build .
 ```
 
-> This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/Chart.yaml) by the chart.
+> This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/reportportal/Chart.yaml) by the chart.
 
 To install the chart directly from local sources, use:
 
