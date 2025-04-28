@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-api
+  namespace: {{ .Release.Namespace }}
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.serviceapi.replicaCount | default 1 }}
