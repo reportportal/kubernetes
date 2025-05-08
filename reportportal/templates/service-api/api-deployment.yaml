@@ -209,8 +209,8 @@ spec:
             failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 5 }}
         {{- end }}
           volumeMounts:
-          {{- if .Values.serviceapi.secret.enabled }}
-            - name: {{ template "reportportal.name" . }}-serviceapi-secret
+          {{- if and .Values.serviceapi.secret.enabled (or .Values.serviceapi.secret.existingSecret .Values.serviceapi.secret.data) }}
+            - name: serviceapi-user-supplied-secret
               mountPath: {{ .Values.serviceapi.secret.mountPath }}
               readOnly: {{ .Values.serviceapi.secret.readOnly }}
           {{- end }}
@@ -254,10 +254,10 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
-      {{- if .Values.serviceapi.secret.enabled }}
-        - name: {{ template "reportportal.name" . }}-serviceapi-secret
+      {{- if and .Values.serviceapi.secret.enabled (or .Values.serviceapi.secret.existingSecret .Values.serviceapi.secret.data) }}
+        - name: serviceapi-user-supplied-secret
           secret:
-            secretName: {{ template "reportportal.name" . }}-serviceapi-secret
+            secretName: {{ coalesce .Values.serviceapi.secret.existingSecret (printf "%s-serviceapi-secret" (include "reportportal.name" .)) }}
       {{- end }}
       {{- if .Values.serviceapi.auditLogs.enable }}
         - name: audit-log-volume
