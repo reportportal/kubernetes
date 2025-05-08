@@ -189,8 +189,8 @@ spec:
             failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 10 }}
         {{- end }}
           volumeMounts:
-          {{- if .Values.uat.secret.enabled }}
-            - name: {{ template "reportportal.name" . }}-uat-secret
+          {{- if and .Values.uat.secret.enabled (or .Values.uat.secret.existingSecret .Values.uat.secret.data) }}
+            - name: uat-user-supplied-secret
               mountPath: {{ .Values.uat.secret.mountPath }}
               readOnly: {{ .Values.uat.secret.readOnly }}
           {{- end }}
@@ -215,10 +215,10 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
-      {{- if .Values.uat.secret.enabled }}
-        - name: {{ template "reportportal.name" . }}-uat-secret
+      {{- if and .Values.uat.secret.enabled (or .Values.uat.secret.existingSecret .Values.uat.secret.data) }}
+        - name: uat-user-supplied-secret
           secret:
-            secretName: {{ template "reportportal.name" . }}-uat-secret
+            secretName: {{ coalesce .Values.uat.secret.existingSecret (printf "%s-uat-secret" (include "reportportal.name" .)) }}
       {{- end }}
       {{- if eq .Values.storage.type "filesystem" }}
         - name: shared-volume
