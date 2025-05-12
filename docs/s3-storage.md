@@ -162,3 +162,21 @@ When running ReportPortal in Docker containers on an EC2 instance with an attach
 All you need to do is attach the role created in the first step to the EC2 instance as an instance profile, or modify an existing one to include S3 read/write permissions.
 
 How to [Attach an IAM role to an instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/attach-iam-role.html)
+
+Update the `docker-compose.yml` file with the appropriate storage configuration:
+
+```yaml
+x-environment: &common-environment
+  # Ref.: https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions
+  RP_FEATURE_FLAGS: singleBucket
+  DATASTDATASTORE_TYPE: s3 
+  DATASTORE_REGION: us-standard   # Region of the bucket (JCloud ref. to `us-east-1`)
+  DATASTORE_ACCESSKEY:
+  DATASTORE_DEFAULTBUCKETNAME: my-rp-bucket
+```
+
+Install ReportPortal using Docker Compsoe:
+
+```bash
+docker-compose -p reportportal up -d --force-recreate
+```
