@@ -160,3 +160,5 @@ This configuration ensures that ReportPortal uses Amazon S3 for storage with IAM
 When running ReportPortal in Docker containers on an EC2 instance with an attached IAM instance profile, the AWS SDK will automatically retrieve credentials from the EC2 Instance Metadata Service (IMDS) without any additional configuration.
 
 All you need to do is attach the role created in the first step to the EC2 instance as an instance profile, or modify an existing one to include S3 read/write permissions.
+
+How to [Attach an IAM role to an instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/attach-iam-role.html)
