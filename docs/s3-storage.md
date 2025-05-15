@@ -44,7 +44,7 @@ To enable secure access to your S3 bucket, you need to create an AWS IAM role wi
 
 ### Step 1: Define the Trust Policy
 
-The trust policy determines which AWS service or entity can assume the role. Save the following JSON content to a file named `trust-policy.json`:
+The trust policy specifies which AWS service or entity is allowed to assume the role. Save the following JSON content to a file named `trust-policy.json`:
 
 ```json
 {
@@ -53,13 +53,28 @@ The trust policy determines which AWS service or entity can assume the role. Sav
         {
             "Effect": "Allow",
             "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Federated": "arn:aws:iam::ACCOUNT_ID:oidc-provider/oidc.eks.REGION.amazonaws.com/id/OIDC_ID"
             },
-            "Action": "sts:AssumeRole"
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringLike": {
+                    "oidc.eks.REGION.amazonaws.com/id/OIDC_ID:aud": "sts.amazonaws.com",
+                    "oidc.eks.REGION.amazonaws.com/id/OIDC_ID:sub": "system:serviceaccount:NAMESPACE:SA_NAME"
+                }
+            }
         }
     ]
 }
 ```
+
+Replace the placeholders with the appropriate values:
+- `ACCOUNT_ID`: Your AWS account ID.
+- `REGION`: The AWS region where your EKS cluster is deployed.
+- `OIDC_ID`: The unique identifier of your OIDC provider.
+- `NAMESPACE`: The Kubernetes namespace of the service account.
+- `SA_NAME`: The name of the Kubernetes service account.
+
+This trust policy ensures that only the specified Kubernetes service account can assume the IAM role via the OIDC provider.
 
 ### Step 2: Create the IAM Role
 
@@ -124,7 +139,7 @@ global:
     create: true
     name: reportportal
     annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::my-account-id:role/my-rp-s3-role"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/my-rp-s3-role"
 
 
 storage:
@@ -137,7 +152,7 @@ storage:
   region: "us-standard" # JCloud ref. to `us-east-1`
   bucket:
     type: single
-    bucketDefaultName: "my-rp-bucket"
+    bucketDefaultName: "my-rp-bucket" # Bucket created from step 1
 
 # Disable the MinIO dependency
 minio:

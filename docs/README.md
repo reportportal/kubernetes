@@ -7,6 +7,7 @@ This directory contains installation guides for ReportPortal on Kubernetes.
 - [Certificates Management](certificates-management.md)
 - [Cert-Manager Configuration](cert-manager-config.md)
 - [Google Managed Certificates Configuration](gcp-managed-cert-config.md)
+- [Amazon S3 Access Using IAM Role](s3-storage.md)
 
 ## Google Kubernetes Engine (GKE) application
 
