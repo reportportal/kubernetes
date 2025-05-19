@@ -8,6 +8,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-gateway-ingress
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
   annotations:
   {{- if eq .Values.ingress.class "nginx" }}
     {{- range $key, $value := .Values.ingress.annotations.nginx }}

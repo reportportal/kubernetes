@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: {{ include "reportportal.fullname" . }}-migrations
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
 spec:
   template:
     metadata:

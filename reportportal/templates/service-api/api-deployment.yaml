@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-api
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.serviceapi.replicaCount | default 1 }}
   selector:

@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-ui
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     service: {{ $.Values.serviceui.name | default "ui" }}
     infoEndpoint: "/ui/info"

@@ -3,6 +3,7 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: {{ .Release.Name }}-gcp-managed-cert
+  namespace: {{ .Release.Namespace }}
   labels:
     {{ include "labels" . | nindent 4 }}
 spec:

@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-index
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     service: {{ $.Values.serviceindex.name | default "index" }}
     infoEndpoint: "/info"

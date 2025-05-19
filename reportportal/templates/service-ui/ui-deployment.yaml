@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "reportportal.fullname" . }}-ui
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.serviceui.replicaCount | default 1 }}
   selector:

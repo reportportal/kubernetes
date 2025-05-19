@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-uat
   labels: {{ include "labels" . | indent 4 }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     service: {{ $.Values.uat.name | default "uat" }}
     infoEndpoint: "{{ .Values.ingress.path }}/uat/info"

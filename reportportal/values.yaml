@@ -896,21 +896,21 @@ rabbitmq:
 opensearch:
   install: true
   image:
-    repository: opensearchproject/opensearch
-    tag: 2.18.0
-  ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
-  ##
-  singleNode: true
-  ## @param opensearch.httpPort Port for OpenSearch endpoint
-  ##
-  httpPort: *searchenginePort
-  startupProbe:
-    initialDelaySeconds: 30
-  extraEnvs:
-    - name: DISABLE_INSTALL_DEMO_CONFIG
-      value: "true"
-    - name: DISABLE_SECURITY_PLUGIN
-      value: "true"
+    repository: bitnami/opensearch
+    tag: 3.0.0-debian-12-r2
+  master:
+    masterOnly: true
+    replicaCount: 1
+  data:
+    replicaCount: 1
+  coordinating:
+    replicaCount: 1
+  ingest:
+    enabled: false
+  dashboards:
+    enabled: false
+  snapshots:
+    enabled: false
 
 ## @param minio External MinIO Helm Chart
 ## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
