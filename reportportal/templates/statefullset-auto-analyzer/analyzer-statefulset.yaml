@@ -109,7 +109,7 @@ spec:
         - name: AMQP_VIRTUAL_HOST
           value: "{{ .Values.msgbroker.vhost }}"
         - name: ES_HOSTS
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "%s-opensearch-master-hl.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.searchengine.port }}"
         {{- if .Values.searchengine.secretName }}
         - name: ES_USER
           valueFrom:
