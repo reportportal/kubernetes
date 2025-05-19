@@ -48,7 +48,7 @@ spec:
           value: "{{ .Values.database.password }}"
         {{ end }}
         - name: OS_HOST
-          value: "{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}"
+          value: "{{ .Values.searchengine.endpoint | default (printf "%s-opensearch-master-hl.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}"
         - name: OS_PORT
           value: "{{ .Values.searchengine.port | default "9200" }}"
         - name: OS_PROTOCOL
