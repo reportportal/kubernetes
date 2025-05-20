@@ -36,6 +36,8 @@ Create an Amazon S3 bucket to store your data. Replace `my-rp-bucket` with a uni
 aws s3api create-bucket --bucket my-rp-bucket --region us-east-1
 ```
 
+> To create a bucket outside of the `us-east-1` region, add the following flag: `--create-bucket-configuration LocationConstraint=<region>`, replacing `<region>` with your desired AWS region.
+
 Ensure that the bucket name adheres to [Amazon S3 bucket naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
 
 ## 2. AWS IAM Role
@@ -57,9 +59,9 @@ The trust policy specifies which AWS service or entity is allowed to assume the 
             },
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
-                "StringLike": {
+                "StringEquals": {
                     "oidc.eks.REGION.amazonaws.com/id/OIDC_ID:aud": "sts.amazonaws.com",
-                    "oidc.eks.REGION.amazonaws.com/id/OIDC_ID:sub": "system:serviceaccount:NAMESPACE:SA_NAME"
+                    "oidc.eks.REGION.amazonaws.com/id/OIDC_ID:sub": "system:serviceaccount:NAMESPACE:reportportal"
                 }
             }
         }
@@ -70,15 +72,15 @@ The trust policy specifies which AWS service or entity is allowed to assume the 
 Replace the placeholders with the appropriate values:
 - `ACCOUNT_ID`: Your AWS account ID.
 - `REGION`: The AWS region where your EKS cluster is deployed.
-- `OIDC_ID`: The unique identifier of your OIDC provider.
+- `OIDC_ID`: The unique identifier of your OIDC provider. [How to create an IAM OIDC provider for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
 - `NAMESPACE`: The Kubernetes namespace of the service account.
-- `SA_NAME`: The name of the Kubernetes service account.
+- `reportportal`: The name of the Kubernetes service account.
 
 This trust policy ensures that only the specified Kubernetes service account can assume the IAM role via the OIDC provider.
 
 ### Step 2: Create the IAM Role
 
-Use the AWS CLI to create the IAM role with the trust policy:
+Use the AWS CLI to create the IAM role with  the trust policy:
 
 ```bash
 aws iam create-role --role-name my-rp-s3-role \
@@ -94,6 +96,7 @@ The permissions policy specifies the actions the IAM role can perform on the S3 
     "Version": "2012-10-17",
     "Statement": [
         {
+            "Sid": "AllowListAndLocation",
             "Effect": "Allow",
             "Action": [
                 "s3:ListBucket",
@@ -102,11 +105,14 @@ The permissions policy specifies the actions the IAM role can perform on the S3 
             "Resource": "arn:aws:s3:::my-rp-bucket"
         },
         {
+            "Sid": "AllowObjectOpsAnywhere",
             "Effect": "Allow",
             "Action": [
                 "s3:PutObject",
                 "s3:GetObject",
-                "s3:DeleteObject"
+                "s3:DeleteObject",
+                "s3:GetObjectAcl",
+                "s3:GetObjectVersion"
             ],
             "Resource": "arn:aws:s3:::my-rp-bucket/*"
         }
