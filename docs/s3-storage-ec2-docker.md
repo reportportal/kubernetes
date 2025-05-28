@@ -4,22 +4,20 @@ This document outlines the requirements and configuration steps to enable read/w
 
 ## Table of Contents
 
-* [Requirements](#requirements)
-* [1. S3 Bucket](#1-s3-bucket)
-* [2. AWS IAM Role](#2-aws-iam-role)
-
-  * [Step 1: Define the Trust Policy](#step-1-define-the-trust-policy)
-  * [Step 2: Create the IAM Role](#step-2-create-the-iam-role)
-  * [Step 3: Define the Permissions Policy](#step-3-define-the-permissions-policy)
-  * [Step 4: Attach the Permissions Policy](#step-4-attach-the-permissions-policy)
-* [3. IAM Instance Profile](#3-iam-instance-profile)
-
-  * [Step 1: Create an Instance Profile](#step-1-create-an-instance-profile)
-  * [Step 2: Attach the Role to the Instance Profile](#step-2-attach-the-role-to-the-instance-profile)
-  * [Step 3: Associate the Profile with the EC2 Instance](#step-3-associate-the-profile-with-the-ec2-instance)
-  * [Step 4: Enable Instance Metadata Access](#step-4-enable-instance-metadata-access)
-* [4. ReportPortal Configuration](#4-reportportal-configuration)
-* [5. Docker-Based Installation](#5-docker-based-installation)
+- [Requirements](#requirements)
+- [S3 Bucket](#1-s3-bucket)
+- [AWS IAM Role](#2-aws-iam-role)
+  - [Step 1: Define the Trust Policy](#step-1-define-the-trust-policy)
+  - [Step 2: Create the IAM Role](#step-2-create-the-iam-role)
+  - [Step 3: Define the Permissions Policy](#step-3-define-the-permissions-policy)
+  - [Step 4: Attach the Permissions Policy](#step-4-attach-the-permissions-policy)
+- [IAM Instance Profile](#3-iam-instance-profile)
+  - [Step 1: Create an Instance Profile](#step-1-create-an-instance-profile)
+  - [Step 2: Attach the Role to the Instance Profile](#step-2-attach-the-role-to-the-instance-profile)
+  - [Step 3: Associate the Profile with the EC2 Instance](#step-3-associate-the-profile-with-the-ec2-instance)
+  - [Step 4: Enable Instance Metadata Access](#step-4-enable-instance-metadata-access)
+- [ReportPortal Configuration](#4-reportportal-configuration)
+- [Docker-Based Installation](#5-docker-based-installation)
 
 ## Requirements
 
@@ -146,7 +144,7 @@ Replace `INSTANCE_ID` with your EC2 instance ID:
 ```bash
 aws ec2 associate-iam-instance-profile \
     --region us-east-1 \
-    --instance-id i-002746c9a8a597198 \
+    --instance-id <INSTANCE_ID> \
     --iam-instance-profile Name=my-ec2-rp-s3-profile
 ```
 
@@ -156,7 +154,7 @@ To allow a Docker container to access IMDSv2 metadata, you must increase the ins
 
 ```bash
 aws ec2 modify-instance-metadata-options \
-    --instance-id i-002746c9a8a597198 \
+    --instance-id <INSTANCE_ID> \
     --http-put-response-hop-limit 2 \
     --http-endpoint enabled \
     --region us-east-1
@@ -177,7 +175,7 @@ x-environment: &common-environment
   DATASTORE_DEFAULTBUCKETNAME: my-rp-docker-bucket
 ```
 
-> ℹ️ For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions).
+> For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions).
 
 ## 5. Docker-Based Installation
 
