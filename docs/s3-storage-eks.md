@@ -1,4 +1,4 @@
-# Amazon S3 Access Using IAM Role
+# S3-Based Storage Using IAM Role for Amazon EKS-based ReportPortal
 
 This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 using the AWS SDK for Java ([software.amazon.awssdk:aws-core:2.31.23](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/DefaultCredentialsProvider.html)) in two deployment scenarios:
 
@@ -14,8 +14,7 @@ This document outlines the requirements and configuration steps to enable read/w
   - [Step 2: Create the IAM Role](#step-2-create-the-iam-role)
   - [Step 3: Define the Permissions Policy](#step-3-define-the-permissions-policy)
   - [Step 4: Attach the Permissions Policy](#step-4-attach-the-permissions-policy)
-- [Kubernetes-based Installation](#2-kubernetes-based-installation)
-- [Docker-based Installation](#3-docker-based-installation)
+- [EKS-based Installation](#3-eks-based-installation)
 
 
 ## Requirements
@@ -24,9 +23,7 @@ This document outlines the requirements and configuration steps to enable read/w
 3. Kubernetes-based installation:
     - EKS cluster version ≥ 1.28.
     - OIDC provider enabled for the cluster. [How to create an IAM OIDC provider for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html).
-4. Docker-based installation:
-    - EC2 instance with Docker and Docker Compose installed.
-    - IAM instance profile attached with S3 read/write permissions.
+
 
 ## 1. S3 Bucket
 
@@ -132,7 +129,7 @@ aws iam put-role-policy --role-name my-rp-s3-role \
 
 By completing these steps, the IAM role will have the necessary permissions to interact with the specified S3 bucket securely.
 
-## 2. Kubernetes-based Installation
+## 3. Kubernetes-based Installation
 
 To grant a Kubernetes pod on EKS read/write access to S3, use IAM Roles for Service Accounts (IRSA). This approach issues temporary credentials by having the pod assume an IAM role via OIDC
 
@@ -175,29 +172,3 @@ helm install my-release \
 ```
 
 This configuration ensures that ReportPortal uses Amazon S3 for storage with IAM role-based access, while disabling the default MinIO dependency.
-
-## 3. Docker-based installation
-
-When running ReportPortal in Docker containers on an EC2 instance with an attached IAM instance profile, the AWS SDK will automatically retrieve credentials from the EC2 Instance Metadata Service (IMDS) without any additional configuration.
-
-All you need to do is attach the role created in the first step to the EC2 instance as an instance profile, or modify an existing one to include S3 read/write permissions.
-
-How to [Attach an IAM role to an instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/attach-iam-role.html)
-
-Update the `docker-compose.yml` file with the appropriate storage configuration:
-
-```yaml
-x-environment: &common-environment
-  # Ref.: https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions
-  RP_FEATURE_FLAGS: singleBucket
-  DATASTDATASTORE_TYPE: s3 
-  DATASTORE_REGION: us-standard   # Region of the bucket (JCloud ref. to `us-east-1`)
-  DATASTORE_ACCESSKEY:
-  DATASTORE_DEFAULTBUCKETNAME: my-rp-bucket
-```
-
-Install ReportPortal using Docker Compsoe:
-
-```bash
-docker-compose -p reportportal up -d --force-recreate
-```
