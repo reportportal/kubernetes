@@ -146,7 +146,7 @@ global:
 
 
 storage:
-  # Ref.: https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions
+  # Ref.: https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage
   type: s3
   # Leave `accesskey` and `secretkey` empty for IAM role-based access
   accesskey:

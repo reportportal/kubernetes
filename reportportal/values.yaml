@@ -78,7 +78,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -467,7 +467,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
