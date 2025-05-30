@@ -175,7 +175,7 @@ x-environment: &common-environment
   DATASTORE_DEFAULTBUCKETNAME: my-rp-docker-bucket
 ```
 
-> For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/FileStorageOptions).
+> For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage).
 
 ## 5. Docker-Based Installation
 
