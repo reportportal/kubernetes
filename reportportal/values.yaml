@@ -396,7 +396,7 @@ rabbitmq:
   endpoint:
     ## Enable HTTPS and AMQPS
     ssl: false
-    address: <rabbitmq-release-name>-rabbitmq.default.svc.cluster.local
+    address: my-release-rabbitmq.default.svc.cluster.local
     port: 5672
     user: rabbitmq
     apiport: 15672
@@ -411,7 +411,7 @@ postgresql:
   installdep:
     enable: false
   endpoint:
-    address: <postgresql-release-name>-postgresql.default.svc.cluster.local
+    address: my-release-postgresql.default.svc.cluster.local
     port: 5432
     user: rpuser
     dbName: reportportal
@@ -434,7 +434,7 @@ elasticsearch:
   ##
   doubleEntry:
     enable: true
-  endpoint: http://elasticsearch-master.default.svc.cluster.local:9200
+  endpoint: http://my-release-elasticsearch-master.default.svc.cluster.local:9200
   user: elastic
   password:
 
@@ -450,8 +450,8 @@ storage:
   secretkeyName: "secret-key"
   accesskey: <minio-accesskey>
   secretkey: <minio-secretkey>
-  endpoint: http://<minio-release-name>-minio.default.svc.cluster.local:9000
-  endpointshort: <minio-release-name>-minio.default.svc.cluster.local:9000
+  endpoint: http://my-release-minio.default.svc.cluster.local:9000
+  endpointshort: my-release-minio.default.svc.cluster.local:9000
   region: ""
   bucket:
     ##
@@ -477,26 +477,30 @@ storage:
 ## If you don't have any domain names - set INGRESS.USEDOMAINNAME to false
 ingress:
   enable: true
-  ## IF YOU HAVE SOME DOMAIN NAME SET INGRESS.USEDOMAINNAME to true
-  usedomainname: false
-  hosts:
-    - reportportal.k8.com
+  ## @param ingress.hosts can be a list or a single string
+  ##
+  hosts: null
+  path: null
+  class: nginx
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: /$1
-    nginx.ingress.kubernetes.io/proxy-body-size: 128m
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
-    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-    nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-  tls: []
-  # - hosts:
-  #   - reportportal.k8.com
-  #   secretName: reportportal.k8.com-tls
+    nginx:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 128m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+    gce: {}
+    custom: {}
+  tls:
+    certificates: null
+    certificate:
+      gcpManaged: false
+      privateKey: null
+      certificate: null
+
 
 ## tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/

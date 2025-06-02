@@ -1,100 +1,167 @@
 {{- if .Values.ingress.enable }}
 {{- $fullName := include "reportportal.fullname" . -}}
+{{- $isTlsCertComplete := and .Values.ingress.tls.certificate.certificate .Values.ingress.tls.certificate.privateKey -}}
+{{- $path := .Values.ingress.path -}}
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-gateway-ingress
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
+  {{- if eq .Values.ingress.class "nginx" }}
+    {{- range $key, $value := .Values.ingress.annotations.nginx }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+  {{- else if eq .Values.ingress.class "gce" }}
+    {{- if .Values.ingress.tls.certificate.gcpManaged }}
+    networking.gke.io/managed-certificates: {{ .Release.Name }}-gcp-managed-cert
+    {{- end }}
+    {{- range $key, $value := .Values.ingress.annotations.gce }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- else }}
+    {{- range $key, $value := .Values.ingress.annotations.custom }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
+  # Define the ingress class to use
+  {{- if eq .Values.ingress.class "gce" }}
+  {{- else }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
+  # Define the TLS settings
+  {{- if .Values.ingress.tls.certificates }}
   tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-{{- end}}
+    {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
+  {{- else if and $isTlsCertComplete (eq .Values.ingress.tls.certificate.gcpManaged false)}}
+  tls:
+    - secretName: {{ .Release.Name }}-gateway-tls
+      {{- if .Values.ingress.hosts }}
+      {{- if kindIs "slice" .Values.ingress.hosts }}
+      hosts:
+        {{ toYaml .Values.ingress.hosts | nindent 8 }}
+      {{- else if kindIs "string" .Values.ingress.hosts }}
+      hosts:
+        - {{ .Values.ingress.hosts }}
+      {{- end }}
+      {{- end }}
+  {{- end }}
+  # Define the rules for the ingress
   rules:
-{{ if .Values.ingress.usedomainname }}
+  {{- if .Values.ingress.hosts }}
+  {{- if kindIs "slice" .Values.ingress.hosts }}
   {{- range $host := .Values.ingress.hosts }}
   - host: {{ $host }}
     http:
       paths:
-      - path: /()?(.*)
+      {{- if $path }}
+      - path: {{ $path }}
+      {{- else }}
+      - path: /
+      {{- end }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
+      - path: {{ $path }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
+      - path: {{ $path }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
+      - path: {{ $path }}/api
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-      - path: /(jobs)/?(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-jobs
-            port:
-              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
-  {{- end -}}
-{{ else }}
+  {{- end }}
+  {{- else if kindIs "string" .Values.ingress.hosts }}
+  - host: {{ .Values.ingress.hosts }}
+    http:
+      paths:
+      {{- if $path }}
+        - path: {{ $path }}
+      {{- else }}
+        - path: /
+      {{- end }}
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $fullName }}-index
+              port:
+                name: {{ $.Values.serviceindex.service.portName | default "headless" }}
+        - path: {{ $path }}/ui
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $fullName }}-ui
+              port:
+                name: {{ $.Values.serviceui.service.portName | default "headless" }}
+        - path: {{ $path }}/uat
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $fullName }}-uat
+              port:
+                name: {{ $.Values.uat.service.portName | default "headless" }}
+        - path: {{ $path }}/api
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ $fullName }}-api
+              port:
+                name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+  {{- end }}
+  {{- else }}
   - http:
       paths:
-      - path: /()?(.*)
+      {{- if $path }}
+      - path: {{ $path }}
+      {{- else }}
+      - path: /
+      {{- end }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: /(ui)/?(.*)
+      - path: {{ $path }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: /(uat)/?(.*)
+      - path: {{ $path }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: /(api)/?(.*)
+      - path: {{ $path }}/api
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-      - path: /(jobs)/?(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-jobs
-            port:
-              name: {{ $.Values.servicejobs.service.portName | default "headless" }}
-{{ end }}
+  {{- end }}
 status:
   loadBalancer: {}
 {{- end }}

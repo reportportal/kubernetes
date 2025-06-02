@@ -18,12 +18,12 @@ dependencies:
 
   - name: rabbitmq
     version: 10.3.9
-    repository: https://charts.bitnami.com/bitnami  
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami  
     condition: rabbitmq.installdep.enable
 
   - name: elasticsearch
-    version: 7.10.2
-    repository: https://helm.elastic.co
+    version: 14.5.3
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: elasticsearch.installdep.enable
 
   - name: minio
