@@ -23,7 +23,6 @@ global:
     ##
     annotations: {}
 
-
 ## @param serviceindex Core ReportPortal service for the indexing
 ##
 serviceindex:
@@ -42,7 +41,8 @@ serviceindex:
 
   ## @param serviceindex.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers:
+    {}
     # - name: init-container
     #   image: busybox
     #   command: ['sh', '-c', 'echo "Hello, World!"']
@@ -95,12 +95,14 @@ serviceui:
 
   ## @param serviceui.extraVolumes define the extra volumes
   ##
-  extraVolumes: []
+  extraVolumes:
+    []
     # - name: extra-volume
     #   emptyDir: {}
   ## @param serviceui.extraVolumeMounts define the extra volume mounts
   ##
-  extraVolumeMounts: []
+  extraVolumeMounts:
+    []
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
@@ -218,7 +220,8 @@ serviceapi:
     parkingLotTtlDays: 7
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
+  extraEnvs:
+    []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -253,13 +256,17 @@ serviceapi:
   ##
   secret:
     enabled: false
+    # If you want to mount an existing secret (e.g. a Java trust store), specify its name here.
+    # If set, this secret will be mounted instead of creating a new one from .Values.serviceapi.secret.data
+    existingSecret: ""
     mountPath: /etc/secret-volume
     readOnly: true
     data: {}
     #  custom-pki.jks: <base64-data>
   ## @param serviceapi.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
-  hostAliases: []
+  hostAliases:
+    []
     # - ip: "127.0.0.1"
     #   hostnames:
     #     - "foo.local"
@@ -321,7 +328,8 @@ uat:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
   ## @param uat.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
+  extraEnvs:
+    []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -350,10 +358,13 @@ uat:
   ##
   secret:
     enabled: false
+    # If you want to mount an existing secret (e.g. a Java trust store), specify its name here.
+    # If set, this secret will be mounted instead of creating a new one from .Values.uat.secret.data
+    existingSecret: ""
     mountPath: /etc/secret-volume
     readOnly: true
     data: {}
-      # custom-pki.jks: <base64-data>
+    #  custom-pki.jks: <base64-data>
   service:
     type: ""
     portName: ""
@@ -362,7 +373,8 @@ uat:
     annotations: {}
   ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
-  hostAliases: []
+  hostAliases:
+    []
     # - ip: "127.0.0.1"
     #   hostnames:
     #     - "foo.local"
@@ -435,7 +447,8 @@ servicejobs:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
+  extraEnvs:
+    []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -491,7 +504,8 @@ serviceanalyzer:
   securityContext: {}
   ## @param serviceanalyzer.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
+  extraEnvs:
+    []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -540,7 +554,8 @@ serviceanalyzertrain:
   podAnnotations: {}
   securityContext: {}
   ## @param serviceanalyzertrain.extraEnvs define the extra environment variables
-  extraEnvs: []
+  extraEnvs:
+    []
     # - name: EXTRA_ENV
     #   value: "TRUE"
     # - name: EXTRA_ENV_SECRET
@@ -586,7 +601,6 @@ migrations:
   ##
   nodeSelector: {}
   serviceAccountName: ""
-
 
 ## @section Infrastructure configuration
 database:
@@ -725,7 +739,6 @@ storage:
         ##
         volumeAttributes: {}
 
-
 ## @section Ingress configuration
 
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
@@ -775,14 +788,14 @@ ingress:
       privateKey: null
       certificate: null
 
-
 ## @section Additional configuration
 ##
 
 ## @param tolerations for all components, if any (requires Kubernetes >= 1.6)
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 ##
-tolerations: []
+tolerations:
+  []
   # - key: "key"
   #   operator: "Equal|Exists"
   #   value: "value"
@@ -797,7 +810,8 @@ rbac:
   create: true
   ## @param rbac.rules define the rules for ReportPortal
   ##
-  rules: []
+  rules:
+    []
     # - apiGroups: ["", "batch"]
     #   resources: ["pods","services", "jobs"]
     #   verbs: ["get", "list", "watch"]
