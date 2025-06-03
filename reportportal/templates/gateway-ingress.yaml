@@ -134,28 +134,28 @@ spec:
       {{- else }}
       - path: /
       {{- end }}
-        pathType: Prefix
+        pathType: {{ .Values.ingress.pathType.root | default "Prefix" }}
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: {{ $path }}/ui
-        pathType: Prefix
+        pathType: {{ .Values.ingress.pathType.ui | default "Prefix" }}
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: {{ $path }}/uat
-        pathType: Prefix
+        pathType: {{ .Values.ingress.pathType.uat | default "Prefix" }}
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: {{ $path }}/api
-        pathType: Prefix
+        pathType: {{ .Values.ingress.pathType.api | default "Prefix" }}
         backend:
           service:
             name: {{ $fullName }}-api
