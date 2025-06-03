@@ -1,3 +1,4 @@
+{{- $path := .Values.ingress.path -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,6 +31,8 @@ spec:
       {{- end }}
       containers:
       - env:
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "{{ $path }}/jobs"
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}

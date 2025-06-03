@@ -500,6 +500,11 @@ ingress:
       gcpManaged: false
       privateKey: null
       certificate: null
+  # pathType:
+  #   root: ImplementationSpecific
+  #   ui: ImplementationSpecific
+  #   uat: ImplementationSpecific
+  #   api: ImplementationSpecific
 
 
 ## tolerations for all components, if any (requires Kubernetes >= 1.6)
