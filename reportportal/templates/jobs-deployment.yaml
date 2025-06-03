@@ -172,7 +172,7 @@ spec:
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
@@ -184,7 +184,7 @@ spec:
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}

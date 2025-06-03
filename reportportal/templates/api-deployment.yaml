@@ -154,7 +154,7 @@ spec:
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
@@ -166,7 +166,7 @@ spec:
         {{- if .Values.serviceapi.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
