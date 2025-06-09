@@ -275,7 +275,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
