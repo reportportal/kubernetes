@@ -844,6 +844,9 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+  image:
+    repository: curlimages/curl
+    tag: latest
 
 ## @section External dependencies installation configuration
 ##
