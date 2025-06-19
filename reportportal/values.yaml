@@ -128,7 +128,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
