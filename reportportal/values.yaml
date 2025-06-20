@@ -78,7 +78,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   replicaCount: 1
   resources:
