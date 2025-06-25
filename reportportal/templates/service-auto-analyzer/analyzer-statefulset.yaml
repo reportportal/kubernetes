@@ -30,19 +30,19 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      - name: migrations-waiting-init
-        image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
-        imagePullPolicy: IfNotPresent
-        args:
-          - "pod-wr"
-          - "-lcomponent={{ include "reportportal.fullname" . }}-api"
-        resources:
-          requests:
-            cpu: 50m
-            memory: 100Mi
-          limits:
-            cpu: 50m
-            memory: 100Mi
+        - name: migrations-waiting-init
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "pod-wr"
+            - "-lcomponent={{ include "reportportal.fullname" . }}-api"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 50m
+              memory: 100Mi
       {{- if .Values.serviceanalyzer.extraInitContainers }}
         {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 8 }}
       {{- end }}
