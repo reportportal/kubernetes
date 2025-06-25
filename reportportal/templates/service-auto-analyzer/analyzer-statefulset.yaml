@@ -43,8 +43,8 @@ spec:
             limits:
               cpu: 50m
               memory: 100Mi
-      {{- if .Values.serviceanalyzer.extraInitContainers }}
-        {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 8 }}
+      {{- if .Values.serviceanalyzertrain.extraInitContainers }}
+        {{ toYaml .Values.serviceanalyzertrain.extraInitContainers | nindent 8 }}
       {{- end }}
       containers:
       - name: "{{ $.Values.serviceanalyzer.name | default "analyzer" }}"
@@ -184,6 +184,6 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
       {{- end }}
-      {{- if .Values.serviceanalyzer.extraVolumes }}
-        {{ toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
+      {{- if .Values.serviceanalyzertrain.extraVolumes }}
+        {{ toYaml .Values.serviceanalyzertrain.extraVolumes | nindent 8 }}
       {{- end }}
