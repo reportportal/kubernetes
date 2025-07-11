@@ -10,7 +10,7 @@ metadata:
 spec:
   containers:
   - name: test-container
-    image: curlimages/curl:latest
+    image: "{{ include "reportportal.image" (dict "Values" .Values "service" "hooks") }}"
     command: ["/bin/sh", "-c"]
     args:
     - >
