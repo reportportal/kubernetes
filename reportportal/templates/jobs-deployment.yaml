@@ -1,3 +1,4 @@
+{{- $path := .Values.ingress.path -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +30,8 @@ spec:
 {{- if .Values.servicejobs.extraEnvs }}
 {{ toYaml .Values.servicejobs.extraEnvs | indent 8 }}
 {{- end }}
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "{{ $path }}/jobs"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_ATTACHMENT_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanAttachmentCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LOG_CRON
@@ -157,7 +160,7 @@ spec:
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
@@ -169,7 +172,7 @@ spec:
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}

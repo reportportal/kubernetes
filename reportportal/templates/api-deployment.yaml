@@ -1,3 +1,4 @@
+{{- $path := .Values.ingress.path -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +30,8 @@ spec:
 {{- if .Values.serviceapi.extraEnvs }}
 {{ toYaml .Values.serviceapi.extraEnvs | indent 8 }}
 {{- end }}
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "{{ $path }}/api"
         - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
           value: "info"
         - name: RP_REQUESTLOGGING
@@ -141,7 +144,7 @@ spec:
         {{- if .Values.serviceapi.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
@@ -153,7 +156,7 @@ spec:
         {{- if .Values.serviceapi.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/api/health"
             port: 8585
           initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
           periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}

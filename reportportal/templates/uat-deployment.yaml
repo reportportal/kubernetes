@@ -1,3 +1,4 @@
+{{- $path := .Values.ingress.path -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,6 +30,8 @@ spec:
 {{- if .Values.uat.extraEnvs }}
 {{ toYaml .Values.uat.extraEnvs | indent 8 }}
 {{- end }}
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: "{{ $path }}/uat"
         {{- if .Values.uat.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.uat.jvmArgs }}"
@@ -107,7 +110,7 @@ spec:
         {{- if .Values.uat.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/uat/health"
             port: 9999
           initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 40 }}
@@ -119,7 +122,7 @@ spec:
         {{- if .Values.uat.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
-            path: "{{ .Values.rp.healthEndpoint }}"
+            path: "{{ $path }}/uat/health"
             port: 9999
           initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
