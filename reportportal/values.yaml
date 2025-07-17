@@ -78,7 +78,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -128,7 +128,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -275,7 +275,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.0
+    tag: 5.14.3
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
