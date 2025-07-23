@@ -12,13 +12,13 @@ spec:
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.serviceanalyzer.podLabels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.serviceanalyzer.podLabels }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-analyzer
+        component: { { include "reportportal.fullname" . } }-analyzer
       annotations:
-        {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.serviceanalyzer.podAnnotations }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
     spec:
       {{- with .Values.serviceanalyzer.affinity }}

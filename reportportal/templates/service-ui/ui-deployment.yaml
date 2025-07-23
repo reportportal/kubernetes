@@ -11,13 +11,13 @@ spec:
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.serviceui.podLabels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.serviceui.podLabels }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-ui
+        component: { { include "reportportal.fullname" . } }-ui
       annotations:
-        {{- range $key, $value := .Values.serviceui.podAnnotations }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.serviceui.podAnnotations }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
     spec:
       {{- with .Values.serviceui.affinity }}
