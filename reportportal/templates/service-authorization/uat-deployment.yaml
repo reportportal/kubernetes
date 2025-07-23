@@ -13,13 +13,13 @@ spec:
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.uat.podLabels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.uat.podLabels }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-uat
+        component: { { include "reportportal.fullname" . } }-uat
       annotations:
-        {{- range $key, $value := .Values.uat.podAnnotations }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.uat.podAnnotations }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
     spec:
     {{- with .Values.uat.affinity }}
