@@ -7,13 +7,13 @@ spec:
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.migrations.podLabels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.migrations.podLabels }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
         component: {{ include "reportportal.fullname" . }}-migrations
       annotations:
-        {{- range $key, $value := .Values.migrations.podAnnotations }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.migrations.podAnnotations }}
+        {{- toYaml . | nindent 4 }}
         {{- end }}
     spec:
       restartPolicy: OnFailure
@@ -89,6 +89,6 @@ spec:
 {{ toYaml .Values.migrations.securityContext | indent 8}}
       serviceAccountName: {{ .Values.migrations.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.tolerations }}
-      tolerations: 
+      tolerations:
 {{- toYaml . | nindent 8 }}
 {{- end }}
