@@ -22,6 +22,18 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
+  ## @param global.defaultSecurityContext Default security context for all pods
+  ##
+  defaultSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -57,6 +69,23 @@ serviceindex:
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
+  ## @param serviceindex.readinessProbe configure readiness probe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceindex.livenessProbe configure liveness probe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
   ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
@@ -108,6 +137,23 @@ serviceui:
   affinity: {}
   podAnnotations: {}
   securityContext: {}
+  ## @param serviceui.readinessProbe configure readiness probe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceui.livenessProbe configure liveness probe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
@@ -514,54 +560,7 @@ serviceanalyzer:
     extraPorts: []
     annotations: {}
 
-## @param serviceanalyzertrain Core ReportPortal service for the training of the analysis of test results
-##
-serviceanalyzertrain:
-  name: analyzer-train
-  pullPolicy: Always
-  uwsgiWorkers: 1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 200m
-      memory: 512Mi
-  ## @param serviceanalyzertrain.extraInitContainers init containers
-  ##
-  extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
-  ##
-  extraVolumes: []
-  ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
-  ##
-  extraVolumeMounts: []
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  ## @param serviceanalyzertrain.extraEnvs define the extra environment variables
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
-  ## @param serviceanalyzertrain.nodeSelector define which Nodes the Pods are scheduled on.
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  serviceAccountName: ""
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
+
 
 migrations:
   image:
@@ -844,6 +843,30 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+
+## @section Network and Security configuration
+##
+
+## @param networkPolicy Enable network policies for pod-to-pod communication
+##
+networkPolicy:
+  enabled: false
+
+## @param resourceQuota Configure resource quotas for the namespace
+##
+resourceQuota:
+  enabled: false
+  cpu: "4"
+  memory: "8Gi"
+  pods: "20"
+  services: "10"
+  persistentvolumeclaims: "5"
+
+## @param podDisruptionBudget Configure pod disruption budgets for high availability
+##
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
 
 ## @section External dependencies installation configuration
 ##

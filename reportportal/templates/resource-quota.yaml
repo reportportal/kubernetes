@@ -1,0 +1,26 @@
+{{- if .Values.resourceQuota.enabled }}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ include "reportportal.fullname" . }}-quota
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  hard:
+    {{- if .Values.resourceQuota.cpu }}
+    requests.cpu: {{ .Values.resourceQuota.cpu }}
+    limits.cpu: {{ .Values.resourceQuota.cpu }}
+    {{- end }}
+    {{- if .Values.resourceQuota.memory }}
+    requests.memory: {{ .Values.resourceQuota.memory }}
+    limits.memory: {{ .Values.resourceQuota.memory }}
+    {{- end }}
+    {{- if .Values.resourceQuota.pods }}
+    pods: {{ .Values.resourceQuota.pods }}
+    {{- end }}
+    {{- if .Values.resourceQuota.services }}
+    services: {{ .Values.resourceQuota.services }}
+    {{- end }}
+    {{- if .Values.resourceQuota.persistentvolumeclaims }}
+    persistentvolumeclaims: {{ .Values.resourceQuota.persistentvolumeclaims }}
+    {{- end }}
+{{- end }} 

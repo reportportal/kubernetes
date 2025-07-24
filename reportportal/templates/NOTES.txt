@@ -12,3 +12,23 @@ Welcome to ReportPortal, a TestOps service, that provides increased capabilities
 ReportPortal is a great addition to the Continuous Integration and Continuous Testing process. 
 
 ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.
+
+{{- if .Values.networkPolicy.enabled }}
+Network policies have been enabled for enhanced security.
+{{- end }}
+
+{{- if .Values.resourceQuota.enabled }}
+Resource quotas have been configured for better resource management.
+{{- end }}
+
+{{- if .Values.podDisruptionBudget.enabled }}
+Pod disruption budgets have been configured for high availability.
+{{- end }}
+
+To check the status of your deployment, run:
+  kubectl get pods -l app={{ .Chart.Name }}
+
+To view logs from a specific service:
+  kubectl logs -l component={{ include "reportportal.fullname" . }}-api
+
+For more information, visit: https://reportportal.io
