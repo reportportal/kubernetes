@@ -1,4 +1,4 @@
-{{- if and .Values.podDisruptionBudget.enabled (gt (.Values.serviceui.replicaCount | default 1) 1) }}
+{{- if .Values.podDisruptionBudget.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -11,7 +11,7 @@ spec:
       component: {{ include "reportportal.fullname" . }}-ui
 {{- end }}
 
-{{- if and .Values.podDisruptionBudget.enabled (gt (.Values.serviceapi.replicaCount | default 1) 1) }}
+{{- if .Values.podDisruptionBudget.enabled }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget

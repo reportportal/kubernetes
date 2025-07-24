@@ -856,10 +856,10 @@ networkPolicy:
 ##
 resourceQuota:
   enabled: false
-  cpu: "4"
+  cpu: "6"
   memory: "8Gi"
   pods: "20"
-  services: "10"
+  services: "12"
   persistentvolumeclaims: "5"
 
 ## @param podDisruptionBudget Configure pod disruption budgets for high availability
