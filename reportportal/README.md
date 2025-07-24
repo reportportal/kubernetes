@@ -1,4 +1,4 @@
-# [ReportPortal.io](http://ReportPortal.io)
+# 🚀 [ReportPortal.io](http://ReportPortal.io)
 
 [![Join Slack chat!](https://img.shields.io/badge/slack-join-brightgreen.svg)](https://slack.epmrpp.reportportal.io/)
 [![stackoverflow](https://img.shields.io/badge/reportportal-stackoverflow-orange.svg?style=flat)](http://stackoverflow.com/questions/tagged/reportportal)
@@ -9,14 +9,14 @@
 
 ReportPortal is a TestOps service, that provides increased capabilities to speed up results analysis and reporting through the use of built-in analytic features.
 
-## Prerequisites
+## 📋 Prerequisites
 
 > **Note:** The minimal requirements for a ReportPortal 1-node solution are 2 CPUs and 6Gi of memory
 
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
-## Installing the Chart
+## ⚡ Installing the Chart
 
 Add the official ReportPortal Helm Chart repository:
 
@@ -32,53 +32,15 @@ helm install my-release --set uat.superadminInitPasswd.password="MyPassword" rep
 
 > **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
 
-### Install with Advanced Kubernetes Features
-
-For production deployments, you can enable advanced Kubernetes features for enhanced security, availability, and resource management:
-
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set networkPolicy.enabled=true \
-  --set podDisruptionBudget.enabled=true \
-  --set resourceQuota.enabled=true \
-  --set resourceQuota.services=15 \
-  --set resourceQuota.cpu=6 \
-  --set resourceQuota.memory=8Gi \
-  reportportal/reportportal
-```
-
-#### Advanced Features Explained:
-
-|Feature|Description|Benefits|
-|-|-|-|
-|**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
-|**Pod Disruption Budgets** (`podDisruptionBudget.enabled=true`)|Ensures minimum pod availability during maintenance|🛡️ **High Availability**: Protects against availability loss during node maintenance|
-|**Resource Quotas** (`resourceQuota.enabled=true`)|Limits resource consumption in the namespace|📊 **Resource Management**: Prevents resource exhaustion and ensures fair resource allocation|
-
-#### Resource Quota Configuration:
-
-|Parameter|Description|Default|Recommended|
-|-|-|-|-|
-|`resourceQuota.services`|Maximum number of services|`10`|`15` (for ReportPortal with dependencies)|
-|`resourceQuota.cpu`|Total CPU limit|`4`|`6` (for production workloads)|
-|`resourceQuota.memory`|Total memory limit|`8Gi`|`8Gi` or higher based on workload|
-|`resourceQuota.pods`|Maximum number of pods|`20`|`20` (usually sufficient)|
-
-> **Important Notes:**
-> - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
-> - **Resource Quotas enforce resource limits** on all pods - ensure all containers have proper resource requests/limits
-> - **Pod Disruption Budgets only work with multiple replicas** - consider scaling deployments for high availability
-
-## Uninstalling the Chart
+## 🗑️ Uninstalling the Chart
 
 ```bash
 helm uninstall my-release 
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-### Install the chart with dependencies
+### 📦 Install the chart with dependencies
 
 ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives.
 
@@ -107,7 +69,65 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
-### Install from sources
+### 🔒 Configure Network Policies and Default Security Context
+
+For enhanced security in production deployments, you can enable network policies and default security context:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set defaultSecurityContext.enabled=true \
+  reportportal/reportportal
+```
+
+#### Security Features Explained:
+
+|Feature|Description|Benefits|
+|-|-|-|
+|**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
+|**Default Security Context** (`defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
+
+> **Important Notes:**
+> - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
+> - **Default Security Context** applies non-root user execution and read-only root filesystem by default
+
+### 🛡️ Configure Pod Disruption Budgets and Resource Quotas
+
+For enhanced availability and resource management in production deployments, you can enable pod disruption budgets and resource quotas:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set podDisruptionBudget.enabled=true \
+  --set resourceQuota.enabled=true \
+  --set resourceQuota.services=15 \
+  --set resourceQuota.cpu=6 \
+  --set resourceQuota.memory=8Gi \
+  reportportal/reportportal
+```
+
+#### Availability and Resource Management Features:
+
+|Feature|Description|Benefits|
+|-|-|-|
+|**Pod Disruption Budgets** (`podDisruptionBudget.enabled=true`)|Ensures minimum pod availability during maintenance|🛡️ **High Availability**: Protects against availability loss during node maintenance|
+|**Resource Quotas** (`resourceQuota.enabled=true`)|Limits resource consumption in the namespace|📊 **Resource Management**: Prevents resource exhaustion and ensures fair resource allocation|
+
+#### Resource Quota Configuration:
+
+|Parameter|Description|Default|Recommended|
+|-|-|-|
+|`resourceQuota.services`|Maximum number of services|`10`|`15` (for ReportPortal with dependencies)|
+|`resourceQuota.cpu`|Total CPU limit|`4`|`6` (for production workloads)|
+|`resourceQuota.memory`|Total memory limit|`8Gi`|`8Gi` or higher based on workload|
+|`resourceQuota.pods`|Maximum number of pods|`20`|`20` (usually sufficient)|
+
+> **Important Notes:**
+> - **Resource Quotas enforce resource limits** on all pods - ensure all containers have proper resource requests/limits
+> - **Pod Disruption Budgets only work with multiple replicas** - consider scaling deployments for high availability
+
+### 📥 Install from sources
 
 For fetching chart dependencies, use the command:
 
@@ -123,7 +143,7 @@ To install the chart directly from local sources, use:
 helm install my-release --set uat.superadminInitPasswd.password="MyPassword" ./reportportal
 ```
 
-### Install specific version
+### 🏷️ Install specific version
 
 To search for available versions of a chart, use:
 
@@ -140,13 +160,13 @@ helm install my-release \
   --version 23.2
 ```
 
-## Documentation
+## 📚 Documentation
 
 * [General User Manual](https://reportportal.io/docs/)
 * [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/deploy-with-kubernetes/)
 * [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
 
-## Community / Support
+## 🤝 Community / Support
 
 * [**Slack chat**](https://reportportal-slack-auto.herokuapp.com)
 * [**Security Advisories**](https://github.com/reportportal/reportportal/blob/master/SECURITY_ADVISORIES.md)
@@ -156,6 +176,6 @@ helm install my-release \
 * [Facebook](https://www.facebook.com/ReportPortal.io)
 * [YouTube Channel](https://www.youtube.com/channel/UCsZxrHqLHPJcrkcgIGRG-cQ)
 
-## License
+## 📄 License
 
 Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
