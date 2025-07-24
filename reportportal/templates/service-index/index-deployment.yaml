@@ -47,13 +47,27 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
+        {{- if .Values.serviceindex.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "/health"
             port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 3
+          initialDelaySeconds: {{ .Values.serviceindex.readinessProbe.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.serviceindex.readinessProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.serviceindex.readinessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.serviceindex.readinessProbe.failureThreshold | default 3 }}
+          successThreshold: {{ .Values.serviceindex.readinessProbe.successThreshold | default 1 }}
+        {{- end }}
+        {{- if .Values.serviceindex.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 8080
+          initialDelaySeconds: {{ .Values.serviceindex.livenessProbe.initialDelaySeconds | default 60 }}
+          periodSeconds: {{ .Values.serviceindex.livenessProbe.periodSeconds | default 30 }}
+          timeoutSeconds: {{ .Values.serviceindex.livenessProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.serviceindex.livenessProbe.failureThreshold | default 3 }}
+        {{- end }}
         resources:
           requests:
             cpu: {{ .Values.serviceindex.resources.requests.cpu }}

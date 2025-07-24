@@ -1,0 +1,26 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-ui-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-ui
+{{- end }}
+
+{{- if .Values.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-api-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-api
+{{- end }} 

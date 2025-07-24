@@ -32,6 +32,44 @@ helm install my-release --set uat.superadminInitPasswd.password="MyPassword" rep
 
 > **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
 
+### Install with Advanced Kubernetes Features
+
+For production deployments, you can enable advanced Kubernetes features for enhanced security, availability, and resource management:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set podDisruptionBudget.enabled=true \
+  --set resourceQuota.enabled=true \
+  --set resourceQuota.services=15 \
+  --set resourceQuota.cpu=6 \
+  --set resourceQuota.memory=8Gi \
+  reportportal/reportportal
+```
+
+#### Advanced Features Explained:
+
+|Feature|Description|Benefits|
+|-|-|-|
+|**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
+|**Pod Disruption Budgets** (`podDisruptionBudget.enabled=true`)|Ensures minimum pod availability during maintenance|🛡️ **High Availability**: Protects against availability loss during node maintenance|
+|**Resource Quotas** (`resourceQuota.enabled=true`)|Limits resource consumption in the namespace|📊 **Resource Management**: Prevents resource exhaustion and ensures fair resource allocation|
+
+#### Resource Quota Configuration:
+
+|Parameter|Description|Default|Recommended|
+|-|-|-|-|
+|`resourceQuota.services`|Maximum number of services|`10`|`15` (for ReportPortal with dependencies)|
+|`resourceQuota.cpu`|Total CPU limit|`4`|`6` (for production workloads)|
+|`resourceQuota.memory`|Total memory limit|`8Gi`|`8Gi` or higher based on workload|
+|`resourceQuota.pods`|Maximum number of pods|`20`|`20` (usually sufficient)|
+
+> **Important Notes:**
+> - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
+> - **Resource Quotas enforce resource limits** on all pods - ensure all containers have proper resource requests/limits
+> - **Pod Disruption Budgets only work with multiple replicas** - consider scaling deployments for high availability
+
 ## Uninstalling the Chart
 
 ```bash

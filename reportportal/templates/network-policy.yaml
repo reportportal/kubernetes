@@ -1,0 +1,89 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "reportportal.fullname" . }}-network-policy
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $.Chart.Name }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow traffic from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8585
+        - protocol: TCP
+          port: 9999
+        - protocol: TCP
+          port: 8686
+        - protocol: TCP
+          port: 5001
+    # Allow internal communication between ReportPortal services
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ $.Chart.Name }}
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8585
+        - protocol: TCP
+          port: 9999
+        - protocol: TCP
+          port: 8686
+        - protocol: TCP
+          port: 5001
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow access to database
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow access to message broker
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
+        - protocol: TCP
+          port: 15672
+    # Allow access to search engine
+    - to:
+        - podSelector:
+            matchLabels:
+              app: opensearch
+      ports:
+        - protocol: TCP
+          port: 9200
+    # Allow access to storage
+    - to:
+        - podSelector:
+            matchLabels:
+              app: minio
+      ports:
+        - protocol: TCP
+          port: 9000
+        - protocol: TCP
+          port: 9001
+{{- end }} 
