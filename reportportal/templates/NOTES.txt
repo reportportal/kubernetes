@@ -13,8 +13,6 @@ ReportPortal is a great addition to the Continuous Integration and Continuous Te
 
 ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.
 
-
-
 To get detailed information about all ReportPortal resources:
   kubectl get all -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
 
