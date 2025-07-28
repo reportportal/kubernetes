@@ -83,7 +83,12 @@ spec:
 {{- end }}
       securityContext:
 {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceindex.securityContext) | nindent 8 }}
-{{- with .Values.tolerations }}
+{{- with .Values.global.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}
+{{- else }}
+{{- with .Values.serviceindex.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}
 {{- end }}

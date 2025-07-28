@@ -3,15 +3,14 @@
 
 ## @section Global configuration
 ##
-## @param global.imageRegistry Global image registry
-## @param global.imagePullSecrets Global registry secret names as an array
-## @param global.nameOverride expand the name of the chart
-## @param global.fullnameOverride expand the fully qualified app name
-##
 global:
+  ## @param global.imageRegistry Global image registry
   imageRegistry: ""
+  ## @param global.imagePullSecrets Global registry secret names as an array
   imagePullSecrets: []
+  ## @param global.nameOverride expand the name of the chart
   nameOverride: ""
+  ## @param global.fullnameOverride expand the fully qualified app name
   fullnameOverride: ""
   security:
     allowInsecureImages: true
@@ -20,13 +19,12 @@ global:
     name: reportportal
     ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-    ##
     annotations: {}
   ## @param global.defaultSecurityContext Default security context for all pods
-  ##
   defaultSecurityContext:
     enabled: false
     runAsNonRoot: true
+    runAsNonRoot: false
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
@@ -35,6 +33,13 @@ global:
     capabilities:
       drop:
         - ALL
+  ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  tolerations: []
+    # - key: "key"
+    #   operator: "Equal|Exists"
+    #   value: "value"
+    #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -95,6 +100,8 @@ serviceindex:
   ##
   nodeSelector: {}
   affinity: {}
+  ## @param serviceindex.tolerations Service-specific tolerations for the index service
+  tolerations: []
   service:
     type: ""
     portName: ""
@@ -162,6 +169,8 @@ serviceui:
   ##
   nodeSelector: {}
   serviceAccountName: ""
+  ## @param serviceui.tolerations Service-specific tolerations for the UI service
+  tolerations: []
   service:
     type: ""
     portName: ""
@@ -284,6 +293,8 @@ serviceapi:
   ##
   nodeSelector: {}
   serviceAccountName: ""
+  ## @param serviceapi.tolerations Service-specific tolerations for the API service
+  tolerations: []
   service:
     type: ""
     portName: ""
@@ -387,6 +398,8 @@ uat:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param uat.tolerations Service-specific tolerations for the authorization service
+  tolerations: []
   ## @param uat.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -501,6 +514,8 @@ servicejobs:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param servicejobs.tolerations Service-specific tolerations for the jobs service
+  tolerations: []
   service:
     type: ""
     portName: ""
@@ -554,6 +569,8 @@ serviceanalyzer:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param serviceanalyzer.tolerations Service-specific tolerations for the analyzer service
+  tolerations: []
   service:
     type: ""
     portName: ""
@@ -584,9 +601,12 @@ migrations:
   ##
   nodeSelector: {}
   serviceAccountName: ""
+  ## @param migrations.tolerations Service-specific tolerations for the migrations job
+  tolerations: []
 
 
 ## @section Infrastructure configuration
+##
 database:
   secretName: ""
   passwordKeyName: "postgresql-password"
@@ -725,7 +745,7 @@ storage:
 
 
 ## @section Ingress configuration
-
+##
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
 ## @param ingress.hosts set variable this you domain names list (FQDN) if you have some domain name and want to use it in ingress rules.
 ## @param ingress.hosts is required if you want to use Google Managed Certificate.
@@ -776,16 +796,6 @@ ingress:
 
 ## @section Additional configuration
 ##
-
-## @param tolerations for all components, if any (requires Kubernetes >= 1.6)
-## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-##
-tolerations: []
-  # - key: "key"
-  #   operator: "Equal|Exists"
-  #   value: "value"
-  #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
-
 ## Role Based Access
 ## ref: https://kubernetes.io/docs/admin/authorization/rbac/
 ##
@@ -845,7 +855,6 @@ hooks:
 
 ## @section Network and Security configuration
 ##
-
 ## @param networkPolicy Enable network policies for pod-to-pod communication
 ##
 networkPolicy:

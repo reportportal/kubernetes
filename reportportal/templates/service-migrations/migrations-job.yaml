@@ -88,7 +88,12 @@ spec:
       securityContext:
 {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.migrations.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.migrations.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.tolerations }}
+{{- with .Values.global.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}
+{{- else }}
+{{- with .Values.migrations.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}
 {{- end }}
