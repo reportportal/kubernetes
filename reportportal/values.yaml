@@ -25,6 +25,7 @@ global:
   ## @param global.defaultSecurityContext Default security context for all pods
   ##
   defaultSecurityContext:
+    enabled: false
     runAsNonRoot: true
     runAsUser: 1000
     runAsGroup: 1000

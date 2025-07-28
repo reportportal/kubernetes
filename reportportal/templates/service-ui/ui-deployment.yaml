@@ -85,7 +85,7 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.serviceui.securityContext | indent 8}}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceui.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.serviceui.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.tolerations }}
       tolerations: 

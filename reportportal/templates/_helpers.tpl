@@ -67,5 +67,20 @@ Create image name
 {{- end -}}
 {{- end -}}
 
+{{/*
+Merge default security context with service-specific security context
+*/}}
+{{- define "reportportal.securityContext" -}}
+{{- $serviceContext := .serviceContext -}}
+{{- $defaultContext := .Values.global.defaultSecurityContext -}}
+{{- if and $defaultContext.enabled $defaultContext -}}
+{{- $merged := merge $serviceContext $defaultContext -}}
+{{- $mergedWithoutEnabled := omit $merged "enabled" -}}
+{{- $mergedWithoutEnabled | toYaml -}}
+{{- else -}}
+{{- $serviceContext | toYaml -}}
+{{- end -}}
+{{- end -}}
+
 
 

@@ -77,7 +77,7 @@ For enhanced security in production deployments, you can enable network policies
 helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
   --set networkPolicy.enabled=true \
-  --set defaultSecurityContext.enabled=true \
+  --set global.defaultSecurityContext.enabled=true \
   reportportal/reportportal
 ```
 
@@ -86,7 +86,7 @@ helm install my-release \
 |Feature|Description|Benefits|
 |-|-|-|
 |**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
-|**Default Security Context** (`defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
+|**Default Security Context** (`global.defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
 
 > **Important Notes:**
 > - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
