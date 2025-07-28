@@ -22,7 +22,7 @@ global:
     annotations: {}
   ## @param global.defaultSecurityContext Default security context for all pods
   defaultSecurityContext:
-    runAsNonRoot: true
+    runAsNonRoot: false
     runAsUser: 1000
     runAsGroup: 1000
     fsGroup: 1000
