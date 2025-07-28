@@ -69,57 +69,6 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
-### 🛡️ Configure Security Context
-
-For enhanced security in production deployments, you can enable security context to apply consistent security settings across all pods:
-
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set global.securityContext.runAsNonRoot=true \
-  reportportal/reportportal
-```
-
-#### Security Context Features Explained:
-
-|Feature|Description|Benefits|
-|-|-|-|
-|**Global Security Context** (`global.securityContext`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
-
-#### Usage Examples:
-
-**1. Basic Security Context (Non-root User):**
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set global.securityContext.runAsNonRoot=true \
-  reportportal/reportportal
-```
-
-**2. Enhanced Security Context (Read-only Filesystem):**
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set global.securityContext.runAsNonRoot=true \
-  --set global.securityContext.readOnlyRootFilesystem=true \
-  reportportal/reportportal
-```
-
-**3. Custom Security Context (Specific User/Group):**
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set global.securityContext.runAsUser=1000 \
-  --set global.securityContext.runAsGroup=1000 \
-  --set global.securityContext.fsGroup=1000 \
-  reportportal/reportportal
-```
-
-> **Important Notes:**
-> - **Global Security Context** overrides service-specific security contexts
-> - **Custom user/group IDs** should match the container's expected user configuration
-> - **Read-only filesystem** may require volume mounts for writable directories
-
 ### 🛡️ Configure Pod Disruption Budgets and Resource Quotas
 
 For enhanced availability and resource management in production deployments, you can enable pod disruption budgets and resource quotas:
