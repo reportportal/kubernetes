@@ -69,14 +69,14 @@ Create image name
 
 {{/*
 Merge default security context with service-specific security context
+Global context overrides service-specific context
 */}}
 {{- define "reportportal.securityContext" -}}
 {{- $serviceContext := .serviceContext -}}
-{{- $defaultContext := .Values.global.defaultSecurityContext -}}
-{{- if and $defaultContext.enabled $defaultContext -}}
-{{- $merged := merge $serviceContext $defaultContext -}}
-{{- $mergedWithoutEnabled := omit $merged "enabled" -}}
-{{- $mergedWithoutEnabled | toYaml -}}
+{{- $defaultContext := .Values.global.securityContext -}}
+{{- if and (not (empty $defaultContext)) (not (kindIs "bool" $defaultContext)) -}}
+{{- $merged := merge $defaultContext $serviceContext -}}
+{{- $merged | toYaml -}}
 {{- else -}}
 {{- $serviceContext | toYaml -}}
 {{- end -}}

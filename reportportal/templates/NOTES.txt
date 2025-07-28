@@ -13,12 +13,6 @@ ReportPortal is a great addition to the Continuous Integration and Continuous Te
 
 ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.
 
-===
-
-{{- if .Values.networkPolicy.enabled }}
-Network policies have been enabled for enhanced security.
-{{- end }}
-
 {{- if .Values.resourceQuota.enabled }}
 Resource quotas have been configured for better resource management.
 {{- end }}

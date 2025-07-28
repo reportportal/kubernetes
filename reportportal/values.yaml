@@ -25,19 +25,9 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
-  ## @param global.defaultSecurityContext Default security context for all pods
+  ## @param global.securityContext Default security context for all pods
   ##
-  defaultSecurityContext:
-    enabled: false
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-    capabilities:
-      drop:
-        - ALL
+  securityContext: {}
   ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
   ##
@@ -905,36 +895,6 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
-
-## @section Network and Security configuration
-##
-## @param networkPolicy Enable network policies for pod-to-pod communication
-##
-networkPolicy:
-  enabled: false
-  ## @param networkPolicy.allowExternalServices Enable access to external services (PostgreSQL, RabbitMQ, OpenSearch, MinIO)
-  ## When enabled, allows outbound traffic to external services on standard ports
-  ## When disabled, only allows access to internal services deployed with this chart
-  ##
-  allowExternalServices: false
-  ## @param networkPolicy.additionalEgressRules Additional egress rules for custom network access
-  ## Example:
-  ## additionalEgressRules:
-  ##   - name: "custom-database"
-  ##     ipBlock:
-  ##       cidr: "10.0.0.0/8"
-  ##       except: ["10.0.0.1/32"]
-  ##     ports:
-  ##       - port: 5432
-  ##         protocol: TCP
-  ##   - name: "namespace-access"
-  ##     namespaceSelector:
-  ##       name: "monitoring"
-  ##     ports:
-  ##       - port: 9090
-  ##         protocol: TCP
-  ##
-  additionalEgressRules: []
 
 ## @param resourceQuota Configure resource quotas for the namespace
 ##
