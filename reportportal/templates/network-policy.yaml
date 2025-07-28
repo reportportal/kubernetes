@@ -50,7 +50,24 @@ spec:
       ports:
         - protocol: UDP
           port: 53
-    # Allow access to database
+    {{- if .Values.networkPolicy.allowExternalServices }}
+    # Allow access to external services (when enabled)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 5432  # External PostgreSQL
+        - protocol: TCP
+          port: 5672  # External RabbitMQ AMQP
+        - protocol: TCP
+          port: 15672 # External RabbitMQ Management
+        - protocol: TCP
+          port: 9200  # External OpenSearch
+        - protocol: TCP
+          port: 9000  # External MinIO
+        - protocol: TCP
+          port: 9001  # External MinIO Console
+    {{- else }}
+    # Allow access to internal database
     - to:
         - podSelector:
             matchLabels:
@@ -58,7 +75,7 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
-    # Allow access to message broker
+    # Allow access to internal message broker
     - to:
         - podSelector:
             matchLabels:
@@ -68,7 +85,7 @@ spec:
           port: 5672
         - protocol: TCP
           port: 15672
-    # Allow access to search engine
+    # Allow access to internal search engine
     - to:
         - podSelector:
             matchLabels:
@@ -76,7 +93,7 @@ spec:
       ports:
         - protocol: TCP
           port: 9200
-    # Allow access to storage
+    # Allow access to internal storage
     - to:
         - podSelector:
             matchLabels:
@@ -86,4 +103,33 @@ spec:
           port: 9000
         - protocol: TCP
           port: 9001
+    {{- end }}
+    {{- if .Values.networkPolicy.additionalEgressRules }}
+    {{- range .Values.networkPolicy.additionalEgressRules }}
+    # Additional egress rule: {{ .name | default "custom" }}
+    - to:
+      {{- if .namespaceSelector }}
+        - namespaceSelector:
+            matchLabels:
+              {{- toYaml .namespaceSelector | nindent 14 }}
+      {{- end }}
+      {{- if .podSelector }}
+        - podSelector:
+            matchLabels:
+              {{- toYaml .podSelector | nindent 14 }}
+      {{- end }}
+      {{- if .ipBlock }}
+        - ipBlock:
+            {{- toYaml .ipBlock | nindent 12 }}
+      {{- end }}
+      {{- if not (or .namespaceSelector .podSelector .ipBlock) }}
+        - {}
+      {{- end }}
+      ports:
+      {{- range .ports }}
+        - protocol: {{ .protocol | default "TCP" }}
+          port: {{ .port }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
 {{- end }} 

@@ -69,28 +69,130 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
-### 🔒 Configure Network Policies and Default Security Context
+### 🔒 Configure Network Policies (Beta feature)
 
-For enhanced security in production deployments, you can enable network policies and default security context:
+For enhanced security in production deployments, you can enable network policies to control pod-to-pod communication:
 
 ```bash
 helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
   --set networkPolicy.enabled=true \
-  --set global.defaultSecurityContext.enabled=true \
   reportportal/reportportal
 ```
 
-#### Security Features Explained:
+#### Network Policy Features Explained:
 
 |Feature|Description|Benefits|
 |-|-|-|
 |**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
-|**Default Security Context** (`global.defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
+
+#### Usage Examples:
+
+**1. Internal Services Only (Default - Maximum Security):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set networkPolicy.allowExternalServices=false \
+  reportportal/reportportal
+```
+
+**2. External Services Enabled (Cloud/Managed Services):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set networkPolicy.allowExternalServices=true \
+  --set postgresql.install=false \
+  --set global.postgresql.host=your-rds-endpoint.amazonaws.com \
+  reportportal/reportportal
+```
+
+**3. Custom Network Rules (Specific IP Ranges):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set networkPolicy.allowExternalServices=false \
+  --set 'networkPolicy.additionalEgressRules[0].name=datacenter-db' \
+  --set 'networkPolicy.additionalEgressRules[0].ipBlock.cidr=192.168.1.0/24' \
+  --set 'networkPolicy.additionalEgressRules[0].ports[0].port=5432' \
+  reportportal/reportportal
+```
+
+**4. AWS RDS for PostgreSQL:**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set networkPolicy.enabled=true \
+  --set networkPolicy.allowExternalServices=true \
+  --set postgresql.install=false \
+  --set database.endpoint=your-rds-endpoint.amazonaws.com \
+  --set database.ssl=require \
+  --set database.user=your-db-user \
+  --set database.password=your-db-password \
+  reportportal/reportportal
+```
 
 > **Important Notes:**
 > - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
+> - **Internal mode** (`allowExternalServices=false`) provides maximum security isolation
+> - **External mode** (`allowExternalServices=true`) enables cloud/managed service connections
+> - **Custom rules** allow fine-grained control for specific network segments
+
+### 🛡️ Configure Default Security Context
+
+For enhanced security in production deployments, you can enable default security context to apply consistent security settings across all pods:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set global.defaultSecurityContext.enabled=true \
+  reportportal/reportportal
+```
+
+#### Security Context Features Explained:
+
+|Feature|Description|Benefits|
+|-|-|-|
+|**Default Security Context** (`global.defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
+
+#### Usage Examples:
+
+**1. Basic Security Context (Non-root User):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set global.defaultSecurityContext.enabled=true \
+  --set global.defaultSecurityContext.runAsNonRoot=true \
+  reportportal/reportportal
+```
+
+**2. Enhanced Security Context (Read-only Filesystem):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set global.defaultSecurityContext.enabled=true \
+  --set global.defaultSecurityContext.runAsNonRoot=true \
+  --set global.defaultSecurityContext.readOnlyRootFilesystem=true \
+  reportportal/reportportal
+```
+
+**3. Custom Security Context (Specific User/Group):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set global.defaultSecurityContext.enabled=true \
+  --set global.defaultSecurityContext.runAsUser=1000 \
+  --set global.defaultSecurityContext.runAsGroup=1000 \
+  --set global.defaultSecurityContext.fsGroup=1000 \
+  reportportal/reportportal
+```
+
+> **Important Notes:**
 > - **Default Security Context** applies non-root user execution and read-only root filesystem by default
+> - **Custom user/group IDs** should match the container's expected user configuration
+> - **Read-only filesystem** may require volume mounts for writable directories
 
 ### 🛡️ Configure Pod Disruption Budgets and Resource Quotas
 
