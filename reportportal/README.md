@@ -118,9 +118,9 @@ helm install my-release \
 
 |Parameter|Description|Default|Recommended|
 |-|-|-|-|
-|`resourceQuota.services`|Maximum number of services|`10`|`15` (for ReportPortal with dependencies)|
-|`resourceQuota.cpu`|Total CPU limit|`4`|`6` (for production workloads)|
-|`resourceQuota.memory`|Total memory limit|`8Gi`|`8Gi` or higher based on workload|
+|`resourceQuota.services`|Maximum number of services|`12`|`15` (for ReportPortal with dependencies)|
+|`resourceQuota.cpu`|Total CPU limit|`6`|`8` (for production workloads)|
+|`resourceQuota.memory`|Total memory limit|`8Gi`|`16Gi` or higher based on workload|
 |`resourceQuota.pods`|Maximum number of pods|`20`|`20` (usually sufficient)|
 
 > **Important Notes:**

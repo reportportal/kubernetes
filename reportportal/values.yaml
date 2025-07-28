@@ -3,15 +3,14 @@
 
 ## @section Global configuration
 ##
-## @param global.imageRegistry Global image registry
-## @param global.imagePullSecrets Global registry secret names as an array
-## @param global.nameOverride expand the name of the chart
-## @param global.fullnameOverride expand the fully qualified app name
-##
 global:
+  ## @param global.imageRegistry Global image registry
   imageRegistry: ""
+  ## @param global.imagePullSecrets Global registry secret names as an array
   imagePullSecrets: []
+  ## @param global.nameOverride expand the name of the chart
   nameOverride: ""
+  ## @param global.fullnameOverride expand the fully qualified app name
   fullnameOverride: ""
   security:
     allowInsecureImages: true
@@ -20,10 +19,8 @@ global:
     name: reportportal
     ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-    ##
     annotations: {}
   ## @param global.defaultSecurityContext Default security context for all pods
-  ##
   defaultSecurityContext:
     runAsNonRoot: true
     runAsUser: 1000
