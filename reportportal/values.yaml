@@ -853,7 +853,6 @@ hooks:
 
 ## @section Network and Security configuration
 ##
-
 ## @param networkPolicy Enable network policies for pod-to-pod communication
 ##
 networkPolicy:
