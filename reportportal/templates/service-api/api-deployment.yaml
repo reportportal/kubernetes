@@ -247,7 +247,7 @@ spec:
         {{- end }}
     {{- end }}
       securityContext:
-        {{- toYaml .Values.serviceapi.securityContext | nindent 8 }}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceapi.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.serviceapi.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
     {{- with .Values.global.tolerations }}
       tolerations:

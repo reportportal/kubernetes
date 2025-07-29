@@ -5,12 +5,16 @@
 ##
 global:
   ## @param global.imageRegistry Global image registry
+  ##
   imageRegistry: ""
   ## @param global.imagePullSecrets Global registry secret names as an array
+  ##
   imagePullSecrets: []
   ## @param global.nameOverride expand the name of the chart
+  ##
   nameOverride: ""
   ## @param global.fullnameOverride expand the fully qualified app name
+  ##
   fullnameOverride: ""
   security:
     allowInsecureImages: true
@@ -19,25 +23,32 @@ global:
     name: reportportal
     ## @param serviceAccount.annotations For AWS IAM role association use the following annotations
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
+    ##
     annotations: {}
-  ## @param global.defaultSecurityContext Default security context for all pods
-  defaultSecurityContext:
-    runAsNonRoot: false
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
-    capabilities:
-      drop:
-        - ALL
+  ## @param global.securityContext Default security context for all pods
+  ##
+  securityContext: {}
   ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  ##
   tolerations: []
     # - key: "key"
     #   operator: "Equal|Exists"
     #   value: "value"
     #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
+  ## @param global.pdb Global pod disruption budgets for all components (overrides service-specific pdb)
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+  ##
+  pdb:
+    ## @param global.pdb.create Enable/disable a Pod Disruption Budget creation
+    ##
+    create: true
+    ## @param global.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+    ##
+    minAvailable: ""
+    ## @param global.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `global.pdb.minAvailable` and `global.pdb.maxUnavailable` are empty.
+    ##
+    maxUnavailable: "1"
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -100,6 +111,11 @@ serviceindex:
   affinity: {}
   ## @param serviceindex.tolerations Service-specific tolerations for the index service
   tolerations: []
+  ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -169,6 +185,11 @@ serviceui:
   serviceAccountName: ""
   ## @param serviceui.tolerations Service-specific tolerations for the UI service
   tolerations: []
+  ## @param serviceui.pdb Service-specific pod disruption budget for the UI service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -293,6 +314,11 @@ serviceapi:
   serviceAccountName: ""
   ## @param serviceapi.tolerations Service-specific tolerations for the API service
   tolerations: []
+  ## @param serviceapi.pdb Service-specific pod disruption budget for the API service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -398,6 +424,11 @@ uat:
   serviceAccountName: ""
   ## @param uat.tolerations Service-specific tolerations for the authorization service
   tolerations: []
+  ## @param uat.pdb Service-specific pod disruption budget for the authorization service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   ## @param uat.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -514,6 +545,11 @@ servicejobs:
   serviceAccountName: ""
   ## @param servicejobs.tolerations Service-specific tolerations for the jobs service
   tolerations: []
+  ## @param servicejobs.pdb Service-specific pod disruption budget for the jobs service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -569,6 +605,11 @@ serviceanalyzer:
   serviceAccountName: ""
   ## @param serviceanalyzer.tolerations Service-specific tolerations for the analyzer service
   tolerations: []
+  ## @param serviceanalyzer.pdb Service-specific pod disruption budget for the analyzer service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -601,7 +642,11 @@ migrations:
   serviceAccountName: ""
   ## @param migrations.tolerations Service-specific tolerations for the migrations job
   tolerations: []
-
+  ## @param migrations.pdb Service-specific pod disruption budget for the migrations job
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
 
 ## @section Infrastructure configuration
 ##
@@ -851,13 +896,6 @@ hooks:
         cpu: 100m
         memory: 128Mi
 
-## @section Network and Security configuration
-##
-## @param networkPolicy Enable network policies for pod-to-pod communication
-##
-networkPolicy:
-  enabled: false
-
 ## @param resourceQuota Configure resource quotas for the namespace
 ##
 resourceQuota:
@@ -868,15 +906,8 @@ resourceQuota:
   services: "12"
   persistentvolumeclaims: "5"
 
-## @param podDisruptionBudget Configure pod disruption budgets for high availability
-##
-podDisruptionBudget:
-  enabled: false
-  minAvailable: 1
-
 ## @section External dependencies installation configuration
 ##
-
 ## @param postgresql External PostgreSQL Helm Chart as dependency
 ##
 postgresql:

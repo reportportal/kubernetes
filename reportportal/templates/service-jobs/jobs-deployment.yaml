@@ -204,7 +204,7 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.servicejobs.securityContext | indent 8 }}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.servicejobs.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.servicejobs.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.global.tolerations }}
       tolerations:

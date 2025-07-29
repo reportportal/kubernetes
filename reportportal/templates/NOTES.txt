@@ -13,36 +13,18 @@ ReportPortal is a great addition to the Continuous Integration and Continuous Te
 
 ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.
 
-{{- if .Values.networkPolicy.enabled }}
-Network policies have been enabled for enhanced security.
-{{- end }}
-
-{{- if .Values.resourceQuota.enabled }}
-Resource quotas have been configured for better resource management.
-{{- end }}
-
-{{- if .Values.podDisruptionBudget.enabled }}
-Pod disruption budgets have been configured for high availability.
-{{- end }}
-
-To check the status of your deployment, run:
-  kubectl get pods -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
-
-To view logs from a specific service:
-  kubectl logs -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }}
-
 To get detailed information about all ReportPortal resources:
   kubectl get all -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
 
-To check the status of all services:
-  kubectl get services -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
-
 To view events in the namespace:
   kubectl get events -n {{ .Release.Namespace }} --sort-by='.lastTimestamp'
+
+To view logs from a specific service:
+  kubectl logs -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }}
 
 {{- if .Values.ingress.enabled }}
 To check ingress status:
   kubectl get ingress -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
 {{- end }}
 
-For more information, visit: https://reportportal.io
+For more information, visit: https://reportportal.io/docs

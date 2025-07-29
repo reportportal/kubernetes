@@ -145,7 +145,7 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.serviceanalyzer.securityContext | indent 8}}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.global.tolerations }}
       tolerations: 

@@ -69,29 +69,6 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
-### 🔒 Configure Network Policies and Default Security Context
-
-For enhanced security in production deployments, you can enable network policies and default security context:
-
-```bash
-helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set networkPolicy.enabled=true \
-  --set defaultSecurityContext.enabled=true \
-  reportportal/reportportal
-```
-
-#### Security Features Explained:
-
-|Feature|Description|Benefits|
-|-|-|-|
-|**Network Policies** (`networkPolicy.enabled=true`)|Enforces network traffic rules between pods|🔒 **Security**: Isolates traffic and prevents unauthorized access|
-|**Default Security Context** (`defaultSecurityContext.enabled=true`)|Applies security settings to all pods by default|🛡️ **Security**: Ensures consistent security posture across all containers|
-
-> **Important Notes:**
-> - **Network Policies require a CNI that supports them** (Calico, Weave, Cilium, etc.)
-> - **Default Security Context** applies non-root user execution and read-only root filesystem by default
-
 ### 🛡️ Configure Pod Disruption Budgets and Resource Quotas
 
 For enhanced availability and resource management in production deployments, you can enable pod disruption budgets and resource quotas:

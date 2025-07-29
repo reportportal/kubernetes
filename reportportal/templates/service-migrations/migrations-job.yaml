@@ -86,7 +86,7 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.migrations.securityContext | indent 8}}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.migrations.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.migrations.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
 {{- with .Values.global.tolerations }}
       tolerations: 
