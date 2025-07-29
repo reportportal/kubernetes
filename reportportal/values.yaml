@@ -895,6 +895,9 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+  image:
+    repository: curlimages/curl
+    tag: latest
 
 ## @param resourceQuota Configure resource quotas for the namespace
 ##
