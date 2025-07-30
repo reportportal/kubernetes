@@ -916,7 +916,7 @@ postgresql:
   install: true
   image:
     repository: bitnami/postgresql
-    tag: 16.6.0-debian-12-r2
+    tag: 17.5.0-debian-12-r20
   auth:
     postgresPassword: *dbpassword
     username: *dbuser
@@ -934,7 +934,7 @@ rabbitmq:
   install: true
   image:
     repository: bitnami/rabbitmq
-    tag: 4.1.2-debian-12-r0
+    tag: 4.1.2-debian-12-r1
   auth:
     username: *msgbrokerUser
     password: *msgbrokerPass
@@ -957,7 +957,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.18.0
+    tag: 2.19.3
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
@@ -979,7 +979,7 @@ minio:
   install: true
   image:
     repository: bitnami/minio
-    tag: 2024.11.7-debian-12-r2
+    tag: 2025.7.23-debian-12-r0
   auth:
     rootUser: *storageAccessKey
     rootPassword: *storageSecretKey
