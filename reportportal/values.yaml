@@ -986,3 +986,5 @@ minio:
   persistence:
     annotations:
       "helm.sh/resource-policy": "keep"
+  console:
+    enabled: false
