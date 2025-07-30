@@ -79,8 +79,8 @@ Call the following commands from the downloaded
 [kubernetes](https://github.com/reportportal/kubernetes/) repository.
 
 ```bash
-# Download the chart dependencies
-helm dependency build ./reportportal 
+# Update the chart dependencies
+helm dependency update ./reportportal
 ```
 
 ```bash
