@@ -1,1 +1,100 @@
+# Helm package files
 reportportal-*.tgz
+*.tgz
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Development and build files
+Makefile
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+docker-compose*.yaml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+logs/
+tmp/
+temp/
+
+# Test files
+test/
+tests/
+*_test.go
+*_test.py
+*.test.js
+*.spec.js
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+Jenkinsfile
+azure-pipelines.yml
+
+# Dependencies and package managers
+node_modules/
+vendor/
+go.sum
+package-lock.json
+yarn.lock
+Pipfile.lock
+requirements.txt
+
+# Environment and configuration files
+.env
+.env.*
+*.env
+config.local.*
+secrets/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Binary files (if any)
+*.exe
+*.bin
+*.dll
+*.so
+*.dylib
+
+# Chart development files
+charts/
+requirements.lock
+Chart.lock
