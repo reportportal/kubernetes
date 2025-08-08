@@ -616,6 +616,24 @@ serviceanalyzer:
     nodePort: ""
     extraPorts: []
     annotations: {}
+  ## @param serviceanalyzer.readinessProbe configure readiness probe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceanalyzer.livenessProbe configure liveness probe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
 
 migrations:
   image:
