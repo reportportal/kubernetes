@@ -3,15 +3,18 @@
 
 ## @section Global configuration
 ##
-## @param global.imageRegistry Global image registry
-## @param global.imagePullSecrets Global registry secret names as an array
-## @param global.nameOverride expand the name of the chart
-## @param global.fullnameOverride expand the fully qualified app name
-##
 global:
+  ## @param global.imageRegistry Global image registry
+  ##
   imageRegistry: ""
+  ## @param global.imagePullSecrets Global registry secret names as an array
+  ##
   imagePullSecrets: []
+  ## @param global.nameOverride expand the name of the chart
+  ##
   nameOverride: ""
+  ## @param global.fullnameOverride expand the fully qualified app name
+  ##
   fullnameOverride: ""
   security:
     allowInsecureImages: true
@@ -22,6 +25,30 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
+  ## @param global.securityContext Default security context for all pods
+  ##
+  securityContext: {}
+  ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+  ##
+  tolerations: []
+    # - key: "key"
+    #   operator: "Equal|Exists"
+    #   value: "value"
+    #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
+  ## @param global.pdb Global pod disruption budgets for all components (overrides service-specific pdb)
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+  ##
+  pdb:
+    ## @param global.pdb.create Enable/disable a Pod Disruption Budget creation
+    ##
+    create: true
+    ## @param global.pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
+    ##
+    minAvailable: ""
+    ## @param global.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `global.pdb.minAvailable` and `global.pdb.maxUnavailable` are empty.
+    ##
+    maxUnavailable: "1"
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -57,6 +84,23 @@ serviceindex:
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
+  ## @param serviceindex.readinessProbe configure readiness probe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceindex.livenessProbe configure liveness probe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
   ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
@@ -65,6 +109,13 @@ serviceindex:
   ##
   nodeSelector: {}
   affinity: {}
+  ## @param serviceindex.tolerations Service-specific tolerations for the index service
+  tolerations: []
+  ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -78,7 +129,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.2
+    tag: 5.14.3
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -108,6 +159,23 @@ serviceui:
   affinity: {}
   podAnnotations: {}
   securityContext: {}
+  ## @param serviceui.readinessProbe configure readiness probe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceui.livenessProbe configure liveness probe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
   ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
   ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
@@ -115,6 +183,13 @@ serviceui:
   ##
   nodeSelector: {}
   serviceAccountName: ""
+  ## @param serviceui.tolerations Service-specific tolerations for the UI service
+  tolerations: []
+  ## @param serviceui.pdb Service-specific pod disruption budget for the UI service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -128,7 +203,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -237,6 +312,13 @@ serviceapi:
   ##
   nodeSelector: {}
   serviceAccountName: ""
+  ## @param serviceapi.tolerations Service-specific tolerations for the API service
+  tolerations: []
+  ## @param serviceapi.pdb Service-specific pod disruption budget for the API service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -275,7 +357,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.3
+    tag: 5.14.4
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -340,6 +422,13 @@ uat:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param uat.tolerations Service-specific tolerations for the authorization service
+  tolerations: []
+  ## @param uat.pdb Service-specific pod disruption budget for the authorization service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   ## @param uat.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -454,6 +543,13 @@ servicejobs:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param servicejobs.tolerations Service-specific tolerations for the jobs service
+  tolerations: []
+  ## @param servicejobs.pdb Service-specific pod disruption budget for the jobs service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
@@ -467,7 +563,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -507,66 +603,42 @@ serviceanalyzer:
   nodeSelector: {}
   affinity: {}
   serviceAccountName: ""
+  ## @param serviceanalyzer.tolerations Service-specific tolerations for the analyzer service
+  tolerations: []
+  ## @param serviceanalyzer.pdb Service-specific pod disruption budget for the analyzer service
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
   service:
     type: ""
     portName: ""
     nodePort: ""
     extraPorts: []
     annotations: {}
-
-## @param serviceanalyzertrain Core ReportPortal service for the training of the analysis of test results
-##
-serviceanalyzertrain:
-  name: analyzer-train
-  pullPolicy: Always
-  uwsgiWorkers: 1
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 200m
-      memory: 512Mi
-  ## @param serviceanalyzertrain.extraInitContainers init containers
+  ## @param serviceanalyzer.readinessProbe configure readiness probe
   ##
-  extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param serviceanalyzer.livenessProbe configure liveness probe
   ##
-  extraVolumes: []
-  ## @param serviceanalyzertrain.extraVolumeMounts define the extra volume mounts
-  ##
-  extraVolumeMounts: []
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  ## @param serviceanalyzertrain.extraEnvs define the extra environment variables
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
-  ## @param serviceanalyzertrain.nodeSelector define which Nodes the Pods are scheduled on.
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  serviceAccountName: ""
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
 
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.14.0
+    tag: 5.14.1
   resources:
     requests:
       cpu: 100m
@@ -586,9 +658,16 @@ migrations:
   ##
   nodeSelector: {}
   serviceAccountName: ""
-
+  ## @param migrations.tolerations Service-specific tolerations for the migrations job
+  tolerations: []
+  ## @param migrations.pdb Service-specific pod disruption budget for the migrations job
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
 
 ## @section Infrastructure configuration
+##
 database:
   secretName: ""
   passwordKeyName: "postgresql-password"
@@ -640,94 +719,170 @@ searchengine:
   user:
   password:
 
+## @section Storage Configuration
+##
+## ReportPortal supports three storage types: minio, s3, and filesystem
+## Choose the storage type that best fits your environment and requirements
+##
+## Quick Start Presets:
+##   - For local development: use "minio" (default)
+##   - For production with cloud storage: use "s3"
+##   - For production with shared filesystem: use "filesystem"
+##
+## Storage Type Comparison:
+##   - minio: Self-hosted object storage (good for development/testing)
+##   - s3: Cloud object storage (good for production, supports IAM roles)
+##   - filesystem: Shared filesystem storage (good for production with existing storage)
+##
 storage:
-  ## @param storage.type Possible storage types: minio, s3, filesystem
+  ## @param storage.type Storage type to use for ReportPortal data
+  ## Options: minio, s3, filesystem
+  ## Default: minio (recommended for development)
   ##
   type: minio
+
+  ## @param storage.secretName Kubernetes secret containing storage credentials
+  ## Leave empty to use inline credentials below
+  ## Recommended for production: create a secret and reference it here
+  ##
   secretName: ""
-  ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key
+
+  ## @param storage.accesskeyName and @param storage.secretkeyName
+  ## Secret key names when using storage.secretName
+  ## These map to the keys in your Kubernetes secret
   ##
   accesskeyName: "access-key"
   secretkeyName: "secret-key"
+
+  ## @param storage.accesskey and @param storage.secretkey
+  ## Inline storage credentials (not recommended for production)
+  ## For S3 with IAM roles, leave these empty
+  ##
   accesskey: &storageAccessKey rpuser
   secretkey: &storageSecretKey miniopassword
-  ## @param storage.endpoint URL without protocol and port
+
+  ## @param storage.endpoint Storage service endpoint
+  ## For MinIO: leave empty to use internal service
+  ## For S3: leave empty to use AWS default endpoints
+  ## For custom S3-compatible: specify endpoint URL (without protocol/port)
   ##
   endpoint:
-  ## @param storage.ssl configure SSL connection to the storage
-  ## Incoming parameters: true (HTTPS), false (HTTP)
+
+  ## @param storage.ssl Enable SSL/TLS for storage connections
+  ## true = HTTPS, false = HTTP
   ##
   ssl: false
+
+  ## @param storage.port Storage service port
+  ## Default: 9000 (MinIO standard port)
+  ##
   port: 9000
+
+  ## @param storage.region AWS region for S3 storage
+  ## Required for S3 storage type
+  ## Examples: us-east-1, eu-west-1, ap-southeast-1
+  ##
   region: ""
+
+  ## @param storage.bucket Bucket configuration for object storage (minio/s3)
+  ##
   bucket:
-    ## @param storage.bucket.type switches between multi and single buckets.
-    ## If you are upgrading an already installed Report Portal, a migration is required.
-    ## Ref: https://github.com/reportportal/migrations-complex/tree/master/charts
+    ## @param storage.bucket.type Bucket organization strategy
+    ## Options: single, multi
+    ##   single: One bucket for all data with subdirectories (recommended for production)
+    ##   multi: Separate bucket for each project (not recommended - creates many buckets)
     ##
-    ## Incoming parameters: single, multi
-    ## When @param storage.bucket.type=multi @param storage.bucket.bucketDefaultName defines plugins bucket
-    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName defines default single bucket name
+    ## IMPORTANT: Multi-bucket strategy is NOT recommended for production S3 deployments
+    ## because ReportPortal will create a separate S3 bucket for each project in the portal
+    ## Use single bucket strategy which creates one bucket with subdirectories for better management.
     ##
     type: multi
+
+    ## @param storage.bucket.bucketDefaultName Default bucket name
+    ## For single bucket mode: this is the main bucket name
+    ## For multi bucket mode: this is the plugins bucket name
+    ##
     bucketDefaultName: "rp-bucket"
-    ## Use when @param storage.bucket.type=multi
+
+    ## @param storage.bucket.bucketMultiPrefix Prefix for project buckets (multi mode only)
+    ## Project buckets will be named: {prefix}{project-id}{postfix}
     ##
     bucketMultiPrefix: "prj-"
+
+    ## @param storage.bucket.bucketMultiPostfix Suffix for project buckets (multi mode only)
+    ##
     bucketMultiPostfix: ""
-    ## @param storage.bucket.bucketMultiSaltName storing auth keystore
+
+    ## @param storage.bucket.bucketMultiSaltName Salt storage location (multi mode only)
     ##
     bucketMultiSaltName: "keystore"
-  ## @param storage.volume defines the persistent volume claim properties for the filesystem storage type
+
+  ## @param storage.volume Filesystem storage configuration (when type=filesystem)
   ##
   volume:
-    ## @param storage.volume.capacity defines the size of the storage
+    ## @param storage.volume.capacity Storage size for filesystem storage
+    ## Examples: 5Gi, 10Gi, 100Gi
     ##
     capacity: 5Gi
-    ## @param storage.volume.storageClassName defines the storage class name
+
+    ## @param storage.volume.storageClassName Kubernetes storage class name
+    ## Examples: standard, standard-rwx, fast-ssd
+    ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
-    ## @param storage.volume.annotations defines the common annotations
+
+    ## @param storage.volume.annotations Annotations for the PersistentVolumeClaim
     ##
     annotations: {}
-    ## @param storage.volume.volumeConfig contains configuration for creating a persistent volume
+
+    ## @param storage.volume.volumeConfig PersistentVolume configuration
+    ## Only needed for custom volume types (hostPath, local, CSI)
+    ## For cloud providers, leave empty to use dynamic provisioning
     ##
     volumeConfig:
-      ## @param storage.volume.volumeConfig.type defines the Persistent Volume type
-      ## Incoming parameters: hostPath, local, csi. If empty, PV is not created
+      ## @param storage.volume.volumeConfig.type Volume type for custom provisioning
+      ## Options: hostPath, local, csi
+      ## Leave empty to use dynamic provisioning (recommended for cloud)
       ##
       type: ""
+
+      ## @param storage.volume.volumeConfig.hostPath HostPath volume configuration
+      ##
       hostPath: {}
+
+      ## @param storage.volume.volumeConfig.local Local volume configuration
+      ##
       local:
         nodeSelectorNames: []
-      ## @param storage.volume.volumeConfig.csi defines
-      ## the Container Storage Interface (CSI) properties
+
+      ## @param storage.volume.volumeConfig.csi CSI volume configuration
       ##
       csi:
-        ## @param storage.volume.volumeConfig.csi.driver defines
-        ## the CSI driver name
+        ## @param storage.volume.volumeConfig.csi.driver CSI driver name
         ##
         driver: ""
-        ## @param storage.volume.volumeConfig.csi.volumeHandle defines
-        ## the volume handle
+
+        ## @param storage.volume.volumeConfig.csi.volumeHandle CSI volume handle
         ##
         volumeHandle: ""
-        ## @param storage.volume.volumeConfig.csi.fsType defines
-        ## the filesystem type. Provide ext4, xfs, etc
+
+        ## @param storage.volume.volumeConfig.csi.fsType Filesystem type
+        ## Examples: ext4, xfs, nfs
         ##
         fsType: ""
-        ## @param storage.volume.volumeConfig.csi.readOnly defines if
-        ## the volume is read-only. Provide true or false
+
+        ## @param storage.volume.volumeConfig.csi.readOnly Read-only volume
+        ## true/false
         ##
         readOnly: ""
-        ## @param storage.volume.volumeConfig.csi.volumeAttributes defines
-        ## additional volume attributes
+
+        ## @param storage.volume.volumeConfig.csi.volumeAttributes Additional CSI attributes
         ##
         volumeAttributes: {}
 
 
 ## @section Ingress configuration
-
+##
 ## If you have installed ingress controller and want to expose application - set @param ingress.enable to `true`
 ## @param ingress.hosts set variable this you domain names list (FQDN) if you have some domain name and want to use it in ingress rules.
 ## @param ingress.hosts is required if you want to use Google Managed Certificate.
@@ -778,16 +933,6 @@ ingress:
 
 ## @section Additional configuration
 ##
-
-## @param tolerations for all components, if any (requires Kubernetes >= 1.6)
-## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-##
-tolerations: []
-  # - key: "key"
-  #   operator: "Equal|Exists"
-  #   value: "value"
-  #   effect: "NoSchedule|PreferNoSchedule|NoExecute"
-
 ## Role Based Access
 ## ref: https://kubernetes.io/docs/admin/authorization/rbac/
 ##
@@ -845,9 +990,18 @@ hooks:
         cpu: 100m
         memory: 128Mi
 
+## @param resourceQuota Configure resource quotas for the namespace
+##
+resourceQuota:
+  enabled: false
+  cpu: "6"
+  memory: "8Gi"
+  pods: "20"
+  services: "12"
+  persistentvolumeclaims: "5"
+
 ## @section External dependencies installation configuration
 ##
-
 ## @param postgresql External PostgreSQL Helm Chart as dependency
 ##
 postgresql:

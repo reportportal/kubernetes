@@ -46,29 +46,6 @@ spec:
         {{ else }}
           value: "{{ .Values.database.password }}"
         {{ end }}
-        - name: OS_HOST
-          value: "{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}"
-        - name: OS_PORT
-          value: "{{ .Values.searchengine.port | default "9200" }}"
-        - name: OS_PROTOCOL
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}"
-        {{- if .Values.searchengine.secretName }}
-        - name: OS_USER
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.searchengine.secretName }}"
-              key: "username"
-        - name: OS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.searchengine.secretName }}"
-              key: "password"
-        {{- else }}
-        - name: OS_USER
-          value: "{{ .Values.searchengine.user }}"
-        - name: OS_PASSWORD
-          value: "{{ .Values.searchengine.password }}"
-        {{- end }}
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "migrations") }}"
         imagePullPolicy: "{{ .Values.migrations.pullPolicy }}"
         name: migrations
@@ -86,9 +63,14 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.migrations.securityContext | indent 8}}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.migrations.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.migrations.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.tolerations }}
+{{- with .Values.global.tolerations }}
       tolerations: 
 {{- toYaml . | nindent 8 }}
+{{- else }}
+{{- with .Values.migrations.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}
 {{- end }}

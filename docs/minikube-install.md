@@ -80,7 +80,7 @@ Call the following commands from the downloaded
 
 ```bash
 # Update the chart dependencies
-helm dependency update ./reportportal
+helm dependency update ./reportportal 
 ```
 
 ```bash

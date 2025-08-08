@@ -1,0 +1,172 @@
+{{- /* Service Index PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.serviceindex.pdb.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-index-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.serviceindex.pdb.minAvailable }}
+  minAvailable: {{ .Values.serviceindex.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.serviceindex.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.serviceindex.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-index
+{{- end }}
+
+{{- /* Service UI PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.serviceui.pdb.create }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-ui-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.serviceui.pdb.minAvailable }}
+  minAvailable: {{ .Values.serviceui.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.serviceui.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.serviceui.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-ui
+{{- end }}
+
+{{- /* Service API PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.serviceapi.pdb.create }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-api-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.serviceapi.pdb.minAvailable }}
+  minAvailable: {{ .Values.serviceapi.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.serviceapi.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.serviceapi.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-api
+{{- end }}
+
+{{- /* UAT (Authorization) PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.uat.pdb.create }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-uat-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.uat.pdb.minAvailable }}
+  minAvailable: {{ .Values.uat.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.uat.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.uat.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-uat
+{{- end }}
+
+{{- /* Service Jobs PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.servicejobs.pdb.create }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-jobs-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.servicejobs.pdb.minAvailable }}
+  minAvailable: {{ .Values.servicejobs.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.servicejobs.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.servicejobs.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-jobs
+{{- end }}
+
+{{- /* Service Analyzer PodDisruptionBudget */ -}}
+{{- if or .Values.global.pdb.create .Values.serviceanalyzer.pdb.create }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-analyzer-pdb
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- if .Values.global.pdb.minAvailable }}
+  minAvailable: {{ .Values.global.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
+  {{- end }}
+  {{- else }}
+  {{- if .Values.serviceanalyzer.pdb.minAvailable }}
+  minAvailable: {{ .Values.serviceanalyzer.pdb.minAvailable }}
+  {{- end }}
+  {{- if .Values.serviceanalyzer.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.serviceanalyzer.pdb.maxUnavailable }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-analyzer
+{{- end }} 
