@@ -708,7 +708,7 @@ searchengine:
 ##
 ## Quick Start Presets:
 ##   - For local development: use "minio" (default)
-##   - For production with cloud storage: use "s3" 
+##   - For production with cloud storage: use "s3"
 ##   - For production with shared filesystem: use "filesystem"
 ##
 ## Storage Type Comparison:
@@ -729,7 +729,7 @@ storage:
   ##
   secretName: ""
 
-  ## @param storage.accesskeyName and @param storage.secretkeyName 
+  ## @param storage.accesskeyName and @param storage.secretkeyName
   ## Secret key names when using storage.secretName
   ## These map to the keys in your Kubernetes secret
   ##
