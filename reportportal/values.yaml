@@ -129,7 +129,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.2
+    tag: 5.14.3
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -203,7 +203,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -357,7 +357,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.3
+    tag: 5.14.4
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -563,7 +563,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.1
+    tag: 5.14.2
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -620,7 +620,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.14.0
+    tag: 5.14.1
   resources:
     requests:
       cpu: 100m
@@ -701,88 +701,160 @@ searchengine:
   user:
   password:
 
+## @section Storage Configuration
+##
+## ReportPortal supports three storage types: minio, s3, and filesystem
+## Choose the storage type that best fits your environment and requirements
+##
+## Quick Start Presets:
+##   - For local development: use "minio" (default)
+##   - For production with cloud storage: use "s3" 
+##   - For production with shared filesystem: use "filesystem"
+##
+## Storage Type Comparison:
+##   - minio: Self-hosted object storage (good for development/testing)
+##   - s3: Cloud object storage (good for production, supports IAM roles)
+##   - filesystem: Shared filesystem storage (good for production with existing storage)
+##
 storage:
-  ## @param storage.type Possible storage types: minio, s3, filesystem
+  ## @param storage.type Storage type to use for ReportPortal data
+  ## Options: minio, s3, filesystem
+  ## Default: minio (recommended for development)
   ##
   type: minio
+
+  ## @param storage.secretName Kubernetes secret containing storage credentials
+  ## Leave empty to use inline credentials below
+  ## Recommended for production: create a secret and reference it here
+  ##
   secretName: ""
-  ## @param storage.accesskeyName and @param storage.secretkeyName pass to the env[].valueFrom.secretKeyRef.key
+
+  ## @param storage.accesskeyName and @param storage.secretkeyName 
+  ## Secret key names when using storage.secretName
+  ## These map to the keys in your Kubernetes secret
   ##
   accesskeyName: "access-key"
   secretkeyName: "secret-key"
+
+  ## @param storage.accesskey and @param storage.secretkey
+  ## Inline storage credentials (not recommended for production)
+  ## For S3 with IAM roles, leave these empty
+  ##
   accesskey: &storageAccessKey rpuser
   secretkey: &storageSecretKey miniopassword
-  ## @param storage.endpoint URL without protocol and port
+
+  ## @param storage.endpoint Storage service endpoint
+  ## For MinIO: leave empty to use internal service
+  ## For S3: leave empty to use AWS default endpoints
+  ## For custom S3-compatible: specify endpoint URL (without protocol/port)
   ##
   endpoint:
-  ## @param storage.ssl configure SSL connection to the storage
-  ## Incoming parameters: true (HTTPS), false (HTTP)
+
+  ## @param storage.ssl Enable SSL/TLS for storage connections
+  ## true = HTTPS, false = HTTP
   ##
   ssl: false
+
+  ## @param storage.port Storage service port
+  ## Default: 9000 (MinIO standard port)
+  ##
   port: 9000
+
+  ## @param storage.region AWS region for S3 storage
+  ## Required for S3 storage type
+  ## Examples: us-east-1, eu-west-1, ap-southeast-1
+  ##
   region: ""
+
+  ## @param storage.bucket Bucket configuration for object storage (minio/s3)
+  ##
   bucket:
-    ## @param storage.bucket.type switches between multi and single buckets.
-    ## If you are upgrading an already installed Report Portal, a migration is required.
-    ## Ref: https://github.com/reportportal/migrations-complex/tree/master/charts
-    ##
-    ## Incoming parameters: single, multi
-    ## When @param storage.bucket.type=multi @param storage.bucket.bucketDefaultName defines plugins bucket
-    ## When @param storage.bucket.type=single @param storage.bucket.bucketDefaultName defines default single bucket name
+    ## @param storage.bucket.type Bucket organization strategy
+    ## Options: single, multi
+    ##   single: One bucket for all data (simpler, recommended for new installations)
+    ##   multi: Multiple buckets per project (more complex, requires migration for existing installations)
     ##
     type: multi
+
+    ## @param storage.bucket.bucketDefaultName Default bucket name
+    ## For single bucket mode: this is the main bucket name
+    ## For multi bucket mode: this is the plugins bucket name
+    ##
     bucketDefaultName: "rp-bucket"
-    ## Use when @param storage.bucket.type=multi
+
+    ## @param storage.bucket.bucketMultiPrefix Prefix for project buckets (multi mode only)
+    ## Project buckets will be named: {prefix}{project-id}{postfix}
     ##
     bucketMultiPrefix: "prj-"
+
+    ## @param storage.bucket.bucketMultiPostfix Suffix for project buckets (multi mode only)
+    ##
     bucketMultiPostfix: ""
-    ## @param storage.bucket.bucketMultiSaltName storing auth keystore
+
+    ## @param storage.bucket.bucketMultiSaltName Salt storage location (multi mode only)
     ##
     bucketMultiSaltName: "keystore"
-  ## @param storage.volume defines the persistent volume claim properties for the filesystem storage type
+
+  ## @param storage.volume Filesystem storage configuration (when type=filesystem)
   ##
   volume:
-    ## @param storage.volume.capacity defines the size of the storage
+    ## @param storage.volume.capacity Storage size for filesystem storage
+    ## Examples: 5Gi, 10Gi, 100Gi
     ##
     capacity: 5Gi
-    ## @param storage.volume.storageClassName defines the storage class name
+
+    ## @param storage.volume.storageClassName Kubernetes storage class name
+    ## Examples: standard, standard-rwx, fast-ssd
+    ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
-    ## @param storage.volume.annotations defines the common annotations
+
+    ## @param storage.volume.annotations Annotations for the PersistentVolumeClaim
     ##
     annotations: {}
-    ## @param storage.volume.volumeConfig contains configuration for creating a persistent volume
+
+    ## @param storage.volume.volumeConfig PersistentVolume configuration
+    ## Only needed for custom volume types (hostPath, local, CSI)
+    ## For cloud providers, leave empty to use dynamic provisioning
     ##
     volumeConfig:
-      ## @param storage.volume.volumeConfig.type defines the Persistent Volume type
-      ## Incoming parameters: hostPath, local, csi. If empty, PV is not created
+      ## @param storage.volume.volumeConfig.type Volume type for custom provisioning
+      ## Options: hostPath, local, csi
+      ## Leave empty to use dynamic provisioning (recommended for cloud)
       ##
       type: ""
+
+      ## @param storage.volume.volumeConfig.hostPath HostPath volume configuration
+      ##
       hostPath: {}
+
+      ## @param storage.volume.volumeConfig.local Local volume configuration
+      ##
       local:
         nodeSelectorNames: []
-      ## @param storage.volume.volumeConfig.csi defines
-      ## the Container Storage Interface (CSI) properties
+
+      ## @param storage.volume.volumeConfig.csi CSI volume configuration
       ##
       csi:
-        ## @param storage.volume.volumeConfig.csi.driver defines
-        ## the CSI driver name
+        ## @param storage.volume.volumeConfig.csi.driver CSI driver name
         ##
         driver: ""
-        ## @param storage.volume.volumeConfig.csi.volumeHandle defines
-        ## the volume handle
+
+        ## @param storage.volume.volumeConfig.csi.volumeHandle CSI volume handle
         ##
         volumeHandle: ""
-        ## @param storage.volume.volumeConfig.csi.fsType defines
-        ## the filesystem type. Provide ext4, xfs, etc
+
+        ## @param storage.volume.volumeConfig.csi.fsType Filesystem type
+        ## Examples: ext4, xfs, nfs
         ##
         fsType: ""
-        ## @param storage.volume.volumeConfig.csi.readOnly defines if
-        ## the volume is read-only. Provide true or false
+
+        ## @param storage.volume.volumeConfig.csi.readOnly Read-only volume
+        ## true/false
         ##
         readOnly: ""
-        ## @param storage.volume.volumeConfig.csi.volumeAttributes defines
-        ## additional volume attributes
+
+        ## @param storage.volume.volumeConfig.csi.volumeAttributes Additional CSI attributes
         ##
         volumeAttributes: {}
 

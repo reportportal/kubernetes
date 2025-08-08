@@ -70,6 +70,49 @@ helm install my-release \
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
 
+### 💾 Storage Configuration
+
+ReportPortal supports three storage types: **minio**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
+
+| Storage Type | Use Case | Pros | Cons |
+|--------------|----------|------|------|
+| **minio** | Development, testing | Simple setup, built-in | Not suitable for production |
+| **s3** | Production, cloud | Scalable, reliable, supports IAM | Requires cloud provider |
+| **filesystem** | Production, on-premise | Simple, works with existing storage | Less scalable than object storage |
+
+#### Quick Storage Setup Examples:
+
+**For Development (MinIO - Default):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=minio \
+  reportportal/reportportal
+```
+
+**For Production with AWS S3:**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=s3 \
+  --set storage.region=us-east-1 \
+  --set storage.bucket.bucketDefaultName=my-reportportal-bucket \
+  --set minio.install=false \
+  reportportal/reportportal
+```
+
+**For Production with Filesystem:**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=filesystem \
+  --set storage.volume.capacity=100Gi \
+  --set minio.install=false \
+  reportportal/reportportal
+```
+
+> **📋 Storage Examples:** See [Storage Configuration Examples](../docs/storage-examples.md) for detailed configuration examples including AWS S3 with IAM roles, GKE Filestore, and more.
+
 ### 🛡️ Configure Pod Disruption Budgets and Resource Quotas
 
 For enhanced availability and resource management in production deployments, you can enable pod disruption budgets and resource quotas:
@@ -143,6 +186,10 @@ helm install my-release \
 * [General User Manual](https://reportportal.io/docs/)
 * [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/deploy-with-kubernetes/)
 * [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
+
+### 📋 Configuration Guides
+
+* [Storage Configuration Examples](../docs/storage-examples.md) - Detailed examples for MinIO, AWS S3, and filesystem storage
 
 ## 🤝 Community / Support
 

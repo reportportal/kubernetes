@@ -4,7 +4,7 @@ description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 25.7.3
+version: 25.8.8
 sources:
   - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
@@ -27,22 +27,25 @@ maintainers:
   - name: reportportal
     email: support@reportportal.io
 
-# If you update dependencies version, please update also *.image.tag in values.yaml
+# IMPORTANT: When updating any dependency version below, you must also update the corresponding image tag in values.yaml
+# This ensures the Helm chart uses the same version as the container images
 dependencies:
-  # If you update version, please update also postgresql.image.tag in values.yaml
+  # PostgreSQL dependency - update postgresql.image.tag in values.yaml when changing this version
   - name: postgresql
     version: 16.7.21
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.install
-    # If you update version, please update also rabbitmq.image.tag in values.yaml
+  # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
     version: 16.0.11
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
+  # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
     version: 2.35.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
+  # MinIO dependency - update minio.image.tag in values.yaml when changing this version
   - name: minio
     version: 17.0.16
     repository: https://charts.bitnami.com/bitnami
