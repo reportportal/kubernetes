@@ -45,10 +45,9 @@ jobs:
 
       - name: Dry run installation
         run: |
-          helm install reportportal-test . --dry-run \
+          helm install reportportal-test ./reportportal --dry-run \
             --set uat.superadminInitPasswd.password="testpassword123" \
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \
-            --set minio.install=true \
-            ./reportportal
+            --set minio.install=true
