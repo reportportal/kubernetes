@@ -130,6 +130,28 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
+        {{- if .Values.serviceanalyzer.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5001
+          initialDelaySeconds: {{ .Values.serviceanalyzer.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.serviceanalyzer.readinessProbe.successThreshold }}
+        {{- end }}
+        {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5001
+          initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.serviceanalyzer.livenessProbe.successThreshold }}
+        {{- end }}
         volumeMounts:
           {{ if eq .Values.storage.type "filesystem" }}
           - name: shared-volume
