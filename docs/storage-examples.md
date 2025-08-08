@@ -20,8 +20,8 @@ Uses the built-in MinIO service for object storage.
 storage:
   type: minio
   # MinIO credentials (inline - not recommended for production)
-  accesskey: rpuser
-  secretkey: miniopassword
+  accesskey: &storageAccessKey rpuser
+  secretkey: &storageSecretKey miniopassword
   # Use internal MinIO service
   endpoint: ""
   ssl: false
@@ -29,9 +29,49 @@ storage:
   bucket:
     type: single  # Simpler for development
     bucketDefaultName: "rp-bucket"
+
+minio:
+  install: true
+  auth:
+    rootUser: *storageAccessKey
+    rootPassword: *storageSecretKey
 ```
 
-## Example 2: AWS S3 Storage with IAM Role (Production)
+## Example 2: MinIO Storage with Secrets (Production)
+
+Uses the built-in MinIO service with Kubernetes secrets for secure credential management.
+
+```yaml
+# Create a Kubernetes secret first:
+# kubectl create secret generic reportportal-minio-secret \
+#   --from-literal=access-key=your-minio-access-key \
+#   --from-literal=secret-key=your-minio-secret-key
+
+storage:
+  type: minio
+  # Reference to Kubernetes secret containing MinIO credentials
+  secretName: "reportportal-minio-secret"
+  accesskeyName: "access-key"
+  secretkeyName: "secret-key"
+  # Use internal MinIO service
+  endpoint: ""
+  ssl: false
+  port: 9000
+  bucket:
+    type: single  # Recommended for production
+    bucketDefaultName: "rp-bucket"
+
+minio:
+  install: true
+  auth:
+    existingSecret: "reportportal-minio-secret"
+    rootUserSecretKey: "access-key"
+    rootPasswordSecretKey: "secret-key"
+  persistence:
+    size: 500Gi  # Adjust based on your storage needs
+```
+
+## Example 3: AWS S3 Storage with IAM Role (Production)
 
 Uses AWS S3 with IAM role-based authentication (recommended for EKS).
 
@@ -62,7 +102,7 @@ minio:
   install: false
 ```
 
-## Example 3: AWS S3 Storage with Access Keys (Production)
+## Example 4: AWS S3 Storage with Access Keys (Production)
 
 Uses AWS S3 with access key authentication.
 
@@ -85,7 +125,7 @@ minio:
   install: false
 ```
 
-## Example 4: Filesystem Storage with GKE Filestore (Production)
+## Example 5: Filesystem Storage with GKE Filestore (Production)
 
 Uses Google Filestore for shared filesystem storage.
 
@@ -101,49 +141,42 @@ minio:
   install: false
 ```
 
-## Example 5: Filesystem Storage with Local Storage (Development)
+## Example 6: Production S3 Storage with Single Bucket (Recommended)
 
-Uses local storage for development/testing.
-
-```yaml
-storage:
-  type: filesystem
-  volume:
-    capacity: 10Gi
-    storageClassName: "standard"
-    volumeConfig:
-      type: hostPath
-      hostPath:
-        path: "/data/reportportal"
-
-# Disable MinIO since we're using filesystem
-minio:
-  install: false
-```
-
-## Example 6: Multi-Bucket S3 Storage (Advanced)
-
-Uses multiple S3 buckets for different projects.
+**Recommended for production deployments.** Uses a single S3 bucket for all ReportPortal data, providing better cost management and simpler administration.
 
 ```yaml
 storage:
   type: s3
-  secretName: "reportportal-s3-credentials"
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
+  # Use IAM role for authentication (recommended for production)
+  accesskey: ""
+  secretkey: ""
+  # AWS region
   region: "us-east-1"
   bucket:
-    type: multi
-    bucketDefaultName: "rp-plugins-bucket"
-    bucketMultiPrefix: "rp-project-"
-    bucketMultiPostfix: ""
-    bucketMultiSaltName: "keystore"
+    type: single  # Single bucket for all data
+    bucketDefaultName: "reportportal-production-data"
   ssl: true
+
+# Enable IAM role for service account (EKS only)
+global:
+  serviceAccount:
+    create: true
+    name: reportportal
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/reportportal-s3-role"
 
 # Disable MinIO since we're using S3
 minio:
   install: false
 ```
+
+**Benefits of Single Bucket for Production:**
+- **Cost Effective**: Fewer buckets mean lower S3 costs
+- **Simpler Management**: One bucket to monitor and manage
+- **Better Performance**: No need to create/manage multiple buckets
+- **Easier Backup**: Single bucket simplifies backup strategies
+- **IAM Simplicity**: Simpler IAM policies with one bucket
 
 ## Example 7: Custom S3-Compatible Storage (MinIO, Ceph, etc.)
 

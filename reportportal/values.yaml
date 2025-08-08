@@ -771,8 +771,12 @@ storage:
   bucket:
     ## @param storage.bucket.type Bucket organization strategy
     ## Options: single, multi
-    ##   single: One bucket for all data (simpler, recommended for new installations)
-    ##   multi: Multiple buckets per project (more complex, requires migration for existing installations)
+    ##   single: One bucket for all data with subdirectories (recommended for production)
+    ##   multi: Separate bucket for each project (not recommended - creates many buckets)
+    ##
+    ## IMPORTANT: Multi-bucket strategy is NOT recommended for production S3 deployments
+    ## because ReportPortal will create a separate S3 bucket for each project in the portal
+    ## Use single bucket strategy which creates one bucket with subdirectories for better management.
     ##
     type: multi
 
