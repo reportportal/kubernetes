@@ -43,11 +43,11 @@ jobs:
         run: |
           helm dependency build ./reportportal
 
-      - name: Dry run installation
+      - name: Template validation
         run: |
-          helm install reportportal-test ./reportportal --dry-run \
+          helm template reportportal-test ./reportportal \
             --set uat.superadminInitPasswd.password="testpassword123" \
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \
-            --set minio.install=true
+            --set minio.install=true > /dev/null
