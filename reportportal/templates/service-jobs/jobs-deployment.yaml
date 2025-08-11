@@ -98,12 +98,12 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
+          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}'
         # Database settings
         - name: RP_DB_HOST
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
         - name: RP_DB_PORT
           value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
@@ -129,7 +129,7 @@ spec:
         {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
         {{- if eq .Values.storage.type "minio" }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.storage.port }}"
         {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION
