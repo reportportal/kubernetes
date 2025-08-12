@@ -1043,6 +1043,12 @@ rabbitmq:
     rabbitmq_consistent_hash_exchange
     rabbitmq_shovel
     rabbitmq_shovel_management
+  ## @param rabbitmq.extraConfiguration additional RabbitMQ configuration
+  ## @param rabbitmq.extraConfiguration.max_message_size increases the maximum allowed size for a single message
+  ## 128 MB (134217728 bytes) recommended for ReportPortal
+  ##
+  extraConfiguration: |-
+    max_message_size = 134217728
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
