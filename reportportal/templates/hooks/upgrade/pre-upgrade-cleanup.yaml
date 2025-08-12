@@ -21,7 +21,9 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
+      {{- if .Values.global.serviceAccount.create }}
+      serviceAccountName: {{ .Values.global.serviceAccount.name }}
+      {{- end }}
       restartPolicy: OnFailure
       containers:
       - name: delete-job
