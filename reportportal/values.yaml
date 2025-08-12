@@ -566,7 +566,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.2
+    tag: 5.14.3
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
