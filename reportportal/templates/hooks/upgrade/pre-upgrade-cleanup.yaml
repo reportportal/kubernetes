@@ -8,6 +8,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "10"
 spec:
   template:
     metadata:
@@ -21,7 +22,9 @@ spec:
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "reportportal.serviceAccountName" . }}
+      {{- if .Values.global.serviceAccount.create }}
+      serviceAccountName: {{ .Values.global.serviceAccount.name }}
+      {{- end }}
       restartPolicy: OnFailure
       containers:
       - name: delete-job
