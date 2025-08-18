@@ -5,8 +5,10 @@ metadata:
   name: {{ include "reportportal.fullname" . }}-user-binding
   namespace: {{ .Release.Namespace }}
   annotations:
+    {{- if .Values.global.argocd.enabled }}
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "4"
+    {{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
