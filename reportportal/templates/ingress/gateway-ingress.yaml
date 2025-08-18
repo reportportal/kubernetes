@@ -2,6 +2,14 @@
 {{- $fullName := include "reportportal.fullname" . -}}
 {{- $isTlsCertComplete := and .Values.ingress.tls.certificate.certificate .Values.ingress.tls.certificate.privateKey -}}
 {{- $path := .Values.ingress.path -}}
+{{- $basePath := "" -}}
+{{- if $path -}}
+  {{- if eq $path "/" -}}
+    {{- $basePath = "" -}}
+  {{- else -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+{{- end -}}
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -63,32 +71,28 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      {{- if $path }}
-      - path: {{ $path }}
-      {{- else }}
-      - path: /
-      {{- end }}
+      - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $path }}/ui
+      - path: {{ $basePath | default "" }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $path }}/uat
+      - path: {{ $basePath | default "" }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: {{ $path }}/api
+      - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
           service:
@@ -100,32 +104,28 @@ spec:
   - host: {{ .Values.ingress.hosts }}
     http:
       paths:
-      {{- if $path }}
-        - path: {{ $path }}
-      {{- else }}
-        - path: /
-      {{- end }}
+      - path: {{ $basePath | default "/" }}
           pathType: Prefix
           backend:
             service:
               name: {{ $fullName }}-index
               port:
                 name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-        - path: {{ $path }}/ui
+      - path: {{ $basePath | default "" }}/ui
           pathType: Prefix
           backend:
             service:
               name: {{ $fullName }}-ui
               port:
                 name: {{ $.Values.serviceui.service.portName | default "headless" }}
-        - path: {{ $path }}/uat
+      - path: {{ $basePath | default "" }}/uat
           pathType: Prefix
           backend:
             service:
               name: {{ $fullName }}-uat
               port:
                 name: {{ $.Values.uat.service.portName | default "headless" }}
-        - path: {{ $path }}/api
+      - path: {{ $basePath | default "" }}/api
           pathType: Prefix
           backend:
             service:
@@ -136,32 +136,28 @@ spec:
   {{- else }}
   - http:
       paths:
-      {{- if $path }}
-      - path: {{ $path }}
-      {{- else }}
-      - path: /
-      {{- end }}
+      - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $path }}/ui
+      - path: {{ $basePath | default "" }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $path }}/uat
+      - path: {{ $basePath | default "" }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: {{ $path }}/api
+      - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
           service:
