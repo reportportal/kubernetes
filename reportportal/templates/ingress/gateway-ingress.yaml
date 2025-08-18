@@ -20,6 +20,11 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations.gce }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+  {{- else if eq .Values.ingress.class "alb" }}
+    kubernetes.io/ingress.class: alb
+    {{- range $key, $value := .Values.ingress.annotations.alb }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
   {{- else }}
     {{- range $key, $value := .Values.ingress.annotations.custom }}
     {{ $key }}: {{ $value | quote }}
@@ -27,7 +32,7 @@ metadata:
   {{- end }}
 spec:
   # Define the ingress class to use
-  {{- if eq .Values.ingress.class "gce" }}
+  {{- if or (eq .Values.ingress.class "gce") (eq .Values.ingress.class "alb") }}
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
@@ -35,7 +40,7 @@ spec:
   {{- if .Values.ingress.tls.certificates }}
   tls:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
-  {{- else if and $isTlsCertComplete (eq .Values.ingress.tls.certificate.gcpManaged false)}}
+  {{- else if and $isTlsCertComplete (eq .Values.ingress.tls.certificate.gcpManaged false) (ne .Values.ingress.class "alb") }}
   tls:
     - secretName: {{ .Release.Name }}-gateway-tls
       {{- if .Values.ingress.hosts }}
@@ -47,6 +52,8 @@ spec:
         - {{ .Values.ingress.hosts }}
       {{- end }}
       {{- end }}
+  {{- else if eq .Values.ingress.class "alb" }}
+  # ALB uses certificate ARN via annotations, no TLS section needed
   {{- end }}
   # Define the rules for the ingress
   rules:
