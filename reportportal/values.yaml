@@ -25,6 +25,11 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
+  ## @param global.argocd.enabled Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade cleanup
+  ## Set to true when deploying with ArgoCD to ensure proper resource ordering
+  ##
+  argocd:
+    enabled: false
   ## @param global.securityContext Default security context for all pods
   ##
   securityContext: {}
