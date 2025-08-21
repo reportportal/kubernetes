@@ -25,6 +25,11 @@ global:
     ## See: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
     ##
     annotations: {}
+  ## @param global.argocd.enabled Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade cleanup
+  ## Set to true when deploying with ArgoCD to ensure proper resource ordering
+  ##
+  argocd:
+    enabled: false
   ## @param global.securityContext Default security context for all pods
   ##
   securityContext: {}
@@ -129,7 +134,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.3
+    tag: 5.14.4
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -203,7 +208,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.2
+    tag: 5.14.3
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -357,7 +362,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.4
+    tag: 5.14.5
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -563,7 +568,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.2
+    tag: 5.14.4
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -638,7 +643,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.14.1
+    tag: 5.14.2
   resources:
     requests:
       cpu: 100m
@@ -1043,6 +1048,12 @@ rabbitmq:
     rabbitmq_consistent_hash_exchange
     rabbitmq_shovel
     rabbitmq_shovel_management
+  ## @param rabbitmq.extraConfiguration additional RabbitMQ configuration
+  ## @param rabbitmq.extraConfiguration.max_message_size increases the maximum allowed size for a single message
+  ## 128 MB (134217728 bytes) recommended for ReportPortal
+  ##
+  extraConfiguration: |-
+    max_message_size = 134217728
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
