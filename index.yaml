@@ -5,6 +5,55 @@ entries:
       category: Infrastructure
       licenses: Apache-2.0
     apiVersion: v2
+    appVersion: 25.1.8
+    created: "2025-08-21T12:52:19.712080545Z"
+    dependencies:
+    - condition: postgresql.install
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.7.21
+    - condition: rabbitmq.install
+      name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.0.11
+    - condition: opensearch.install
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts/
+      version: 2.35.0
+    - condition: minio.install
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.0.16
+    description: 'ReportPortal.io is a TestOps service, that provides increased capabilities
+      to speed up results analysis and reporting through the use of built-in analytic
+      features. '
+    digest: c67a63c018ff68fc3bfdc0e567e5f1e21cc9da374a0d020cf2f0b1d34ea2d831
+    home: https://reportportal.io
+    icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
+    keywords:
+    - reportportal
+    - report portal
+    - test results reporting service
+    - test report dashboard
+    - test automation reporting tools
+    - test automation results dashboard
+    - qa automation dashboard
+    - qa metrics dashboard
+    - automation test report
+    - test execution dashboard
+    maintainers:
+    - email: support@reportportal.io
+      name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/kubernetes/tree/master/reportportal
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-25.8.21/reportportal-25.8.21.tgz
+    version: 25.8.21
+  - annotations:
+      category: Infrastructure
+      licenses: Apache-2.0
+    apiVersion: v2
     appVersion: 25.1.6
     created: "2025-08-08T15:15:41.752480178Z"
     dependencies:
@@ -1720,4 +1769,4 @@ entries:
     urls:
     - https://github.com/reportportal/kubernetes/releases/download/reportportal-1.0.0/reportportal-1.0.0.tgz
     version: 1.0.0
-generated: "2025-08-08T15:15:41.752874762Z"
+generated: "2025-08-21T12:52:19.712535212Z"
