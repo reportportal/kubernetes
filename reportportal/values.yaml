@@ -1014,7 +1014,7 @@ postgresql:
   ##
   install: true
   image:
-    repository: bitnami/postgresql
+    repository: bitnamilegacy/postgresql
     tag: 17.5.0-debian-12-r20
   auth:
     postgresPassword: *dbpassword
@@ -1032,7 +1032,7 @@ postgresql:
 rabbitmq:
   install: true
   image:
-    repository: bitnami/rabbitmq
+    repository: bitnamilegacy/rabbitmq
     tag: 4.1.2-debian-12-r1
   auth:
     username: *msgbrokerUser
@@ -1083,7 +1083,7 @@ opensearch:
 minio:
   install: true
   image:
-    repository: bitnami/minio
+    repository: bitnamilegacy/minio
     tag: 2025.7.23-debian-12-r0
   auth:
     rootUser: *storageAccessKey
