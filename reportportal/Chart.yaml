@@ -47,6 +47,6 @@ dependencies:
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version
   - name: minio
-    version: 17.0.16
-    repository: https://charts.bitnami.com/bitnami
+    version: 5.4.0
+    repository: https://charts.min.io/
     condition: minio.install

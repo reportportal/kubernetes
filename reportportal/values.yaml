@@ -1083,13 +1083,15 @@ opensearch:
 minio:
   install: true
   image:
-    repository: bitnamilegacy/minio
-    tag: 2025.7.23-debian-12-r0
-  auth:
-    rootUser: *storageAccessKey
-    rootPassword: *storageSecretKey
+    repository: minio/minio
+    tag: RELEASE.2025-07-23T15-54-02Z
+  users:
+    - accessKey: *storageAccessKey
+      secretKey: *storageSecretKey
+  replicas: 1
   persistence:
     annotations:
       "helm.sh/resource-policy": "keep"
+    size: 8Gi
   console:
     enabled: false
