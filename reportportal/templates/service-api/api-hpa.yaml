@@ -1,0 +1,51 @@
+{{- if .Values.serviceapi.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "reportportal.fullname" . }}-api
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "reportportal.fullname" . }}-api
+  minReplicas: {{ .Values.serviceapi.autoscaling.minReplicas | default 1 }}
+  maxReplicas: {{ .Values.serviceapi.autoscaling.maxReplicas | default 10 }}
+  metrics:
+  {{- if .Values.serviceapi.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.serviceapi.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+  {{- if .Values.serviceapi.autoscaling.targetMemoryUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.serviceapi.autoscaling.targetMemoryUtilizationPercentage }}
+  {{- end }}
+  {{- if .Values.serviceapi.autoscaling.customMetrics }}
+    {{- toYaml .Values.serviceapi.autoscaling.customMetrics | nindent 2 }}
+  {{- end }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.serviceapi.autoscaling.scaleDown.stabilizationWindowSeconds | default 300 }}
+      policies:
+      - type: Percent
+        value: {{ .Values.serviceapi.autoscaling.scaleDown.percent | default 10 }}
+        periodSeconds: {{ .Values.serviceapi.autoscaling.scaleDown.periodSeconds | default 60 }}
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.serviceapi.autoscaling.scaleUp.stabilizationWindowSeconds | default 60 }}
+      policies:
+      - type: Percent
+        value: {{ .Values.serviceapi.autoscaling.scaleUp.percent | default 100 }}
+        periodSeconds: {{ .Values.serviceapi.autoscaling.scaleUp.periodSeconds | default 60 }}
+      - type: Pods
+        value: {{ .Values.serviceapi.autoscaling.scaleUp.pods | default 4 }}
+        periodSeconds: {{ .Values.serviceapi.autoscaling.scaleUp.periodSeconds | default 60 }}
+      selectPolicy: Max
+{{- end }}
