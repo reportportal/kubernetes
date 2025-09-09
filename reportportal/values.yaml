@@ -355,47 +355,6 @@ serviceapi:
     #   hostnames:
     #     - "foo.remote"
     #     - "bar.remote"
-  ## @param serviceapi.autoscaling configure horizontal pod autoscaling for the API service
-  ##
-  autoscaling:
-    ## @param serviceapi.autoscaling.enabled enable horizontal pod autoscaling
-    ##
-    enabled: false
-    ## @param serviceapi.autoscaling.minReplicas minimum number of replicas
-    ##
-    minReplicas: 1
-    ## @param serviceapi.autoscaling.maxReplicas maximum number of replicas
-    ##
-    maxReplicas: 3
-    ## @param serviceapi.autoscaling.targetCPUUtilizationPercentage target CPU utilization percentage
-    ##
-    targetCPUUtilizationPercentage: 80
-    ## @param serviceapi.autoscaling.targetMemoryUtilizationPercentage target memory utilization percentage
-    ##
-    targetMemoryUtilizationPercentage: 85
-    ## @param serviceapi.autoscaling.customMetrics custom metrics for autoscaling
-    ##
-    customMetrics: []
-      # - type: Pods
-      #   pods:
-      #     metric:
-      #       name: nginx_ingress_controller_requests_per_second
-      #     target:
-      #       type: AverageValue
-      #       averageValue: "100"
-    ## @param serviceapi.autoscaling.scaleDown configure scale down behavior
-    ##
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      percent: 10
-      periodSeconds: 60
-    ## @param serviceapi.autoscaling.scaleUp configure scale up behavior
-    ##
-    scaleUp:
-      stabilizationWindowSeconds: 60
-      percent: 100
-      pods: 4
-      periodSeconds: 60
 
 ## @param serviceapi Core ReportPortal service for the authorization
 ##
