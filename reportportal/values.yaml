@@ -208,7 +208,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.3
+    tag: 5.14.4
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -362,7 +362,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.5
+    tag: 5.14.6
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -568,7 +568,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.4
+    tag: 5.14.5
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
