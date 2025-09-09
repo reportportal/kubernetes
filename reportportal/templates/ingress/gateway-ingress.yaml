@@ -105,33 +105,33 @@ spec:
     http:
       paths:
       - path: {{ $basePath | default "/" }}
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-index
-              port:
-                name: {{ $.Values.serviceindex.service.portName | default "headless" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/ui
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-ui
-              port:
-                name: {{ $.Values.serviceui.service.portName | default "headless" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/uat
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-uat
-              port:
-                name: {{ $.Values.uat.service.portName | default "headless" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-api
-              port:
-                name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
   {{- end }}
   {{- else }}
   - http:
