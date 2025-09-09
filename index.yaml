@@ -5,55 +5,6 @@ entries:
       category: Infrastructure
       licenses: Apache-2.0
     apiVersion: v2
-    appVersion: 25.1.9
-    created: "2025-09-09T15:53:15.736952523Z"
-    dependencies:
-    - condition: postgresql.install
-      name: postgresql
-      repository: https://charts.bitnami.com/bitnami
-      version: 16.7.21
-    - condition: rabbitmq.install
-      name: rabbitmq
-      repository: https://charts.bitnami.com/bitnami
-      version: 16.0.11
-    - condition: opensearch.install
-      name: opensearch
-      repository: https://opensearch-project.github.io/helm-charts/
-      version: 2.35.0
-    - condition: minio.install
-      name: minio
-      repository: https://charts.bitnami.com/bitnami
-      version: 17.0.16
-    description: 'ReportPortal.io is a TestOps service, that provides increased capabilities
-      to speed up results analysis and reporting through the use of built-in analytic
-      features. '
-    digest: 7d634d4758a3d1ce015c38861edfeab31080f8303a411efbcf22e99c7fb1a1b6
-    home: https://reportportal.io
-    icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
-    keywords:
-    - reportportal
-    - report portal
-    - test results reporting service
-    - test report dashboard
-    - test automation reporting tools
-    - test automation results dashboard
-    - qa automation dashboard
-    - qa metrics dashboard
-    - automation test report
-    - test execution dashboard
-    maintainers:
-    - email: support@reportportal.io
-      name: reportportal
-    name: reportportal
-    sources:
-    - https://github.com/reportportal/kubernetes/tree/master/reportportal
-    urls:
-    - https://github.com/reportportal/kubernetes/releases/download/reportportal-25.9.9/reportportal-25.9.9.tgz
-    version: 25.9.9
-  - annotations:
-      category: Infrastructure
-      licenses: Apache-2.0
-    apiVersion: v2
     appVersion: 25.1.8
     created: "2025-08-29T15:40:51.031011806Z"
     dependencies:
