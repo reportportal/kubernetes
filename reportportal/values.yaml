@@ -914,7 +914,7 @@ ingress:
   ## @param ingress.hosts can be a list or a single string
   ##
   hosts: null
-  path: null
+  path: ""
   class: nginx
   annotations:
     nginx:
@@ -927,6 +927,29 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
     gce: {}
+    alb: {}
+      ## AWS Load Balancer Controller annotations
+      # alb.ingress.kubernetes.io/scheme: "internet-facing"
+      # alb.ingress.kubernetes.io/target-type: "ip"
+      # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      # alb.ingress.kubernetes.io/ssl-redirect: "443"
+      # alb.ingress.kubernetes.io/group.name: "reportportal"
+      # alb.ingress.kubernetes.io/group.order: "1"
+      ## Health check settings
+      # alb.ingress.kubernetes.io/healthcheck-path: "/"
+      # alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+      # alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+      # alb.ingress.kubernetes.io/success-codes: "200"
+      # alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+      # alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+      ## Security settings (uncomment and set your values)
+      # alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx"
+      # alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
+      ## SSL/TLS settings (uncomment and set your certificate ARN)
+      # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
+      ## Additional ALB attributes (uncomment and customize)
+      # alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
+      # alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
     custom: {}
   tls:
     certificates: null
@@ -1054,6 +1077,8 @@ rabbitmq:
   ##
   extraConfiguration: |-
     max_message_size = 134217728
+  ingress:
+    tls: []
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch

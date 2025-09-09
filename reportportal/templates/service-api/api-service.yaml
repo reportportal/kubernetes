@@ -7,6 +7,14 @@ metadata:
     service: {{ $.Values.serviceapi.name | default "api" }}
     infoEndpoint: "{{ .Values.ingress.path }}/api/info"
     healthEndpoint: "{{ .Values.ingress.path }}/api/health"
+    {{- if eq .Values.ingress.class "alb" }}
+    # ALB health check annotations
+    alb.ingress.kubernetes.io/healthcheck-path: "{{ .Values.ingress.path }}/api/health"
+    alb.ingress.kubernetes.io/healthcheck-port: "8585"
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
+    {{- end }}
     {{- with .Values.serviceapi.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
