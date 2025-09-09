@@ -2,13 +2,16 @@
 
 This directory contains installation guides for ReportPortal on Kubernetes.
 
-- [Install ReportPortal on Minikube](minikube-install.md)
-- [Install ReportPortal on GKE](gke-install.md)
-- [Certificates Management](certificates-management.md)
+- [AWS Application Load Balancer (ALB) Deployment Guide](alb-deployment-guide.md)
 - [Cert-Manager Configuration](cert-manager-config.md)
+- [Certificates Management](certificates-management.md)
 - [Google Managed Certificates Configuration](gcp-managed-cert-config.md)
+- [Helm Pre-upgrade Guide](helm-pre-upgrade.md)
+- [Install ReportPortal on GKE](gke-install.md)
+- [Install ReportPortal on Minikube](minikube-install.md)
+- [Parameters Reference](parameters-reference.md)
 - [S3-Based Storage Using IAM Role for Amazon EKS-based ReportPortal](s3-storage-eks.md)
-- [S3-Based Storage Using IAM Role for EC2 Docker-based ReportPortal](s3-storage-ec2-docker)
+- [S3-Based Storage Using IAM Role for EC2 Docker-based ReportPortal](s3-storage-ec2-docker.md)
 - [Storage Examples](storage-examples.md)
 
 ## Google Kubernetes Engine (GKE) application

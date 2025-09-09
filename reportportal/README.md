@@ -41,6 +41,16 @@ helm uninstall my-release
 
 ## ⚙️ Configuration
 
+### 🌐 Ingress Controller Recommendation
+
+> **⚠️ Important:** ReportPortal recommends using the **nginx ingress controller** for exposing the application. While other ingress controllers (like AWS ALB) are supported, nginx provides the most tested and reliable configuration for ReportPortal deployments.
+
+For detailed configuration guides, see:
+- [Install NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/) - Official Kubernetes nginx ingress controller installation
+- [AWS Application Load Balancer (ALB) Deployment Guide](../docs/alb-deployment-guide.md) - For AWS EKS with ALB
+- [Install ReportPortal on GKE](../docs/gke-install.md) - For Google Kubernetes Engine
+- [Install ReportPortal on Minikube](../docs/minikube-install.md) - For local development
+
 ### 📦 Install the chart with dependencies
 
 ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives.
@@ -69,6 +79,8 @@ helm install my-release \
 > **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
 All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
+
+> **📋 Parameters Reference:** For a complete list of all configurable parameters with their default values, see the [Parameters Reference](../docs/parameters-reference.md).
 
 ### 💾 Storage Configuration
 
