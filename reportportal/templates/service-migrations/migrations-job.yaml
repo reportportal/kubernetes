@@ -30,7 +30,7 @@ spec:
         - name: POSTGRES_SSLMODE
           value: "{{ .Values.database.ssl }}"
         - name: POSTGRES_SERVER
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
         - name: POSTGRES_DB
           value: "{{ .Values.database.dbName }}"
         - name: POSTGRES_PORT
