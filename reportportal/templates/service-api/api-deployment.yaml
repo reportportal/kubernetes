@@ -145,8 +145,8 @@ spec:
             - name: DATASTORE_TYPE
               value: "{{ .Values.storage.type }}"
         # Minio/S3 settings
-        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
-          {{- if eq .Values.storage.type "minio" }}
+        {{- if or (eq .Values.storage.type "s3-compatible") (eq .Values.storage.type "aws-s3") }}
+          {{- if eq .Values.storage.type "s3-compatible" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
           {{- end }}

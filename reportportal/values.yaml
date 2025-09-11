@@ -741,10 +741,10 @@ searchengine:
 ##
 storage:
   ## @param storage.type Storage type to use for ReportPortal data
-  ## Options: minio, s3, filesystem
-  ## Default: minio (recommended for development)
+  ## Options: s3-compatible (minio), aws-s3, filesystem
+  ## Default: s3-compatible (recommended for development)
   ##
-  type: minio
+  type: s3-compatible
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
