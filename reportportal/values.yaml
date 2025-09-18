@@ -986,7 +986,7 @@ k8sWaitFor:
 ##
 kubectl:
   image:
-    repository: bitnami/kubectl
+    repository: bitnamisecure/kubectl
     tag: latest
 
 ## Networking between pods
