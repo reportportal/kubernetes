@@ -1008,6 +1008,10 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+    ## @param hooks.preUpgrade.tolerations Service-specific tolerations for the pre-upgrade cleanup job
+    ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    ##
+    tolerations: []
   test:
     enabled: true
     resources:
@@ -1017,6 +1021,10 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+    ## @param hooks.test.tolerations Service-specific tolerations for the readiness test pod
+    ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
+    ##
+    tolerations: []
 
 ## @param resourceQuota Configure resource quotas for the namespace
 ##
