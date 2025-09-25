@@ -38,4 +38,13 @@ spec:
           kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
         resources:
           {{- toYaml .Values.hooks.preUpgrade.resources | nindent 10 }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.hooks.preUpgrade.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
 {{- end }}
