@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: "25.1.11"
+appVersion: "25.1.12"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
