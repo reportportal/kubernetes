@@ -71,6 +71,8 @@ spec:
           value: "{{ .Values.servicejobs.coreJobs.cleanLogCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LAUNCH_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanLaunchCron }}"
+        - name: RP_ENVIRONMENT_VARIABLE_BATCH-SIZE
+          value: "{{ .Values.servicejobs.coreJobs.batchSize }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanStorageCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_STORAGE_PROJECT_CRON

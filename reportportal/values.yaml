@@ -134,7 +134,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.5
+    tag: 5.14.6
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -362,7 +362,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.6
+    tag: 5.14.7
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -472,7 +472,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.14.0
+    tag: 5.14.1
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -487,13 +487,14 @@ servicejobs:
     timeoutSeconds: 5
     failureThreshold: 10
   ## @param servicejobs.coreJobs define the configuration for the core jobs that clean the database and storage
-  ## @param servicejobs.cleanEventsRetention define the number of days to keep events in the database
-  ## @param servicejobs.cleanEventsCron define the cron expression for the clean events job
-  ## @param servicejobs.cleanAttachmentCron define the cron expression for the clean attachments job from database
-  ## @param servicejobs.cleanLogCron define the cron expression for the clean logs job
-  ## @param servicejobs.cleanLaunchCron define the cron expression for the clean launches job
-  ## @param servicejobs.cleanStorageCron define the cron expression for the clean storage job the binary storage
-  ## @param servicejobs.storageProjectCron define the cron expression for the calculating average project attachments storage job
+  ## @param servicejobs.coreJobs.cleanEventsRetention define the number of days to keep events in the database
+  ## @param servicejobs.coreJobs.cleanEventsCron define the cron expression for the clean events job
+  ## @param servicejobs.coreJobs.cleanAttachmentCron define the cron expression for the clean attachments job from database
+  ## @param servicejobs.coreJobs.cleanLogCron define the cron expression for the clean logs job
+  ## @param servicejobs.coreJobs.cleanLaunchCron define the cron expression for the clean launches job
+  ## @param servicejobs.coreJobs.batchSize define the number of launches to be processed in one batch
+  ## @param servicejobs.coreJobs.cleanStorageCron define the cron expression for the clean storage job the binary storage
+  ## @param servicejobs.coreJobs.storageProjectCron define the cron expression for the calculating average project attachments storage job
   ## @param servicejobs.chunksize define the number of binaries to be removed from binary storage by servicejobs.storageProjectCron within one job execution
   ##
   coreJobs:
@@ -502,6 +503,7 @@ servicejobs:
     cleanAttachmentCron: 0 0 */24 * * *
     cleanLogCron: 0 0 */24 * * *
     cleanLaunchCron: 0 0 */24 * * *
+    batchSize: 10000
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
   ## @param servicejobs.chunksize define the number of binaries to be removed from binary storage by servicejobs.storageProjectCron within one job execution
@@ -568,7 +570,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.5
+    tag: 5.14.6
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -894,6 +896,7 @@ storage:
 ##
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
+## @param ingress.class set to `alb` if you want to use AWS Load Balancer Controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
 ## @param ingress.path is an Application path as a prefix, should start from '/' and be without trailing '/'. Use to deploy ReportPortal to path, E.G. 'https://example.com/reportportal/'
 ## @param ingress.annotations.custom if you use other ingress controller set your annotations here.
@@ -929,6 +932,7 @@ ingress:
     gce: {}
     alb: {}
       ## AWS Load Balancer Controller annotations
+      # alb.ingress.kubernetes.io/load-balancer-name: "reportportal-alb"
       # alb.ingress.kubernetes.io/scheme: "internet-facing"
       # alb.ingress.kubernetes.io/target-type: "ip"
       # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
