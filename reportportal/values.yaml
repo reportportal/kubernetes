@@ -54,6 +54,9 @@ global:
     ## @param global.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable. Defaults to `1` if both `global.pdb.minAvailable` and `global.pdb.maxUnavailable` are empty.
     ##
     maxUnavailable: "1"
+  ## @param global.clusterDomain Kubernetes cluster domain. Defaults to "cluster.local"
+  ##
+  clusterDomain: "cluster.local"
 
 
 ## @param serviceindex Core ReportPortal service for the indexing
@@ -678,7 +681,7 @@ migrations:
 database:
   secretName: ""
   passwordKeyName: "postgresql-password"
-  ## @param database.endpoint by default "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local"
+  ## @param database.endpoint by default "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}"
   ##
   endpoint:
   port: &dbport 5432
@@ -704,7 +707,7 @@ msgbroker:
   ## Incoming parameters: true (HTTPS and AMQPS), false (HTTP and AMQP)
   ##
   ssl: false
-  ## @param msgbroker.endpoint by default "{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local"
+  ## @param msgbroker.endpoint by default "{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.{{ .Values.global.clusterDomain }}"
   ##
   endpoint:
   port: &msgbrokerPort 5672
@@ -715,7 +718,7 @@ msgbroker:
 
 searchengine:
   secretName: ""
-  ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
+  ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}
   ##
   endpoint:
   ## @param searchengine.ssl configure SSL connection to the search engine
