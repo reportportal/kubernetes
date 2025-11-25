@@ -283,7 +283,7 @@ serviceapi:
   ## @param serviceapi.javaArgs define the configuration for the JVM.
   ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
   ##
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:MaxRAMPercentage=90.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseContainerSupport -XX:+UseG1GC -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 -XX:InitiatingHeapOccupancyPercent=70 -XX:G1ReservePercent=20 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   ## @param serviceapi.amqp define the configuration for the AMQP
   ##
   amqp:
