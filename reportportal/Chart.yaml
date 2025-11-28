@@ -42,7 +42,7 @@ dependencies:
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
-    version: 2.35.0
+    version: 2.36.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version

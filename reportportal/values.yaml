@@ -213,16 +213,16 @@ serviceapi:
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 40
-    periodSeconds: 20
+    initialDelaySeconds: 25
+    periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 20
+    failureThreshold: 3
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 40
-    periodSeconds: 20
+    initialDelaySeconds: 60
+    periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   resources:
     requests:
       cpu: 500m
@@ -367,16 +367,16 @@ uat:
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 25
+    periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   livenessProbe:
     enabled: true
     initialDelaySeconds: 60
-    periodSeconds: 40
+    periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   resources:
     requests:
       cpu: 100m
@@ -476,16 +476,16 @@ servicejobs:
   pullPolicy: Always
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 30
+    periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   livenessProbe:
     enabled: true
     initialDelaySeconds: 60
-    periodSeconds: 40
+    periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   ## @param servicejobs.coreJobs define the configuration for the core jobs that clean the database and storage
   ## @param servicejobs.coreJobs.cleanEventsRetention define the number of days to keep events in the database
   ## @param servicejobs.coreJobs.cleanEventsCron define the cron expression for the clean events job
@@ -627,7 +627,7 @@ serviceanalyzer:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
@@ -638,7 +638,7 @@ serviceanalyzer:
     enabled: true
     initialDelaySeconds: 60
     periodSeconds: 30
-    timeoutSeconds: 10
+    timeoutSeconds: 5
     failureThreshold: 3
     successThreshold: 1
 
@@ -1099,7 +1099,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.19.3
+    tag: 2.19.4
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
