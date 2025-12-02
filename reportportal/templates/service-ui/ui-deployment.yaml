@@ -62,8 +62,7 @@ spec:
         {{- end }}
         {{- if .Values.serviceui.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: "/ui/health"
+          tcpSocket:
             port: 8080
           initialDelaySeconds: {{ .Values.serviceui.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.serviceui.livenessProbe.periodSeconds | default 30 }}

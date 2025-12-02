@@ -143,8 +143,7 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: /
+          tcpSocket:
             port: 5001
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}

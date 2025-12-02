@@ -200,8 +200,7 @@ spec:
           {{- end }}
         {{- if .Values.serviceapi.livenessProbe.enabled }}
           livenessProbe:
-            httpGet:
-              path: "{{ $path }}/api/health"
+            tcpSocket:
               port: 8585
             initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
             periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
