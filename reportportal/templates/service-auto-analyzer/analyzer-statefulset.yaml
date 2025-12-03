@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "reportportal.fullname" . }}-analyzer-train
+  name: {{ include "reportportal.fullname" . }}-analyzer
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: {{ include "reportportal.fullname" . }}-analyzer-train
-  serviceName: {{ include "reportportal.fullname" . }}-analyzertrain
+      component: {{ include "reportportal.fullname" . }}-analyzer
+  serviceName: {{ include "reportportal.fullname" . }}-analyzer
   template:
     metadata:
       labels:
-        {{- range $key, $value := .Values.serviceanalyzertrain.podLabels }}
+        {{- range $key, $value := .Values.serviceanalyzer.podLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
-        component: {{ include "reportportal.fullname" . }}-analyzer-train
+        component: {{ include "reportportal.fullname" . }}-analyzer
       annotations:
-        {{- range $key, $value := .Values.serviceanalyzertrain.podAnnotations }}
+        {{- range $key, $value := .Values.serviceanalyzer.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
     spec:
-      {{- with .Values.serviceanalyzertrain.affinity }}
+      {{- with .Values.serviceanalyzer.affinity }}
       affinity:
         {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -43,26 +43,26 @@ spec:
           limits:
             cpu: 50m
             memory: 100Mi
-      {{- if .Values.serviceanalyzertrain.extraInitContainers }}
-        {{ toYaml .Values.serviceanalyzertrain.extraInitContainers | nindent 8 }}
+      {{- if .Values.serviceanalyzer.extraInitContainers }}
+      {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 6 }}
       {{- end }}
       containers:
-      - name: "{{ $.Values.serviceanalyzertrain.name | default "analyzer-train" }}"
+      - name: "{{ $.Values.serviceanalyzer.name | default "analyzer" }}"
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"
-        imagePullPolicy: "{{ .Values.serviceanalyzertrain.pullPolicy }}"
+        imagePullPolicy: "{{ .Values.serviceanalyzer.pullPolicy }}"
         ports:
         - containerPort: 5001
-          name: analyzertrain
+          name: analyzercore
         resources:
           requests:
-            cpu: {{ .Values.serviceanalyzertrain.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzertrain.resources.requests.memory }}
+            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.serviceanalyzertrain.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzertrain.resources.limits.memory }}
+            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
         env:
-{{- if .Values.serviceanalyzertrain.extraEnvs }}
-{{ toYaml .Values.serviceanalyzertrain.extraEnvs | indent 8 }}
+{{- if .Values.serviceanalyzer.extraEnvs }}
+{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
 {{- end }}
         {{- if eq .Values.storage.type "minio"}}
         - name: ANALYZER_BINARYSTORE_TYPE
@@ -92,10 +92,6 @@ spec:
         - name: ANALYZER_BINARYSTORE_TYPE
           value: "filesystem"
         {{- end }}
-        - name: INSTANCE_TASK_TYPE
-          value: "train"
-        - name: UWSGI_WORKERS
-          value: "{{ .Values.serviceanalyzertrain.uwsgiWorkers }}"
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
           valueFrom:
@@ -130,26 +126,56 @@ spec:
         - name: ES_PASSWORD
           value: "{{ .Values.searchengine.password }}" 
         {{- end }}
+        {{- if .Values.serviceanalyzer.uwsgiWorkers }}
+        - name: UWSGI_WORKERS
+          value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
+        {{- end }}
+        {{- if .Values.serviceanalyzer.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5001
+          initialDelaySeconds: {{ .Values.serviceanalyzer.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.serviceanalyzer.readinessProbe.successThreshold }}
+        {{- end }}
+        {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
+        livenessProbe:
+          tcpSocket:
+            port: 5001
+          initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.serviceanalyzer.livenessProbe.successThreshold }}
+        {{- end }}
         volumeMounts:
-          {{- if eq .Values.storage.type "filesystem" }}
+          {{ if eq .Values.storage.type "filesystem" }}
           - name: shared-volume
             mountPath: /data/storage
           {{- end }}
-          {{- if .Values.serviceanalyzertrain.extraVolumeMounts }}
-            {{ toYaml .Values.serviceanalyzertrain.extraVolumeMounts | nindent 12 }}
+          {{- if .Values.serviceanalyzer.extraVolumeMounts }}
+            {{ toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 12 }}
           {{- end }}
-{{- if .Values.serviceanalyzertrain.nodeSelector }}
+{{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
-        {{- range $key, $value := .Values.serviceanalyzertrain.nodeSelector }}
+        {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.serviceanalyzertrain.securityContext | indent 8}}
-      serviceAccountName: {{ .Values.serviceanalyzertrain.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.tolerations }}
-      tolerations:
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
+      serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
+{{- with .Values.global.tolerations }}
+      tolerations: 
 {{- toYaml . | nindent 8 }}
+{{- else }}
+{{- with .Values.serviceanalyzer.tolerations }}
+      tolerations: 
+{{- toYaml . | nindent 8 }}
+{{- end }}
 {{- end }}
       volumes:
       {{- if eq .Values.storage.type "filesystem" }}
@@ -157,6 +183,6 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
       {{- end }}
-      {{- if .Values.serviceanalyzertrain.extraVolumes }}
-        {{ toYaml .Values.serviceanalyzertrain.extraVolumes | nindent 8 }}
+      {{- if .Values.serviceanalyzer.extraVolumes }}
+        {{ toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
       {{- end }}

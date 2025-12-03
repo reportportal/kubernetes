@@ -34,4 +34,13 @@ spec:
     resources:
       {{- toYaml .Values.hooks.test.resources | nindent 6 }}
   restartPolicy: Never
+  {{- with .Values.global.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- else }}
+  {{- with .Values.hooks.test.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
 {{- end }}

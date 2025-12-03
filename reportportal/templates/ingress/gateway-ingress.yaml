@@ -2,6 +2,14 @@
 {{- $fullName := include "reportportal.fullname" . -}}
 {{- $isTlsCertComplete := and .Values.ingress.tls.certificate.certificate .Values.ingress.tls.certificate.privateKey -}}
 {{- $path := .Values.ingress.path -}}
+{{- $basePath := "" -}}
+{{- if $path -}}
+  {{- if eq $path "/" -}}
+    {{- $basePath = "" -}}
+  {{- else -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+{{- end -}}
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -20,6 +28,11 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations.gce }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+  {{- else if eq .Values.ingress.class "alb" }}
+    kubernetes.io/ingress.class: alb
+    {{- range $key, $value := .Values.ingress.annotations.alb }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
   {{- else }}
     {{- range $key, $value := .Values.ingress.annotations.custom }}
     {{ $key }}: {{ $value | quote }}
@@ -27,7 +40,7 @@ metadata:
   {{- end }}
 spec:
   # Define the ingress class to use
-  {{- if eq .Values.ingress.class "gce" }}
+  {{- if or (eq .Values.ingress.class "gce") (eq .Values.ingress.class "alb") }}
   {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
   {{- end }}
@@ -35,7 +48,7 @@ spec:
   {{- if .Values.ingress.tls.certificates }}
   tls:
     {{ toYaml .Values.ingress.tls.certificates | nindent 4 }}
-  {{- else if and $isTlsCertComplete (eq .Values.ingress.tls.certificate.gcpManaged false)}}
+  {{- else if and $isTlsCertComplete (eq .Values.ingress.tls.certificate.gcpManaged false) (ne .Values.ingress.class "alb") }}
   tls:
     - secretName: {{ .Release.Name }}-gateway-tls
       {{- if .Values.ingress.hosts }}
@@ -47,6 +60,8 @@ spec:
         - {{ .Values.ingress.hosts }}
       {{- end }}
       {{- end }}
+  {{- else if eq .Values.ingress.class "alb" }}
+  # ALB uses certificate ARN via annotations, no TLS section needed
   {{- end }}
   # Define the rules for the ingress
   rules:
@@ -56,32 +71,28 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      {{- if $path }}
-      - path: {{ $path }}
-      {{- else }}
-      - path: /
-      {{- end }}
+      - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $path }}/ui
+      - path: {{ $basePath | default "" }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $path }}/uat
+      - path: {{ $basePath | default "" }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: {{ $path }}/api
+      - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
           service:
@@ -93,68 +104,60 @@ spec:
   - host: {{ .Values.ingress.hosts }}
     http:
       paths:
-      {{- if $path }}
-        - path: {{ $path }}
-      {{- else }}
-        - path: /
-      {{- end }}
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-index
-              port:
-                name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-        - path: {{ $path }}/ui
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-ui
-              port:
-                name: {{ $.Values.serviceui.service.portName | default "headless" }}
-        - path: {{ $path }}/uat
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-uat
-              port:
-                name: {{ $.Values.uat.service.portName | default "headless" }}
-        - path: {{ $path }}/api
-          pathType: Prefix
-          backend:
-            service:
-              name: {{ $fullName }}-api
-              port:
-                name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-  {{- end }}
-  {{- else }}
-  - http:
-      paths:
-      {{- if $path }}
-      - path: {{ $path }}
-      {{- else }}
-      - path: /
-      {{- end }}
+      - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-index
             port:
               name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $path }}/ui
+      - path: {{ $basePath | default "" }}/ui
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $path }}/uat
+      - path: {{ $basePath | default "" }}/uat
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-uat
             port:
               name: {{ $.Values.uat.service.portName | default "headless" }}
-      - path: {{ $path }}/api
+      - path: {{ $basePath | default "" }}/api
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+  {{- end }}
+  {{- else }}
+  - http:
+      paths:
+      - path: {{ $basePath | default "/" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-index
+            port:
+              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
+      - path: {{ $basePath | default "" }}/ui
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
+      - path: {{ $basePath | default "" }}/uat
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-uat
+            port:
+              name: {{ $.Values.uat.service.portName | default "headless" }}
+      - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
           service:

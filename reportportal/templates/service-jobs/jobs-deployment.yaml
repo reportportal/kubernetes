@@ -71,6 +71,8 @@ spec:
           value: "{{ .Values.servicejobs.coreJobs.cleanLogCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_LAUNCH_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanLaunchCron }}"
+        - name: RP_ENVIRONMENT_VARIABLE_BATCH-SIZE
+          value: "{{ .Values.servicejobs.coreJobs.batchSize }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CRON
           value: "{{ .Values.servicejobs.coreJobs.cleanStorageCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_STORAGE_PROJECT_CRON
@@ -181,8 +183,7 @@ spec:
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: "/jobs/health"
+          tcpSocket:
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
@@ -204,11 +205,16 @@ spec:
         {{- end }}
 {{- end }}
       securityContext:
-{{ toYaml .Values.servicejobs.securityContext | indent 8 }}
+{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.servicejobs.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.servicejobs.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.tolerations }}
+{{- with .Values.global.tolerations }}
       tolerations:
 {{- toYaml . | nindent 8 }}
+{{- else }}
+{{- with .Values.servicejobs.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+{{- end }}
 {{- end }}
       volumes:
       {{- if eq .Values.storage.type "filesystem" }}

@@ -12,3 +12,19 @@ Welcome to ReportPortal, a TestOps service, that provides increased capabilities
 ReportPortal is a great addition to the Continuous Integration and Continuous Testing process. 
 
 ReportPortal is distributed under the Apache v2.0 license, and it is free to use and modify, even for commercial purposes.
+
+To get detailed information about all ReportPortal resources:
+  kubectl get all -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+
+To view events in the namespace:
+  kubectl get events -n {{ .Release.Namespace }} --sort-by='.lastTimestamp'
+
+To view logs from a specific service:
+  kubectl logs -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }}
+
+{{- if .Values.ingress.enabled }}
+To check ingress status:
+  kubectl get ingress -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- end }}
+
+For more information, visit: https://reportportal.io/docs
