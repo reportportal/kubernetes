@@ -1025,6 +1025,9 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
+  image:
+    repository: curlimages/curl
+    tag: latest
     ## @param hooks.test.tolerations Service-specific tolerations for the readiness test pod
     ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     ##
