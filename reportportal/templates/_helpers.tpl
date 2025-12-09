@@ -82,5 +82,17 @@ Global context overrides service-specific context
 {{- end -}}
 {{- end -}}
 
+{{/*
+Get storage type with default "minio" and validation
+Returns: minio, s3, or filesystem
+*/}}
+{{- define "reportportal.storageType" -}}
+{{- $storageType := .Values.storage.type | default "minio" -}}
+{{- if not (has $storageType (list "minio" "s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: minio, s3, filesystem" -}}
+{{- end -}}
+{{- $storageType -}}
+{{- end -}}
+
 
 
