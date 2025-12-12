@@ -97,7 +97,7 @@ spec:
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
         - name: DATASTORE_DEFAULTBUCKETNAME
-          value: "{{ .Values.storage.bucket.bucketDefaultName }}"
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}/analyzer"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
