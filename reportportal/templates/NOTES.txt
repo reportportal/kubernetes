@@ -22,9 +22,20 @@ To view events in the namespace:
 To view logs from a specific service:
   kubectl logs -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }}
 
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.enable }}
 To check ingress status:
   kubectl get ingress -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- end }}
+{{- if .Values.gatewayAPI.enable }}
+Gateway API HTTPRoute deployed successfully.
+
+To check HTTPRoute status:
+  kubectl get httproute -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- if .Values.gatewayAPI.gateway.create }}
+
+To check Gateway status:
+  kubectl get gateway -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- end }}
 {{- end }}
 
 For more information, visit: https://reportportal.io/docs

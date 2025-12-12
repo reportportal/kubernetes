@@ -1,0 +1,64 @@
+{{- if and .Values.gatewayAPI.enable .Values.gatewayAPI.gateway.create }}
+{{- $fullName := include "reportportal.fullname" . -}}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.gatewayAPI.gateway.name | default (printf "%s-gateway" $fullName) }}
+  labels: {{ include "labels" . | indent 4 }}
+  {{- with .Values.gatewayAPI.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.gatewayAPI.gateway.className }}
+  {{- if .Values.gatewayAPI.gateway.addresses }}
+  addresses:
+    {{- toYaml .Values.gatewayAPI.gateway.addresses | nindent 4 }}
+  {{- end }}
+  listeners:
+    {{- if .Values.gatewayAPI.gateway.listeners }}
+    {{- toYaml .Values.gatewayAPI.gateway.listeners | nindent 4 }}
+    {{- else }}
+    # Default HTTP listener
+    - name: http
+      protocol: HTTP
+      port: 80
+      {{- if .Values.gatewayAPI.hostnames }}
+      {{- if kindIs "slice" .Values.gatewayAPI.hostnames }}
+      hostname: {{ index .Values.gatewayAPI.hostnames 0 | quote }}
+      {{- else }}
+      hostname: {{ .Values.gatewayAPI.hostnames | quote }}
+      {{- end }}
+      {{- end }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+    {{- if .Values.gatewayAPI.gateway.tls.enable }}
+    # HTTPS listener
+    - name: https
+      protocol: HTTPS
+      port: 443
+      {{- if .Values.gatewayAPI.hostnames }}
+      {{- if kindIs "slice" .Values.gatewayAPI.hostnames }}
+      hostname: {{ index .Values.gatewayAPI.hostnames 0 | quote }}
+      {{- else }}
+      hostname: {{ .Values.gatewayAPI.hostnames | quote }}
+      {{- end }}
+      {{- end }}
+      tls:
+        mode: {{ .Values.gatewayAPI.gateway.tls.mode | default "Terminate" }}
+        certificateRefs:
+          {{- if .Values.gatewayAPI.gateway.tls.certificateRefs }}
+          {{- toYaml .Values.gatewayAPI.gateway.tls.certificateRefs | nindent 10 }}
+          {{- else }}
+          - kind: Secret
+            name: {{ .Values.gatewayAPI.gateway.tls.secretName | default (printf "%s-gateway-tls" .Release.Name) }}
+          {{- end }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+    {{- end }}
+    {{- end }}
+{{- end }}
+
