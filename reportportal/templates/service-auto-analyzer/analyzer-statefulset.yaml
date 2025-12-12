@@ -72,8 +72,6 @@ spec:
         - name: DATASTORE_ENDPOINT
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- else if eq $storageType "s3" }}
-        - name: DATASTORE_ENDPOINT
-          value: "{{ .Values.storage.endpoint | default "https://s3.amazonaws.com" }}"
         - name: DATASTORE_REGION
           value: "{{ .Values.storage.region }}"
         {{- end }}
