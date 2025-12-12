@@ -54,16 +54,11 @@ spec:
         - containerPort: 5001
           name: analyzercore
         resources:
-          requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+          {{- toYaml .Values.serviceanalyzer.resources | nindent 10 }}
         env:
-{{- if .Values.serviceanalyzer.extraEnvs }}
-{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
-{{- end }}
+        {{- if .Values.serviceanalyzer.extraEnvs }}
+        {{- toYaml .Values.serviceanalyzer.extraEnvs | nindent 8 }}
+        {{- end }}
         {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
           value: "{{ $storageType }}"
@@ -164,32 +159,34 @@ spec:
             mountPath: /data/storage
           {{- end }}
           {{- if .Values.serviceanalyzer.extraVolumeMounts }}
-            {{ toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 12 }}
+          {{- toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 10 }}
           {{- end }}
-{{- if .Values.serviceanalyzer.nodeSelector }}
+      {{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
-        {{ $key }}: {{ $value | quote }}
+        {{- $key | nindent 8 }}: {{ $value | quote }}
         {{- end }}
-{{- end }}
+      {{- end }}
       securityContext:
-{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
+        {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.global.tolerations }}
-      tolerations: 
-{{- toYaml . | nindent 8 }}
-{{- else }}
-{{- with .Values.serviceanalyzer.tolerations }}
-      tolerations: 
-{{- toYaml . | nindent 8 }}
-{{- end }}
-{{- end }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.serviceanalyzer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- if or (eq (include "reportportal.storageType" .) "filesystem") .Values.serviceanalyzer.extraVolumes }}
       volumes:
-      {{- if eq (include "reportportal.storageType" .) "filesystem" }}
+        {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
-      {{- end }}
-      {{- if .Values.serviceanalyzer.extraVolumes }}
-        {{ toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
+        {{- end }}
+        {{- if .Values.serviceanalyzer.extraVolumes }}
+        {{- toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
+        {{- end }}
       {{- end }}

@@ -565,6 +565,7 @@ servicejobs:
     annotations: {}
 
 ## @param serviceanalyzer Core ReportPortal service for the analysis of test results
+## Note: Analyzer does not support horizontal scaling (replicas > 1)
 ##
 serviceanalyzer:
   name: analyzer

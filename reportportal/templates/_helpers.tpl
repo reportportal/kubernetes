@@ -35,6 +35,11 @@ Create chart name and version as used by the chart label.
 Generate labels
 */}}
 {{- define "labels" }}
+app.kubernetes.io/name: {{ include "reportportal.name" . }}
+app.kubernetes.io/instance: {{ $.Release.Name }}
+app.kubernetes.io/version: {{ $.Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ $.Release.Service }}
+helm.sh/chart: {{ include "reportportal.chart" . }}
 heritage: {{ $.Release.Service | quote }}
 release: {{ $.Release.Name | quote }}
 chart: {{ include "reportportal.chart" . }}
