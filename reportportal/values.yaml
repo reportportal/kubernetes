@@ -62,7 +62,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.14.0
+    tag: 5.15.0
   pullPolicy: Always
   resources:
     requests:
@@ -134,7 +134,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.6
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -208,21 +208,21 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.4
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 25
-    periodSeconds: 10
+    initialDelaySeconds: 40
+    periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 20
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 30
+    initialDelaySeconds: 40
+    periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
   resources:
     requests:
       cpu: 500m
@@ -362,21 +362,21 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.7
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 25
-    periodSeconds: 10
+    initialDelaySeconds: 60
+    periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
   livenessProbe:
     enabled: true
     initialDelaySeconds: 60
-    periodSeconds: 30
+    periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
   resources:
     requests:
       cpu: 100m
@@ -472,20 +472,20 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.14.1
+    tag: 5.15.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
+    initialDelaySeconds: 60
+    periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
   livenessProbe:
     enabled: true
     initialDelaySeconds: 60
-    periodSeconds: 30
+    periodSeconds: 40
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
   ## @param servicejobs.coreJobs define the configuration for the core jobs that clean the database and storage
   ## @param servicejobs.coreJobs.cleanEventsRetention define the number of days to keep events in the database
   ## @param servicejobs.coreJobs.cleanEventsCron define the cron expression for the clean events job
@@ -565,13 +565,12 @@ servicejobs:
     annotations: {}
 
 ## @param serviceanalyzer Core ReportPortal service for the analysis of test results
-## Note: Analyzer does not support horizontal scaling (replicas > 1)
 ##
 serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.6
+    tag: 5.15.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -628,7 +627,7 @@ serviceanalyzer:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
@@ -639,14 +638,14 @@ serviceanalyzer:
     enabled: true
     initialDelaySeconds: 60
     periodSeconds: 30
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 3
     successThreshold: 1
 
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.14.2
+    tag: 5.15.0
   resources:
     requests:
       cpu: 100m
@@ -920,44 +919,42 @@ ingress:
   hosts: null
   path: ""
   class: nginx
-  ## @param ingress.annotations Ingress annotations
-  ## Add annotations based on your ingress controller
-  ##
-  ## Example for Nginx Ingress Controller:
-  ##   nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  ##   nginx.ingress.kubernetes.io/proxy-body-size: 128m
-  ##   nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
-  ##   nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-  ##   nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
-  ##   nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
-  ##   nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
-  ##   nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-  ##
-  ## Example for AWS ALB Ingress Controller:
-  ##   kubernetes.io/ingress.class: alb
-  ##   alb.ingress.kubernetes.io/load-balancer-name: "reportportal-alb"
-  ##   alb.ingress.kubernetes.io/scheme: "internet-facing"
-  ##   alb.ingress.kubernetes.io/target-type: "ip"
-  ##   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-  ##   alb.ingress.kubernetes.io/ssl-redirect: "443"
-  ##   alb.ingress.kubernetes.io/group.name: "reportportal"
-  ##   alb.ingress.kubernetes.io/group.order: "1"
-  ##   alb.ingress.kubernetes.io/healthcheck-path: "/"
-  ##   alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-  ##   alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
-  ##   alb.ingress.kubernetes.io/success-codes: "200"
-  ##   alb.ingress.kubernetes.io/healthy-threshold-count: "2"
-  ##   alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
-  ##   alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx"
-  ##   alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
-  ##   alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
-  ##   alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
-  ##   alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
-  ##
-  ## Example for GCE Ingress Controller:
-  ##   kubernetes.io/ingress.class: gce
-  ##
-  annotations: {}
+  annotations:
+    nginx:
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/proxy-body-size: 128m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
+      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+    gce: {}
+    alb: {}
+      ## AWS Load Balancer Controller annotations
+      # alb.ingress.kubernetes.io/load-balancer-name: "reportportal-alb"
+      # alb.ingress.kubernetes.io/scheme: "internet-facing"
+      # alb.ingress.kubernetes.io/target-type: "ip"
+      # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+      # alb.ingress.kubernetes.io/ssl-redirect: "443"
+      # alb.ingress.kubernetes.io/group.name: "reportportal"
+      # alb.ingress.kubernetes.io/group.order: "1"
+      ## Health check settings
+      # alb.ingress.kubernetes.io/healthcheck-path: "/"
+      # alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+      # alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+      # alb.ingress.kubernetes.io/success-codes: "200"
+      # alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+      # alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+      ## Security settings (uncomment and set your values)
+      # alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx"
+      # alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
+      ## SSL/TLS settings (uncomment and set your certificate ARN)
+      # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
+      ## Additional ALB attributes (uncomment and customize)
+      # alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
+      # alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
+    custom: {}
   tls:
     certificates: null
     certificate:
@@ -965,101 +962,6 @@ ingress:
       privateKey: null
       certificate: null
 
-## @section Gateway API Configuration
-## Gateway API is the modern replacement for Ingress, recommended by Kubernetes.
-## Note: Ingress NGINX is being retired in March 2026.
-## See: https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/
-##
-## @param gatewayAPI.enable Enable Gateway API resources (HTTPRoute)
-## @param gatewayAPI.hostnames Hostnames for the HTTPRoute (can be a list or single string)
-## @param gatewayAPI.path Base path for all routes (default: "")
-##
-
-gatewayAPI:
-  enable: false
-  ## @param gatewayAPI.hostnames Hostnames to match for routing
-  ## Can be a single hostname or a list
-  ## Example:
-  ##   hostnames: reportportal.example.com
-  ## or:
-  ##   hostnames:
-  ##     - reportportal.example.com
-  ##     - rp.example.com
-  ##
-  hostnames: null
-  ## @param gatewayAPI.path Base path prefix for all routes
-  ##
-  path: ""
-  ## @param gatewayAPI.parentRefs Custom parent references (advanced)
-  ## If not set, gatewayRef will be used to construct parentRefs
-  ##
-  parentRefs: null
-  ## @param gatewayAPI.gatewayRef Reference to an existing Gateway
-  ## Used when parentRefs is not set
-  ##
-  gatewayRef:
-    ## @param gatewayAPI.gatewayRef.name Name of the Gateway to attach routes to
-    ##
-    name: ""
-    ## @param gatewayAPI.gatewayRef.namespace Namespace of the Gateway (optional, defaults to same namespace)
-    ##
-    namespace: ""
-    ## @param gatewayAPI.gatewayRef.sectionName Specific listener on the Gateway (optional)
-    ##
-    sectionName: ""
-  ## @param gatewayAPI.httpRoute HTTPRoute configuration
-  ##
-  httpRoute:
-    ## @param gatewayAPI.httpRoute.annotations Annotations for the HTTPRoute
-    ##
-    annotations: {}
-    ## @param gatewayAPI.httpRoute.backendRefs Backend reference options
-    ##
-    backendRefs:
-      weight: null
-    ## @param gatewayAPI.httpRoute.additionalRules Additional routing rules
-    ##
-    additionalRules: []
-  ## @param gatewayAPI.gateway Gateway resource configuration
-  ## Set gateway.create to true to create a new Gateway resource
-  ## Otherwise, reference an existing Gateway using gatewayRef
-  ##
-  gateway:
-    ## @param gatewayAPI.gateway.create Create a Gateway resource
-    ##
-    create: false
-    ## @param gatewayAPI.gateway.name Gateway name (defaults to <fullname>-gateway)
-    ##
-    name: ""
-    ## @param gatewayAPI.gateway.className GatewayClass name
-    ## Common options: istio, cilium, nginx, envoy-gateway, gke-l7-rilb, gke-l7-global-external-managed
-    ##
-    className: ""
-    ## @param gatewayAPI.gateway.annotations Gateway annotations
-    ##
-    annotations: {}
-    ## @param gatewayAPI.gateway.addresses Gateway addresses (optional)
-    ##
-    addresses: []
-    ## @param gatewayAPI.gateway.listeners Custom listeners (optional, overrides defaults)
-    ## If not specified, HTTP (and optionally HTTPS) listeners will be created
-    ##
-    listeners: null
-    ## @param gatewayAPI.gateway.tls TLS configuration for the Gateway
-    ##
-    tls:
-      ## @param gatewayAPI.gateway.tls.enable Enable HTTPS listener
-      ##
-      enable: false
-      ## @param gatewayAPI.gateway.tls.mode TLS termination mode (Terminate or Passthrough)
-      ##
-      mode: Terminate
-      ## @param gatewayAPI.gateway.tls.secretName TLS secret name
-      ##
-      secretName: ""
-      ## @param gatewayAPI.gateway.tls.certificateRefs Custom certificate references
-      ##
-      certificateRefs: null
 
 ## @section Additional configuration
 ##
@@ -1123,9 +1025,6 @@ hooks:
       limits:
         cpu: 100m
         memory: 128Mi
-  image:
-    repository: curlimages/curl
-    tag: latest
     ## @param hooks.test.tolerations Service-specific tolerations for the readiness test pod
     ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     ##
@@ -1200,7 +1099,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.19.4
+    tag: 2.19.3
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
