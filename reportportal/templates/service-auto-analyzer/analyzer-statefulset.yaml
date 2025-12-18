@@ -54,43 +54,45 @@ spec:
         - containerPort: 5001
           name: analyzercore
         resources:
-          requests:
-            cpu: {{ .Values.serviceanalyzer.resources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceanalyzer.resources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.resources.limits.memory }}
+          {{- toYaml .Values.serviceanalyzer.resources | nindent 10 }}
         env:
-{{- if .Values.serviceanalyzer.extraEnvs }}
-{{ toYaml .Values.serviceanalyzer.extraEnvs | indent 8 }}
-{{- end }}
-        {{- if eq .Values.storage.type "minio"}}
-        - name: ANALYZER_BINARYSTORE_TYPE
-          value: "minio"
-        - name: ANALYZER_BINARYSTORE_BUCKETPREFIX
-          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
-        - name: MINIO_SHORT_HOST
-          value: "{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+        {{- if .Values.serviceanalyzer.extraEnvs }}
+        {{- toYaml .Values.serviceanalyzer.extraEnvs | nindent 8 }}
+        {{- end }}
+        {{- $storageType := include "reportportal.storageType" . }}
+        - name: DATASTORE_TYPE
+          value: "{{ $storageType }}"
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
+        {{- if eq $storageType "minio" }}
+        - name: DATASTORE_ENDPOINT
+          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+        {{- else if eq $storageType "s3" }}
+        - name: DATASTORE_REGION
+          value: "{{ .Values.storage.region }}"
+        {{- end }}
         {{- if .Values.storage.secretName }}
-        - name: MINIO_ACCESS_KEY
+        - name: DATASTORE_ACCESSKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.storage.secretName }}"
               key: "{{ .Values.storage.accesskeyName }}"
-        - name: MINIO_SECRET_KEY
+        - name: DATASTORE_SECRETKEY
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.storage.secretName }}"
               key: "{{ .Values.storage.secretkeyName }}"
         {{- else }}
-        - name: MINIO_ACCESS_KEY
+        - name: DATASTORE_ACCESSKEY
           value: "{{ .Values.storage.accesskey }}"
-        - name: MINIO_SECRET_KEY
+        - name: DATASTORE_SECRETKEY
           value: "{{ .Values.storage.secretkey }}"
         {{- end }}
-        {{- else }}
-        - name: ANALYZER_BINARYSTORE_TYPE
-          value: "filesystem"
+        - name: DATASTORE_BUCKETPREFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
+        - name: DATASTORE_BUCKETPOSTFIX
+          value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
+        - name: DATASTORE_DEFAULTBUCKETNAME
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}/analyzer"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
@@ -152,37 +154,39 @@ spec:
           successThreshold: {{ .Values.serviceanalyzer.livenessProbe.successThreshold }}
         {{- end }}
         volumeMounts:
-          {{ if eq .Values.storage.type "filesystem" }}
+          {{- if eq (include "reportportal.storageType" .) "filesystem" }}
           - name: shared-volume
             mountPath: /data/storage
           {{- end }}
           {{- if .Values.serviceanalyzer.extraVolumeMounts }}
-            {{ toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 12 }}
+          {{- toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 10 }}
           {{- end }}
-{{- if .Values.serviceanalyzer.nodeSelector }}
+      {{- if .Values.serviceanalyzer.nodeSelector }}
       nodeSelector:
         {{- range $key, $value := .Values.serviceanalyzer.nodeSelector }}
-        {{ $key }}: {{ $value | quote }}
+        {{- $key | nindent 8 }}: {{ $value | quote }}
         {{- end }}
-{{- end }}
+      {{- end }}
       securityContext:
-{{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
+        {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.securityContext) | nindent 8 }}
       serviceAccountName: {{ .Values.serviceanalyzer.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
-{{- with .Values.global.tolerations }}
-      tolerations: 
-{{- toYaml . | nindent 8 }}
-{{- else }}
-{{- with .Values.serviceanalyzer.tolerations }}
-      tolerations: 
-{{- toYaml . | nindent 8 }}
-{{- end }}
-{{- end }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.serviceanalyzer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- if or (eq (include "reportportal.storageType" .) "filesystem") .Values.serviceanalyzer.extraVolumes }}
       volumes:
-      {{- if eq .Values.storage.type "filesystem" }}
+        {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
-      {{- end }}
-      {{- if .Values.serviceanalyzer.extraVolumes }}
-        {{ toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
+        {{- end }}
+        {{- if .Values.serviceanalyzer.extraVolumes }}
+        {{- toYaml .Values.serviceanalyzer.extraVolumes | nindent 8 }}
+        {{- end }}
       {{- end }}

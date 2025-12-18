@@ -124,11 +124,12 @@ spec:
               value: "{{ .Values.database.password }}"
           {{- end }}
         # Datastore settings
+            {{- $storageType := include "reportportal.storageType" . }}
             - name: DATASTORE_TYPE
-              value: "{{ .Values.storage.type }}"
+              value: "{{ $storageType }}"
         # Minio/S3 settings
-        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
-          {{- if eq .Values.storage.type "minio" }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
+          {{- if eq $storageType "minio" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
           {{- end }}
@@ -193,7 +194,7 @@ spec:
               mountPath: {{ .Values.uat.secret.mountPath }}
               readOnly: {{ .Values.uat.secret.readOnly }}
           {{- end }}
-          {{- if eq .Values.storage.type "filesystem" }}
+          {{- if eq (include "reportportal.storageType" .) "filesystem" }}
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
@@ -224,7 +225,7 @@ spec:
           secret:
             secretName: {{ template "reportportal.name" . }}-uat-secret
       {{- end }}
-      {{- if eq .Values.storage.type "filesystem" }}
+      {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
