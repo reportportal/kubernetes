@@ -255,14 +255,28 @@ serviceapi:
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
-  ## @param serviceapi.auditLogs.loglevel define log level
+  ## @param serviceapi.auditLogs define audit logging configuration
+  ## @param serviceapi.auditLogs.enable Enable audit logging (sets AUDIT_LOGGER env var and mounts log volume)
+  ## @param serviceapi.auditLogs.loglevel Audit log level
+  ##
+  ## WARNING: Enabling audit logs writes to an emptyDir volume on the node.
+  ## Monitor node storage usage to prevent disk pressure issues.
+  ## Consider using a log collector (e.g., fluentbit) to ship logs externally.
+  ##
+  ## For custom log collectors, set auditLogs.sidecar.enable=false and configure
+  ## your collector via extraInitContainers, extraVolumes, and extraVolumeMounts.
   ##
   auditLogs:
     enable: false
     loglevel: info
-    ## @param serviceapi.auditLogs.sidecar define sidecar container configuration
+    ## @param serviceapi.auditLogs.sidecar Default sidecar container for streaming audit logs to stdout
+    ## Set sidecar.enable=true to use the built-in log streamer (streams to container stdout)
+    ## For custom log collectors (e.g., fluentbit), set sidecar.enable=false
     ##
     sidecar:
+      ## @param serviceapi.auditLogs.sidecar.enable Enable the default audit log streamer sidecar
+      ##
+      enable: false
       image:
         repository: busybox
         tag: latest

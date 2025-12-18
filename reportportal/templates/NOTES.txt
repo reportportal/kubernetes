@@ -38,4 +38,23 @@ To check Gateway status:
 {{- end }}
 {{- end }}
 
+{{- if .Values.serviceapi.auditLogs.enable }}
+
+⚠️  WARNING: Audit logging is enabled!
+   Audit logs are written to an emptyDir volume on the node filesystem.
+   
+   Important considerations:
+   - Monitor node disk usage to prevent disk pressure issues
+   - Logs are lost when the pod is deleted or rescheduled
+   - Consider using a log collector (e.g., fluentbit) to ship logs to external storage
+   
+   To check audit log volume usage:
+     kubectl exec -it $(kubectl get pod -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }} -o jsonpath='{.items[0].metadata.name}') -n {{ .Release.Namespace }} -- du -sh /var/log/reportportal/
+{{- if not .Values.serviceapi.auditLogs.sidecar.enable }}
+   
+   Note: The default log streamer sidecar is disabled.
+   Configure a custom log collector via extraVolumes and extraVolumeMounts if needed.
+{{- end }}
+{{- end }}
+
 For more information, visit: https://reportportal.io/docs
