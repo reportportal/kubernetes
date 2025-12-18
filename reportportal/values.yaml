@@ -135,6 +135,9 @@ serviceindex:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceindex.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceui Core ReportPortal service
 ##
@@ -217,6 +220,9 @@ serviceui:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceui.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceapi Core ReportPortal
 ##
@@ -368,6 +374,9 @@ serviceapi:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceapi.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param serviceapi.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -500,6 +509,9 @@ uat:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param uat.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
   hostAliases: []
@@ -617,6 +629,9 @@ servicejobs:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param servicejobs.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceanalyzer Core ReportPortal service for the analysis of test results
 ##
@@ -684,6 +699,9 @@ serviceanalyzer:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceanalyzer.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param serviceanalyzer.readinessProbe configure readiness probe
   ##
   readinessProbe:
