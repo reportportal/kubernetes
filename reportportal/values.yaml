@@ -116,6 +116,14 @@ serviceindex:
   affinity: {}
   ## @param serviceindex.tolerations Service-specific tolerations for the index service
   tolerations: []
+  ## @param serviceindex.strategy Deployment strategy for the index service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
   pdb:
     create: false
@@ -190,6 +198,14 @@ serviceui:
   serviceAccountName: ""
   ## @param serviceui.tolerations Service-specific tolerations for the UI service
   tolerations: []
+  ## @param serviceui.strategy Deployment strategy for the UI service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceui.pdb Service-specific pod disruption budget for the UI service
   pdb:
     create: false
@@ -319,6 +335,14 @@ serviceapi:
   serviceAccountName: ""
   ## @param serviceapi.tolerations Service-specific tolerations for the API service
   tolerations: []
+  ## @param serviceapi.strategy Deployment strategy for the API service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceapi.pdb Service-specific pod disruption budget for the API service
   pdb:
     create: false
@@ -429,6 +453,14 @@ uat:
   serviceAccountName: ""
   ## @param uat.tolerations Service-specific tolerations for the authorization service
   tolerations: []
+  ## @param uat.strategy Deployment strategy for the authorization service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param uat.pdb Service-specific pod disruption budget for the authorization service
   pdb:
     create: false
@@ -552,6 +584,14 @@ servicejobs:
   serviceAccountName: ""
   ## @param servicejobs.tolerations Service-specific tolerations for the jobs service
   tolerations: []
+  ## @param servicejobs.strategy Deployment strategy for the jobs service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param servicejobs.pdb Service-specific pod disruption budget for the jobs service
   pdb:
     create: false
@@ -612,6 +652,13 @@ serviceanalyzer:
   serviceAccountName: ""
   ## @param serviceanalyzer.tolerations Service-specific tolerations for the analyzer service
   tolerations: []
+  ## @param serviceanalyzer.updateStrategy Update strategy for the analyzer StatefulSet
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   partition: 0
   ## @param serviceanalyzer.pdb Service-specific pod disruption budget for the analyzer service
   pdb:
     create: false
@@ -962,6 +1009,101 @@ ingress:
       privateKey: null
       certificate: null
 
+## @section Gateway API Configuration
+## Gateway API is the modern replacement for Ingress, recommended by Kubernetes.
+## Note: Ingress NGINX is being retired in March 2026.
+## See: https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/
+##
+## @param gatewayAPI.enable Enable Gateway API resources (HTTPRoute)
+## @param gatewayAPI.hostnames Hostnames for the HTTPRoute (can be a list or single string)
+## @param gatewayAPI.path Base path for all routes (default: "")
+##
+
+gatewayAPI:
+  enable: false
+  ## @param gatewayAPI.hostnames Hostnames to match for routing
+  ## Can be a single hostname or a list
+  ## Example:
+  ##   hostnames: reportportal.example.com
+  ## or:
+  ##   hostnames:
+  ##     - reportportal.example.com
+  ##     - rp.example.com
+  ##
+  hostnames: null
+  ## @param gatewayAPI.path Base path prefix for all routes
+  ##
+  path: ""
+  ## @param gatewayAPI.parentRefs Custom parent references (advanced)
+  ## If not set, gatewayRef will be used to construct parentRefs
+  ##
+  parentRefs: null
+  ## @param gatewayAPI.gatewayRef Reference to an existing Gateway
+  ## Used when parentRefs is not set
+  ##
+  gatewayRef:
+    ## @param gatewayAPI.gatewayRef.name Name of the Gateway to attach routes to
+    ##
+    name: ""
+    ## @param gatewayAPI.gatewayRef.namespace Namespace of the Gateway (optional, defaults to same namespace)
+    ##
+    namespace: ""
+    ## @param gatewayAPI.gatewayRef.sectionName Specific listener on the Gateway (optional)
+    ##
+    sectionName: ""
+  ## @param gatewayAPI.httpRoute HTTPRoute configuration
+  ##
+  httpRoute:
+    ## @param gatewayAPI.httpRoute.annotations Annotations for the HTTPRoute
+    ##
+    annotations: {}
+    ## @param gatewayAPI.httpRoute.backendRefs Backend reference options
+    ##
+    backendRefs:
+      weight: null
+    ## @param gatewayAPI.httpRoute.additionalRules Additional routing rules
+    ##
+    additionalRules: []
+  ## @param gatewayAPI.gateway Gateway resource configuration
+  ## Set gateway.create to true to create a new Gateway resource
+  ## Otherwise, reference an existing Gateway using gatewayRef
+  ##
+  gateway:
+    ## @param gatewayAPI.gateway.create Create a Gateway resource
+    ##
+    create: false
+    ## @param gatewayAPI.gateway.name Gateway name (defaults to <fullname>-gateway)
+    ##
+    name: ""
+    ## @param gatewayAPI.gateway.className GatewayClass name
+    ## Common options: istio, cilium, nginx, envoy-gateway, gke-l7-rilb, gke-l7-global-external-managed
+    ##
+    className: ""
+    ## @param gatewayAPI.gateway.annotations Gateway annotations
+    ##
+    annotations: {}
+    ## @param gatewayAPI.gateway.addresses Gateway addresses (optional)
+    ##
+    addresses: []
+    ## @param gatewayAPI.gateway.listeners Custom listeners (optional, overrides defaults)
+    ## If not specified, HTTP (and optionally HTTPS) listeners will be created
+    ##
+    listeners: null
+    ## @param gatewayAPI.gateway.tls TLS configuration for the Gateway
+    ##
+    tls:
+      ## @param gatewayAPI.gateway.tls.enable Enable HTTPS listener
+      ##
+      enable: false
+      ## @param gatewayAPI.gateway.tls.mode TLS termination mode (Terminate or Passthrough)
+      ##
+      mode: Terminate
+      ## @param gatewayAPI.gateway.tls.secretName TLS secret name
+      ##
+      secretName: ""
+      ## @param gatewayAPI.gateway.tls.certificateRefs Custom certificate references
+      ##
+      certificateRefs: null
 
 ## @section Additional configuration
 ##
@@ -1029,6 +1171,9 @@ hooks:
     ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     ##
     tolerations: []
+  image:
+    repository: curlimages/curl
+    tag: latest
 
 ## @param resourceQuota Configure resource quotas for the namespace
 ##

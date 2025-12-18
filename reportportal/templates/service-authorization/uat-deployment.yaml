@@ -7,6 +7,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.uat.replicaCount | default 1 }}
+  {{- with .Values.uat.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-uat

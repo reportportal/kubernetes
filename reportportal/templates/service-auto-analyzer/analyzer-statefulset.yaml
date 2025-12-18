@@ -5,6 +5,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
+  {{- with .Values.serviceanalyzer.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-analyzer

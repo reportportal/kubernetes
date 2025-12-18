@@ -6,6 +6,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.serviceapi.replicaCount | default 1 }}
+  {{- with .Values.serviceapi.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-api
