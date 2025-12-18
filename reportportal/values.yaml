@@ -775,7 +775,16 @@ msgbroker:
   password: &msgbrokerPass rabbitmqpassword
 
 searchengine:
+  ## @param searchengine.secretName Kubernetes secret containing search engine credentials
+  ## When set, credentials are read from the secret instead of inline values
+  ##
   secretName: ""
+  ## @param searchengine.userKeyName Key name for username in the secret
+  ##
+  userKeyName: "username"
+  ## @param searchengine.passwordKeyName Key name for password in the secret
+  ##
+  passwordKeyName: "password"
   ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   ##
   endpoint:
@@ -784,7 +793,11 @@ searchengine:
   ##
   ssl: false
   port: &searchenginePort 9200
+  ## @param searchengine.user Inline username (used when secretName is not set)
+  ##
   user:
+  ## @param searchengine.password Inline password (used when secretName is not set)
+  ##
   password:
 
 ## @section Storage Configuration

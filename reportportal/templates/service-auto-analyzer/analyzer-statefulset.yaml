@@ -120,12 +120,12 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.searchengine.secretName }}"
-              key: "username"
+              key: "{{ .Values.searchengine.userKeyName | default "username" }}"
         - name: ES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: "{{ .Values.searchengine.secretName }}"
-              key: "password"
+              key: "{{ .Values.searchengine.passwordKeyName | default "password" }}"
         {{- else }}
         - name: ES_USER
           value: "{{ .Values.searchengine.user }}"
