@@ -1291,7 +1291,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.19.3
+    tag: 2.19.4
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true

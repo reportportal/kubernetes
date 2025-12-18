@@ -70,7 +70,7 @@ referencegrants.gateway.networking.k8s.io
 
 ### 3. Gateway Controller
 
-You need a Gateway controller implementation. See [Gateway Controller Options](#gateway-controller-options) for installation instructions.
+You need a Gateway controller implementation. See [Gateway Controller: Envoy Gateway](#gateway-controller-envoy-gateway) for installation instructions.
 
 ## Gateway API Concepts
 
