@@ -6,6 +6,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.serviceapi.replicaCount | default 1 }}
+  {{- with .Values.serviceapi.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-api
@@ -142,11 +146,12 @@ spec:
               value: "{{ .Values.database.password }}"
           {{- end }}
         # Storage settings
+            {{- $storageType := include "reportportal.storageType" . }}
             - name: DATASTORE_TYPE
-              value: "{{ .Values.storage.type }}"
+              value: "{{ $storageType }}"
         # Minio/S3 settings
-        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
-          {{- if eq .Values.storage.type "minio" }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
+          {{- if eq $storageType "minio" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
           {{- end }}
@@ -200,8 +205,7 @@ spec:
           {{- end }}
         {{- if .Values.serviceapi.livenessProbe.enabled }}
           livenessProbe:
-            httpGet:
-              path: "{{ $path }}/api/health"
+            tcpSocket:
               port: 8585
             initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
             periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
@@ -218,14 +222,14 @@ spec:
             - name: audit-log-volume
               mountPath: /var/log
           {{- end }}
-          {{- if eq .Values.storage.type "filesystem" }}
+          {{- if eq (include "reportportal.storageType" .) "filesystem" }}
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
           {{- if .Values.serviceapi.extraVolumeMounts }}
             {{ toYaml .Values.serviceapi.extraVolumeMounts | nindent 12 }}
           {{- end }}
-      {{- if .Values.serviceapi.auditLogs.enable }}
+      {{- if and .Values.serviceapi.auditLogs.enable .Values.serviceapi.auditLogs.sidecar.enable }}
         - name: auditlogstreamer
           image: "{{ if .Values.global.imageRegistry }}{{ .Values.global.imageRegistry }}/{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ else }}{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ end }}"
           command:
@@ -268,7 +272,7 @@ spec:
         - name: audit-log-volume
           emptyDir: { }
       {{- end }}
-      {{- if eq .Values.storage.type "filesystem" }}
+      {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim

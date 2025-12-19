@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-api
   labels: {{ include "labels" . | indent 4 }}
+    {{- with .Values.serviceapi.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   annotations:
     service: {{ $.Values.serviceapi.name | default "api" }}
     infoEndpoint: "{{ .Values.ingress.path }}/api/info"

@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-jobs
   labels: {{ include "labels" . | indent 4 }}
+    {{- with .Values.servicejobs.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   annotations:
     service: {{ $.Values.servicejobs.name | default "jobs" }}
     infoEndpoint: "/jobs/info"

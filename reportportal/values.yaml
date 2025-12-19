@@ -62,7 +62,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.14.0
+    tag: 5.15.0
   pullPolicy: Always
   resources:
     requests:
@@ -116,6 +116,14 @@ serviceindex:
   affinity: {}
   ## @param serviceindex.tolerations Service-specific tolerations for the index service
   tolerations: []
+  ## @param serviceindex.strategy Deployment strategy for the index service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
   pdb:
     create: false
@@ -127,6 +135,9 @@ serviceindex:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceindex.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceui Core ReportPortal service
 ##
@@ -134,7 +145,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.14.6
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -190,6 +201,14 @@ serviceui:
   serviceAccountName: ""
   ## @param serviceui.tolerations Service-specific tolerations for the UI service
   tolerations: []
+  ## @param serviceui.strategy Deployment strategy for the UI service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceui.pdb Service-specific pod disruption budget for the UI service
   pdb:
     create: false
@@ -201,6 +220,9 @@ serviceui:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceui.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceapi Core ReportPortal
 ##
@@ -208,7 +230,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.14.4
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -239,14 +261,28 @@ serviceapi:
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
-  ## @param serviceapi.auditLogs.loglevel define log level
+  ## @param serviceapi.auditLogs define audit logging configuration
+  ## @param serviceapi.auditLogs.enable Enable audit logging (sets AUDIT_LOGGER env var and mounts log volume)
+  ## @param serviceapi.auditLogs.loglevel Audit log level
+  ##
+  ## WARNING: Enabling audit logs writes to an emptyDir volume on the node.
+  ## Monitor node storage usage to prevent disk pressure issues.
+  ## Consider using a log collector (e.g., fluentbit) to ship logs externally.
+  ##
+  ## For custom log collectors, set auditLogs.sidecar.enable=false and configure
+  ## your collector via extraInitContainers, extraVolumes, and extraVolumeMounts.
   ##
   auditLogs:
     enable: false
     loglevel: info
-    ## @param serviceapi.auditLogs.sidecar define sidecar container configuration
+    ## @param serviceapi.auditLogs.sidecar Default sidecar container for streaming audit logs to stdout
+    ## Set sidecar.enable=true to use the built-in log streamer (streams to container stdout)
+    ## For custom log collectors (e.g., fluentbit), set sidecar.enable=false
     ##
     sidecar:
+      ## @param serviceapi.auditLogs.sidecar.enable Enable the default audit log streamer sidecar
+      ##
+      enable: false
       image:
         repository: busybox
         tag: latest
@@ -319,6 +355,14 @@ serviceapi:
   serviceAccountName: ""
   ## @param serviceapi.tolerations Service-specific tolerations for the API service
   tolerations: []
+  ## @param serviceapi.strategy Deployment strategy for the API service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param serviceapi.pdb Service-specific pod disruption budget for the API service
   pdb:
     create: false
@@ -330,6 +374,9 @@ serviceapi:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceapi.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param serviceapi.secret define the secret configuration
   ## e.g. provide a custom java keystore used in jvmArgs:
   ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
@@ -362,7 +409,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.14.7
+    tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -429,6 +476,14 @@ uat:
   serviceAccountName: ""
   ## @param uat.tolerations Service-specific tolerations for the authorization service
   tolerations: []
+  ## @param uat.strategy Deployment strategy for the authorization service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param uat.pdb Service-specific pod disruption budget for the authorization service
   pdb:
     create: false
@@ -454,6 +509,9 @@ uat:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param uat.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
   ##
   hostAliases: []
@@ -472,7 +530,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.14.1
+    tag: 5.15.0
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -552,6 +610,14 @@ servicejobs:
   serviceAccountName: ""
   ## @param servicejobs.tolerations Service-specific tolerations for the jobs service
   tolerations: []
+  ## @param servicejobs.strategy Deployment strategy for the jobs service
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  strategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 1
+    #   maxUnavailable: 0
   ## @param servicejobs.pdb Service-specific pod disruption budget for the jobs service
   pdb:
     create: false
@@ -563,6 +629,9 @@ servicejobs:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param servicejobs.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @param serviceanalyzer Core ReportPortal service for the analysis of test results
 ##
@@ -570,7 +639,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.14.6
+    tag: 5.15.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -612,6 +681,13 @@ serviceanalyzer:
   serviceAccountName: ""
   ## @param serviceanalyzer.tolerations Service-specific tolerations for the analyzer service
   tolerations: []
+  ## @param serviceanalyzer.updateStrategy Update strategy for the analyzer StatefulSet
+  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   partition: 0
   ## @param serviceanalyzer.pdb Service-specific pod disruption budget for the analyzer service
   pdb:
     create: false
@@ -623,6 +699,9 @@ serviceanalyzer:
     nodePort: ""
     extraPorts: []
     annotations: {}
+    ## @param serviceanalyzer.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
   ## @param serviceanalyzer.readinessProbe configure readiness probe
   ##
   readinessProbe:
@@ -645,7 +724,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.14.2
+    tag: 5.15.0
   resources:
     requests:
       cpu: 100m
@@ -714,7 +793,16 @@ msgbroker:
   password: &msgbrokerPass rabbitmqpassword
 
 searchengine:
+  ## @param searchengine.secretName Kubernetes secret containing search engine credentials
+  ## When set, credentials are read from the secret instead of inline values
+  ##
   secretName: ""
+  ## @param searchengine.userKeyName Key name for username in the secret
+  ##
+  userKeyName: "username"
+  ## @param searchengine.passwordKeyName Key name for password in the secret
+  ##
+  passwordKeyName: "password"
   ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.cluster.local
   ##
   endpoint:
@@ -723,7 +811,11 @@ searchengine:
   ##
   ssl: false
   port: &searchenginePort 9200
+  ## @param searchengine.user Inline username (used when secretName is not set)
+  ##
   user:
+  ## @param searchengine.password Inline password (used when secretName is not set)
+  ##
   password:
 
 ## @section Storage Configuration
@@ -919,42 +1011,44 @@ ingress:
   hosts: null
   path: ""
   class: nginx
-  annotations:
-    nginx:
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
-      nginx.ingress.kubernetes.io/proxy-body-size: 128m
-      nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
-      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
-    gce: {}
-    alb: {}
-      ## AWS Load Balancer Controller annotations
-      # alb.ingress.kubernetes.io/load-balancer-name: "reportportal-alb"
-      # alb.ingress.kubernetes.io/scheme: "internet-facing"
-      # alb.ingress.kubernetes.io/target-type: "ip"
-      # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-      # alb.ingress.kubernetes.io/ssl-redirect: "443"
-      # alb.ingress.kubernetes.io/group.name: "reportportal"
-      # alb.ingress.kubernetes.io/group.order: "1"
-      ## Health check settings
-      # alb.ingress.kubernetes.io/healthcheck-path: "/"
-      # alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      # alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
-      # alb.ingress.kubernetes.io/success-codes: "200"
-      # alb.ingress.kubernetes.io/healthy-threshold-count: "2"
-      # alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
-      ## Security settings (uncomment and set your values)
-      # alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx"
-      # alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
-      ## SSL/TLS settings (uncomment and set your certificate ARN)
-      # alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
-      ## Additional ALB attributes (uncomment and customize)
-      # alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
-      # alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
-    custom: {}
+  ## @param ingress.annotations Ingress annotations
+  ## Add annotations based on your ingress controller
+  ##
+  ## Example for Nginx Ingress Controller:
+  ##   nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  ##   nginx.ingress.kubernetes.io/proxy-body-size: 128m
+  ##   nginx.ingress.kubernetes.io/proxy-buffer-size: 512k
+  ##   nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+  ##   nginx.ingress.kubernetes.io/proxy-busy-buffers-size: 512k
+  ##   nginx.ingress.kubernetes.io/proxy-connect-timeout: "8000"
+  ##   nginx.ingress.kubernetes.io/proxy-read-timeout: "4000"
+  ##   nginx.ingress.kubernetes.io/proxy-send-timeout: "4000"
+  ##
+  ## Example for AWS ALB Ingress Controller:
+  ##   kubernetes.io/ingress.class: alb
+  ##   alb.ingress.kubernetes.io/load-balancer-name: "reportportal-alb"
+  ##   alb.ingress.kubernetes.io/scheme: "internet-facing"
+  ##   alb.ingress.kubernetes.io/target-type: "ip"
+  ##   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+  ##   alb.ingress.kubernetes.io/ssl-redirect: "443"
+  ##   alb.ingress.kubernetes.io/group.name: "reportportal"
+  ##   alb.ingress.kubernetes.io/group.order: "1"
+  ##   alb.ingress.kubernetes.io/healthcheck-path: "/"
+  ##   alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+  ##   alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+  ##   alb.ingress.kubernetes.io/success-codes: "200"
+  ##   alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+  ##   alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+  ##   alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx"
+  ##   alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
+  ##   alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
+  ##   alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
+  ##   alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
+  ##
+  ## Example for GCE Ingress Controller:
+  ##   kubernetes.io/ingress.class: gce
+  ##
+  annotations: {}
   tls:
     certificates: null
     certificate:
@@ -962,6 +1056,101 @@ ingress:
       privateKey: null
       certificate: null
 
+## @section Gateway API Configuration
+## Gateway API is the modern replacement for Ingress, recommended by Kubernetes.
+## Note: Ingress NGINX is being retired in March 2026.
+## See: https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/
+##
+## @param gatewayAPI.enable Enable Gateway API resources (HTTPRoute)
+## @param gatewayAPI.hostnames Hostnames for the HTTPRoute (can be a list or single string)
+## @param gatewayAPI.path Base path for all routes (default: "")
+##
+
+gatewayAPI:
+  enable: false
+  ## @param gatewayAPI.hostnames Hostnames to match for routing
+  ## Can be a single hostname or a list
+  ## Example:
+  ##   hostnames: reportportal.example.com
+  ## or:
+  ##   hostnames:
+  ##     - reportportal.example.com
+  ##     - rp.example.com
+  ##
+  hostnames: null
+  ## @param gatewayAPI.path Base path prefix for all routes
+  ##
+  path: ""
+  ## @param gatewayAPI.parentRefs Custom parent references (advanced)
+  ## If not set, gatewayRef will be used to construct parentRefs
+  ##
+  parentRefs: null
+  ## @param gatewayAPI.gatewayRef Reference to an existing Gateway
+  ## Used when parentRefs is not set
+  ##
+  gatewayRef:
+    ## @param gatewayAPI.gatewayRef.name Name of the Gateway to attach routes to
+    ##
+    name: ""
+    ## @param gatewayAPI.gatewayRef.namespace Namespace of the Gateway (optional, defaults to same namespace)
+    ##
+    namespace: ""
+    ## @param gatewayAPI.gatewayRef.sectionName Specific listener on the Gateway (optional)
+    ##
+    sectionName: ""
+  ## @param gatewayAPI.httpRoute HTTPRoute configuration
+  ##
+  httpRoute:
+    ## @param gatewayAPI.httpRoute.annotations Annotations for the HTTPRoute
+    ##
+    annotations: {}
+    ## @param gatewayAPI.httpRoute.backendRefs Backend reference options
+    ##
+    backendRefs:
+      weight: null
+    ## @param gatewayAPI.httpRoute.additionalRules Additional routing rules
+    ##
+    additionalRules: []
+  ## @param gatewayAPI.gateway Gateway resource configuration
+  ## Set gateway.create to true to create a new Gateway resource
+  ## Otherwise, reference an existing Gateway using gatewayRef
+  ##
+  gateway:
+    ## @param gatewayAPI.gateway.create Create a Gateway resource
+    ##
+    create: false
+    ## @param gatewayAPI.gateway.name Gateway name (defaults to <fullname>-gateway)
+    ##
+    name: ""
+    ## @param gatewayAPI.gateway.className GatewayClass name
+    ## Common options: istio, cilium, nginx, envoy-gateway, gke-l7-rilb, gke-l7-global-external-managed
+    ##
+    className: ""
+    ## @param gatewayAPI.gateway.annotations Gateway annotations
+    ##
+    annotations: {}
+    ## @param gatewayAPI.gateway.addresses Gateway addresses (optional)
+    ##
+    addresses: []
+    ## @param gatewayAPI.gateway.listeners Custom listeners (optional, overrides defaults)
+    ## If not specified, HTTP (and optionally HTTPS) listeners will be created
+    ##
+    listeners: null
+    ## @param gatewayAPI.gateway.tls TLS configuration for the Gateway
+    ##
+    tls:
+      ## @param gatewayAPI.gateway.tls.enable Enable HTTPS listener
+      ##
+      enable: false
+      ## @param gatewayAPI.gateway.tls.mode TLS termination mode (Terminate or Passthrough)
+      ##
+      mode: Terminate
+      ## @param gatewayAPI.gateway.tls.secretName TLS secret name
+      ##
+      secretName: ""
+      ## @param gatewayAPI.gateway.tls.certificateRefs Custom certificate references
+      ##
+      certificateRefs: null
 
 ## @section Additional configuration
 ##
@@ -1029,6 +1218,9 @@ hooks:
     ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
     ##
     tolerations: []
+  image:
+    repository: curlimages/curl
+    tag: latest
 
 ## @param resourceQuota Configure resource quotas for the namespace
 ##
@@ -1099,7 +1291,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.19.3
+    tag: 2.19.4
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true

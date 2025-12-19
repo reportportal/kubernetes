@@ -5,6 +5,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
+  {{- with .Values.servicejobs.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-jobs
@@ -126,10 +130,11 @@ spec:
           value: "{{ .Values.database.password }}"
         {{- end }}
         # Storage settings
+        {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
-          value: "{{ .Values.storage.type }}"
-        {{- if or (eq .Values.storage.type "minio") (eq .Values.storage.type "s3") }}
-        {{- if eq .Values.storage.type "minio" }}
+          value: "{{ $storageType }}"
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
+        {{- if eq $storageType "minio" }}
         - name: DATASTORE_ENDPOINT
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- end }}
@@ -183,8 +188,7 @@ spec:
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: "/jobs/health"
+          tcpSocket:
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
@@ -192,7 +196,7 @@ spec:
           failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 10 }}
         {{- end }}
         volumeMounts:
-          {{- if eq .Values.storage.type "filesystem" }}
+          {{- if eq (include "reportportal.storageType" .) "filesystem" }}
           - name: shared-volume
             mountPath: /data/storage
           {{- end }}
@@ -218,7 +222,7 @@ spec:
 {{- end }}
 {{- end }}
       volumes:
-      {{- if eq .Values.storage.type "filesystem" }}
+      {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim
