@@ -7,6 +7,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: 1
+  {{- with .Values.serviceindex.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-index
@@ -60,8 +64,7 @@ spec:
         {{- end }}
         {{- if .Values.serviceindex.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: "/health"
+          tcpSocket:
             port: 8080
           initialDelaySeconds: {{ .Values.serviceindex.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.serviceindex.livenessProbe.periodSeconds | default 30 }}

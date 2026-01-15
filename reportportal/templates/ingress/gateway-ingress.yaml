@@ -17,33 +17,14 @@ metadata:
   name: {{ $fullName }}-gateway-ingress
   labels: {{ include "labels" . | indent 4 }}
   annotations:
-  {{- if eq .Values.ingress.class "nginx" }}
-    {{- range $key, $value := .Values.ingress.annotations.nginx }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- else if eq .Values.ingress.class "gce" }}
-    {{- if .Values.ingress.tls.certificate.gcpManaged }}
+    {{- if and (eq .Values.ingress.class "gce") .Values.ingress.tls.certificate.gcpManaged }}
     networking.gke.io/managed-certificates: {{ .Release.Name }}-gcp-managed-cert
     {{- end }}
-    {{- range $key, $value := .Values.ingress.annotations.gce }}
+    {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-  {{- else if eq .Values.ingress.class "alb" }}
-    kubernetes.io/ingress.class: alb
-    {{- range $key, $value := .Values.ingress.annotations.alb }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- else }}
-    {{- range $key, $value := .Values.ingress.annotations.custom }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
-  {{- end }}
 spec:
-  # Define the ingress class to use
-  {{- if or (eq .Values.ingress.class "gce") (eq .Values.ingress.class "alb") }}
-  {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
-  {{- end }}
   # Define the TLS settings
   {{- if .Values.ingress.tls.certificates }}
   tls:

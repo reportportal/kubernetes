@@ -35,12 +35,12 @@ The AWS Load Balancer Controller must be installed in your EKS cluster before de
 
 ## ALB Configuration Overview
 
-**Important**: By default, ReportPortal uses `nginx` as the ingress class. To use ALB, you must manually change the ingress class in your values.yaml file from `nginx` to `alb`.
+**Important**: By default, ReportPortal uses `nginx` as the ingress class. To use ALB, you must set `ingress.class: alb` in your values.yaml file.
 
 ReportPortal's ALB integration includes:
 
 ### 1. Ingress Configuration
-- **Class**: `alb` (must be manually set in values.yaml, defaults to `nginx`)
+- **Class**: `alb` (set via `ingress.class`)
 - **TLS**: Handled via AWS Certificate Manager (ACM) ARN
 - **Path-based routing**: Routes traffic to different services based on URL paths
 
@@ -62,7 +62,7 @@ Each service has individual health check configurations:
 
 ### 1. Create Values File
 
-Create a `values-alb.yaml` file with ALB-specific configuration. **Important**: Change the ingress class from the default `nginx` to `alb`:
+Create a `values-alb.yaml` file with ALB-specific configuration:
 
 ```yaml
 # ALB Ingress Configuration
@@ -71,36 +71,35 @@ ingress:
   hosts:
     - "your-domain.com"  # Replace with your domain
   path: ""  # Set to "/reportportal" if deploying to subpath
-  class: alb  # Changed from default 'nginx' to 'alb'
+  class: alb
   annotations:
-    alb:
-      # Basic ALB configuration
-      alb.ingress.kubernetes.io/scheme: "internet-facing"  # or "internal"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-      alb.ingress.kubernetes.io/ssl-redirect: "443"
-      
-      # Load balancer grouping (optional)
-      alb.ingress.kubernetes.io/group.name: "k8s-reportportal"
-      alb.ingress.kubernetes.io/group.order: "1"
-      
-      # Health check settings
-      alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
-      alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
-      alb.ingress.kubernetes.io/success-codes: "200"
-      alb.ingress.kubernetes.io/healthy-threshold-count: "2"
-      alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
-      
-      # Security settings
-      alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx,sg-yyyyyyyyy"
-      alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
-      
-      # SSL/TLS settings
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
-      
-      # Additional ALB attributes
-      alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
-      alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
+    # Basic ALB configuration
+    alb.ingress.kubernetes.io/scheme: "internet-facing"  # or "internal"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    
+    # Load balancer grouping (optional)
+    alb.ingress.kubernetes.io/group.name: "k8s-reportportal"
+    alb.ingress.kubernetes.io/group.order: "1"
+    
+    # Health check settings
+    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
+    
+    # Security settings
+    alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx,sg-yyyyyyyyy"
+    alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
+    
+    # SSL/TLS settings
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
+    
+    # Additional ALB attributes
+    alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
+    alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
 ```
 
 ### 2. Deploy ReportPortal
@@ -141,10 +140,9 @@ ingress:
     - reportportal.example.com
   class: alb
   annotations:
-    alb:
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 ```
 
 ### Example 2: Internal ALB with Custom Security Groups
@@ -156,12 +154,11 @@ ingress:
    - internal-reportportal.example.com
   class: alb
   annotations:
-    alb:
-      alb.ingress.kubernetes.io/scheme: "internal"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/security-groups: "sg-12345678,sg-87654321"
-      alb.ingress.kubernetes.io/subnets: "subnet-12345678,subnet-87654321"
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+    alb.ingress.kubernetes.io/scheme: "internal"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/security-groups: "sg-12345678,sg-87654321"
+    alb.ingress.kubernetes.io/subnets: "subnet-12345678,subnet-87654321"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 ```
 
 ### Example 3: ALB with Session Stickiness
@@ -173,11 +170,10 @@ ingress:
     - reportportal.example.com
   class: alb
   annotations:
-    alb:
-      alb.ingress.kubernetes.io/scheme: "internet-facing"
-      alb.ingress.kubernetes.io/target-type: "ip"
-      alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
-      alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 ```
 
 ## Troubleshooting

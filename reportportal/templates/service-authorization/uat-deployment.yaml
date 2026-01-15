@@ -7,6 +7,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.uat.replicaCount | default 1 }}
+  {{- with .Values.uat.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-uat
@@ -124,11 +128,12 @@ spec:
               value: "{{ .Values.database.password }}"
           {{- end }}
         # Datastore settings
+            {{- $storageType := include "reportportal.storageType" . }}
             - name: DATASTORE_TYPE
-              value: "{{ .Values.storage.type }}"
+              value: "{{ $storageType }}"
         # Minio/S3 settings
-        {{- if or (eq .Values.storage.type "s3-compatible") (eq .Values.storage.type "aws-s3") }}
-          {{- if eq .Values.storage.type "s3-compatible" }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+          {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
           {{- end }}
@@ -180,8 +185,7 @@ spec:
           {{- end }}
         {{- if .Values.uat.livenessProbe.enabled }}
           livenessProbe:
-            httpGet:
-              path: "{{ $path }}/uat/health"
+            tcpSocket:
               port: 9999
             initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
             periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
@@ -194,7 +198,7 @@ spec:
               mountPath: {{ .Values.uat.secret.mountPath }}
               readOnly: {{ .Values.uat.secret.readOnly }}
           {{- end }}
-          {{- if eq .Values.storage.type "filesystem" }}
+          {{- if eq (include "reportportal.storageType" .) "filesystem" }}
             - name: shared-volume
               mountPath: /data/storage
           {{- end }}
@@ -225,7 +229,7 @@ spec:
           secret:
             secretName: {{ template "reportportal.name" . }}-uat-secret
       {{- end }}
-      {{- if eq .Values.storage.type "filesystem" }}
+      {{- if eq (include "reportportal.storageType" .) "filesystem" }}
         - name: shared-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-shared-volume-claim

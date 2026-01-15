@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-analyzer
   labels: {{ include "labels" . | indent 4 }}
+    {{- with .Values.serviceanalyzer.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   annotations:
     {{- with .Values.serviceanalyzer.service.annotations }}
     {{- toYaml . | nindent 4 }}
