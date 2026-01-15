@@ -66,11 +66,11 @@ spec:
         {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
           value: "{{ $storageType }}"
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
-        {{- if eq $storageType "minio" }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
         - name: DATASTORE_ENDPOINT
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
-        {{- else if eq $storageType "s3" }}
+        {{- else if or (eq $storageType "s3") (eq $storageType "aws-s3") }}
         - name: DATASTORE_REGION
           {{- /* Map GCS region names to AWS S3 region names */}}
           {{- $region := .Values.storage.region }}
