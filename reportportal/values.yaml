@@ -820,25 +820,32 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports three storage types: minio, s3, and filesystem
+## ReportPortal supports four storage types: minio, seaweedfs, s3, and filesystem
 ## Choose the storage type that best fits your environment and requirements
 ##
 ## Quick Start Presets:
 ##   - For local development: use "minio" (default)
+##   - For scalable self-hosted storage: use "seaweedfs"
 ##   - For production with cloud storage: use "s3"
 ##   - For production with shared filesystem: use "filesystem"
 ##
 ## Storage Type Comparison:
 ##   - minio: Self-hosted object storage (good for development/testing)
+##   - seaweedfs: Self-hosted distributed storage (good for scalable production, lower resource usage)
 ##   - s3: Cloud object storage (good for production, supports IAM roles)
 ##   - filesystem: Shared filesystem storage (good for production with existing storage)
 ##
+## Note: When switching storage types, ensure only one storage backend is installed:
+##   - For minio: set minio.install=true, seaweedfs.install=false
+##   - For seaweedfs: set seaweedfs.install=true, minio.install=false
+##   - For s3/filesystem: set both minio.install=false, seaweedfs.install=false
+##
 storage:
   ## @param storage.type Storage type to use for ReportPortal data
-  ## Options: minio, s3, filesystem
-  ## Default: minio (recommended for development)
+  ## Options: minio, seaweedfs, s3, filesystem
+  ## Default: seaweedfs (recommended for production)
   ##
-  type: minio
+  type: seaweedfs
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
@@ -1307,10 +1314,10 @@ opensearch:
       value: "true"
 
 ## @param minio External MinIO Helm Chart
-## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
+## Set @param minio.install to `true` if you prefer MinIO over SeaweedFS
 ##
 minio:
-  install: true
+  install: false
   image:
     repository: bitnamilegacy/minio
     tag: 2025.7.23-debian-12-r0
@@ -1322,3 +1329,136 @@ minio:
       "helm.sh/resource-policy": "keep"
   console:
     enabled: false
+
+## @param seaweedfs External SeaweedFS Helm Chart
+## Set @param seaweedfs.install to `true` to use SeaweedFS instead of MinIO
+## SeaweedFS provides S3-compatible storage with better scalability for large deployments
+## Note: When using SeaweedFS, set storage.type to "seaweedfs" and minio.install to false
+##
+seaweedfs:
+  ## @param seaweedfs.install Enable/disable SeaweedFS installation
+  ## SeaweedFS is the default storage backend. Set to false if using MinIO or external storage.
+  ##
+  install: true
+  ## @param seaweedfs.global Global configuration for SeaweedFS
+  ##
+  global:
+    ## @param seaweedfs.global.imageName SeaweedFS image name
+    ##
+    imageName: chrislusf/seaweedfs
+    ## @param seaweedfs.global.imageTag SeaweedFS image tag
+    ##
+    imageTag: "3.80"
+    ## @param seaweedfs.global.enableSecurity Enable security features (authentication)
+    ##
+    enableSecurity: false
+  ## @param seaweedfs.master Master server configuration
+  ## Master server manages volume servers and file IDs
+  ##
+  master:
+    enabled: true
+    replicas: 1
+    port: 9333
+    grpcPort: 19333
+    ## @param seaweedfs.master.data Master data persistence configuration
+    ##
+    data:
+      type: persistentVolumeClaim
+      size: 5Gi
+      ## @param seaweedfs.master.data.storageClass Storage class for master PVC
+      ## Leave empty to use cluster default storage class
+      ##
+      storageClass: ""
+  ## @param seaweedfs.volume Volume server configuration
+  ## Volume server stores actual file data
+  ##
+  volume:
+    enabled: true
+    replicas: 1
+    port: 8080
+    grpcPort: 18080
+    ## @param seaweedfs.volume.dataDirs Volume data directories configuration
+    ##
+    dataDirs:
+      - name: data
+        type: persistentVolumeClaim
+        size: 50Gi
+        ## @param seaweedfs.volume.dataDirs[].storageClass Storage class for volume PVC
+        ## Leave empty to use cluster default storage class
+        ##
+        storageClass: ""
+        maxVolumes: 100
+  ## @param seaweedfs.filer Filer server configuration
+  ## Filer provides file system interface and S3 gateway
+  ##
+  filer:
+    enabled: true
+    replicas: 1
+    port: 8888
+    grpcPort: 18888
+    ## @param seaweedfs.filer.data Filer data persistence configuration
+    ##
+    data:
+      type: persistentVolumeClaim
+      size: 10Gi
+      ## @param seaweedfs.filer.data.storageClass Storage class for filer PVC
+      ## Leave empty to use cluster default storage class
+      ##
+      storageClass: ""
+    ## @param seaweedfs.filer.s3 S3 Gateway configuration
+    ##
+    s3:
+      enabled: true
+      port: 8333
+      ## @param seaweedfs.filer.s3.enableAuth Enable S3 authentication
+      ## When enabled, clients must provide valid access key and secret key
+      ##
+      enableAuth: true
+      ## @param seaweedfs.filer.s3.existingConfigSecret Name of existing secret with S3 config
+      ## If set, uses credentials from this secret instead of creating new ones
+      ## The secret should contain a config.json file with S3 credentials
+      ##
+      existingConfigSecret: ""
+      ## @param seaweedfs.filer.s3.auditLogConfig S3 audit log configuration
+      ##
+      auditLogConfig: ""
+  ## @param seaweedfs.s3 S3 Gateway standalone configuration (if not using filer.s3)
+  ## Note: Using filer.s3 is recommended for integrated deployment
+  ##
+  s3:
+    enabled: false
+    port: 8333
+    ## @param seaweedfs.s3.allowEmptyFolder Allow empty folder creation in S3
+    ##
+    allowEmptyFolder: false
+  ## @param seaweedfs.auth S3 Authentication credentials
+  ## These credentials are used by ReportPortal services to access SeaweedFS S3 gateway
+  ## Note: The same credentials from storage.accesskey/storage.secretkey are used by default
+  ##
+  auth:
+    ## @param seaweedfs.auth.enabled Enable S3 authentication for SeaweedFS
+    ##
+    enabled: true
+    ## @param seaweedfs.auth.existingSecret Use existing secret for S3 credentials
+    ## If set, the secret should contain 'accessKey' and 'secretKey' keys
+    ## Leave empty to use storage.accesskey and storage.secretkey values
+    ##
+    existingSecret: ""
+    ## @param seaweedfs.auth.accessKey S3 access key for SeaweedFS
+    ## If not set, uses storage.accesskey value
+    ##
+    accessKey: *storageAccessKey
+    ## @param seaweedfs.auth.secretKey S3 secret key for SeaweedFS
+    ## If not set, uses storage.secretkey value
+    ##
+    secretKey: *storageSecretKey
+  ## @param seaweedfs.security Advanced security configuration
+  ##
+  security:
+    ## @param seaweedfs.security.enabled Enable mTLS between SeaweedFS components
+    ##
+    enabled: false
+    ## @param seaweedfs.security.tls TLS configuration for SeaweedFS
+    ##
+    tls:
+      enabled: false

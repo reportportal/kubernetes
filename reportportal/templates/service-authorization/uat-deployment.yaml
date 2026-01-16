@@ -131,11 +131,14 @@ spec:
             {{- $storageType := include "reportportal.storageType" . }}
             - name: DATASTORE_TYPE
               value: "{{ $storageType }}"
-        # Minio/S3 settings
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
+        # Minio/SeaweedFS/S3 settings
+        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3") }}
           {{- if eq $storageType "minio" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+          {{- else if eq $storageType "seaweedfs" }}
+            - name: DATASTORE_ENDPOINT
+              value: "{{ include "reportportal.seaweedfsS3Endpoint" . }}"
           {{- end }}
           {{- if .Values.storage.region }}
             - name: DATASTORE_REGION

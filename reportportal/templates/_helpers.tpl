@@ -89,14 +89,25 @@ Global context overrides service-specific context
 
 {{/*
 Get storage type with default "minio" and validation
-Returns: minio, s3, or filesystem
+Returns: minio, seaweedfs, s3, or filesystem
 */}}
 {{- define "reportportal.storageType" -}}
 {{- $storageType := .Values.storage.type | default "minio" -}}
-{{- if not (has $storageType (list "minio" "s3" "filesystem")) -}}
-{{- fail "storage.type must be one of: minio, s3, filesystem" -}}
+{{- if not (has $storageType (list "minio" "seaweedfs" "s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: minio, seaweedfs, s3, filesystem" -}}
 {{- end -}}
 {{- $storageType -}}
+{{- end -}}
+
+{{/*
+Get SeaweedFS S3 endpoint
+Returns the S3 gateway endpoint for SeaweedFS
+*/}}
+{{- define "reportportal.seaweedfsS3Endpoint" -}}
+{{- $protocol := ternary "https" "http" .Values.storage.ssl -}}
+{{- $endpoint := .Values.storage.endpoint | default (printf "%s-seaweedfs-s3.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
+{{- $port := .Values.seaweedfs.filer.s3.port | default 8333 -}}
+{{- printf "%s://%s:%v" $protocol $endpoint $port -}}
 {{- end -}}
 
 

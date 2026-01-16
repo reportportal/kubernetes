@@ -50,3 +50,8 @@ dependencies:
     version: 17.0.16
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
+  # SeaweedFS dependency - alternative S3-compatible storage to MinIO
+  - name: seaweedfs
+    version: 4.0.0
+    repository: https://seaweedfs.github.io/seaweedfs/helm
+    condition: seaweedfs.install
