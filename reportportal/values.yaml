@@ -1421,7 +1421,7 @@ seaweedfs:
       existingConfigSecret: ""
       ## @param seaweedfs.filer.s3.auditLogConfig S3 audit log configuration
       ##
-      auditLogConfig: ""
+      auditLogConfig: {}
   ## @param seaweedfs.s3 S3 Gateway standalone configuration (if not using filer.s3)
   ## Note: Using filer.s3 is recommended for integrated deployment
   ##
