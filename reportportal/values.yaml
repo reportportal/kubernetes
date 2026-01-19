@@ -455,14 +455,17 @@ uat:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
   ## @param uat.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
+  extraEnvs:
+    - name: BINARY_DATASTORE_TYPE
+      value: s3
+    - name: BINARY_DATASTORE_ENDPOINT
+      value: http://my-release-seaweedfs-s3.default.svc.cluster.local:8333
+    - name: BINARY_DATASTORE_ACCESSKEY
+      value: rpuser
+    - name: BINARY_DATASTORE_SECRETKEY
+      value: miniopassword
+    - name: BINARY_DATASTORE_BUCKET
+      value: rp-bucket
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -589,14 +592,17 @@ servicejobs:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
+  extraEnvs:
+    - name: DATASTORE_TYPE
+      value: s3
+    - name: DATASTORE_ENDPOINT
+      value: http://my-release-seaweedfs-s3.default.svc.cluster.local:8333
+    - name: DATASTORE_ACCESSKEY
+      value: rpuser
+    - name: DATASTORE_SECRETKEY
+      value: miniopassword
+    - name: DATASTORE_BUCKET
+      value: rp-bucket
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -1335,6 +1341,11 @@ minio:
 ## SeaweedFS provides S3-compatible storage with better scalability for large deployments
 ## Note: When using SeaweedFS, set storage.type to "seaweedfs" and minio.install to false
 ##
+
+authorization:
+  binaryData:
+    storage: s3
+
 seaweedfs:
   ## @param seaweedfs.install Enable/disable SeaweedFS installation
   ## SeaweedFS is the default storage backend. Set to false if using MinIO or external storage.
