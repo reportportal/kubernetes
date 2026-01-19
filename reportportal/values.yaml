@@ -335,10 +335,17 @@ serviceapi:
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
   extraEnvs:
-    - name: DATASTORE_TYPE
+    - name: RP_STORAGE_TYPE
       value: s3
-    - name: DATASTORE_ENDPOINT
+    - name: RP_STORAGE_S3_ENDPOINT
       value: http://seaweedfs-s3.default.svc.cluster.local:8333
+    - name: RP_STORAGE_S3_ACCESSKEY
+      value: rpuser
+    - name: RP_STORAGE_S3_SECRETKEY
+      value: miniopassword
+    - name: RP_STORAGE_S3_BUCKET
+      value: rp-bucket
+
       
   affinity: {}
   podLabels: {}
@@ -454,16 +461,17 @@ uat:
   ## @param uat.extraEnvs define the extra environment variables
   ##
   extraEnvs:
-    - name: BINARY_DATASTORE_TYPE
+    - name: RP_STORAGE_TYPE
       value: s3
-    - name: BINARY_DATASTORE_ENDPOINT
+    - name: RP_STORAGE_S3_ENDPOINT
       value: http://seaweedfs-s3.default.svc.cluster.local:8333
-    - name: BINARY_DATASTORE_ACCESSKEY
+    - name: RP_STORAGE_S3_ACCESSKEY
       value: rpuser
-    - name: BINARY_DATASTORE_SECRETKEY
+    - name: RP_STORAGE_S3_SECRETKEY
       value: miniopassword
-    - name: BINARY_DATASTORE_BUCKET
+    - name: RP_STORAGE_S3_BUCKET
       value: rp-bucket
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -591,16 +599,17 @@ servicejobs:
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
   extraEnvs:
-    - name: DATASTORE_TYPE
+    - name: RP_STORAGE_TYPE
       value: s3
-    - name: DATASTORE_ENDPOINT
+    - name: RP_STORAGE_S3_ENDPOINT
       value: http://seaweedfs-s3.default.svc.cluster.local:8333
-    - name: DATASTORE_ACCESSKEY
+    - name: RP_STORAGE_S3_ACCESSKEY
       value: rpuser
-    - name: DATASTORE_SECRETKEY
+    - name: RP_STORAGE_S3_SECRETKEY
       value: miniopassword
-    - name: DATASTORE_BUCKET
+    - name: RP_STORAGE_S3_BUCKET
       value: rp-bucket
+
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
