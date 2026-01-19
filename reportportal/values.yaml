@@ -334,14 +334,12 @@ serviceapi:
     parkingLotTtlDays: 7
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
+  extraEnvs:
+    - name: DATASTORE_TYPE
+      value: s3
+    - name: DATASTORE_ENDPOINT
+      value: http://seaweedfs-s3.default.svc.cluster.local:8333
+      
   affinity: {}
   podLabels: {}
   podAnnotations: {}
@@ -459,7 +457,7 @@ uat:
     - name: BINARY_DATASTORE_TYPE
       value: s3
     - name: BINARY_DATASTORE_ENDPOINT
-      value: http://my-release-seaweedfs-s3.default.svc.cluster.local:8333
+      value: http://seaweedfs-s3.default.svc.cluster.local:8333
     - name: BINARY_DATASTORE_ACCESSKEY
       value: rpuser
     - name: BINARY_DATASTORE_SECRETKEY
@@ -596,7 +594,7 @@ servicejobs:
     - name: DATASTORE_TYPE
       value: s3
     - name: DATASTORE_ENDPOINT
-      value: http://my-release-seaweedfs-s3.default.svc.cluster.local:8333
+      value: http://seaweedfs-s3.default.svc.cluster.local:8333
     - name: DATASTORE_ACCESSKEY
       value: rpuser
     - name: DATASTORE_SECRETKEY
