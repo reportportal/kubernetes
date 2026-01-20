@@ -136,7 +136,7 @@ spec:
           {{- if eq $storageType "minio" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
-          {{- else if eq $storageType "minio" }}
+          {{- else if eq $storageType "seaweedfs" }}
             - name: DATASTORE_ENDPOINT
               value: "{{ include "reportportal.seaweedfsS3Endpoint" . }}"
           {{- end }}
