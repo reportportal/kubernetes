@@ -845,7 +845,7 @@ storage:
   ## Options: minio, seaweedfs, s3, filesystem
   ## Default: seaweedfs (recommended for production)
   ##
-  type: minio
+  type: seaweedfs
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
