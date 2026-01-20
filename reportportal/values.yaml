@@ -845,7 +845,7 @@ storage:
   ## Options: minio, seaweedfs, s3, filesystem
   ## Default: seaweedfs (recommended for production)
   ##
-  type: seaweedfs
+  type: minio
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
@@ -872,7 +872,7 @@ storage:
   ## For S3: leave empty to use AWS default endpoints
   ## For custom S3-compatible: specify endpoint URL (without protocol/port)
   ##
-  endpoint:
+  endpoint: my-release-seaweedfs-s3.default.svc.cluster.local
 
   ## @param storage.ssl Enable SSL/TLS for storage connections
   ## true = HTTPS, false = HTTP
