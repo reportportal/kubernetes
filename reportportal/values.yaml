@@ -334,19 +334,14 @@ serviceapi:
     parkingLotTtlDays: 7
   ## @param serviceapi.extraEnvs define the extra environment variables
   ##
-  extraEnvs:
-    - name: RP_STORAGE_TYPE
-      value: s3
-    - name: RP_STORAGE_S3_ENDPOINT
-      value: http://seaweedfs-s3.default.svc.cluster.local:8333
-    - name: RP_STORAGE_S3_ACCESSKEY
-      value: rpuser
-    - name: RP_STORAGE_S3_SECRETKEY
-      value: miniopassword
-    - name: RP_STORAGE_S3_BUCKET
-      value: rp-bucket
-
-      
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   affinity: {}
   podLabels: {}
   podAnnotations: {}
@@ -460,18 +455,14 @@ uat:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
   ## @param uat.extraEnvs define the extra environment variables
   ##
-  extraEnvs:
-    - name: RP_STORAGE_TYPE
-      value: s3
-    - name: RP_STORAGE_S3_ENDPOINT
-      value: http://seaweedfs-s3.default.svc.cluster.local:8333
-    - name: RP_STORAGE_S3_ACCESSKEY
-      value: rpuser
-    - name: RP_STORAGE_S3_SECRETKEY
-      value: miniopassword
-    - name: RP_STORAGE_S3_BUCKET
-      value: rp-bucket
-
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -598,18 +589,14 @@ servicejobs:
   jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
   ## @param servicejobs.extraEnvs define the extra environment variables
   ##
-  extraEnvs:
-    - name: RP_STORAGE_TYPE
-      value: s3
-    - name: RP_STORAGE_S3_ENDPOINT
-      value: http://seaweedfs-s3.default.svc.cluster.local:8333
-    - name: RP_STORAGE_S3_ACCESSKEY
-      value: rpuser
-    - name: RP_STORAGE_S3_SECRETKEY
-      value: miniopassword
-    - name: RP_STORAGE_S3_BUCKET
-      value: rp-bucket
-
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
   podLabels: {}
   podAnnotations: {}
   securityContext: {}
@@ -858,7 +845,7 @@ storage:
   ## Options: minio, seaweedfs, s3, filesystem
   ## Default: seaweedfs (recommended for production)
   ##
-  type: seaweedfs
+  type: minio
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
@@ -1348,11 +1335,6 @@ minio:
 ## SeaweedFS provides S3-compatible storage with better scalability for large deployments
 ## Note: When using SeaweedFS, set storage.type to "seaweedfs" and minio.install to false
 ##
-
-authorization:
-  binaryData:
-    storage: s3
-
 seaweedfs:
   ## @param seaweedfs.install Enable/disable SeaweedFS installation
   ## SeaweedFS is the default storage backend. Set to false if using MinIO or external storage.
