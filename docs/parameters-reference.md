@@ -16,7 +16,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.serviceAccount.create` | Create service account | `true` |
 | `global.serviceAccount.name` | Service account name | `reportportal` |
 | `global.serviceAccount.annotations` | Service account annotations | `{}` |
-| `global.argocd.enabled` | Enable ArgoCD webhooks | `false` |
+| `global.argocd.enabled` | Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade-cleanup job. Set to true when deploying with ArgoCD to ensure proper resource ordering | `false` |
 | `global.securityContext` | Default security context for all pods | `{}` |
 | `global.tolerations` | Global tolerations for all components | `[]` |
 | `global.pdb.create` | Enable/disable Pod Disruption Budget creation | `true` |

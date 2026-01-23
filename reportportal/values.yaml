@@ -27,6 +27,11 @@ global:
     annotations: {}
   ## @param global.argocd.enabled Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade cleanup
   ## Set to true when deploying with ArgoCD to ensure proper resource ordering
+  ## This adds helm.sh/hook annotations with weights to control deployment sequence:
+  ##   - Role: weight 3
+  ##   - ServiceAccount: weight 4
+  ##   - RoleBinding: weight 5
+  ##   - Pre-upgrade cleanup: weight 10
   ##
   argocd:
     enabled: false
