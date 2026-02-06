@@ -72,7 +72,13 @@ spec:
           value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
         {{- else if eq $storageType "s3" }}
         - name: DATASTORE_REGION
-          value: "{{ .Values.storage.region }}"
+          {{- /* Map GCS region names to AWS S3 region names */}}
+          {{- $region := .Values.storage.region }}
+          {{- if eq $region "us-standard" }}
+          value: "us-east-1"
+          {{- else }}
+          value: "{{ $region }}"
+          {{- end }}
         {{- end }}
         {{- if .Values.storage.secretName }}
         - name: DATASTORE_ACCESSKEY

@@ -24,11 +24,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  # Define the ingress class to use
-  {{- if or (eq .Values.ingress.class "gce") (eq .Values.ingress.class "alb") }}
-  {{- else }}
   ingressClassName: {{ .Values.ingress.class }}
-  {{- end }}
   # Define the TLS settings
   {{- if .Values.ingress.tls.certificates }}
   tls:
