@@ -35,6 +35,11 @@ Create chart name and version as used by the chart label.
 Generate labels
 */}}
 {{- define "labels" }}
+app.kubernetes.io/name: {{ include "reportportal.name" . }}
+app.kubernetes.io/instance: {{ $.Release.Name }}
+app.kubernetes.io/version: {{ $.Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ $.Release.Service }}
+helm.sh/chart: {{ include "reportportal.chart" . }}
 heritage: {{ $.Release.Service | quote }}
 release: {{ $.Release.Name | quote }}
 chart: {{ include "reportportal.chart" . }}
@@ -80,6 +85,18 @@ Global context overrides service-specific context
 {{- else -}}
 {{- $serviceContext | toYaml -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Get storage type with default "minio" and validation
+Returns: minio, s3, or filesystem
+*/}}
+{{- define "reportportal.storageType" -}}
+{{- $storageType := .Values.storage.type | default "minio" -}}
+{{- if not (has $storageType (list "minio" "s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: minio, s3, filesystem" -}}
+{{- end -}}
+{{- $storageType -}}
 {{- end -}}
 
 

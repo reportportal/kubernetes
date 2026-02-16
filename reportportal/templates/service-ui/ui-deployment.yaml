@@ -5,6 +5,10 @@ metadata:
   labels: {{ include "labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.serviceui.replicaCount | default 1 }}
+  {{- with .Values.serviceui.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-ui
@@ -62,8 +66,7 @@ spec:
         {{- end }}
         {{- if .Values.serviceui.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: "/ui/health"
+          tcpSocket:
             port: 8080
           initialDelaySeconds: {{ .Values.serviceui.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.serviceui.livenessProbe.periodSeconds | default 30 }}

@@ -22,9 +22,39 @@ To view events in the namespace:
 To view logs from a specific service:
   kubectl logs -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }}
 
-{{- if .Values.ingress.enabled }}
+{{- if .Values.ingress.enable }}
 To check ingress status:
   kubectl get ingress -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- end }}
+{{- if .Values.gatewayAPI.enable }}
+Gateway API HTTPRoute deployed successfully.
+
+To check HTTPRoute status:
+  kubectl get httproute -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- if .Values.gatewayAPI.gateway.create }}
+
+To check Gateway status:
+  kubectl get gateway -l app={{ .Chart.Name }} -n {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.serviceapi.auditLogs.enable }}
+
+⚠️  WARNING: Audit logging is enabled!
+   Audit logs are written to an emptyDir volume on the node filesystem.
+   
+   Important considerations:
+   - Monitor node disk usage to prevent disk pressure issues
+   - Logs are lost when the pod is deleted or rescheduled
+   - Consider using a log collector (e.g., fluentbit) to ship logs to external storage
+   
+   To check audit log volume usage:
+     kubectl exec -it $(kubectl get pod -l component={{ include "reportportal.fullname" . }}-api -n {{ .Release.Namespace }} -o jsonpath='{.items[0].metadata.name}') -n {{ .Release.Namespace }} -- du -sh /var/log/reportportal/
+{{- if not .Values.serviceapi.auditLogs.sidecar.enable }}
+   
+   Note: The default log streamer sidecar is disabled.
+   Configure a custom log collector via extraVolumes and extraVolumeMounts if needed.
+{{- end }}
 {{- end }}
 
 For more information, visit: https://reportportal.io/docs

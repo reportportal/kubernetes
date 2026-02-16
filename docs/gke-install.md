@@ -321,13 +321,24 @@ helm install \
 
 ## Ingress configuration
 
-You can add custom gce ingress annotations via `ingress.annotations.gce` parameter:
+You can add custom GCE ingress annotations via `ingress.annotations` parameter:
 
 ```bash
 helm install \
 ...
-  --set-json='ingress.annotations.gce={"key1":"value1","key2":"value2"}'
+  --set 'ingress.annotations.kubernetes\.io/ingress\.allow-http=false' \
+  --set 'ingress.annotations.networking\.gke\.io/v1beta1\.FrontendConfig=my-frontend-config'
 ...
+```
+
+Or using a values file:
+
+```yaml
+ingress:
+  class: gce
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/v1beta1.FrontendConfig: "my-frontend-config"
 ```
 
 If you have some domain name, set this FQDN to `ingress.hosts`:
@@ -335,7 +346,7 @@ If you have some domain name, set this FQDN to `ingress.hosts`:
 ```bash
 helm install \
 ...
-  --set ingress.hosts[0].reportportal.k8.com
+  --set 'ingress.hosts[0]=reportportal.example.com'
 ...
 ```
 
@@ -350,10 +361,9 @@ You can use Google-managed SSL certificates for your domain name:
 ```bash
 helm install \
 ...
-  --set ingress.tls.certificate.gcpManaged=true
-  --set ingress.hosts\[0\]="example.com"
+  --set ingress.tls.certificate.gcpManaged=true \
+  --set 'ingress.hosts[0]=example.com'
 ...
-
 ```
 
 ### Cert-Manager
@@ -376,9 +386,16 @@ gcloud artifacts repositories delete ${CLUSTER_NAME} --location=${REPO_LOCATION}
 
 ### Disable HTTP Load Balancing
 
-If you want to disable HTTP Load Balancing, you can do it after the certificate
-is attached to the Ingress resource:
+If you want to disable HTTP Load Balancing, you can set it in your values file:
+
+```yaml
+ingress:
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+```
+
+Or add the annotation after the certificate is attached to the Ingress resource:
 
 ```bash
-kubectl annotate ingress ${APP_NAME}-gateway-ingress kubernetes.io/ingress.allow-http: "false"
+kubectl annotate ingress ${RELEASE_NAME}-gateway-ingress kubernetes.io/ingress.allow-http="false"
 ```

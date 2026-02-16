@@ -1,0 +1,88 @@
+{{- if .Values.gatewayAPI.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+{{- $path := .Values.gatewayAPI.path -}}
+{{- $basePath := "" -}}
+{{- if $path -}}
+  {{- if eq $path "/" -}}
+    {{- $basePath = "" -}}
+  {{- else -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+{{- end -}}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}-httproute
+  labels: {{ include "labels" . | indent 4 }}
+  {{- with .Values.gatewayAPI.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.gatewayAPI.parentRefs }}
+  parentRefs:
+    {{- toYaml .Values.gatewayAPI.parentRefs | nindent 4 }}
+  {{- else }}
+  parentRefs:
+    {{- if .Values.gatewayAPI.gateway.create }}
+    - name: {{ .Values.gatewayAPI.gateway.name | default (printf "%s-gateway" $fullName) }}
+    {{- else }}
+    - name: {{ .Values.gatewayAPI.gatewayRef.name }}
+      {{- if .Values.gatewayAPI.gatewayRef.namespace }}
+      namespace: {{ .Values.gatewayAPI.gatewayRef.namespace }}
+      {{- end }}
+      {{- if .Values.gatewayAPI.gatewayRef.sectionName }}
+      sectionName: {{ .Values.gatewayAPI.gatewayRef.sectionName }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.gatewayAPI.hostnames }}
+  hostnames:
+    {{- if kindIs "slice" .Values.gatewayAPI.hostnames }}
+    {{- toYaml .Values.gatewayAPI.hostnames | nindent 4 }}
+    {{- else }}
+    - {{ .Values.gatewayAPI.hostnames }}
+    {{- end }}
+  {{- end }}
+  rules:
+    # Route for index service (root path)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      backendRefs:
+        - name: {{ $fullName }}-index
+          port: {{ .Values.serviceindex.service.port | default 8080 }}
+          {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          {{- end }}
+    # Route for UI service
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/ui
+      backendRefs:
+        - name: {{ $fullName }}-ui
+          port: {{ .Values.serviceui.service.port | default 8080 }}
+    # Route for UAT (authorization) service
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/uat
+      backendRefs:
+        - name: {{ $fullName }}-uat
+          port: {{ .Values.uat.service.port | default 9999 }}
+    # Route for API service
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/api
+      backendRefs:
+        - name: {{ $fullName }}-api
+          port: {{ .Values.serviceapi.service.port | default 8585 }}
+    {{- with .Values.gatewayAPI.httpRoute.additionalRules }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+

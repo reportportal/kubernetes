@@ -2,9 +2,27 @@
 
 Starting from version 24.1.3 we added the helm pre-upgrade hook to the chart.
 This hook is used to delete the old jobs to resolve a kubernetes issue with the job name.
-This hook doesn't work with the additional roles and role bindings.
 
-Before performing the helm upgrade you need to create the roles and role bindings manually:
+## ArgoCD Deployments
+
+If you are deploying the ReportPortal helm chart with ArgoCD, set `global.argocd.enabled=true` in your values:
+
+```yaml
+global:
+  argocd:
+    enabled: true
+```
+
+This ensures proper resource ordering through Helm hook weights:
+
+- Role (weight: 3)
+- ServiceAccount (weight: 4)
+- RoleBinding (weight: 5)
+- Pre-upgrade cleanup Job (weight: 10)
+
+## Standard Helm Deployments
+
+For standard Helm deployments without ArgoCD, the hook doesn't work with the additional roles and role bindings. Before performing the helm upgrade you need to create the roles and role bindings manually:
 
 ```yaml
 # role.yaml
