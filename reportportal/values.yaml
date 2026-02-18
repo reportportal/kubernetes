@@ -1197,6 +1197,13 @@ k8s:
 ## @param hooks Helm 3+ hooks toggles
 hooks:
   enabled: true
+  ## @param hooks.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  ## Use disktype: "ssd" for specific disk type.
+  ##
+  nodeSelector: {}
   preUpgrade:
     enabled: true
     resources:

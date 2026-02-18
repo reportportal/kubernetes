@@ -444,6 +444,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `hooks.enabled` | Enable hooks | `true` |
+| `hooks.nodeSelector` | Node selector | `{}` |
 | `hooks.preUpgrade.enabled` | Enable pre-upgrade hook | `true` |
 | `hooks.preUpgrade.resources.requests.cpu` | Pre-upgrade CPU requests | `50m` |
 | `hooks.preUpgrade.resources.requests.memory` | Pre-upgrade memory requests | `64Mi` |
