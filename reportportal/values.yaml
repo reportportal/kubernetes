@@ -924,6 +924,10 @@ storage:
   ## @param storage.volume Filesystem storage configuration (when type=filesystem)
   ##
   volume:
+    ## @param storage.volume.defaultPath Default mount path inside containers
+    ##
+    defaultPath: "/data/storage"
+
     ## @param storage.volume.capacity Storage size for filesystem storage
     ## Examples: 5Gi, 10Gi, 100Gi
     ##

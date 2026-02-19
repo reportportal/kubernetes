@@ -66,6 +66,10 @@ spec:
         {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
           value: "{{ $storageType }}"
+        {{- if eq $storageType "filesystem" }}
+        - name: FILESYSTEM_DEFAULT_PATH
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+        {{- end }}
         {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
         {{- if eq $storageType "minio" }}
         - name: DATASTORE_ENDPOINT
