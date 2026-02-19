@@ -131,6 +131,10 @@ spec:
             {{- $storageType := include "reportportal.storageType" . }}
             - name: DATASTORE_TYPE
               value: "{{ $storageType }}"
+        {{- if eq $storageType "filesystem" }}
+            - name: DATASTORE_PATH
+              value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+        {{- end }}
         # Minio/S3 settings
         {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
           {{- if eq $storageType "minio" }}
@@ -185,7 +189,8 @@ spec:
           {{- end }}
         {{- if .Values.uat.livenessProbe.enabled }}
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: "{{ $path }}/uat/health"
               port: 9999
             initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
             periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
