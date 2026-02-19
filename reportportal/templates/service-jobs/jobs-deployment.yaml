@@ -192,7 +192,8 @@ spec:
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: "/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}

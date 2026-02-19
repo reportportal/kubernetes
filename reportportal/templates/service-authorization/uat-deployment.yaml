@@ -189,7 +189,8 @@ spec:
           {{- end }}
         {{- if .Values.uat.livenessProbe.enabled }}
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: "{{ $path }}/uat/health"
               port: 9999
             initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
             periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}

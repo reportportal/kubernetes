@@ -159,13 +159,13 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: /
             port: 5001
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.serviceanalyzer.livenessProbe.failureThreshold }}
-          successThreshold: {{ .Values.serviceanalyzer.livenessProbe.successThreshold }}
         {{- end }}
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}
