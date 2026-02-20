@@ -1,15 +1,22 @@
 # ReportPortal Storage Configuration Examples
 
-This document contains common storage configurations for different environments. Copy the relevant section to your `values.yaml` or use with `--set-file` flag.
+This document contains common storage configurations for different environments. Copy the relevant section into a values file and pass it with `-f` when installing or upgrading the chart.
+
+**Current chart defaults (see [reportportal/values.yaml](../reportportal/values.yaml)):**  
+- **MinIO**: `storage.type: minio`, inline `accesskey`/`secretkey`, `minio.install: true`.  
+- **S3**: set `storage.type: s3`, leave credentials empty for IRSA, set `minio.install: false`.  
+- **Filesystem**: `storage.type: filesystem`, `storage.volume.defaultPath: "/data/storage"` (mount path and env for API/UAT/Jobs/Analyzer), `minio.install: false`.
 
 ## Usage Examples
 
-```bash
-# Install with storage examples
-helm install reportportal reportportal/reportportal -f storage-examples.yaml
+Use a custom values file (e.g. `storage-examples.yaml`) with the chart. When using the repo locally, point to the chart path `./reportportal`:
 
-# Or use specific example
-helm install reportportal reportportal/reportportal --set-file storage=storage-examples.yaml
+```bash
+# Install with a storage example file
+helm install my-release ./reportportal -f storage-examples.yaml
+
+# Or merge with default values and override storage only
+helm install my-release ./reportportal -f values.yaml -f storage-examples.yaml
 ```
 
 ## Example 1: MinIO Storage (Default - Good for Development)
@@ -127,12 +134,14 @@ minio:
 
 ## Example 5: Filesystem Storage with GKE Filestore (Production)
 
-Uses Google Filestore for shared filesystem storage.
+Uses Google Filestore for shared filesystem storage. When `type: filesystem`, the chart mounts the volume at `storage.volume.defaultPath` inside API, UAT, Jobs, and Analyzer pods (and sets `DATASTORE_PATH` / `FILESYSTEM_DEFAULT_PATH` accordingly). Override `defaultPath` only if your PVC or storage backend expects a different path.
 
 ```yaml
 storage:
   type: filesystem
   volume:
+    # Optional: default is /data/storage (used as DATASTORE_PATH / FILESYSTEM_DEFAULT_PATH)
+    defaultPath: "/data/storage"
     capacity: 1Ti  # Minimum for Filestore
     storageClassName: "standard-rwx"  # GKE Filestore storage class
 

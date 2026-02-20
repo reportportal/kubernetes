@@ -266,6 +266,21 @@ serviceapi:
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
+  ## @param serviceapi.extraContainers additional sidecar containers (e.g. custom audit log collector like fluentbit)
+  ## When auditLogs.enable is true, the audit log volume is available as "audit-log-volume" at /var/log in the API container.
+  ## Mount it in your sidecar to read /var/log/reportportal/audit.log (see docs/audit-logs.md).
+  ##
+  extraContainers: []
+    # - name: fluentbit
+    #   image: fluent/fluent-bit:2.2
+    #   volumeMounts:
+    #     - name: audit-log-volume
+    #       mountPath: /var/log
+    #     - name: fluentbit-config
+    #       mountPath: /fluent-bit/etc
+    #   resources:
+    #     requests: { cpu: 10m, memory: 25Mi }
+    #     limits: { cpu: 100m, memory: 128Mi }
   ## @param serviceapi.auditLogs define audit logging configuration
   ## @param serviceapi.auditLogs.enable Enable audit logging (sets AUDIT_LOGGER env var and mounts log volume)
   ## @param serviceapi.auditLogs.loglevel Audit log level
@@ -274,30 +289,12 @@ serviceapi:
   ## Monitor node storage usage to prevent disk pressure issues.
   ## Consider using a log collector (e.g., fluentbit) to ship logs externally.
   ##
-  ## For custom log collectors, set auditLogs.sidecar.enable=false and configure
-  ## your collector via extraInitContainers, extraVolumes, and extraVolumeMounts.
+  ## To ship audit logs (e.g. fluentbit, filebeat), add a sidecar via extraContainers and optionally extraVolumes.
+  ## See docs/audit-logs.md for examples.
   ##
   auditLogs:
     enable: false
     loglevel: info
-    ## @param serviceapi.auditLogs.sidecar Default sidecar container for streaming audit logs to stdout
-    ## Set sidecar.enable=true to use the built-in log streamer (streams to container stdout)
-    ## For custom log collectors (e.g., fluentbit), set sidecar.enable=false
-    ##
-    sidecar:
-      ## @param serviceapi.auditLogs.sidecar.enable Enable the default audit log streamer sidecar
-      ##
-      enable: false
-      image:
-        repository: busybox
-        tag: latest
-      resources:
-        requests:
-          cpu: 10m
-          memory: 10Mi
-        limits:
-          cpu: 100m
-          memory: 100Mi
   ## @param serviceapi.allowDeleteAccount enable or disable "Delete Account" button in UI
   ##
   allowDeleteAccount: true

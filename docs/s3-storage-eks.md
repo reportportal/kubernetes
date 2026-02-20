@@ -2,8 +2,8 @@
 
 This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 using the AWS SDK for Java ([software.amazon.awssdk:aws-core:2.31.23](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/DefaultCredentialsProvider.html)) in two deployment scenarios:
 
-1. Kubernetes on EKS (IAM Roles for Service Accounts)
-2. Docker on an EC2 instance (Instance Profile)
+1. **Kubernetes on EKS** (IAM Roles for Service Accounts) — covered in this guide.
+2. **Docker on an EC2 instance** (Instance Profile) — see [S3 Storage on EC2 Docker](s3-storage-ec2-docker.md).
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ This document outlines the requirements and configuration steps to enable read/w
   - [Step 2: Create the IAM Role](#step-2-create-the-iam-role)
   - [Step 3: Define the Permissions Policy](#step-3-define-the-permissions-policy)
   - [Step 4: Attach the Permissions Policy](#step-4-attach-the-permissions-policy)
-- [EKS-based Installation](#3-eks-based-installation)
+- [Kubernetes-based Installation (EKS)](#3-kubernetes-based-installation)
 
 
 ## Requirements
@@ -133,10 +133,10 @@ By completing these steps, the IAM role will have the necessary permissions to i
 
 To grant a Kubernetes pod on EKS read/write access to S3, use IAM Roles for Service Accounts (IRSA). This approach issues temporary credentials by having the pod assume an IAM role via OIDC
 
-Update the `values.yaml` file with the appropriate storage configuration:
+Create or update a values file (e.g. `values-s3.yaml`) with the following storage and IRSA configuration:
 
 ```yaml
-# Activate Service Account for the ReportPortal application
+# IRSA: Service Account annotation so pods can assume the IAM role
 global:
   serviceAccount:
     create: true
@@ -144,31 +144,31 @@ global:
     annotations:
       eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/my-rp-s3-role"
 
-
 storage:
   # Ref.: https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage
   type: s3
-  # Leave `accesskey` and `secretkey` empty for IAM role-based access
-  accesskey:
-  secretkey:
-  # Specify the AWS region. Ref.: https://jclouds.apache.org/reference/javadoc/2.6.x/org/jclouds/aws/domain/Region.html
-  region: "us-standard" # JCloud ref. to `us-east-1`
+  # Leave accesskey and secretkey empty for IAM role-based access
+  accesskey: ""
+  secretkey: ""
+  # AWS region (e.g. us-east-1). Some apps also accept "us-standard" for us-east-1.
+  region: "us-east-1"
   bucket:
     type: single
-    bucketDefaultName: "my-rp-bucket" # Bucket created from step 1
+    bucketDefaultName: "my-rp-bucket"  # Bucket created in step 1
 
-# Disable the MinIO dependency
+# Do not install MinIO when using S3
 minio:
-  enable: false
+  install: false
 ```
 
-Install ReportPortal using Helm:
+Replace `ACCOUNT_ID` in the role ARN with your AWS account ID.
+
+Install or upgrade ReportPortal using Helm (use the path to your chart, e.g. `./reportportal` when using the repo):
 
 ```bash
-helm install my-release \
+helm install my-release ./reportportal \
   --set uat.superadminInitPasswd.password="MyPassword" \
-  -f values.yaml \
-  reportportal/reportportal
+  -f values-s3.yaml
 ```
 
-This configuration ensures that ReportPortal uses Amazon S3 for storage with IAM role-based access, while disabling the default MinIO dependency.
+This configuration uses Amazon S3 for storage with IAM role-based access (IRSA) and disables the MinIO subchart.

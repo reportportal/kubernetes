@@ -234,20 +234,8 @@ spec:
           {{- if .Values.serviceapi.extraVolumeMounts }}
             {{ toYaml .Values.serviceapi.extraVolumeMounts | nindent 12 }}
           {{- end }}
-      {{- if and .Values.serviceapi.auditLogs.enable .Values.serviceapi.auditLogs.sidecar.enable }}
-        - name: auditlogstreamer
-          image: "{{ if .Values.global.imageRegistry }}{{ .Values.global.imageRegistry }}/{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ else }}{{ .Values.serviceapi.auditLogs.sidecar.image.repository }}:{{ .Values.serviceapi.auditLogs.sidecar.image.tag }}{{ end }}"
-          command:
-            - /bin/sh
-          args:
-            - -c
-            - while true; do if [ -e "/var/log/reportportal/audit.log" ]; then tail -f /var/log/reportportal/audit.log; else sleep 60; fi; done
-          imagePullPolicy: IfNotPresent
-          resources:
-            {{- toYaml .Values.serviceapi.auditLogs.sidecar.resources | nindent 12 }}
-          volumeMounts:
-            - name: audit-log-volume
-              mountPath: /var/log
+      {{- if .Values.serviceapi.extraContainers }}
+        {{- toYaml .Values.serviceapi.extraContainers | nindent 8 }}
       {{- end }}
     {{- if .Values.serviceapi.nodeSelector }}
       nodeSelector:
