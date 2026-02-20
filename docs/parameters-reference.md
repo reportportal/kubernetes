@@ -505,6 +505,6 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `k8sWaitFor.image.repository` | K8s wait for image repository | `reportportal/k8s-wait-for` |
 | `k8sWaitFor.image.tag` | K8s wait for image tag | `latest` |
-| `kubectl.image.repository` | Kubectl image repository | `bitnamisecure/kubectl` |
+| `kubectl.image.repository` | Kubectl image repository (use `bitnamilegacy/kubectl` in FIPS 140–only envs if you see X25519 errors) | `bitnamisecure/kubectl` |
 | `kubectl.image.tag` | Kubectl image tag | `latest` |
 | `k8s.networking.ssl` | SSL between pods | `false` |
