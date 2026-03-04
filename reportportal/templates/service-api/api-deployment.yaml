@@ -52,11 +52,11 @@ spec:
             - {{ include "reportportal.fullname" . }}-migrations
           resources:
             requests:
-              cpu: 50m
-              memory: 100Mi
+              cpu: {{ .Values.serviceapi.initContainerResources.requests.cpu }}
+              memory: {{ .Values.serviceapi.initContainerResources.requests.memory }}
             limits:
-              cpu: 50m
-              memory: 100Mi
+              cpu: {{ .Values.serviceapi.initContainerResources.limits.cpu }}
+              memory: {{ .Values.serviceapi.initContainerResources.limits.memory }}
       {{- if .Values.serviceapi.extraInitContainers }}
         {{ toYaml .Values.serviceapi.extraInitContainers | nindent 8 }}
       {{- end }}

@@ -260,6 +260,15 @@ serviceapi:
   ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: {}
+  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param serviceapi.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -438,6 +447,15 @@ uat:
   ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: {}
+  ## @param uat.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param uat.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -576,13 +594,22 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
-  ## @param servicjobs.extraInitContainers init containers
+  ## @param servicejobs.extraInitContainers init containers
   ##
   extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
+  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
+  ## @param servicejobs.extraVolumes define the extra volumes
   ##
   extraVolumes: []
-  ## @param servicjobs.extraVolumeMounts define the extra volume mounts
+  ## @param servicejobs.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
   ## @param servicjobs.javaArgs define the configuration for the JVM.
@@ -654,7 +681,16 @@ serviceanalyzer:
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
+  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
+  ## @param serviceanalyzer.extraVolumes define the extra volumes
   ##
   extraVolumes: []
   ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts

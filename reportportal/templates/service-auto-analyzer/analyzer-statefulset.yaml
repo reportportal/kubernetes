@@ -42,11 +42,11 @@ spec:
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
         resources:
           requests:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.serviceanalyzer.initContainerResources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzer.initContainerResources.requests.memory }}
           limits:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.serviceanalyzer.initContainerResources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzer.initContainerResources.limits.memory }}
       {{- if .Values.serviceanalyzer.extraInitContainers }}
       {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 6 }}
       {{- end }}
