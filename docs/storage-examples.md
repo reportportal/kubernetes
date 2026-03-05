@@ -1,223 +1,235 @@
-# ReportPortal Storage Configuration Examples
+# ReportPortal Storage Types
 
-This document contains common storage configurations for different environments. Copy the relevant section into a values file and pass it with `-f` when installing or upgrading the chart.
+The chart supports **four storage backends**. Set `storage.type` and enable/disable the matching subchart. All options are defined in [reportportal/values.yaml](../reportportal/values.yaml).
 
-**Current chart defaults (see [reportportal/values.yaml](../reportportal/values.yaml)):**  
-- **MinIO**: `storage.type: minio`, inline `accesskey`/`secretkey`, `minio.install: true`.  
-- **S3**: set `storage.type: s3`, leave credentials empty for IRSA, set `minio.install: false`.  
-- **Filesystem**: `storage.type: filesystem`, `storage.volume.defaultPath: "/data/storage"` (mount path and env for API/UAT/Jobs/Analyzer), `minio.install: false`.
+| Type        | Use case                          | Subchart to install | Default in chart |
+|------------|------------------------------------|----------------------|------------------|
+| **SeaweedFS** | S3-compatible, Apache 2.0 | `seaweedfs`          | ✅ Default       |
+| **MinIO**     | S3-compatible, self-hosted (AGPL)     | `minio`              | —                |
+| **S3**       | AWS S3 or any S3-compatible API       | none                 | —                |
+| **FS**        | Shared filesystem (NFS, Filestore…)   | none                 | —                |
 
-## Usage Examples
+Use **Helm `--set`** for quick overrides or a **values file** (`-f`) for full config. Chart path: `./reportportal` (from this repo) or `reportportal/reportportal` (if added as Helm repo).
 
-Use a custom values file (e.g. `storage-examples.yaml`) with the chart. When using the repo locally, point to the chart path `./reportportal`:
+---
+
+## 1. SeaweedFS (default, recommended)
+
+Apache 2.0 licensed, S3-compatible object storage. One pod (all-in-one) with one PVC; S3 API on port 8333. Credentials come from `storage.accesskey` / `storage.secretkey` in values.
+
+**Helm (no extra flags — defaults):**
 
 ```bash
-# Install with a storage example file
-helm install my-release ./reportportal -f storage-examples.yaml
-
-# Or merge with default values and override storage only
-helm install my-release ./reportportal -f values.yaml -f storage-examples.yaml
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  reportportal
 ```
 
-## Example 1: MinIO Storage (Default - Good for Development)
+Or explicitly:
 
-Uses the built-in MinIO service for object storage.
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=seaweedfs \
+  --set seaweedfs.install=true \
+  --set minio.install=false \
+  reportportal
+```
+
+**Optional values file** (e.g. `my-values.yaml`):
+
+```yaml
+storage:
+  type: seaweedfs
+  accesskey: rpuser
+  secretkey: miniopassword
+  # endpoint/port left empty → internal service
+  ssl: false
+
+seaweedfs:
+  install: true
+  allInOne:
+    data:
+      size: "20Gi"
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: rpuser
+        secretKey: miniopassword
+
+minio:
+  install: false
+```
+
+Install with: `helm upgrade --install my-release -f my-values.yaml reportportal`
+
+---
+
+## 2. MinIO
+
+Self-hosted S3-compatible storage (AGPL). Chart deploys MinIO as a dependency; API on port 9000.
+
+**Helm:**
+
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=minio \
+  --set seaweedfs.install=false \
+  --set minio.install=true \
+  reportportal
+```
+
+**Optional values file:**
 
 ```yaml
 storage:
   type: minio
-  # MinIO credentials (inline - not recommended for production)
-  accesskey: &storageAccessKey rpuser
-  secretkey: &storageSecretKey miniopassword
-  # Use internal MinIO service
-  endpoint: ""
+  accesskey: rpuser
+  secretkey: miniopassword
+  endpoint: ""   # empty = internal MinIO service
   ssl: false
   port: 9000
   bucket:
-    type: single  # Simpler for development
+    type: multi
     bucketDefaultName: "rp-bucket"
+
+seaweedfs:
+  install: false
 
 minio:
   install: true
   auth:
-    rootUser: *storageAccessKey
-    rootPassword: *storageSecretKey
-```
-
-## Example 2: MinIO Storage with Secrets (Production)
-
-Uses the built-in MinIO service with Kubernetes secrets for secure credential management.
-
-```yaml
-# Create a Kubernetes secret first:
-# kubectl create secret generic reportportal-minio-secret \
-#   --from-literal=access-key=your-minio-access-key \
-#   --from-literal=secret-key=your-minio-secret-key
-
-storage:
-  type: minio
-  # Reference to Kubernetes secret containing MinIO credentials
-  secretName: "reportportal-minio-secret"
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  # Use internal MinIO service
-  endpoint: ""
-  ssl: false
-  port: 9000
-  bucket:
-    type: single  # Recommended for production
-    bucketDefaultName: "rp-bucket"
-
-minio:
-  install: true
-  auth:
-    existingSecret: "reportportal-minio-secret"
-    rootUserSecretKey: "access-key"
-    rootPasswordSecretKey: "secret-key"
+    rootUser: rpuser
+    rootPassword: miniopassword
   persistence:
-    size: 500Gi  # Adjust based on your storage needs
+    size: 50Gi
 ```
 
-## Example 3: AWS S3 Storage with IAM Role (Production)
+For credentials from a Kubernetes secret, use `storage.secretName`, `storage.accesskeyName`, `storage.secretkeyName` and MinIO’s `auth.existingSecret` (see values.yaml).
 
-Uses AWS S3 with IAM role-based authentication (recommended for EKS).
+---
+
+## 3. S3
+
+Use AWS S3 or any S3-compatible endpoint (no built-in object store). Set `storage.type=s3`, disable both SeaweedFS and MinIO.
+
+**Helm (minimal — e.g. AWS with IRSA):**
+
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=s3 \
+  --set storage.region=us-east-1 \
+  --set seaweedfs.install=false \
+  --set minio.install=false \
+  reportportal
+```
+
+**With inline credentials:**
+
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=s3 \
+  --set storage.region=us-east-1 \
+  --set storage.accesskey=AKIA... \
+  --set storage.secretkey=... \
+  --set seaweedfs.install=false \
+  --set minio.install=false \
+  reportportal
+```
+
+**Optional values file (AWS S3, IAM role / IRSA):**
 
 ```yaml
 storage:
   type: s3
-  # No credentials needed when using IAM roles
   accesskey: ""
   secretkey: ""
-  # AWS region
   region: "us-east-1"
+  ssl: true
   bucket:
     type: single
     bucketDefaultName: "my-reportportal-bucket"
-  # SSL enabled for S3
-  ssl: true
 
-# Enable IAM role for service account (EKS only)
-global:
-  serviceAccount:
-    create: true
-    name: reportportal
-    annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/my-rp-s3-role"
+seaweedfs:
+  install: false
 
-# Disable MinIO since we're using S3
 minio:
   install: false
 ```
 
-## Example 4: AWS S3 Storage with Access Keys (Production)
-
-Uses AWS S3 with access key authentication.
+**Optional values file (custom S3-compatible endpoint):**
 
 ```yaml
 storage:
   type: s3
-  # Create a Kubernetes secret with your AWS credentials
-  secretName: "reportportal-s3-credentials"
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  # AWS region
+  accesskey: mykey
+  secretkey: mysecret
+  endpoint: "s3.example.com"
+  port: 443
+  ssl: true
   region: "us-east-1"
   bucket:
     type: single
-    bucketDefaultName: "my-reportportal-bucket"
-  ssl: true
+    bucketDefaultName: "reportportal"
 
-# Disable MinIO since we're using S3
+seaweedfs:
+  install: false
+
 minio:
   install: false
 ```
 
-## Example 5: Filesystem Storage with GKE Filestore (Production)
+For EKS with IRSA, set `global.serviceAccount.annotations.eks\.amazonaws\.com/role-arn` (see values.yaml).
 
-Uses Google Filestore for shared filesystem storage. When `type: filesystem`, the chart mounts the volume at `storage.volume.defaultPath` inside API, UAT, Jobs, and Analyzer pods (and sets `DATASTORE_PATH` / `FILESYSTEM_DEFAULT_PATH` accordingly). Override `defaultPath` only if your PVC or storage backend expects a different path.
+---
+
+## 4. FS (filesystem)
+
+Use a shared filesystem (NFS, GKE Filestore, etc.). The chart creates a PVC and mounts it at `storage.volume.defaultPath` in API, UAT, Jobs, and Analyzer pods.
+
+**Helm:**
+
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=filesystem \
+  --set storage.volume.capacity=10Gi \
+  --set storage.volume.storageClassName=standard \
+  --set seaweedfs.install=false \
+  --set minio.install=false \
+  reportportal
+```
+
+**Optional values file:**
 
 ```yaml
 storage:
   type: filesystem
   volume:
-    # Optional: default is /data/storage (used as DATASTORE_PATH / FILESYSTEM_DEFAULT_PATH)
     defaultPath: "/data/storage"
-    capacity: 1Ti  # Minimum for Filestore
-    storageClassName: "standard-rwx"  # GKE Filestore storage class
+    capacity: 10Gi
+    storageClassName: "standard"   # e.g. standard-rwx for GKE Filestore
 
-# Disable MinIO since we're using filesystem
+seaweedfs:
+  install: false
+
 minio:
   install: false
 ```
 
-## Example 6: Production S3 Storage with Single Bucket (Recommended)
+---
 
-**Recommended for production deployments.** Uses a single S3 bucket for all ReportPortal data, providing better cost management and simpler administration.
+## Summary: key values per type
 
-```yaml
-storage:
-  type: s3
-  # Use IAM role for authentication (recommended for production)
-  accesskey: ""
-  secretkey: ""
-  # AWS region
-  region: "us-east-1"
-  bucket:
-    type: single  # Single bucket for all data
-    bucketDefaultName: "reportportal-production-data"
-  ssl: true
+| Type       | `storage.type` | `seaweedfs.install` | `minio.install` | Extra (examples) |
+|-----------|----------------|--------------------|-----------------|--------------------|
+| SeaweedFS | `seaweedfs`    | `true`             | `false`         | —                  |
+| MinIO     | `minio`        | `false`            | `true`          | `storage.port=9000` |
+| S3        | `s3`           | `false`            | `false`         | `storage.region`, credentials or IRSA |
+| FS        | `filesystem`   | `false`            | `false`         | `storage.volume.capacity`, `storageClassName` |
 
-# Enable IAM role for service account (EKS only)
-global:
-  serviceAccount:
-    create: true
-    name: reportportal
-    annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/reportportal-s3-role"
-
-# Disable MinIO since we're using S3
-minio:
-  install: false
-```
-
-**Benefits of Single Bucket for Production:**
-- **Cost Effective**: Fewer buckets mean lower S3 costs
-- **Simpler Management**: One bucket to monitor and manage
-- **Better Performance**: No need to create/manage multiple buckets
-- **Easier Backup**: Single bucket simplifies backup strategies
-- **IAM Simplicity**: Simpler IAM policies with one bucket
-
-## Example 7: Custom S3-Compatible Storage (MinIO, Ceph, etc.)
-
-Uses external S3-compatible storage service.
-
-```yaml
-storage:
-  type: s3
-  secretName: "reportportal-storage-credentials"
-  accesskeyName: "access-key"
-  secretkeyName: "secret-key"
-  # Your S3-compatible service endpoint
-  endpoint: "my-minio.example.com"
-  port: 9000
-  ssl: true
-  bucket:
-    type: single
-    bucketDefaultName: "reportportal-bucket"
-
-# Disable built-in MinIO since we're using external storage
-minio:
-  install: false
-```
-
-## MinIO Anchors
-
-The following anchors are used for MinIO configuration and should be preserved when setting up MinIO storage:
-
-```yaml
-# MinIO access credentials
-accesskey: &storageAccessKey rpuser
-secretkey: &storageSecretKey miniopassword
-```
-
-These anchors are referenced throughout the ReportPortal configuration and ensure consistent MinIO setup across all services.
+All storage-related parameters (bucket, secretName, endpoint, ssl, volume, etc.) are documented in [reportportal/values.yaml](../reportportal/values.yaml).
