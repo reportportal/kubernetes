@@ -1359,24 +1359,6 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param minio External MinIO Helm Chart
-## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
-## Note: MinIO is AGPL licensed. Consider SeaweedFS (Apache 2.0) as an alternative.
-##
-minio:
-  install: false
-  image:
-    repository: bitnamilegacy/minio
-    tag: 2025.7.23-debian-12-r0
-  auth:
-    rootUser: *storageAccessKey
-    rootPassword: *storageSecretKey
-  persistence:
-    annotations:
-      "helm.sh/resource-policy": "keep"
-  console:
-    enabled: false
-
 ## @param seaweedfs SeaweedFS Helm Chart — Apache 2.0 licensed S3-compatible object storage
 ## Drop-in replacement for MinIO. S3 API is exposed on port 8333.
 ##
@@ -1433,3 +1415,21 @@ seaweedfs:
       admin:
         accessKey: *storageAccessKey
         secretKey: *storageSecretKey
+
+## @param minio External MinIO Helm Chart
+## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
+## Note: MinIO is AGPL licensed. Consider SeaweedFS (Apache 2.0) as an alternative.
+##
+minio:
+  install: false
+  image:
+    repository: bitnamilegacy/minio
+    tag: 2025.7.23-debian-12-r0
+  auth:
+    rootUser: *storageAccessKey
+    rootPassword: *storageSecretKey
+  persistence:
+    annotations:
+      "helm.sh/resource-policy": "keep"
+  console:
+    enabled: false
