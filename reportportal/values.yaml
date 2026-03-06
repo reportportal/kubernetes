@@ -867,16 +867,17 @@ searchengine:
 ##   - For production with shared filesystem: use "filesystem"
 ##
 ## Storage Type Comparison:
-##   - minio: Self-hosted object storage (good for development/testing)
+##   - seaweedfs: Apache 2.0 licensed S3-compatible object storage (recommended replacement for MinIO)
+##   - minio: Self-hosted object storage (AGPL licensed)
 ##   - s3: Cloud object storage (good for production, supports IAM roles)
 ##   - filesystem: Shared filesystem storage (good for production with existing storage)
 ##
 storage:
   ## @param storage.type Storage type to use for ReportPortal data
-  ## Options: minio, s3, filesystem
-  ## Default: minio (recommended for development)
+  ## Options: seaweedfs, minio, s3, filesystem
+  ## Default: seaweedfs (Apache 2.0 licensed S3-compatible storage)
   ##
-  type: minio
+  type: seaweedfs
 
   ## @param storage.secretName Kubernetes secret containing storage credentials
   ## Leave empty to use inline credentials below
@@ -911,9 +912,12 @@ storage:
   ssl: false
 
   ## @param storage.port Storage service port
-  ## Default: 9000 (MinIO standard port)
+  ## Leave empty to auto-select based on storage type:
+  ##   seaweedfs → 8333 (SeaweedFS S3 gateway default)
+  ##   minio     → 9000 (MinIO API default)
+  ## Set explicitly to override the auto-selected default.
   ##
-  port: 9000
+  port: ""
 
   ## @param storage.region AWS region for S3 storage
   ## Required for S3 storage type
@@ -1355,11 +1359,69 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
+## @param seaweedfs SeaweedFS Helm Chart — Apache 2.0 licensed S3-compatible object storage
+## Drop-in replacement for MinIO. S3 API is exposed on port 8333.
+##
+## Uses allInOne mode: master + volume + filer in a SINGLE pod backed by ONE PVC.
+## This is a minimal demo/test configuration. For production (HA, resources, affinity, TLS)
+## disable allInOne and configure master/volume/filer separately:
+##   helm show values seaweedfs/seaweedfs
+##
+## After adding the repo, verify/update the version in Chart.yaml:
+##   helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helm
+##   helm search repo seaweedfs/seaweedfs
+##
+seaweedfs:
+  install: true
+
+  global:
+    enableSecurity: false
+    serviceAccountName: "seaweedfs"
+    ## Update Chart.yaml dependency version when changing imageTag
+    imageName: chrislusf/seaweedfs
+    imageTag: "4.15"
+    createClusterRole: true
+
+  ## Disable individual components — allInOne runs everything in one pod
+  master:
+    enabled: false
+  volume:
+    enabled: false
+  filer:
+    enabled: false
+
+  ## Single-pod all-in-one: master + volume + filer in one Deployment (1 replica, 1 PVC)
+  ## Service: <release>-seaweedfs-all-in-one.<namespace>.svc.cluster.local:8333
+  allInOne:
+    enabled: true
+    ## 0 = auto-detect max volumes from disk (removes the default 8-volume cap)
+    extraArgs: ["-volume.max=0"]
+    s3:
+      enabled: true
+      enableAuth: true
+    ## PVC for all object data — size to match your needs (perf MinIO uses 50Gi)
+    data:
+      type: "persistentVolumeClaim"
+      size: "20Gi"
+      storageClass: ""
+      annotations:
+        "helm.sh/resource-policy": "keep"
+
+  ## S3 credentials — anchors reference storage.accesskey / storage.secretkey above.
+  ## The chart generates the S3 auth config JSON from these values automatically.
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: *storageAccessKey
+        secretKey: *storageSecretKey
+
 ## @param minio External MinIO Helm Chart
 ## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
+## Note: MinIO is AGPL licensed. Consider SeaweedFS (Apache 2.0) as an alternative.
 ##
 minio:
-  install: true
+  install: false
   image:
     repository: bitnamilegacy/minio
     tag: 2025.7.23-debian-12-r0
