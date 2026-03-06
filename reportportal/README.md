@@ -62,7 +62,8 @@ The following table lists the configurable parameters of the chart and their def
 |`postgresql.install`|Allow PostgreSQL Bitnami Helm Chart to be installed as a dependency|`true`|
 |`rabbitmq.install`|Allow RabbitmQ Helm Bitnami Chart to be installed as a dependency|`true`|
 |`opensearch.install`|Allow Open Search Helm Chart to be installed as a dependency|`true`|
-|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency|`true`|
+|`seaweedfs.install`|Allow SeaweedFS Helm Chart to be installed as a dependency (default storage)|`true`|
+|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency|`false`|
 
 These dependencies are integrated into the distribution by default. To deactivate them, specify each parameter using the --set key=value[,key=value] argument to helm install. For example:
 
@@ -84,21 +85,42 @@ All configuration variables are presented in the [value.yaml](https://github.com
 
 ### 💾 Storage Configuration
 
-ReportPortal supports three storage types: **minio**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
+> **⚠️ Default storage change:** We moved from **MinIO** to **SeaweedFS** as the default object storage (Apache 2.0, S3-compatible). The chart now installs SeaweedFS by default. **To continue using MinIO**, install with:
+>
+> ```bash
+> helm install my-release \
+>   --set uat.superadminInitPasswd.password="MyPassword" \
+>   --set storage.type=minio \
+>   --set seaweedfs.install=false \
+>   --set minio.install=true \
+>   reportportal/reportportal
+> ```
+
+ReportPortal supports four storage types: **seaweedfs**, **minio**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
 
 | Storage Type | Use Case | Pros | Cons |
 |--------------|----------|------|------|
-| **minio** | Development, testing | Simple setup, built-in | Not suitable for production |
+| **seaweedfs** | Default, development, testing | Apache 2.0, S3-compatible, single PVC | — |
+| **minio** | Optional, existing MinIO setups | Simple setup, built-in | AGPL license; not default |
 | **s3** | Production, cloud | Scalable, reliable, supports IAM | Requires cloud provider |
 | **filesystem** | Production, on-premise | Simple, works with existing storage | Less scalable than object storage |
 
 #### Quick Storage Setup Examples:
 
-**For Development (MinIO - Default):**
+**For Development (SeaweedFS – Default):**
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  reportportal/reportportal
+```
+
+**To continue using MinIO:**
 ```bash
 helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
   --set storage.type=minio \
+  --set seaweedfs.install=false \
+  --set minio.install=true \
   reportportal/reportportal
 ```
 
@@ -224,4 +246,5 @@ This chart includes the following dependencies with their respective licenses:
 - **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
-- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE)
+- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (default object storage)
+- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (optional)
