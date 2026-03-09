@@ -205,7 +205,7 @@ spec:
           {{- end }}
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}
             - name: shared-volume
-              mountPath: /data/storage
+              mountPath: {{ .Values.storage.volume.defaultPath | default "/data/storage" }}
           {{- end }}
           {{- if .Values.uat.extraVolumeMounts }}
             {{ toYaml .Values.uat.extraVolumeMounts | nindent 12 }}
