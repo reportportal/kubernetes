@@ -858,7 +858,7 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports three storage types: minio, s3, and filesystem
+## ReportPortal supports four storage types: minio, seaweedfs, s3, and filesystem
 ## Choose the storage type that best fits your environment and requirements
 ##
 ## Quick Start Presets:

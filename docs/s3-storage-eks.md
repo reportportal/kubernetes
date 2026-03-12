@@ -156,8 +156,11 @@ storage:
     type: single
     bucketDefaultName: "my-rp-bucket"  # Bucket created in step 1
 
-# Do not install MinIO when using S3
+# Do not install MinIO or SeaweedFS when using S3
 minio:
+  install: false
+
+seaweedfs:
   install: false
 ```
 

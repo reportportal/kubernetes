@@ -122,6 +122,7 @@ helm install my-release \
   --set storage.type=s3 \
   --set storage.region=us-east-1 \
   --set storage.bucket.bucketDefaultName=my-reportportal-bucket \
+  --set seaweedfs.install=false \
   --set minio.install=false \
   reportportal/reportportal
 ```
@@ -132,6 +133,7 @@ helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
   --set storage.type=filesystem \
   --set storage.volume.capacity=100Gi \
+  --set seaweedfs.install=false \
   --set minio.install=false \
   reportportal/reportportal
 ```

@@ -315,7 +315,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.livenessProbe.periodSeconds` | Period | `30` |
 | `serviceanalyzer.livenessProbe.timeoutSeconds` | Timeout | `10` |
 | `serviceanalyzer.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceanalyzer.livenessProbe.successThreshold` | Success threshold | `1` |
 
 ## Migrations Configuration
 
@@ -496,7 +495,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `seaweedfs.global.imageTag` | SeaweedFS image tag | `4.15` |
 | `seaweedfs.allInOne.enabled` | Use single-pod all-in-one mode | `true` |
 | `seaweedfs.allInOne.data.size` | PVC size for all-in-one data | `20Gi` |
-| `seaweedfs.s3.enableAuth` | Enable S3 auth (uses storage.accesskey/secretkey) | `true` |
+| `seaweedfs.allInOne.s3.enableAuth` | Enable S3 auth in all-in-one mode (uses storage.accesskey/secretkey) | `true` |
 | `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using SeaweedFS) | `true` |
 | `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
 | `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |

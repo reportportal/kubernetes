@@ -102,7 +102,7 @@ minio:
   install: false
 ```
 
-Install with: `helm upgrade --install my-release -f my-values.yaml reportportal`
+Install with: `helm upgrade --install my-release -f my-values.yaml --set uat.superadminInitPasswd.password="MyPassword" reportportal`
 
 ---
 
