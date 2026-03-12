@@ -33,6 +33,12 @@ spec:
       echo "All health checks passed.";
     resources:
       {{- toYaml .Values.hooks.test.resources | nindent 6 }}
+  {{- if .Values.hooks.nodeSelector }}
+  nodeSelector:
+    {{- range $key, $value := .Values.hooks.nodeSelector }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
   restartPolicy: Never
   {{- with .Values.global.tolerations }}
   tolerations:

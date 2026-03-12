@@ -150,7 +150,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -235,7 +235,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.0
+    tag: 5.15.1
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -260,12 +260,36 @@ serviceapi:
   ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: {}
+  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param serviceapi.extraVolumes define the extra volumes
   ##
   extraVolumes: []
   ## @param serviceapi.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
+  ## @param serviceapi.extraContainers additional sidecar containers (e.g. custom audit log collector like fluentbit)
+  ## When auditLogs.enable is true, the audit log volume is available as "audit-log-volume" at /var/log in the API container.
+  ## Mount it in your sidecar to read /var/log/reportportal/audit.log (see docs/audit-logs.md).
+  ##
+  extraContainers: []
+    # - name: fluentbit
+    #   image: fluent/fluent-bit:2.2
+    #   volumeMounts:
+    #     - name: audit-log-volume
+    #       mountPath: /var/log
+    #     - name: fluentbit-config
+    #       mountPath: /fluent-bit/etc
+    #   resources:
+    #     requests: { cpu: 10m, memory: 25Mi }
+    #     limits: { cpu: 100m, memory: 128Mi }
   ## @param serviceapi.auditLogs define audit logging configuration
   ## @param serviceapi.auditLogs.enable Enable audit logging (sets AUDIT_LOGGER env var and mounts log volume)
   ## @param serviceapi.auditLogs.loglevel Audit log level
@@ -274,30 +298,12 @@ serviceapi:
   ## Monitor node storage usage to prevent disk pressure issues.
   ## Consider using a log collector (e.g., fluentbit) to ship logs externally.
   ##
-  ## For custom log collectors, set auditLogs.sidecar.enable=false and configure
-  ## your collector via extraInitContainers, extraVolumes, and extraVolumeMounts.
+  ## To ship audit logs (e.g. fluentbit, filebeat), add a sidecar via extraContainers and optionally extraVolumes.
+  ## See docs/audit-logs.md for examples.
   ##
   auditLogs:
     enable: false
     loglevel: info
-    ## @param serviceapi.auditLogs.sidecar Default sidecar container for streaming audit logs to stdout
-    ## Set sidecar.enable=true to use the built-in log streamer (streams to container stdout)
-    ## For custom log collectors (e.g., fluentbit), set sidecar.enable=false
-    ##
-    sidecar:
-      ## @param serviceapi.auditLogs.sidecar.enable Enable the default audit log streamer sidecar
-      ##
-      enable: false
-      image:
-        repository: busybox
-        tag: latest
-      resources:
-        requests:
-          cpu: 10m
-          memory: 10Mi
-        limits:
-          cpu: 100m
-          memory: 100Mi
   ## @param serviceapi.allowDeleteAccount enable or disable "Delete Account" button in UI
   ##
   allowDeleteAccount: true
@@ -441,6 +447,15 @@ uat:
   ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: {}
+  ## @param uat.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param uat.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -579,13 +594,22 @@ servicejobs:
     limits:
       cpu: 250m
       memory: 512Mi
-  ## @param servicjobs.extraInitContainers init containers
+  ## @param servicejobs.extraInitContainers init containers
   ##
   extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
+  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
+  ## @param servicejobs.extraVolumes define the extra volumes
   ##
   extraVolumes: []
-  ## @param servicjobs.extraVolumeMounts define the extra volume mounts
+  ## @param servicejobs.extraVolumeMounts define the extra volume mounts
   ##
   extraVolumeMounts: []
   ## @param servicjobs.javaArgs define the configuration for the JVM.
@@ -657,7 +681,16 @@ serviceanalyzer:
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: {}
-  ## @param uat.extraVolumes define the extra volumes
+  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
+  ## @param serviceanalyzer.extraVolumes define the extra volumes
   ##
   extraVolumes: []
   ## @param serviceanalyzer.extraVolumeMounts define the extra volume mounts
@@ -729,7 +762,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.0
+    tag: 5.15.1
   resources:
     requests:
       cpu: 100m
@@ -825,7 +858,7 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports three storage types: minio, s3, and filesystem
+## ReportPortal supports four storage types: minio, seaweedfs, s3, and filesystem
 ## Choose the storage type that best fits your environment and requirements
 ##
 ## Quick Start Presets:
@@ -834,14 +867,14 @@ searchengine:
 ##   - For production with shared filesystem: use "filesystem"
 ##
 ## Storage Type Comparison:
-##   - minio: Self-hosted object storage (good for development/testing)
-##   - s3: Cloud object storage (good for production, supports IAM roles)
-##   - filesystem: Shared filesystem storage (good for production with existing storage)
+##   - minio: Self-hosted S3-compatible (chart default for backward compatibility)
+##   - seaweedfs: Apache 2.0 licensed S3-compatible (recommended since chart 26.3.12 / ReportPortal 26.0.2)
+##   - s3: Cloud object storage (production, IAM)
+##   - filesystem: Shared filesystem (production, on-premise)
 ##
 storage:
-  ## @param storage.type Storage type to use for ReportPortal data
-  ## Options: minio, s3, filesystem
-  ## Default: minio (recommended for development)
+  ## @param storage.type Storage type: minio, seaweedfs, s3, filesystem
+  ## Default: minio. From chart 26.3.12 we recommend seaweedfs (Apache 2.0). To use: type=seaweedfs, seaweedfs.install=true, minio.install=false
   ##
   type: minio
 
@@ -878,9 +911,12 @@ storage:
   ssl: false
 
   ## @param storage.port Storage service port
-  ## Default: 9000 (MinIO standard port)
+  ## Leave empty to auto-select based on storage type:
+  ##   seaweedfs → 8333 (SeaweedFS S3 gateway default)
+  ##   minio     → 9000 (MinIO API default)
+  ## Set explicitly to override the auto-selected default.
   ##
-  port: 9000
+  port: ""
 
   ## @param storage.region AWS region for S3 storage
   ## Required for S3 storage type
@@ -924,6 +960,10 @@ storage:
   ## @param storage.volume Filesystem storage configuration (when type=filesystem)
   ##
   volume:
+    ## @param storage.volume.defaultPath Default mount path inside containers
+    ##
+    defaultPath: "/data/storage"
+
     ## @param storage.volume.capacity Storage size for filesystem storage
     ## Examples: 5Gi, 10Gi, 100Gi
     ##
@@ -1197,6 +1237,13 @@ k8s:
 ## @param hooks Helm 3+ hooks toggles
 hooks:
   enabled: true
+  ## @param hooks.nodeSelector define which Nodes the Pods are scheduled on.
+  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
+  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
+  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
+  ## Use disktype: "ssd" for specific disk type.
+  ##
+  nodeSelector: {}
   preUpgrade:
     enabled: true
     resources:
@@ -1311,8 +1358,61 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param minio External MinIO Helm Chart
-## Set @param minio.install to `false` if using a Cloud/On-Premise managed binary storage
+## @param seaweedfs SeaweedFS Helm Chart — Apache 2.0 licensed S3-compatible object storage (recommended since chart 26.3.12)
+## Drop-in replacement for MinIO. S3 API on port 8333. Set install: true and minio.install: false to use.
+##
+## Uses allInOne mode: master + volume + filer in a SINGLE pod backed by ONE PVC.
+## This is a minimal demo/test configuration. For production (HA, resources, affinity, TLS)
+## disable allInOne and configure master/volume/filer separately:
+##   helm show values seaweedfs/seaweedfs
+##
+seaweedfs:
+  install: false
+
+  global:
+    enableSecurity: false
+    serviceAccountName: "seaweedfs"
+    ## Update Chart.yaml dependency version when changing imageTag
+    imageName: chrislusf/seaweedfs
+    imageTag: "4.15"
+    createClusterRole: true
+
+  ## Disable individual components — allInOne runs everything in one pod
+  master:
+    enabled: false
+  volume:
+    enabled: false
+  filer:
+    enabled: false
+
+  ## Single-pod all-in-one: master + volume + filer in one Deployment (1 replica, 1 PVC)
+  ## Service: <release>-seaweedfs-all-in-one.<namespace>.svc.cluster.local:8333
+  allInOne:
+    enabled: true
+    ## 0 = auto-detect max volumes from disk (removes the default 8-volume cap)
+    extraArgs: ["-volume.max=0"]
+    s3:
+      enabled: true
+      enableAuth: true
+    ## PVC for all object data — size to match your needs (perf MinIO uses 50Gi)
+    data:
+      type: "persistentVolumeClaim"
+      size: "20Gi"
+      storageClass: ""
+      annotations:
+        "helm.sh/resource-policy": "keep"
+
+  ## S3 credentials — anchors reference storage.accesskey / storage.secretkey above.
+  ## The chart generates the S3 auth config JSON from these values automatically.
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: *storageAccessKey
+        secretKey: *storageSecretKey
+
+## @param minio External MinIO Helm Chart (chart default for backward compatibility)
+## Set minio.install to false when using SeaweedFS or external S3. MinIO is AGPL licensed; we recommend SeaweedFS (Apache 2.0) for new installs since chart 26.3.12.
 ##
 minio:
   install: true

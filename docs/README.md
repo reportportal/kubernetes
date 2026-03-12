@@ -1,6 +1,6 @@
 # Kubernetes installation guides
 
-This directory contains installation guides for ReportPortal on Kubernetes.
+This directory contains installation and configuration guides for ReportPortal on Kubernetes. The Helm chart is in [reportportal/](../reportportal); default values are in [reportportal/values.yaml](../reportportal/values.yaml).
 
 ## Ingress & Networking
 
@@ -16,6 +16,7 @@ This directory contains installation guides for ReportPortal on Kubernetes.
 - [Install ReportPortal on Minikube](minikube-install.md)
 - [Helm Pre-upgrade Guide](helm-pre-upgrade.md)
 - [Parameters Reference](parameters-reference.md)
+- [Audit logs and log collection](audit-logs.md)
 
 ## Storage Configuration
 
