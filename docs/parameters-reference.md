@@ -385,7 +385,7 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `storage.type` | Storage type: `seaweedfs`, `minio`, `s3`, `filesystem` | `seaweedfs` |
+| `storage.type` | Storage type: `minio`, `seaweedfs`, `s3`, `filesystem`. From chart 26.3.12 we recommend `seaweedfs` (Apache 2.0). Chart default: `minio` | `minio` |
 | `storage.secretName` | Storage secret name | `""` |
 | `storage.accesskeyName` | Access key name | `access-key` |
 | `storage.secretkeyName` | Secret key name | `secret-key` |
@@ -491,13 +491,13 @@ This document provides a comprehensive reference of all configurable parameters 
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
 | `opensearch.extraEnvs` | OpenSearch extra env vars | Various settings |
-| `seaweedfs.install` | Install SeaweedFS (S3-compatible, Apache 2.0) | `true` |
+| `seaweedfs.install` | Install SeaweedFS (S3-compatible, Apache 2.0; recommended since chart 26.3.12) | `false` |
 | `seaweedfs.global.imageName` | SeaweedFS image name | `chrislusf/seaweedfs` |
 | `seaweedfs.global.imageTag` | SeaweedFS image tag | `4.15` |
 | `seaweedfs.allInOne.enabled` | Use single-pod all-in-one mode | `true` |
 | `seaweedfs.allInOne.data.size` | PVC size for all-in-one data | `20Gi` |
 | `seaweedfs.s3.enableAuth` | Enable S3 auth (uses storage.accesskey/secretkey) | `true` |
-| `minio.install` | Install MinIO (set `true` when using storage.type=minio) | `false` |
+| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using SeaweedFS) | `true` |
 | `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
 | `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |
 | `minio.auth.rootUser` | MinIO root user | `rpuser` |

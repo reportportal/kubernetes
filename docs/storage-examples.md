@@ -2,10 +2,12 @@
 
 The chart supports **four storage backends**. Set `storage.type` and enable/disable the matching subchart. All options are defined in [reportportal/values.yaml](../reportportal/values.yaml).
 
+> **Release note (chart 26.3.12 / ReportPortal 26.0.2):** We added **SeaweedFS** support and **recommend** using it for new installs (Apache 2.0, S3-compatible). The chart default remains **MinIO** for backward compatibility. To use SeaweedFS: `storage.type=seaweedfs`, `seaweedfs.install=true`, `minio.install=false`.
+
 | Type        | Use case                          | Subchart to install | Default in chart |
 |------------|------------------------------------|----------------------|------------------|
-| **SeaweedFS** | S3-compatible, Apache 2.0 | `seaweedfs`          | ✅ Default       |
-| **MinIO**     | S3-compatible, self-hosted (AGPL)     | `minio`              | —                |
+| **MinIO**     | S3-compatible, self-hosted (AGPL)     | `minio`              | ✅ Default       |
+| **SeaweedFS** | S3-compatible, Apache 2.0 (recommended) | `seaweedfs`          | —                |
 | **S3**       | AWS S3 or any S3-compatible API       | none                 | —                |
 | **FS**        | Shared filesystem (NFS, Filestore…)   | none                 | —                |
 
@@ -13,62 +15,9 @@ Use **Helm `--set`** for quick overrides or a **values file** (`-f`) for full co
 
 ---
 
-## 1. SeaweedFS (default, recommended)
+## 1. MinIO (chart default)
 
-Apache 2.0 licensed, S3-compatible object storage. One pod (all-in-one) with one PVC; S3 API on port 8333. Credentials come from `storage.accesskey` / `storage.secretkey` in values.
-
-**Helm (no extra flags — defaults):**
-
-```bash
-helm upgrade --install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  reportportal
-```
-
-Or explicitly:
-
-```bash
-helm upgrade --install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
-  --set storage.type=seaweedfs \
-  --set seaweedfs.install=true \
-  --set minio.install=false \
-  reportportal
-```
-
-**Optional values file** (e.g. `my-values.yaml`):
-
-```yaml
-storage:
-  type: seaweedfs
-  accesskey: rpuser
-  secretkey: miniopassword
-  # endpoint/port left empty → internal service
-  ssl: false
-
-seaweedfs:
-  install: true
-  allInOne:
-    data:
-      size: "20Gi"
-  s3:
-    enableAuth: true
-    credentials:
-      admin:
-        accessKey: rpuser
-        secretKey: miniopassword
-
-minio:
-  install: false
-```
-
-Install with: `helm upgrade --install my-release -f my-values.yaml reportportal`
-
----
-
-## 2. MinIO
-
-Self-hosted S3-compatible storage (AGPL). Chart deploys MinIO as a dependency; API on port 9000.
+Self-hosted S3-compatible storage (AGPL). Chart default for backward compatibility. API on port 9000.
 
 **Helm:**
 
@@ -108,6 +57,52 @@ minio:
 ```
 
 For credentials from a Kubernetes secret, use `storage.secretName`, `storage.accesskeyName`, `storage.secretkeyName` and MinIO’s `auth.existingSecret` (see values.yaml).
+
+With default chart values, a simple install uses MinIO: `helm install my-release --set uat.superadminInitPasswd.password="MyPassword" reportportal`.
+
+---
+
+## 2. SeaweedFS (recommended since 26.3.12)
+
+Apache 2.0 licensed, S3-compatible object storage. One pod (all-in-one) with one PVC; S3 API on port 8333. **Recommended for new installs** since Helm chart 26.3.12 / ReportPortal 26.0.2.
+
+**Helm:**
+
+```bash
+helm upgrade --install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set storage.type=seaweedfs \
+  --set seaweedfs.install=true \
+  --set minio.install=false \
+  reportportal
+```
+
+**Optional values file** (e.g. `my-values.yaml`):
+
+```yaml
+storage:
+  type: seaweedfs
+  accesskey: rpuser
+  secretkey: miniopassword
+  ssl: false
+
+seaweedfs:
+  install: true
+  allInOne:
+    data:
+      size: "20Gi"
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: rpuser
+        secretKey: miniopassword
+
+minio:
+  install: false
+```
+
+Install with: `helm upgrade --install my-release -f my-values.yaml reportportal`
 
 ---
 
@@ -227,8 +222,8 @@ minio:
 
 | Type       | `storage.type` | `seaweedfs.install` | `minio.install` | Extra (examples) |
 |-----------|----------------|--------------------|-----------------|--------------------|
-| SeaweedFS | `seaweedfs`    | `true`             | `false`         | —                  |
-| MinIO     | `minio`        | `false`            | `true`          | `storage.port=9000` |
+| MinIO (default) | `minio` | `false` | `true` | `storage.port=9000` |
+| SeaweedFS (recommended) | `seaweedfs` | `true` | `false` | — |
 | S3        | `s3`           | `false`            | `false`         | `storage.region`, credentials or IRSA |
 | FS        | `filesystem`   | `false`            | `false`         | `storage.volume.capacity`, `storageClassName` |
 

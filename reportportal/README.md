@@ -62,8 +62,8 @@ The following table lists the configurable parameters of the chart and their def
 |`postgresql.install`|Allow PostgreSQL Bitnami Helm Chart to be installed as a dependency|`true`|
 |`rabbitmq.install`|Allow RabbitmQ Helm Bitnami Chart to be installed as a dependency|`true`|
 |`opensearch.install`|Allow Open Search Helm Chart to be installed as a dependency|`true`|
-|`seaweedfs.install`|Allow SeaweedFS Helm Chart to be installed as a dependency (default storage)|`true`|
-|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency|`false`|
+|`seaweedfs.install`|Allow SeaweedFS Helm Chart to be installed (recommended since 26.3.12)|`false`|
+|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency (chart default)|`true`|
 
 These dependencies are integrated into the distribution by default. To deactivate them, specify each parameter using the --set key=value[,key=value] argument to helm install. For example:
 
@@ -85,42 +85,33 @@ All configuration variables are presented in the [value.yaml](https://github.com
 
 ### 💾 Storage Configuration
 
-> **⚠️ Default storage change:** We moved from **MinIO** to **SeaweedFS** as the default object storage (Apache 2.0, S3-compatible). The chart now installs SeaweedFS by default. **To continue using MinIO**, install with:
->
-> ```bash
-> helm install my-release \
->   --set uat.superadminInitPasswd.password="MyPassword" \
->   --set storage.type=minio \
->   --set seaweedfs.install=false \
->   --set minio.install=true \
->   reportportal/reportportal
-> ```
+> **Release note (chart 26.3.12 / ReportPortal 26.0.2):** We added **SeaweedFS** support and **recommend** using it for new installs (Apache 2.0, S3-compatible). The chart default remains **MinIO** for backward compatibility. To use SeaweedFS: `storage.type=seaweedfs`, `seaweedfs.install=true`, `minio.install=false`.
 
-ReportPortal supports four storage types: **seaweedfs**, **minio**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
+ReportPortal supports four storage types: **minio**, **seaweedfs**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
 
 | Storage Type | Use Case | Pros | Cons |
 |--------------|----------|------|------|
-| **seaweedfs** | Default, development, testing | Apache 2.0, S3-compatible, single PVC | — |
-| **minio** | Optional, existing MinIO setups | Simple setup, built-in | AGPL license; not default |
+| **minio** | Chart default, development, testing | Simple setup, built-in | AGPL license |
+| **seaweedfs** | Recommended (since 26.3.12), development, testing | Apache 2.0, S3-compatible, single PVC | — |
 | **s3** | Production, cloud | Scalable, reliable, supports IAM | Requires cloud provider |
 | **filesystem** | Production, on-premise | Simple, works with existing storage | Less scalable than object storage |
 
 #### Quick Storage Setup Examples:
 
-**For Development (SeaweedFS – Default):**
+**Default (MinIO):**
 ```bash
 helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
   reportportal/reportportal
 ```
 
-**To continue using MinIO:**
+**Recommended — SeaweedFS (since 26.3.12):**
 ```bash
 helm install my-release \
   --set uat.superadminInitPasswd.password="MyPassword" \
-  --set storage.type=minio \
-  --set seaweedfs.install=false \
-  --set minio.install=true \
+  --set storage.type=seaweedfs \
+  --set seaweedfs.install=true \
+  --set minio.install=false \
   reportportal/reportportal
 ```
 
@@ -246,5 +237,5 @@ This chart includes the following dependencies with their respective licenses:
 - **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
-- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (default object storage)
-- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (optional)
+- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)
+- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (recommended alternative since chart 26.3.12)

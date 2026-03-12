@@ -88,11 +88,11 @@ Global context overrides service-specific context
 {{- end -}}
 
 {{/*
-Get storage type with default "seaweedfs" and validation.
-Returns: seaweedfs, minio, s3, or filesystem
+Get storage type with default "minio" and validation.
+Returns: minio, seaweedfs, s3, or filesystem
 */}}
 {{- define "reportportal.storageType" -}}
-{{- $storageType := .Values.storage.type | default "seaweedfs" -}}
+{{- $storageType := .Values.storage.type | default "minio" -}}
 {{- if not (has $storageType (list "seaweedfs" "minio" "s3" "filesystem")) -}}
 {{- fail "storage.type must be one of: seaweedfs, minio, s3, filesystem" -}}
 {{- end -}}
