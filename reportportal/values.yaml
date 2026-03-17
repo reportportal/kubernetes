@@ -1370,13 +1370,11 @@ seaweedfs:
   install: false
   image:
     repository: chrislusf/seaweedfs
-    tag: 4.15
-
+    tag: "4.15"
   global:
     enableSecurity: false
     serviceAccountName: "seaweedfs"
     createClusterRole: true
-
   ## Disable individual components — allInOne runs everything in one pod
   master:
     enabled: false
@@ -1384,7 +1382,6 @@ seaweedfs:
     enabled: false
   filer:
     enabled: false
-
   ## Single-pod all-in-one: master + volume + filer in one Deployment (1 replica, 1 PVC)
   ## Service: <release>-seaweedfs-all-in-one.<namespace>.svc.cluster.local:8333
   allInOne:
@@ -1401,7 +1398,6 @@ seaweedfs:
       storageClass: ""
       annotations:
         "helm.sh/resource-policy": "keep"
-
   ## S3 credentials — anchors reference storage.accesskey / storage.secretkey above.
   ## The chart generates the S3 auth config JSON from these values automatically.
   s3:
