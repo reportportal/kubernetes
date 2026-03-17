@@ -1368,13 +1368,13 @@ opensearch:
 ##
 seaweedfs:
   install: false
+  image:
+    repository: chrislusf/seaweedfs
+    tag: 4.15
 
   global:
     enableSecurity: false
     serviceAccountName: "seaweedfs"
-    ## Update Chart.yaml dependency version when changing imageTag
-    imageName: chrislusf/seaweedfs
-    imageTag: "4.15"
     createClusterRole: true
 
   ## Disable individual components — allInOne runs everything in one pod
