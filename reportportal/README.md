@@ -22,7 +22,7 @@ ReportPortal is a TestOps service, that provides increased capabilities to speed
 Add the official ReportPortal Helm Chart repository:
 
 ```bash
-helm repo add reportportal https://reportportal.io/kubernetes && helm repo update reportportal
+helm repo add reportportal https://k8s.reportportal.io && helm repo update reportportal
 ```
 
 Install the chart:

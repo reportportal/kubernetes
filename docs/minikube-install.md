@@ -50,7 +50,7 @@ echo "$(minikube ip) minikube.local" | sudo tee -a /etc/hosts
 #### Install from Helm repo
 
 ```bash
-helm repo add reportportal https://reportportal.io/kubernetes && helm repo update reportportal
+helm repo add reportportal https://k8s.reportportal.io && helm repo update reportportal
 ```
 
 ```bash
