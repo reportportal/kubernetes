@@ -22,7 +22,7 @@ ReportPortal is a TestOps service, that provides increased capabilities to speed
 Add the official ReportPortal Helm Chart repository:
 
 ```bash
-helm repo add reportportal https://reportportal.io/kubernetes && helm repo update reportportal
+helm repo add reportportal https://k8s.reportportal.io/ && helm repo update reportportal
 ```
 
 Install the chart:
@@ -52,7 +52,7 @@ The following table lists the configurable parameters of the chart and their def
 |`postgresql.install`|Allow PostgreSQL Bitnami Helm Chart to be installed as a dependency|`true`|
 |`rabbitmq.install`|Allow RabbitmQ Helm Bitnami Chart to be installed as a dependency|`true`|
 |`opensearch.install`|Allow Open Search Helm Chart to be installed as a dependency|`true`|
-|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency|`true`|
+|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency (chart default)|`true`|
 
 These dependencies are integrated into the distribution by default. To deactivate them, specify each parameter using the --set key=value[,key=value] argument to helm install. For example:
 
@@ -68,7 +68,38 @@ helm install my-release \
 
 > **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
-All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/reportportal/values.yaml) file.
+All configuration variables are presented in the [values.yaml](https://github.com/reportportal/kubernetes/blob/master/reportportal/values.yaml) file.
+
+### Ingress controller recommendation
+
+ReportPortal recommends using the **nginx ingress controller** for exposing the application. Other ingress controllers (e.g. AWS ALB) are supported; nginx provides the most tested and reliable configuration. See [Install NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/).
+
+### Storage configuration
+
+ReportPortal supports storage types: **minio** (chart default), **s3**, and **filesystem**.
+
+### Pod Disruption Budgets and Resource Quotas
+
+For production you can enable pod disruption budgets and resource quotas:
+
+```bash
+helm install my-release \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set podDisruptionBudget.enabled=true \
+  --set resourceQuota.enabled=true \
+  --set resourceQuota.services=15 \
+  --set resourceQuota.cpu=6 \
+  --set resourceQuota.memory=8Gi \
+  reportportal/reportportal
+```
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `resourceQuota.services` | Maximum number of services | `12` |
+| `resourceQuota.cpu` | Total CPU limit | `6` |
+| `resourceQuota.memory` | Total memory limit | `8Gi` |
+
+Pod Disruption Budgets require multiple replicas for high availability.
 
 ### Install from sources
 
@@ -121,4 +152,14 @@ helm install my-release \
 
 ## License
 
-Report Portal is [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+This Helm chart for ReportPortal is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+### Third-party licenses
+
+This chart includes the following dependencies with their respective licenses:
+
+- **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
+- **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
+- **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
+- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)
+- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (recommended alternative since chart 26.3.12)
