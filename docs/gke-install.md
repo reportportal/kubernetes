@@ -272,7 +272,6 @@ helm install \
   --set serviceapi.resources.requests.memory="2Gi" \
   --set serviceanalyzer.resources.requests.memory="1Gi" \
   --set storage.type="filesystem" \
-  --set storage.volume.storageClassName="standard-rwx" \
   --set minio.install=false \
   ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
