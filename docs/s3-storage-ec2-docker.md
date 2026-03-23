@@ -173,6 +173,7 @@ x-environment: &common-environment
   DATASTORE_TYPE: s3
   DATASTORE_REGION: us-standard      # JClouds alias for us-east-1
   DATASTORE_DEFAULTBUCKETNAME: my-rp-docker-bucket
+  RP_FEATURE_FLAGS: singleBucket     # Enable single-bucket storage (necessary for Amazon S3)
 ```
 
 > For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage).
