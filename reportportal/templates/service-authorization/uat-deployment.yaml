@@ -91,7 +91,7 @@ spec:
               value: "{{ .Values.msgbroker.password }}"
           {{- end }}
             - name: RP_AMQP_ADDRESSES
-              value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+              value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}'
           {{- if .Values.uat.superadminInitPasswd.secretName }}
             - name: RP_INITIAL_ADMIN_PASSWORD
               valueFrom:
@@ -111,7 +111,7 @@ spec:
             - name: RP_SESSION_LIVE
               value: "{{ .Values.uat.sessionLiveTime }}"
             - name: RP_DB_HOST
-              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
             - name: RP_DB_PORT
               value: "{{ .Values.database.port }}"
             - name: RP_DB_NAME
