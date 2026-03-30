@@ -247,15 +247,14 @@ For installing ReportPortal on GKE Autopilot Cluster, you need to set the:
 - resources requests for api, uat, and analyzer services
 
 ```bash
-helm install \
-  --set ingress.class="gce" \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set uat.resources.requests.memory="1Gi" \
-  --set serviceapi.resources.requests.cpu="1000m" \
-  --set serviceapi.resources.requests.memory="2Gi" \
-  --set serviceanalyzer.resources.requests.memory="1Gi" \
-  ${RELEASE_NAME} \
+helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --set ingress.class=gce \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set uat.resources.requests.memory=1Gi \
+  --set serviceapi.resources.requests.cpu=1000m \
+  --set serviceapi.resources.requests.memory=2Gi \
+  --set serviceanalyzer.resources.requests.memory=1Gi \
   --version ${VERSION}
 ```
 
@@ -265,16 +264,16 @@ to `standard-rwx`, and disable MinIO installation:
 
 ```bash
 helm install \
-  --set ingress.class="gce" \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set uat.resources.requests.memory="1Gi" \
-  --set serviceapi.resources.requests.cpu="1000m" \
-  --set serviceapi.resources.requests.memory="2Gi" \
-  --set serviceanalyzer.resources.requests.memory="1Gi" \
-  --set storage.type="filesystem" \
-  --set minio.install=false \
   ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --set ingress.class=gce \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set uat.resources.requests.memory=1Gi \
+  --set serviceapi.resources.requests.cpu=1000m \
+  --set serviceapi.resources.requests.memory=2Gi \
+  --set serviceanalyzer.resources.requests.memory=1Gi \
+  --set storage.type=filesystem \
+  --set minio.install=false \
   --version ${VERSION}
 ```
 
@@ -290,27 +289,23 @@ For installing ReportPortal on GKE Standard Cluster you need to set:
 - superadmin password
 
 ```bash
-helm install \
-  --set ingress.class="gce" \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  ${RELEASE_NAME} \
+helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --set ingress.class=gce \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --version ${VERSION}
 ```
 
 If you want to use Google Filestore instead of MinIO, you need to set
-the `storage.type` to `filesystem`, `storage.volume.storageClassName`
-to `standard-rwx`, and disable MinIO installation:
+the `storage.type` to `filesystem` and disable MinIO installation:
 
 ```bash
-helm install \
-  --set ingress.class="gce" \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set storage.type="filesystem" \
-  --set storage.volume.storageClassName="standard-rwx" \
-  --set minio.install=false \
-  ${RELEASE_NAME} \
+helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
+  --set ingress.class=gce \
+  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set storage.type=filesystem \
+  --set minio.install=false \
   --version ${VERSION}
 ```
 
