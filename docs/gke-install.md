@@ -273,6 +273,7 @@ helm install \
   --set serviceapi.resources.requests.memory=2Gi \
   --set serviceanalyzer.resources.requests.memory=1Gi \
   --set storage.type=filesystem \
+  --set storage.volume.storageClassName=standard-rwx \
   --set minio.install=false \
   --version ${VERSION}
 ```
@@ -297,7 +298,8 @@ helm install ${RELEASE_NAME} \
 ```
 
 If you want to use Google Filestore instead of MinIO, you need to set
-the `storage.type` to `filesystem` and disable MinIO installation:
+the `storage.type` to `filesystem`, `storage.volume.storageClassName`
+to `standard-rwx` and disable MinIO installation:
 
 ```bash
 helm install ${RELEASE_NAME} \
@@ -305,6 +307,7 @@ helm install ${RELEASE_NAME} \
   --set ingress.class=gce \
   --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
+  --set storage.volume.storageClassName=standard-rwx \
   --set minio.install=false \
   --version ${VERSION}
 ```

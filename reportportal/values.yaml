@@ -970,6 +970,8 @@ storage:
     capacity: 5Gi
 
     ## @param storage.volume.storageClassName Kubernetes storage class name
+    ## Examples: standard, standard-rwx, fast-ssd
+    ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
 
