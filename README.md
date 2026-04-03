@@ -42,4 +42,5 @@ This chart includes the following dependencies with their respective licenses:
 - **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
-- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE)
+- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)
+- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (recommended alternative since chart 26.3.12)

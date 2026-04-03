@@ -42,11 +42,11 @@ spec:
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
         resources:
           requests:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.serviceanalyzer.initContainerResources.requests.cpu }}
+            memory: {{ .Values.serviceanalyzer.initContainerResources.requests.memory }}
           limits:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.serviceanalyzer.initContainerResources.limits.cpu }}
+            memory: {{ .Values.serviceanalyzer.initContainerResources.limits.memory }}
       {{- if .Values.serviceanalyzer.extraInitContainers }}
       {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 6 }}
       {{- end }}
@@ -65,12 +65,16 @@ spec:
         {{- end }}
         {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
-          value: "{{ $storageType }}"
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
-        {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
+          value: "{{ include "reportportal.datastoreType" . }}"
+        {{- if eq $storageType "filesystem" }}
+        - name: FILESYSTEM_DEFAULT_PATH
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+        {{- end }}
+        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
-        {{- else if or (eq $storageType "s3") (eq $storageType "aws-s3") }}
+          value: "{{ include "reportportal.storageEndpoint" . }}"
+        {{- else if eq $storageType "s3" }}
         - name: DATASTORE_REGION
           {{- /* Map GCS region names to AWS S3 region names */}}
           {{- $region := .Values.storage.region }}
@@ -155,18 +159,18 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: /
             port: 5001
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.serviceanalyzer.livenessProbe.failureThreshold }}
-          successThreshold: {{ .Values.serviceanalyzer.livenessProbe.successThreshold }}
         {{- end }}
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}
           - name: shared-volume
-            mountPath: /data/storage
+            mountPath: {{ .Values.storage.volume.defaultPath | default "/data/storage" }}
           {{- end }}
           {{- if .Values.serviceanalyzer.extraVolumeMounts }}
           {{- toYaml .Values.serviceanalyzer.extraVolumeMounts | nindent 10 }}

@@ -41,11 +41,11 @@ spec:
           - {{ include "reportportal.fullname" . }}-migrations
         resources:
           requests:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.servicejobs.initContainerResources.requests.cpu }}
+            memory: {{ .Values.servicejobs.initContainerResources.requests.memory }}
           limits:
-            cpu: 50m
-            memory: 100Mi
+            cpu: {{ .Values.servicejobs.initContainerResources.limits.cpu }}
+            memory: {{ .Values.servicejobs.initContainerResources.limits.memory }}
       {{- if .Values.servicejobs.extraInitContainers }}
         {{ toYaml .Values.servicejobs.extraInitContainers | nindent 8 }}
       {{- end }}
@@ -114,10 +114,6 @@ spec:
           value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
           value: "{{ .Values.database.dbName }}"
-        {{- if .Values.database.connections }}
-        - name: RP_DATASOURCE_MAXIMUMPOOLSIZE
-          value: "{{ .Values.database.connections }}"
-        {{- end }}
         - name: RP_DB_USER
           value: "{{ .Values.database.user }}"
         - name: RP_DB_PASS
@@ -132,11 +128,15 @@ spec:
         # Storage settings
         {{- $storageType := include "reportportal.storageType" . }}
         - name: DATASTORE_TYPE
-          value: "{{ $storageType }}"
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
-        {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
+          value: "{{ include "reportportal.datastoreType" . }}"
+        {{- if eq $storageType "filesystem" }}
+        - name: DATASTORE_PATH
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+        {{- end }}
+        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
         - name: DATASTORE_ENDPOINT
-          value: "{{ ternary "https" "http" .Values.storage.ssl }}://{{ .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.storage.port }}"
+          value: "{{ include "reportportal.storageEndpoint" . }}"
         {{- end }}
         {{- if .Values.storage.region }}
         - name: DATASTORE_REGION
@@ -188,7 +188,8 @@ spec:
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: "/jobs/health"
             port: 8686
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
@@ -198,7 +199,7 @@ spec:
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}
           - name: shared-volume
-            mountPath: /data/storage
+            mountPath: {{ .Values.storage.volume.defaultPath | default "/data/storage" }}
           {{- end }}
           {{- if .Values.servicejobs.extraVolumeMounts }}
             {{ toYaml .Values.servicejobs.extraVolumeMounts | nindent 12 }}

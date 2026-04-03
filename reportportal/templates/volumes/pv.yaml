@@ -35,6 +35,13 @@ spec:
               operator: In
               values:
                 {{ .Values.storage.volume.volumeConfig.local.nodeSelectorNames | toYaml | nindent 16 }}
+{{- else if and (eq .Values.storage.volume.volumeConfig.csi.driver "gcsfuse.csi.storage.gke.io") (.Values.storage.volume.volumeConfig.csi.volumeHandle)  }}
+  csi:
+    driver: gcsfuse.csi.storage.gke.io
+    volumeHandle: {{ .Values.storage.volume.volumeConfig.csi.volumeHandle }}
+  claimRef:
+    name: gcs-fuse-csi-static-pvc
+    namespace: {{ .Release.Namespace }}
 {{- else if eq .Values.storage.volume.volumeConfig.type "csi" }}
   csi:
     driver: {{ .Values.storage.volume.volumeConfig.csi.driver }}
