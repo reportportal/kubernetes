@@ -1,5 +1,5 @@
 {{- $path := .Values.ingress.path -}}
-{{- $replicaCount := .Values.uat.replicaCount | default 1 -}}
+{{- $replicaCount := kindIs "invalid" .Values.uat.replicaCount | ternary 1 .Values.uat.replicaCount -}}
 
 apiVersion: apps/v1
 kind: Deployment
