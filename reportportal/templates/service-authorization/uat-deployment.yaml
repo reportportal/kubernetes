@@ -1,5 +1,9 @@
 {{- $path := .Values.ingress.path -}}
-{{- $replicaCount := kindIs "invalid" .Values.uat.replicaCount | ternary 1 .Values.uat.replicaCount -}}
+{{- /* Initialize as 1, then override if the key exists, ensuring it is cast to an int */ -}}
+{{- $replicaCount := 1 -}}
+{{- if not (kindIs "invalid" .Values.uat.replicaCount) -}}
+  {{- $replicaCount = .Values.uat.replicaCount | int -}}
+{{- end -}}
 
 apiVersion: apps/v1
 kind: Deployment
