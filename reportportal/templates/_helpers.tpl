@@ -101,15 +101,9 @@ Returns: minio, seaweedfs, s3, or filesystem
 
 {{/*
 Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
-SeaweedFS exposes a standard S3-compatible API, so it maps to the "minio" JClouds provider
-(which handles any S3-compatible endpoint, not just MinIO itself).
 */}}
 {{- define "reportportal.datastoreType" -}}
-{{- $storageType := include "reportportal.storageType" . -}}
-{{- if eq $storageType "seaweedfs" -}}minio
-{{- else -}}
-{{- $storageType -}}
-{{- end -}}
+{{- include "reportportal.storageType" . -}}
 {{- end -}}
 
 {{/*
