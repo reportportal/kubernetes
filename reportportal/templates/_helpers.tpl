@@ -101,12 +101,31 @@ Returns: minio, seaweedfs, s3, s3-compatible, aws-s3, or filesystem
 
 {{/*
 Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
-SeaweedFS exposes a standard S3-compatible API, so it maps to the "minio" JClouds provider
-(which handles any S3-compatible endpoint, not just MinIO itself).
+SeaweedFS exposes a standard S3-compatible API, so it maps to the "minio" JClouds provider.
+All other storage types pass through unchanged (minio, s3, s3-compatible, aws-s3, filesystem).
 */}}
 {{- define "reportportal.datastoreType" -}}
 {{- $storageType := include "reportportal.storageType" . -}}
 {{- if eq $storageType "seaweedfs" -}}minio
+{{- else -}}
+{{- $storageType -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Returns the DATASTORE_TYPE value for the auto-analyzer service only.
+The analyzer uses a different provider mapping from other services:
+  - filesystem    → "filesystem"     (pass through)
+  - minio         → "minio"          (pass through)
+  - seaweedfs     → "minio"          (S3-compatible, uses the same minio provider)
+  - s3            → "s3"             (pass through)
+  - s3-compatible → "minio"          (S3-compatible, uses the same minio provider)
+  - aws-s3        → "s3"             (analyzer expects "s3", not "aws-s3")
+*/}}
+{{- define "reportportal.analyzerDatastoreType" -}}
+{{- $storageType := include "reportportal.storageType" . -}}
+{{- if or (eq $storageType "seaweedfs") (eq $storageType "s3-compatible") -}}minio
+{{- else if eq $storageType "aws-s3" -}}s3
 {{- else -}}
 {{- $storageType -}}
 {{- end -}}
