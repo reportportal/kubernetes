@@ -89,12 +89,12 @@ Global context overrides service-specific context
 
 {{/*
 Get storage type with default "minio" and validation.
-Returns: minio, seaweedfs, s3, or filesystem
+Returns: minio, s3, or filesystem
 */}}
 {{- define "reportportal.storageType" -}}
 {{- $storageType := .Values.storage.type | default "minio" -}}
-{{- if not (has $storageType (list "seaweedfs" "minio" "s3" "filesystem")) -}}
-{{- fail "storage.type must be one of: seaweedfs, minio, s3, filesystem" -}}
+{{- if not (has $storageType (list "minio" "s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: minio, s3, filesystem" -}}
 {{- end -}}
 {{- $storageType -}}
 {{- end -}}
@@ -107,10 +107,9 @@ Returns the value for the DATASTORE_TYPE environment variable consumed by Report
 {{- end -}}
 
 {{/*
-Returns the full S3 endpoint URL for minio and seaweedfs storage types.
+Returns the full S3 endpoint URL for minio storage type.
 Port is auto-selected based on storage type when storage.port is empty:
-  seaweedfs → 8333 (SeaweedFS S3 gateway default)
-  minio     → 9000 (MinIO API default)
+  minio → 9000 (MinIO API default)
 Override storage.endpoint to point at an external or custom service.
 */}}
 {{- define "reportportal.storageEndpoint" -}}
@@ -119,10 +118,6 @@ Override storage.endpoint to point at an external or custom service.
 {{- if eq $storageType "minio" -}}
   {{- $port := .Values.storage.port | default 9000 -}}
   {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
-  {{- printf "%s://%s:%v" $scheme $host $port -}}
-{{- else if eq $storageType "seaweedfs" -}}
-  {{- $port := .Values.storage.port | default 8333 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-seaweedfs-all-in-one.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
   {{- printf "%s://%s:%v" $scheme $host $port -}}
 {{- end -}}
 {{- end -}}
