@@ -15,6 +15,7 @@ This guide provides comprehensive instructions for deploying ReportPortal using 
 - [Configuration Examples](#configuration-examples)
 - [Gateway Controller: Envoy Gateway](#gateway-controller-envoy-gateway)
 - [Troubleshooting](#troubleshooting)
+- [Supported Ingress Controllers](#supported-ingress-controllers)
 - [Migration from Ingress](#migration-from-ingress)
 
 ## Overview
@@ -599,6 +600,18 @@ kubectl get httproute -n reportportal -o jsonpath='{.status.parents[*].condition
 kubectl port-forward -n envoy-gateway-system deploy/envoy-gateway 19000:19000
 curl localhost:19000/config_dump
 ```
+
+## Supported Ingress Controllers
+
+ReportPortal can be exposed with the standard Kubernetes `Ingress` resource (`ingress.enable: true`) instead of, or alongside, Gateway API. Set `ingress.class` to match your cluster's `IngressClass` name. The chart renders `spec.ingressClassName` from that value.
+
+| `ingress.class` | Controller | Notes |
+|-----------------|------------|-------|
+| `nginx` | [ingress-nginx](https://kubernetes.github.io/ingress-nginx/) | Chart default; use `ingress.annotations` for proxy body size and timeouts |
+| `traefik` | [Traefik](https://doc.traefik.io/traefik/) | Supported; common on **Rancher Desktop** and **k3s** where Traefik is the default ingress |
+| `alb` | AWS Load Balancer Controller | See [ALB Deployment Guide](alb-deployment-guide.md) |
+| `gce` | GCE Ingress | See [GKE Install](gke-install.md) |
+
 
 ## Migration from Ingress
 

@@ -1029,6 +1029,7 @@ storage:
 ## @param ingress.hosts is required if you want to use Google Managed Certificate.
 ##
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
+## @param ingress.class set to `traefik` if you use Traefik (e.g. Rancher Desktop, k3s).
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to `alb` if you want to use AWS Load Balancer Controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
@@ -1089,6 +1090,11 @@ ingress:
   ##
   ## Example for GCE Ingress Controller:
   ##   kubernetes.io/ingress.class: gce
+  ##
+  ## Example for Traefik Ingress Controller (ingressClassName must match your IngressClass, usually `traefik`):
+  ##   ingress.class: traefik
+  ## Optional: attach a Traefik Middleware for large uploads (create the Middleware CR in the same namespace):
+  ##   traefik.ingress.kubernetes.io/router.middlewares: <namespace>-reportportal-buffering@kubernetescrd
   ##
   annotations: {}
   tls:
