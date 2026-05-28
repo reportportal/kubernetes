@@ -173,6 +173,20 @@ x-environment: &common-environment
   DATASTORE_TYPE: s3
   DATASTORE_REGION: us-standard      # JClouds alias for us-east-1
   DATASTORE_DEFAULTBUCKETNAME: my-rp-docker-bucket
+  RP_FEATURE_FLAGS: singleBucket     # Enable single-bucket storage (necessary for Amazon S3)
+
+x-analyzer-environment: &common-analyzer-environment
+  LOGGING_LEVEL: info
+  AMQP_EXCHANGE_NAME: analyzer-default
+  AMQP_VIRTUAL_HOST: analyzer
+  AMQP_URL: amqp://${RABBITMQ_DEFAULT_USER-rabbitmq}:${RABBITMQ_DEFAULT_PASS-rabbitmq}@rabbitmq:5672
+  ES_HOSTS: http://opensearch:9200
+  DATASTORE_REGION: us-east-1
+  DATASTORE_ACCESSKEY: ""         # Leave empty for IAM Role-based access
+  DATASTORE_SECRETKEY: ""         # Leave empty for IAM Role-based access
+  DATASTORE_BUCKETPREFIX: prj-
+  DATASTORE_BUCKETPOSTFIX: ""
+  DATASTORE_DEFAULTBUCKETNAME: my-rp-docker-bucket/analyzer
 ```
 
 > For full configuration options, see the [ReportPortal S3 integration guide](https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage).

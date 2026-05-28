@@ -1,10 +1,10 @@
 apiVersion: v2
-appVersion: "26.0.2"
+appVersion: "26.0.3"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 26.3.12
+version: 26.5.28
 sources:
   - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
@@ -50,9 +50,3 @@ dependencies:
     version: 17.0.16
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
-  # SeaweedFS dependency - Apache 2.0 licensed S3-compatible alternative to MinIO
-  # Run `helm search repo seaweedfs/seaweedfs` to verify the latest available version
-  - name: seaweedfs
-    version: 4.15.0
-    repository: https://seaweedfs.github.io/seaweedfs/helm
-    condition: seaweedfs.install
