@@ -1,0 +1,41 @@
+{{- if .Values.cloudnativepg.install }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "reportportal.fullname" . }}-cnpg
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  instances: 1
+  enableSuperuserAccess: true
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:16
+
+  postgresql:
+    pg_hba:
+      - host all all 0.0.0.0/0 md5
+
+  superuserSecret:
+    name: {{ include "reportportal.fullname" . }}-cnpg-credentials
+
+  bootstrap:
+    initdb:
+      database: {{ .Values.database.dbName | quote }}
+      owner: {{ .Values.database.user | quote }}
+      secret:
+        name: {{ include "reportportal.fullname" . }}-cnpg-credentials
+
+  storage:
+    size: 8Gi
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+{{- end }}

@@ -125,7 +125,7 @@ spec:
               value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}
           # Database settings
             - name: RP_DB_HOST
-              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+              value: {{ include "reportportal.databaseEndpoint" . }}
             - name: RP_DB_PORT
               value: "{{ .Values.database.port }}"
             - name: RP_DB_NAME

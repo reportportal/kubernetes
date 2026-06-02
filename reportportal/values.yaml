@@ -1308,6 +1308,18 @@ postgresql:
       ports:
         postgresql: *dbport
 
+## @param cloudnativepg CloudNativePG operator and cluster as dependency
+## Set cloudnativepg.install to `false` if using a Cloud/On-Premise managed database
+##
+cloudnativepg:
+  install: false  # default, users opt in
+  auth:
+    postgresPassword: *dbpassword
+    username: *dbuser
+    password: *dbpassword
+    database: *dbname
+
+
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 ## Set @param rabbitmq.install to `false` if using a Cloud/On-Premise managed RabbitMQ
 ##

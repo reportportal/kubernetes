@@ -122,5 +122,20 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 {{- end -}}
 
-
+{{/*
+Database endpoint — returns the correct hostname depending on which
+database backend is enabled:
+  1. Explicit override via database.endpoint (external DB, any backend)
+  2. CloudNativePG read-write service (when cloudnativepg.install=true)
+  3. Bitnami PostgreSQL service (default / legacy)
+*/}}
+{{- define "reportportal.databaseEndpoint" -}}
+{{- if .Values.database.endpoint -}}
+  {{- .Values.database.endpoint -}}
+{{- else if .Values.cloudnativepg.install -}}
+  {{- printf "%s-cnpg-rw.%s.svc.cluster.local" (include "reportportal.fullname" .) .Release.Namespace -}}
+{{- else -}}
+  {{- printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
 
