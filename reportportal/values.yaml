@@ -795,7 +795,7 @@ migrations:
 database:
   secretName: ""
   passwordKeyName: "postgresql-password"
-  ## @param database.endpoint by default "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.cluster.local"
+  ## @param database.endpoint by default "<release>-cluster-rw.<namespace>.svc.cluster.local" when postgresql.install=true
   ##
   endpoint:
   port: &dbport 5432
@@ -1289,15 +1289,15 @@ resourceQuota:
 
 ## @section External dependencies installation configuration
 ##
-## @param postgresql External PostgreSQL Helm Chart as dependency
+## @param postgresql CloudNativePG cluster as dependency (operator must be pre-installed separately)
+## Set postgresql.install to `false` if using a Cloud/On-Premise managed database
 ##
 postgresql:
   ## set to `false` if using a Cloud/On-Premise managed database
   ##
   install: true
-  image:
-    repository: bitnamilegacy/postgresql
-    tag: 17.5.0-debian-12-r20
+  ## @param postgresql.auth Credentials — values are driven by anchors defined in the database: section above
+  ##
   auth:
     postgresPassword: *dbpassword
     username: *dbuser
@@ -1307,17 +1307,41 @@ postgresql:
     service:
       ports:
         postgresql: *dbport
-
-## @param cloudnativepg CloudNativePG operator and cluster as dependency
-## Set cloudnativepg.install to `false` if using a Cloud/On-Premise managed database
-##
-cloudnativepg:
-  install: false  # default, users opt in
-  auth:
-    postgresPassword: *dbpassword
-    username: *dbuser
-    password: *dbpassword
-    database: *dbname
+  ## @param postgresql.version PostgreSQL major version
+  ##
+  version:
+    postgresql: "17"
+  ## @param postgresql.cluster CNPG Cluster spec — passed to the cluster subchart
+  ##
+  cluster:
+    ## @param postgresql.cluster.instances Number of PostgreSQL instances
+    ##
+    instances: 1
+    storage:
+      size: 8Gi
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    annotations:
+      "helm.sh/resource-policy": keep
+    enableSuperuserAccess: true
+    ## @param postgresql.cluster.superuserSecret Name of the secret providing postgres credentials.
+    ## Must match the name created by templates/cloudnative-pg/credentials-secret.yaml.
+    ## Override to "<release>-cnpg-credentials" when using a non-default release name.
+    ##
+    superuserSecret: &cnpgCredentialSecret reportportal-cnpg-credentials
+    initdb:
+      database: *dbname
+      owner: *dbuser
+      secret:
+        name: *cnpgCredentialSecret
+    postgresql:
+      pg_hba:
+        - host all all 0.0.0.0/0 md5
 
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency

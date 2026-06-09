@@ -30,10 +30,11 @@ maintainers:
 # IMPORTANT: When updating any dependency version below, you must also update the corresponding image tag in values.yaml
 # This ensures the Helm chart uses the same version as the container images
 dependencies:
-  # PostgreSQL dependency - update postgresql.image.tag in values.yaml when changing this version
-  - name: postgresql
-    version: 16.7.21
-    repository: https://charts.bitnami.com/bitnami
+  # CloudNativePG cluster chart - operator must be pre-installed separately (see docs/cloudnative-pg.md)
+  - name: cluster
+    alias: postgresql
+    version: 0.6.1
+    repository: https://cloudnative-pg.github.io/charts
     condition: postgresql.install
   # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq

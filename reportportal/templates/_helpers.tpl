@@ -123,19 +123,34 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 
 {{/*
+Compute the CNPG Cluster CR name — mirrors the cluster subchart's fullname logic.
+The dependency alias "postgresql" acts as the chart name inside the subchart's templates,
+so the default fullname is "<release>-postgresql" when the release name does not contain "postgresql".
+*/}}
+{{- define "reportportal.cnpgClusterName" -}}
+{{- if .Values.postgresql.fullnameOverride -}}
+  {{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+  {{- $clusterChartName := default "postgresql" .Values.postgresql.nameOverride -}}
+  {{- if contains $clusterChartName .Release.Name -}}
+    {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+  {{- else -}}
+    {{- printf "%s-%s" .Release.Name $clusterChartName | trunc 63 | trimSuffix "-" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Database endpoint — returns the correct hostname depending on which
 database backend is enabled:
-  1. Explicit override via database.endpoint (external DB, any backend)
-  2. CloudNativePG read-write service (when cloudnativepg.install=true)
-  3. Bitnami PostgreSQL service (default / legacy)
+  1. Explicit override via database.endpoint (external DB)
+  2. CloudNativePG read-write service (when postgresql.install=true)
 */}}
 {{- define "reportportal.databaseEndpoint" -}}
 {{- if .Values.database.endpoint -}}
   {{- .Values.database.endpoint -}}
-{{- else if .Values.cloudnativepg.install -}}
-  {{- printf "%s-cnpg-rw.%s.svc.cluster.local" (include "reportportal.fullname" .) .Release.Namespace -}}
 {{- else -}}
-  {{- printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+  {{- printf "%s-rw.%s.svc.cluster.local" (include "reportportal.cnpgClusterName" .) .Release.Namespace -}}
 {{- end -}}
 {{- end -}}
 
