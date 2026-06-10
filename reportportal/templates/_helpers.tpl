@@ -123,20 +123,24 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 
 {{/*
-Compute the CNPG Cluster CR name — mirrors the cluster subchart's fullname logic.
-The dependency alias "postgresql" acts as the chart name inside the subchart's templates,
-so the default fullname is "<release>-postgresql" when the release name does not contain "postgresql".
+Returns the name of the CNPG credentials Secret.
+Used in both credentials-secret.yaml and the hand-rolled cluster.yaml template.
+*/}}
+{{- define "reportportal.cnpgCredentialSecretName" -}}
+{{- printf "%s-cnpg-credentials" .Release.Name -}}
+{{- end -}}
+
+{{/*
+Compute the CNPG Cluster CR name.
+Defaults to "<release>-postgresql" independent of the operator subchart's nameOverride
+(nameOverride is used to fix the operator's self-discovery label, not for cluster naming).
+Override with postgresql.clusterNameOverride if a custom Cluster CR name is needed.
 */}}
 {{- define "reportportal.cnpgClusterName" -}}
-{{- if .Values.postgresql.fullnameOverride -}}
-  {{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- if .Values.postgresql.clusterNameOverride -}}
+  {{- .Values.postgresql.clusterNameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-  {{- $clusterChartName := default "postgresql" .Values.postgresql.nameOverride -}}
-  {{- if contains $clusterChartName .Release.Name -}}
-    {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-  {{- else -}}
-    {{- printf "%s-%s" .Release.Name $clusterChartName | trunc 63 | trimSuffix "-" -}}
-  {{- end -}}
+  {{- printf "%s-postgresql" .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 

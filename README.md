@@ -14,44 +14,23 @@ This repository houses the Helm chart for ReportPortal, a powerful and flexible 
 
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
-* **CloudNativePG operator** — required when using in-cluster PostgreSQL (`postgresql.install: true`). See [CloudNativePG setup](#cloudnativepg-postgresql) below.
 
 ## CloudNativePG PostgreSQL
 
-ReportPortal uses [CloudNativePG](https://cloudnative-pg.io/) to run PostgreSQL as a Kubernetes-native cluster (PostgreSQL 17). The CNPG operator must be installed **once per cluster** before deploying ReportPortal with `postgresql.install: true`.
+ReportPortal uses [CloudNativePG](https://cloudnative-pg.io/) to run PostgreSQL 17 as a Kubernetes-native cluster. The CNPG operator is bundled as a Helm subchart — no pre-install step is needed.
 
-### 1 — Install the CNPG operator
-
-```bash
-helm repo add cnpg https://cloudnative-pg.github.io/charts
-helm repo update
-helm install cnpg-operator cnpg/cloudnative-pg \
-  --namespace cnpg-system \
-  --create-namespace \
-  --wait
-
-# Verify CRDs are registered
-kubectl get crd clusters.postgresql.cnpg.io
-```
-
-### 2 — Deploy ReportPortal with in-cluster PostgreSQL
+### Single-command install with in-cluster PostgreSQL
 
 ```bash
 helm install reportportal reportportal/reportportal \
   --namespace reportportal \
   --create-namespace \
-  --set postgresql.install=true
+  --set uat.superadminInitPasswd.password=<your-password>
 ```
 
-> **Non-default release name:** If you use a release name other than `reportportal` (e.g. `helm install rp …`), you must also set the credentials secret name to match:
-> ```bash
-> --set postgresql.cluster.superuserSecret=rp-cnpg-credentials \
-> --set "postgresql.cluster.initdb.secret.name=rp-cnpg-credentials"
-> ```
+`postgresql.install` defaults to `true`. The operator, Cluster CR, and all ReportPortal services are deployed in a single command. Resource names are derived automatically from the release name — no extra flags required for custom release names.
 
 ### Use an external / managed database instead
-
-Set `postgresql.install=false` and point `database.endpoint` at your managed database:
 
 ```bash
 helm install reportportal reportportal/reportportal \
@@ -65,15 +44,15 @@ helm install reportportal reportportal/reportportal \
 
 | Parameter | Default | Description |
 |---|---|---|
-| `postgresql.install` | `true` | Deploy CNPG cluster (set `false` for external DB) |
-| `postgresql.version.postgresql` | `"17"` | PostgreSQL major version |
-| `postgresql.cluster.instances` | `1` | Number of PostgreSQL instances |
-| `postgresql.cluster.storage.size` | `8Gi` | Persistent volume size per instance |
-| `postgresql.cluster.resources` | see values.yaml | CPU/memory requests and limits |
-| `postgresql.cluster.superuserSecret` | `reportportal-cnpg-credentials` | Secret name for postgres superuser credentials |
+| `postgresql.install` | `true` | Deploy CNPG operator + cluster (set `false` for external DB) |
+| `postgresql.version` | `"17"` | PostgreSQL major version |
+| `postgresql.instances` | `1` | Number of PostgreSQL instances |
+| `postgresql.storage.size` | `8Gi` | Persistent volume size per instance |
+| `postgresql.resources` | see values.yaml | CPU/memory requests and limits per instance |
+| `postgresql.clusterNameOverride` | _(auto)_ | Override the Cluster CR name (e.g. to adopt an existing cluster) |
 | `database.endpoint` | _(auto)_ | Override to use an external database host |
 
-The Cluster CR and credentials Secret are annotated with `helm.sh/resource-policy: keep`, so they survive `helm uninstall`.
+The Cluster CR and credentials Secret are annotated with `helm.sh/resource-policy: keep`, so they survive `helm uninstall`. See [docs/cloudnative-pg.md](docs/cloudnative-pg.md) for full details including manual cleanup instructions.
 
 ## Documentation
 
@@ -101,7 +80,6 @@ This chart includes the following dependencies with their respective licenses:
 
 - **PostgreSQL** (via CloudNativePG) - [PostgreSQL License](https://www.postgresql.org/about/licence/)
 - **CloudNativePG operator** - [Apache License 2.0](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/LICENSE)
-- **CloudNativePG cluster chart** - [Apache License 2.0](https://github.com/cloudnative-pg/charts/blob/main/LICENSE)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
 - **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)

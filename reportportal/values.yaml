@@ -1289,7 +1289,7 @@ resourceQuota:
 
 ## @section External dependencies installation configuration
 ##
-## @param postgresql CloudNativePG cluster as dependency (operator must be pre-installed separately)
+## @param postgresql CloudNativePG operator + cluster as bundled dependency
 ## Set postgresql.install to `false` if using a Cloud/On-Premise managed database
 ##
 postgresql:
@@ -1307,41 +1307,38 @@ postgresql:
     service:
       ports:
         postgresql: *dbport
-  ## @param postgresql.version PostgreSQL major version
+  ## @param postgresql.version PostgreSQL major version — drives imageName in the Cluster CR
   ##
-  version:
-    postgresql: "17"
-  ## @param postgresql.cluster CNPG Cluster spec — passed to the cluster subchart
+  version: "17"
+  ## @param postgresql.instances Number of PostgreSQL instances
   ##
-  cluster:
-    ## @param postgresql.cluster.instances Number of PostgreSQL instances
-    ##
-    instances: 1
-    storage:
-      size: 8Gi
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "100m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    annotations:
-      "helm.sh/resource-policy": keep
-    enableSuperuserAccess: true
-    ## @param postgresql.cluster.superuserSecret Name of the secret providing postgres credentials.
-    ## Must match the name created by templates/cloudnative-pg/credentials-secret.yaml.
-    ## Override to "<release>-cnpg-credentials" when using a non-default release name.
-    ##
-    superuserSecret: &cnpgCredentialSecret reportportal-cnpg-credentials
-    initdb:
-      database: *dbname
-      owner: *dbuser
-      secret:
-        name: *cnpgCredentialSecret
-    postgresql:
-      pg_hba:
-        - host all all 0.0.0.0/0 md5
+  instances: 1
+  ## @param postgresql.storage Storage configuration for the Cluster CR
+  ##
+  storage:
+    size: 8Gi
+    storageClass: ""
+  ## @param postgresql.resources Resource requests and limits for each PostgreSQL instance
+  ##
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  ## @param postgresql.pg_hba PostgreSQL host-based authentication rules
+  ##
+  pg_hba:
+    - host all all 0.0.0.0/0 md5
+  ## CRDs are bundled in reportportal/crds/ so Helm installs them before any templates.
+  ## Disable the operator chart's own CRD template to avoid double-apply on first install.
+  ## Restore the operator's app.kubernetes.io/name label to "cloudnative-pg".
+  ## When aliased as "postgresql", .Chart.Name becomes "postgresql", breaking the
+  ## operator's self-discovery filter (hardcoded to app.kubernetes.io/name=cloudnative-pg).
+  nameOverride: "cloudnative-pg"
+  crds:
+    create: false
 
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency

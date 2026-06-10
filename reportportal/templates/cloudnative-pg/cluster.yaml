@@ -1,0 +1,35 @@
+{{- if .Values.postgresql.install }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "reportportal.cnpgClusterName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  instances: {{ .Values.postgresql.instances }}
+  imageName: ghcr.io/cloudnative-pg/postgresql:{{ .Values.postgresql.version }}
+  storage:
+    size: {{ .Values.postgresql.storage.size }}
+    {{- with .Values.postgresql.storage.storageClass }}
+    storageClass: {{ . }}
+    {{- end }}
+  {{- with .Values.postgresql.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: {{ include "reportportal.cnpgCredentialSecretName" . }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.database.dbName | quote }}
+      owner: {{ .Values.database.user | quote }}
+      secret:
+        name: {{ include "reportportal.cnpgCredentialSecretName" . }}
+  postgresql:
+    pg_hba:
+      {{- toYaml .Values.postgresql.pg_hba | nindent 6 }}
+{{- end }}
