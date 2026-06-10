@@ -111,7 +111,7 @@ spec:
             - name: RP_SESSION_LIVE
               value: "{{ .Values.uat.sessionLiveTime }}"
             - name: RP_DB_HOST
-              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+              value: {{ include "reportportal.databaseEndpoint" . }}
             - name: RP_DB_PORT
               value: "{{ .Values.database.port }}"
             - name: RP_DB_NAME

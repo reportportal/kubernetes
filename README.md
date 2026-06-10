@@ -15,6 +15,45 @@ This repository houses the Helm chart for ReportPortal, a powerful and flexible 
 * Kubernetes v1.26+
 * Helm Package Manager v3.4+
 
+## CloudNativePG PostgreSQL
+
+ReportPortal uses [CloudNativePG](https://cloudnative-pg.io/) to run PostgreSQL 17 as a Kubernetes-native cluster. The CNPG operator is bundled as a Helm subchart — no pre-install step is needed.
+
+### Single-command install with in-cluster PostgreSQL
+
+```bash
+helm install reportportal reportportal/reportportal \
+  --namespace reportportal \
+  --create-namespace \
+  --set uat.superadminInitPasswd.password=<your-password>
+```
+
+`postgresql.install` defaults to `true`. The operator, Cluster CR, and all ReportPortal services are deployed in a single command. Resource names are derived automatically from the release name — no extra flags required for custom release names.
+
+### Use an external / managed database instead
+
+```bash
+helm install reportportal reportportal/reportportal \
+  --namespace reportportal \
+  --create-namespace \
+  --set postgresql.install=false \
+  --set database.endpoint=<your-db-host>
+```
+
+### Key CloudNativePG values
+
+| Parameter | Default | Description |
+|---|---|---|
+| `postgresql.install` | `true` | Deploy CNPG operator + cluster (set `false` for external DB) |
+| `postgresql.version` | `"17"` | PostgreSQL major version |
+| `postgresql.instances` | `1` | Number of PostgreSQL instances |
+| `postgresql.storage.size` | `8Gi` | Persistent volume size per instance |
+| `postgresql.resources` | see values.yaml | CPU/memory requests and limits per instance |
+| `postgresql.clusterNameOverride` | _(auto)_ | Override the Cluster CR name (e.g. to adopt an existing cluster) |
+| `database.endpoint` | _(auto)_ | Override to use an external database host |
+
+The Cluster CR and credentials Secret are annotated with `helm.sh/resource-policy: keep`, so they survive `helm uninstall`. See [docs/cloudnative-pg.md](docs/cloudnative-pg.md) for full details including manual cleanup instructions.
+
 ## Documentation
 
 * [General User Manual](https://reportportal.io/docs/)
@@ -39,8 +78,8 @@ This Helm chart for ReportPortal is licensed under the [Apache License 2.0](http
 
 This chart includes the following dependencies with their respective licenses:
 
-- **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
+- **PostgreSQL** (via CloudNativePG) - [PostgreSQL License](https://www.postgresql.org/about/licence/)
+- **CloudNativePG operator** - [Apache License 2.0](https://github.com/cloudnative-pg/cloudnative-pg/blob/main/LICENSE)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
 - **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)
-- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (recommended alternative since chart 26.3.12)

@@ -14,6 +14,7 @@ This directory contains installation and configuration guides for ReportPortal o
 
 - [Install ReportPortal on GKE](gke-install.md)
 - [Install ReportPortal on Minikube](minikube-install.md)
+- [CloudNativePG PostgreSQL Setup](cloudnative-pg.md)
 - [Helm Pre-upgrade Guide](helm-pre-upgrade.md)
 - [Parameters Reference](parameters-reference.md)
 - [Audit logs and log collection](audit-logs.md)

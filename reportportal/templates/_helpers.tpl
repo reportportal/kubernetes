@@ -122,5 +122,39 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 {{- end -}}
 
+{{/*
+Returns the name of the CNPG credentials Secret.
+Used in both credentials-secret.yaml and the hand-rolled cluster.yaml template.
+*/}}
+{{- define "reportportal.cnpgCredentialSecretName" -}}
+{{- printf "%s-cnpg-credentials" .Release.Name -}}
+{{- end -}}
 
+{{/*
+Compute the CNPG Cluster CR name.
+Defaults to "<release>-postgresql" independent of the operator subchart's nameOverride
+(nameOverride is used to fix the operator's self-discovery label, not for cluster naming).
+Override with postgresql.clusterNameOverride if a custom Cluster CR name is needed.
+*/}}
+{{- define "reportportal.cnpgClusterName" -}}
+{{- if .Values.postgresql.clusterNameOverride -}}
+  {{- .Values.postgresql.clusterNameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+  {{- printf "%s-postgresql" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Database endpoint — returns the correct hostname depending on which
+database backend is enabled:
+  1. Explicit override via database.endpoint (external DB)
+  2. CloudNativePG read-write service (when postgresql.install=true)
+*/}}
+{{- define "reportportal.databaseEndpoint" -}}
+{{- if .Values.database.endpoint -}}
+  {{- .Values.database.endpoint -}}
+{{- else -}}
+  {{- printf "%s-rw.%s.svc.cluster.local" (include "reportportal.cnpgClusterName" .) .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
 
