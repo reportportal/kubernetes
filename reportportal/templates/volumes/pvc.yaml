@@ -12,4 +12,8 @@ spec:
     requests:
       storage: {{ .Values.storage.volume.capacity }}
   storageClassName: {{ .Values.storage.volume.storageClassName }}
+{{- if (ne .Values.storage.volume.volumeConfig.type "") }}
+  {{- /* We have provisioned a PV for this PVC */}}
+  volumeName: {{ .Release.Name }}-shared-volume
+{{- end }}
 {{- end }}
