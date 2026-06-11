@@ -1,0 +1,46 @@
+{{- if and .Values.istio.enable .Values.istio.gateway.create }}
+{{- $fullName := include "reportportal.fullname" . -}}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ .Values.istio.gateway.name | default (printf "%s-istio-gateway" $fullName) }}
+  labels: {{ include "labels" . | indent 4 }}
+spec:
+  selector:
+    {{- toYaml .Values.istio.gateway.selector | nindent 4 }}
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        {{- if .Values.istio.hosts }}
+        {{- if kindIs "slice" .Values.istio.hosts }}
+        {{- toYaml .Values.istio.hosts | nindent 8 }}
+        {{- else }}
+        - {{ .Values.istio.hosts | quote }}
+        {{- end }}
+        {{- else }}
+        - "*"
+        {{- end }}
+    {{- if .Values.istio.gateway.tls.enable }}
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: {{ .Values.istio.gateway.tls.mode }}
+        credentialName: {{ .Values.istio.gateway.tls.credentialName }}
+      hosts:
+        {{- if .Values.istio.hosts }}
+        {{- if kindIs "slice" .Values.istio.hosts }}
+        {{- toYaml .Values.istio.hosts | nindent 8 }}
+        {{- else }}
+        - {{ .Values.istio.hosts | quote }}
+        {{- end }}
+        {{- else }}
+        - "*"
+        {{- end }}
+    {{- end }}
+{{- end }}
