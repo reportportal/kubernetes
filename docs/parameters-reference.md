@@ -420,7 +420,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `ingress.enable` | Enable ingress | `true` |
 | `ingress.hosts` | Ingress hosts | `null` |
 | `ingress.path` | Ingress path | `""` |
-| `ingress.class` | Ingress class (nginx, gce, alb, or other) | `nginx` |
+| `ingress.class` | Ingress class (`nginx`, `traefik`, `gce`, `alb`, or other; maps to `spec.ingressClassName`) | `nginx` |
 | `ingress.annotations` | Ingress annotations (key-value map) | `{}` |
 | `ingress.tls.certificates` | TLS certificates | `null` |
 | `ingress.tls.certificate.gcpManaged` | GCP managed certificate | `false` |

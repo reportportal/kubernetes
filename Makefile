@@ -68,7 +68,7 @@ deps-build:
 
 repo-add:
 	@ echo "Adding Helm repository"
-	@ helm repo add reportportal https://reportportal.io/kubernetes
+	@ helm repo add reportportal https://k8s.reportportal.io
 	@ helm repo add bitnami https://charts.bitnami.com/bitnami
 	@ helm repo add opensearch https://opensearch-project.github.io/helm-charts
 

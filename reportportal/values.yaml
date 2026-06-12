@@ -152,7 +152,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.15.2
+    tag: 5.15.3
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -237,7 +237,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   replicaCount: 1
   readinessProbe:
@@ -552,7 +552,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.15.0
+    tag: 5.15.1
   pullPolicy: Always
   readinessProbe:
     enabled: true
@@ -670,7 +670,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -764,7 +764,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.1
+    tag: 5.15.2
   resources:
     requests:
       cpu: 100m
@@ -860,7 +860,7 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports four storage types: minio, seaweedfs, s3, and filesystem
+## ReportPortal supports three storage types: minio, s3, and filesystem
 ## Choose the storage type that best fits your environment and requirements
 ##
 ## Quick Start Presets:
@@ -870,13 +870,11 @@ searchengine:
 ##
 ## Storage Type Comparison:
 ##   - minio: Self-hosted S3-compatible (chart default for backward compatibility)
-##   - seaweedfs: Apache 2.0 licensed S3-compatible (recommended since chart 26.3.12 / ReportPortal 26.0.2)
 ##   - s3: Cloud object storage (production, IAM)
 ##   - filesystem: Shared filesystem (production, on-premise)
 ##
 storage:
-  ## @param storage.type Storage type: minio, seaweedfs, s3, filesystem
-  ## Default: minio. From chart 26.3.12 we recommend seaweedfs (Apache 2.0). To use: type=seaweedfs, seaweedfs.install=true, minio.install=false
+  ## @param storage.type Storage type: minio, s3, filesystem
   ##
   type: minio
 
@@ -914,8 +912,7 @@ storage:
 
   ## @param storage.port Storage service port
   ## Leave empty to auto-select based on storage type:
-  ##   seaweedfs → 8333 (SeaweedFS S3 gateway default)
-  ##   minio     → 9000 (MinIO API default)
+  ##   minio → 9000 (MinIO API default)
   ## Set explicitly to override the auto-selected default.
   ##
   port: ""
@@ -1033,6 +1030,7 @@ storage:
 ## @param ingress.hosts is required if you want to use Google Managed Certificate.
 ##
 ## @param ingress.class set to `nginx` if you have nginx ingress controller.
+## @param ingress.class set to `traefik` if you use Traefik (e.g. Rancher Desktop, k3s).
 ## @param ingress.class set to `gce` if you want to use GCE ingress controller.
 ## @param ingress.class set to `alb` if you want to use AWS Load Balancer Controller.
 ## @param ingress.class set to any other ingress controller name if you want to use it.
@@ -1093,6 +1091,11 @@ ingress:
   ##
   ## Example for GCE Ingress Controller:
   ##   kubernetes.io/ingress.class: gce
+  ##
+  ## Example for Traefik Ingress Controller (ingressClassName must match your IngressClass, usually `traefik`):
+  ##   ingress.class: traefik
+  ## Optional: attach a Traefik Middleware for large uploads (create the Middleware CR in the same namespace):
+  ##   traefik.ingress.kubernetes.io/router.middlewares: <namespace>-reportportal-buffering@kubernetescrd
   ##
   annotations: {}
   tls:
@@ -1359,61 +1362,8 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param seaweedfs SeaweedFS Helm Chart — Apache 2.0 licensed S3-compatible object storage (recommended since chart 26.3.12)
-## Drop-in replacement for MinIO. S3 API on port 8333. Set install: true and minio.install: false to use.
-##
-## Uses allInOne mode: master + volume + filer in a SINGLE pod backed by ONE PVC.
-## This is a minimal demo/test configuration. For production (HA, resources, affinity, TLS)
-## disable allInOne and configure master/volume/filer separately:
-##   helm show values seaweedfs/seaweedfs
-##
-seaweedfs:
-  install: false
-
-  global:
-    enableSecurity: false
-    serviceAccountName: "seaweedfs"
-    ## Update Chart.yaml dependency version when changing imageTag
-    imageName: chrislusf/seaweedfs
-    imageTag: "4.15"
-    createClusterRole: true
-
-  ## Disable individual components — allInOne runs everything in one pod
-  master:
-    enabled: false
-  volume:
-    enabled: false
-  filer:
-    enabled: false
-
-  ## Single-pod all-in-one: master + volume + filer in one Deployment (1 replica, 1 PVC)
-  ## Service: <release>-seaweedfs-all-in-one.<namespace>.svc.{{ .Values.global.clusterDomain }}:8333
-  allInOne:
-    enabled: true
-    ## 0 = auto-detect max volumes from disk (removes the default 8-volume cap)
-    extraArgs: ["-volume.max=0"]
-    s3:
-      enabled: true
-      enableAuth: true
-    ## PVC for all object data — size to match your needs (perf MinIO uses 50Gi)
-    data:
-      type: "persistentVolumeClaim"
-      size: "20Gi"
-      storageClass: ""
-      annotations:
-        "helm.sh/resource-policy": "keep"
-
-  ## S3 credentials — anchors reference storage.accesskey / storage.secretkey above.
-  ## The chart generates the S3 auth config JSON from these values automatically.
-  s3:
-    enableAuth: true
-    credentials:
-      admin:
-        accessKey: *storageAccessKey
-        secretKey: *storageSecretKey
-
 ## @param minio External MinIO Helm Chart (chart default for backward compatibility)
-## Set minio.install to false when using SeaweedFS or external S3. MinIO is AGPL licensed; we recommend SeaweedFS (Apache 2.0) for new installs since chart 26.3.12.
+## Set minio.install to false when using external S3.
 ##
 minio:
   install: true

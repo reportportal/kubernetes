@@ -106,7 +106,7 @@ ingress:
 
 ```bash
 # Add the Helm repository
-helm repo add reportportal https://reportportal.github.io/kubernetes
+helm repo add reportportal https://k8s.reportportal.io
 helm repo update
 
 # Deploy ReportPortal with ALB configuration
