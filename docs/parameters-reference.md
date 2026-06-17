@@ -8,7 +8,6 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `global.clusterDomain` | Kubernetes cluster domain used to build service FQDNs | `cluster.local` |
 | `global.imageRegistry` | Global image registry | `""` |
 | `global.imagePullSecrets` | Global registry secret names as an array | `[]` |
 | `global.nameOverride` | Expand the name of the chart | `""` |
