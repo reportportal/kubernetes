@@ -26,6 +26,10 @@ spec:
     spec:
       serviceAccountName: {{ include "reportportal.serviceAccountName" . }}
       restartPolicy: OnFailure
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: delete-job
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "kubectl") }}"
