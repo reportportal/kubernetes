@@ -90,6 +90,8 @@ spec:
           {{- if .Values.serviceapi.auditLogs.enable }}
             - name: AUDIT_LOGGER
               value: "{{ .Values.serviceapi.auditLogs.loglevel }}"
+            - name: AUDIT_LOG_FILE
+              value: "/var/log/reportportal/audit.log"
           {{- end }}
             - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
               value: "{{ .Values.serviceapi.allowDeleteAccount }}"
