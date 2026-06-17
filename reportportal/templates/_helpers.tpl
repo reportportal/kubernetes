@@ -117,7 +117,7 @@ Override storage.endpoint to point at an external or custom service.
 {{- $scheme := ternary "https" "http" .Values.storage.ssl -}}
 {{- if eq $storageType "minio" -}}
   {{- $port := .Values.storage.port | default 9000 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
+  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) -}}
   {{- printf "%s://%s:%v" $scheme $host $port -}}
 {{- end -}}
 {{- end -}}
