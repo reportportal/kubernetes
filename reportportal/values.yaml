@@ -749,7 +749,7 @@ serviceanalyzer:
     initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 10
     successThreshold: 1
   ## @param serviceanalyzer.livenessProbe configure liveness probe
   ##
