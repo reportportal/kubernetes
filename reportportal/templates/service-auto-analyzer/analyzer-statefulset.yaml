@@ -148,9 +148,11 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.readinessProbe.enabled }}
         readinessProbe:
-          httpGet:
-            path: /
-            port: 5001
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout=5)"
           initialDelaySeconds: {{ .Values.serviceanalyzer.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.readinessProbe.timeoutSeconds }}
@@ -159,9 +161,11 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: /
-            port: 5001
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout=5)"
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}
