@@ -746,18 +746,18 @@ serviceanalyzer:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
+    initialDelaySeconds: 60
+    periodSeconds: 15
+    timeoutSeconds: 15
     failureThreshold: 10
     successThreshold: 1
   ## @param serviceanalyzer.livenessProbe configure liveness probe
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
+    initialDelaySeconds: 120
     periodSeconds: 30
-    timeoutSeconds: 10
+    timeoutSeconds: 15
     failureThreshold: 3
     successThreshold: 1
 
