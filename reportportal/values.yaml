@@ -260,10 +260,10 @@ serviceapi:
   ##
   startupProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 15
+    failureThreshold: 20
   readinessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -456,7 +456,7 @@ uat:
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 18
+    failureThreshold: 24
   readinessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -593,7 +593,7 @@ servicejobs:
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 12
+    failureThreshold: 20
   readinessProbe:
     enabled: true
     initialDelaySeconds: 0
@@ -789,7 +789,7 @@ serviceanalyzer:
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 15
-    failureThreshold: 18
+    failureThreshold: 20
   ## @param serviceanalyzer.readinessProbe configure readiness probe
   ##
   readinessProbe:
