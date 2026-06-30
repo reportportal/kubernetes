@@ -742,21 +742,29 @@ serviceanalyzer:
     ## @param serviceanalyzer.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
     ##
     labels: {}
+  ## @param serviceanalyzer.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 15
+    failureThreshold: 18
   ## @param serviceanalyzer.readinessProbe configure readiness probe
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 15
+    initialDelaySeconds: 0
+    periodSeconds: 10
     timeoutSeconds: 15
-    failureThreshold: 10
+    failureThreshold: 3
     successThreshold: 1
   ## @param serviceanalyzer.livenessProbe configure liveness probe
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 120
-    periodSeconds: 30
+    initialDelaySeconds: 0
+    periodSeconds: 20
     timeoutSeconds: 15
     failureThreshold: 3
     successThreshold: 1

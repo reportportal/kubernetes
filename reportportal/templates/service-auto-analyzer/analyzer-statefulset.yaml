@@ -146,6 +146,18 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
+        {{- if .Values.serviceanalyzer.startupProbe.enabled }}
+        startupProbe:
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ sub .Values.serviceanalyzer.startupProbe.timeoutSeconds 2 }})"
+          initialDelaySeconds: {{ .Values.serviceanalyzer.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.startupProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.startupProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.startupProbe.failureThreshold }}
+        {{- end }}
         {{- if .Values.serviceanalyzer.readinessProbe.enabled }}
         readinessProbe:
           exec:
