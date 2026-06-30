@@ -96,21 +96,29 @@ serviceindex:
   podAnnotations: {}
   securityContext: {}
   serviceAccountName: ""
+  ## @param serviceindex.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 12
   ## @param serviceindex.readinessProbe configure readiness probe
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    timeoutSeconds: 3
     failureThreshold: 3
     successThreshold: 1
   ## @param serviceindex.livenessProbe configure liveness probe
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 30
+    initialDelaySeconds: 0
+    periodSeconds: 20
     timeoutSeconds: 5
     failureThreshold: 3
   ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
@@ -182,21 +190,29 @@ serviceui:
   affinity: {}
   podAnnotations: {}
   securityContext: {}
+  ## @param serviceui.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 12
   ## @param serviceui.readinessProbe configure readiness probe
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    timeoutSeconds: 3
     failureThreshold: 3
     successThreshold: 1
   ## @param serviceui.livenessProbe configure liveness probe
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 30
+    initialDelaySeconds: 0
+    periodSeconds: 20
     timeoutSeconds: 5
     failureThreshold: 3
   ## @param serviceui.nodeSelector define which Nodes the Pods are scheduled on.
@@ -240,18 +256,26 @@ serviceapi:
     tag: 5.15.2
   pullPolicy: Always
   replicaCount: 1
+  ## @param serviceapi.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 15
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 40
-    periodSeconds: 20
-    timeoutSeconds: 5
-    failureThreshold: 20
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 40
+    initialDelaySeconds: 0
     periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   resources:
     requests:
       cpu: 500m
@@ -425,18 +449,26 @@ uat:
     tag: 5.15.0
   pullPolicy: Always
   replicaCount: 1
+  ## @param uat.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 18
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 0
+    periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 0
+    periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   resources:
     requests:
       cpu: 100m
@@ -554,18 +586,26 @@ servicejobs:
     repository: reportportal/service-jobs
     tag: 5.15.1
   pullPolicy: Always
+  ## @param servicejobs.startupProbe configure startup probe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 12
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 0
+    periodSeconds: 10
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 60
-    periodSeconds: 40
+    initialDelaySeconds: 0
+    periodSeconds: 20
     timeoutSeconds: 5
-    failureThreshold: 10
+    failureThreshold: 3
   ## @param servicejobs.coreJobs define the configuration for the core jobs that clean the database and storage
   ## @param servicejobs.coreJobs.cleanEventsRetention define the number of days to keep events in the database
   ## @param servicejobs.coreJobs.cleanEventsCron define the cron expression for the clean events job

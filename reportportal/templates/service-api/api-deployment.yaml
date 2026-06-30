@@ -197,26 +197,36 @@ spec:
         {{- end }}
             - name: MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED
               value: "false"
+          {{- if .Values.serviceapi.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: "{{ $path }}/api/health"
+              port: 8585
+            initialDelaySeconds: {{ .Values.serviceapi.startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.serviceapi.startupProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.serviceapi.startupProbe.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.serviceapi.startupProbe.failureThreshold | default 15 }}
+          {{- end }}
           {{- if .Values.serviceapi.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: "{{ $path }}/api/health"
               port: 8585
-            initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 30 }}
-            periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 20 }}
+            initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 10 }}
             timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds | default 3 }}
-            failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold | default 20 }}
+            failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold | default 3 }}
           {{- end }}
-        {{- if .Values.serviceapi.livenessProbe.enabled }}
+          {{- if .Values.serviceapi.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: "{{ $path }}/api/health"
               port: 8585
-            initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 30 }}
+            initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 0 }}
             periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
             timeoutSeconds: {{ .Values.serviceapi.livenessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 5 }}
-        {{- end }}
+            failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 3 }}
+          {{- end }}
           volumeMounts:
           {{- if .Values.serviceapi.secret.enabled }}
             - name: {{ template "reportportal.name" . }}-serviceapi-secret

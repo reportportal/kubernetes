@@ -176,25 +176,35 @@ spec:
         {{- end }}
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
+        {{- if .Values.servicejobs.startupProbe.enabled }}
+        startupProbe:
+          httpGet:
+            path: "/jobs/health"
+            port: 8686
+          initialDelaySeconds: {{ .Values.servicejobs.startupProbe.initialDelaySeconds | default 10 }}
+          periodSeconds: {{ .Values.servicejobs.startupProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.servicejobs.startupProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.servicejobs.startupProbe.failureThreshold | default 12 }}
+        {{- end }}
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
+          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 10 }}
           timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 10 }}
+          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
+          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 20 }}
           timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 10 }}
+          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}
