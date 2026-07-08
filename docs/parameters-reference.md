@@ -41,20 +41,26 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceindex.podAnnotations` | Pod annotations | `{}` |
 | `serviceindex.securityContext` | Security context | `{}` |
 | `serviceindex.serviceAccountName` | Service account name | `""` |
+| `serviceindex.startupProbe.enabled` | Enable startup probe | `true` |
+| `serviceindex.startupProbe.initialDelaySeconds` | Initial delay | `5` |
+| `serviceindex.startupProbe.periodSeconds` | Period | `5` |
+| `serviceindex.startupProbe.timeoutSeconds` | Timeout | `3` |
+| `serviceindex.startupProbe.failureThreshold` | Failure threshold | `12` |
 | `serviceindex.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceindex.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
-| `serviceindex.readinessProbe.periodSeconds` | Period | `10` |
-| `serviceindex.readinessProbe.timeoutSeconds` | Timeout | `5` |
+| `serviceindex.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceindex.readinessProbe.periodSeconds` | Period | `5` |
+| `serviceindex.readinessProbe.timeoutSeconds` | Timeout | `3` |
 | `serviceindex.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceindex.readinessProbe.successThreshold` | Success threshold | `1` |
 | `serviceindex.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceindex.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `serviceindex.livenessProbe.periodSeconds` | Period | `30` |
+| `serviceindex.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceindex.livenessProbe.periodSeconds` | Period | `20` |
 | `serviceindex.livenessProbe.timeoutSeconds` | Timeout | `5` |
 | `serviceindex.livenessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceindex.nodeSelector` | Node selector | `{}` |
 | `serviceindex.affinity` | Affinity rules | `{}` |
 | `serviceindex.tolerations` | Tolerations | `[]` |
+| `serviceindex.strategy` | Deployment strategy | `{}` |
 | `serviceindex.pdb.create` | Create PDB | `false` |
 | `serviceindex.pdb.minAvailable` | PDB min available | `""` |
 | `serviceindex.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -63,6 +69,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceindex.service.nodePort` | Node port | `""` |
 | `serviceindex.service.extraPorts` | Extra ports | `[]` |
 | `serviceindex.service.annotations` | Service annotations | `{}` |
+| `serviceindex.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
 
 ## Service UI Configuration
 
@@ -70,7 +77,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceui.name` | Service name | `ui` |
 | `serviceui.image.repository` | Image repository | `reportportal/service-ui` |
-| `serviceui.image.tag` | Image tag | `5.15.1` |
+| `serviceui.image.tag` | Image tag | `5.15.3` |
 | `serviceui.pullPolicy` | Image pull policy | `Always` |
 | `serviceui.replicaCount` | Number of replicas | `1` |
 | `serviceui.resources.requests.cpu` | CPU requests | `100m` |
@@ -84,20 +91,26 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceui.affinity` | Affinity rules | `{}` |
 | `serviceui.podAnnotations` | Pod annotations | `{}` |
 | `serviceui.securityContext` | Security context | `{}` |
+| `serviceui.startupProbe.enabled` | Enable startup probe | `true` |
+| `serviceui.startupProbe.initialDelaySeconds` | Initial delay | `5` |
+| `serviceui.startupProbe.periodSeconds` | Period | `5` |
+| `serviceui.startupProbe.timeoutSeconds` | Timeout | `3` |
+| `serviceui.startupProbe.failureThreshold` | Failure threshold | `12` |
 | `serviceui.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceui.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
-| `serviceui.readinessProbe.periodSeconds` | Period | `10` |
-| `serviceui.readinessProbe.timeoutSeconds` | Timeout | `5` |
+| `serviceui.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceui.readinessProbe.periodSeconds` | Period | `5` |
+| `serviceui.readinessProbe.timeoutSeconds` | Timeout | `3` |
 | `serviceui.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceui.readinessProbe.successThreshold` | Success threshold | `1` |
 | `serviceui.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceui.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `serviceui.livenessProbe.periodSeconds` | Period | `30` |
+| `serviceui.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceui.livenessProbe.periodSeconds` | Period | `20` |
 | `serviceui.livenessProbe.timeoutSeconds` | Timeout | `5` |
 | `serviceui.livenessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceui.nodeSelector` | Node selector | `{}` |
 | `serviceui.serviceAccountName` | Service account name | `""` |
 | `serviceui.tolerations` | Tolerations | `[]` |
+| `serviceui.strategy` | Deployment strategy | `{}` |
 | `serviceui.pdb.create` | Create PDB | `false` |
 | `serviceui.pdb.minAvailable` | PDB min available | `""` |
 | `serviceui.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -106,6 +119,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceui.service.nodePort` | Node port | `""` |
 | `serviceui.service.extraPorts` | Extra ports | `[]` |
 | `serviceui.service.annotations` | Service annotations | `{}` |
+| `serviceui.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
 
 ## Service API Configuration
 
@@ -113,24 +127,33 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.0` |
+| `serviceapi.image.tag` | Image tag | `5.15.2` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
+| `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
+| `serviceapi.startupProbe.initialDelaySeconds` | Initial delay | `30` |
+| `serviceapi.startupProbe.periodSeconds` | Period | `10` |
+| `serviceapi.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `serviceapi.startupProbe.failureThreshold` | Failure threshold | `20` |
 | `serviceapi.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceapi.readinessProbe.initialDelaySeconds` | Initial delay | `40` |
-| `serviceapi.readinessProbe.periodSeconds` | Period | `20` |
-| `serviceapi.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `serviceapi.readinessProbe.failureThreshold` | Failure threshold | `20` |
+| `serviceapi.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceapi.readinessProbe.periodSeconds` | Period | `10` |
+| `serviceapi.readinessProbe.timeoutSeconds` | Timeout | `3` |
+| `serviceapi.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceapi.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceapi.livenessProbe.initialDelaySeconds` | Initial delay | `40` |
+| `serviceapi.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
 | `serviceapi.livenessProbe.periodSeconds` | Period | `20` |
 | `serviceapi.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `serviceapi.livenessProbe.failureThreshold` | Failure threshold | `10` |
+| `serviceapi.livenessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceapi.resources.requests.cpu` | CPU requests | `500m` |
 | `serviceapi.resources.requests.memory` | Memory requests | `1Gi` |
 | `serviceapi.resources.limits.cpu` | CPU limits | `1000m` |
 | `serviceapi.resources.limits.memory` | Memory limits | `2Gi` |
 | `serviceapi.extraInitContainers` | Init containers | `{}` |
+| `serviceapi.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
+| `serviceapi.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
+| `serviceapi.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
+| `serviceapi.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
 | `serviceapi.extraVolumes` | Extra volumes | `[]` |
 | `serviceapi.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `serviceapi.extraContainers` | Additional sidecar containers (e.g. audit log collector) | `[]` |
@@ -154,6 +177,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.nodeSelector` | Node selector | `{}` |
 | `serviceapi.serviceAccountName` | Service account name | `""` |
 | `serviceapi.tolerations` | Tolerations | `[]` |
+| `serviceapi.strategy` | Deployment strategy | `{}` |
 | `serviceapi.pdb.create` | Create PDB | `false` |
 | `serviceapi.pdb.minAvailable` | PDB min available | `""` |
 | `serviceapi.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -162,6 +186,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.service.nodePort` | Node port | `""` |
 | `serviceapi.service.extraPorts` | Extra ports | `[]` |
 | `serviceapi.service.annotations` | Service annotations | `{}` |
+| `serviceapi.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
 | `serviceapi.secret.enabled` | Enable secret | `false` |
 | `serviceapi.secret.mountPath` | Secret mount path | `/etc/secret-volume` |
 | `serviceapi.secret.readOnly` | Secret read only | `true` |
@@ -177,16 +202,21 @@ This document provides a comprehensive reference of all configurable parameters 
 | `uat.image.tag` | Image tag | `5.15.0` |
 | `uat.pullPolicy` | Image pull policy | `Always` |
 | `uat.replicaCount` | Number of replicas | `1` |
+| `uat.startupProbe.enabled` | Enable startup probe | `true` |
+| `uat.startupProbe.initialDelaySeconds` | Initial delay | `10` |
+| `uat.startupProbe.periodSeconds` | Period | `10` |
+| `uat.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `uat.startupProbe.failureThreshold` | Failure threshold | `24` |
 | `uat.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `uat.readinessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `uat.readinessProbe.periodSeconds` | Period | `40` |
+| `uat.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `uat.readinessProbe.periodSeconds` | Period | `10` |
 | `uat.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.readinessProbe.failureThreshold` | Failure threshold | `10` |
+| `uat.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `uat.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `uat.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `uat.livenessProbe.periodSeconds` | Period | `40` |
+| `uat.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `uat.livenessProbe.periodSeconds` | Period | `20` |
 | `uat.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.livenessProbe.failureThreshold` | Failure threshold | `10` |
+| `uat.livenessProbe.failureThreshold` | Failure threshold | `3` |
 | `uat.resources.requests.cpu` | CPU requests | `100m` |
 | `uat.resources.requests.memory` | Memory requests | `512Mi` |
 | `uat.resources.limits.cpu` | CPU limits | `500m` |
@@ -194,6 +224,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `uat.sessionLiveTime` | Session live time | `86400` |
 | `uat.samlSessionLiveTime` | SAML session live time | `4320` |
 | `uat.extraInitContainers` | Init containers | `{}` |
+| `uat.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
+| `uat.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
+| `uat.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
+| `uat.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
 | `uat.extraVolumes` | Extra volumes | `[]` |
 | `uat.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `uat.superadminInitPasswd.secretName` | Superadmin password secret name | `""` |
@@ -208,6 +242,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `uat.affinity` | Affinity rules | `{}` |
 | `uat.serviceAccountName` | Service account name | `""` |
 | `uat.tolerations` | Tolerations | `[]` |
+| `uat.strategy` | Deployment strategy | `{}` |
 | `uat.pdb.create` | Create PDB | `false` |
 | `uat.pdb.minAvailable` | PDB min available | `""` |
 | `uat.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -220,6 +255,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `uat.service.nodePort` | Node port | `""` |
 | `uat.service.extraPorts` | Extra ports | `[]` |
 | `uat.service.annotations` | Service annotations | `{}` |
+| `uat.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
 | `uat.hostAliases` | Host aliases | `[]` |
 
 ## Service Jobs Configuration
@@ -228,23 +264,29 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.0` |
+| `servicejobs.image.tag` | Image tag | `5.15.1` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
+| `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
+| `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
+| `servicejobs.startupProbe.periodSeconds` | Period | `10` |
+| `servicejobs.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `servicejobs.startupProbe.failureThreshold` | Failure threshold | `20` |
 | `servicejobs.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `servicejobs.readinessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `servicejobs.readinessProbe.periodSeconds` | Period | `40` |
+| `servicejobs.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `servicejobs.readinessProbe.periodSeconds` | Period | `10` |
 | `servicejobs.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `servicejobs.readinessProbe.failureThreshold` | Failure threshold | `10` |
+| `servicejobs.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `servicejobs.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `servicejobs.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `servicejobs.livenessProbe.periodSeconds` | Period | `40` |
+| `servicejobs.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `servicejobs.livenessProbe.periodSeconds` | Period | `20` |
 | `servicejobs.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `servicejobs.livenessProbe.failureThreshold` | Failure threshold | `10` |
+| `servicejobs.livenessProbe.failureThreshold` | Failure threshold | `3` |
 | `servicejobs.coreJobs.cleanEventsRetention` | Clean events retention days | `365` |
 | `servicejobs.coreJobs.cleanEventsCron` | Clean events cron | `0 0 */24 * * *` |
 | `servicejobs.coreJobs.cleanAttachmentCron` | Clean attachment cron | `0 0 */24 * * *` |
 | `servicejobs.coreJobs.cleanLogCron` | Clean log cron | `0 0 */24 * * *` |
 | `servicejobs.coreJobs.cleanLaunchCron` | Clean launch cron | `0 0 */24 * * *` |
+| `servicejobs.coreJobs.batchSize` | Number of launches processed in one batch | `10000` |
 | `servicejobs.coreJobs.cleanStorageCron` | Clean storage cron | `0 0 */24 * * *` |
 | `servicejobs.coreJobs.storageProjectCron` | Storage project cron | `0 */5 * * * *` |
 | `servicejobs.chunksize` | Chunk size | `200000` |
@@ -253,6 +295,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.resources.limits.cpu` | CPU limits | `250m` |
 | `servicejobs.resources.limits.memory` | Memory limits | `512Mi` |
 | `servicejobs.extraInitContainers` | Init containers | `{}` |
+| `servicejobs.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
+| `servicejobs.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
+| `servicejobs.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
+| `servicejobs.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
 | `servicejobs.extraVolumes` | Extra volumes | `[]` |
 | `servicejobs.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `servicejobs.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"` |
@@ -264,6 +310,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.affinity` | Affinity rules | `{}` |
 | `servicejobs.serviceAccountName` | Service account name | `""` |
 | `servicejobs.tolerations` | Tolerations | `[]` |
+| `servicejobs.strategy` | Deployment strategy | `{}` |
 | `servicejobs.pdb.create` | Create PDB | `false` |
 | `servicejobs.pdb.minAvailable` | PDB min available | `""` |
 | `servicejobs.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -272,6 +319,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.service.nodePort` | Node port | `""` |
 | `servicejobs.service.extraPorts` | Extra ports | `[]` |
 | `servicejobs.service.annotations` | Service annotations | `{}` |
+| `servicejobs.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
 
 ## Service Analyzer Configuration
 
@@ -279,7 +327,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.1` |
+| `serviceanalyzer.image.tag` | Image tag | `5.15.2` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -287,6 +335,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.resources.limits.cpu` | CPU limits | `500m` |
 | `serviceanalyzer.resources.limits.memory` | Memory limits | `1Gi` |
 | `serviceanalyzer.extraInitContainers` | Init containers | `{}` |
+| `serviceanalyzer.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
+| `serviceanalyzer.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
+| `serviceanalyzer.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
+| `serviceanalyzer.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
 | `serviceanalyzer.extraVolumes` | Extra volumes | `[]` |
 | `serviceanalyzer.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `serviceanalyzer.podLabels` | Pod labels | `{}` |
@@ -297,6 +349,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.affinity` | Affinity rules | `{}` |
 | `serviceanalyzer.serviceAccountName` | Service account name | `""` |
 | `serviceanalyzer.tolerations` | Tolerations | `[]` |
+| `serviceanalyzer.updateStrategy` | StatefulSet update strategy | `{}` |
 | `serviceanalyzer.pdb.create` | Create PDB | `false` |
 | `serviceanalyzer.pdb.minAvailable` | PDB min available | `""` |
 | `serviceanalyzer.pdb.maxUnavailable` | PDB max unavailable | `""` |
@@ -305,24 +358,31 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.service.nodePort` | Node port | `""` |
 | `serviceanalyzer.service.extraPorts` | Extra ports | `[]` |
 | `serviceanalyzer.service.annotations` | Service annotations | `{}` |
+| `serviceanalyzer.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
+| `serviceanalyzer.startupProbe.enabled` | Enable startup probe | `true` |
+| `serviceanalyzer.startupProbe.initialDelaySeconds` | Initial delay | `10` |
+| `serviceanalyzer.startupProbe.periodSeconds` | Period | `10` |
+| `serviceanalyzer.startupProbe.timeoutSeconds` | Timeout | `15` |
+| `serviceanalyzer.startupProbe.failureThreshold` | Failure threshold | `20` |
 | `serviceanalyzer.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceanalyzer.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
+| `serviceanalyzer.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
 | `serviceanalyzer.readinessProbe.periodSeconds` | Period | `10` |
-| `serviceanalyzer.readinessProbe.timeoutSeconds` | Timeout | `5` |
+| `serviceanalyzer.readinessProbe.timeoutSeconds` | Timeout | `15` |
 | `serviceanalyzer.readinessProbe.failureThreshold` | Failure threshold | `3` |
 | `serviceanalyzer.readinessProbe.successThreshold` | Success threshold | `1` |
 | `serviceanalyzer.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceanalyzer.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `serviceanalyzer.livenessProbe.periodSeconds` | Period | `30` |
-| `serviceanalyzer.livenessProbe.timeoutSeconds` | Timeout | `10` |
+| `serviceanalyzer.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
+| `serviceanalyzer.livenessProbe.periodSeconds` | Period | `20` |
+| `serviceanalyzer.livenessProbe.timeoutSeconds` | Timeout | `15` |
 | `serviceanalyzer.livenessProbe.failureThreshold` | Failure threshold | `3` |
+| `serviceanalyzer.livenessProbe.successThreshold` | Success threshold | `1` |
 
 ## Migrations Configuration
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.0` |
+| `migrations.image.tag` | Image tag | `5.15.2` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |
@@ -385,15 +445,15 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `storage.type` | Storage type: `minio`, `seaweedfs`, `s3`, `filesystem`. From chart 26.3.12 we recommend `seaweedfs` (Apache 2.0). Chart default: `minio` | `minio` |
+| `storage.type` | Storage type: `minio`, `s3`, `filesystem` | `minio` |
 | `storage.secretName` | Storage secret name | `""` |
 | `storage.accesskeyName` | Access key name | `access-key` |
 | `storage.secretkeyName` | Secret key name | `secret-key` |
 | `storage.accesskey` | Access key | `rpuser` |
 | `storage.secretkey` | Secret key | `miniopassword` |
-| `storage.endpoint` | Storage endpoint (empty = internal service for seaweedfs/minio) | `""` |
+| `storage.endpoint` | Storage endpoint (empty = internal service for MinIO) | `""` |
 | `storage.ssl` | SSL connection | `false` |
-| `storage.port` | Storage port (empty = auto: seaweedfs→8333, minio→9000) | `""` |
+| `storage.port` | Storage port (empty = auto: minio→9000) | `""` |
 | `storage.region` | AWS region | `""` |
 | `storage.bucket.type` | Bucket type (single, multi) | `multi` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
@@ -427,6 +487,31 @@ This document provides a comprehensive reference of all configurable parameters 
 | `ingress.tls.certificate.privateKey` | Private key | `null` |
 | `ingress.tls.certificate.certificate` | Certificate | `null` |
 
+## Gateway API Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `gatewayAPI.enable` | Enable Gateway API resources (HTTPRoute) | `false` |
+| `gatewayAPI.hostnames` | Hostnames for the HTTPRoute (can be a list or single string) | `null` |
+| `gatewayAPI.path` | Base path prefix for all routes | `""` |
+| `gatewayAPI.parentRefs` | Custom parent references (advanced) | `null` |
+| `gatewayAPI.gatewayRef.name` | Name of the Gateway to attach routes to | `""` |
+| `gatewayAPI.gatewayRef.namespace` | Namespace of the Gateway (optional, defaults to same namespace) | `""` |
+| `gatewayAPI.gatewayRef.sectionName` | Specific listener on the Gateway (optional) | `""` |
+| `gatewayAPI.httpRoute.annotations` | Annotations for the HTTPRoute | `{}` |
+| `gatewayAPI.httpRoute.backendRefs.weight` | Backend reference weight | `null` |
+| `gatewayAPI.httpRoute.additionalRules` | Additional routing rules | `[]` |
+| `gatewayAPI.gateway.create` | Create a Gateway resource | `false` |
+| `gatewayAPI.gateway.name` | Gateway name (defaults to `<fullname>-gateway`) | `""` |
+| `gatewayAPI.gateway.className` | GatewayClass name | `""` |
+| `gatewayAPI.gateway.annotations` | Gateway annotations | `{}` |
+| `gatewayAPI.gateway.addresses` | Gateway addresses (optional) | `[]` |
+| `gatewayAPI.gateway.listeners` | Custom listeners (optional, overrides defaults) | `null` |
+| `gatewayAPI.gateway.tls.enable` | Enable HTTPS listener | `false` |
+| `gatewayAPI.gateway.tls.mode` | TLS termination mode (Terminate or Passthrough) | `Terminate` |
+| `gatewayAPI.gateway.tls.secretName` | TLS secret name | `""` |
+| `gatewayAPI.gateway.tls.certificateRefs` | Custom certificate references | `null` |
+
 ## RBAC Configuration
 
 | Parameter | Description | Default |
@@ -445,11 +530,15 @@ This document provides a comprehensive reference of all configurable parameters 
 | `hooks.preUpgrade.resources.requests.memory` | Pre-upgrade memory requests | `64Mi` |
 | `hooks.preUpgrade.resources.limits.cpu` | Pre-upgrade CPU limits | `100m` |
 | `hooks.preUpgrade.resources.limits.memory` | Pre-upgrade memory limits | `128Mi` |
+| `hooks.preUpgrade.tolerations` | Tolerations for the pre-upgrade cleanup job | `[]` |
 | `hooks.test.enabled` | Enable test hook | `true` |
 | `hooks.test.resources.requests.cpu` | Test CPU requests | `50m` |
 | `hooks.test.resources.requests.memory` | Test memory requests | `64Mi` |
 | `hooks.test.resources.limits.cpu` | Test CPU limits | `100m` |
 | `hooks.test.resources.limits.memory` | Test memory limits | `128Mi` |
+| `hooks.test.tolerations` | Tolerations for the readiness test pod | `[]` |
+| `hooks.image.repository` | Hooks image repository | `curlimages/curl` |
+| `hooks.image.tag` | Hooks image tag | `latest` |
 
 ## Resource Quota Configuration
 
@@ -491,13 +580,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
 | `opensearch.extraEnvs` | OpenSearch extra env vars | Various settings |
-| `seaweedfs.install` | Install SeaweedFS (S3-compatible, Apache 2.0; recommended since chart 26.3.12) | `false` |
-| `seaweedfs.global.imageName` | SeaweedFS image name | `chrislusf/seaweedfs` |
-| `seaweedfs.global.imageTag` | SeaweedFS image tag | `4.15` |
-| `seaweedfs.allInOne.enabled` | Use single-pod all-in-one mode | `true` |
-| `seaweedfs.allInOne.data.size` | PVC size for all-in-one data | `20Gi` |
-| `seaweedfs.allInOne.s3.enableAuth` | Enable S3 auth in all-in-one mode (uses storage.accesskey/secretkey) | `true` |
-| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using SeaweedFS) | `true` |
+| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using external S3) | `true` |
 | `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
 | `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |
 | `minio.auth.rootUser` | MinIO root user | `rpuser` |
