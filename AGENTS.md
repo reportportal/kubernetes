@@ -1,5 +1,21 @@
 # Agent Instructions
 
+## Keep `docs/README.md` in Sync with the `docs/` Directory
+
+**When to apply:** Whenever you create, delete, or rename a file inside `docs/`, or change the title (`#` heading) of an existing doc.
+
+**Steps:**
+
+1. Read `docs/README.md`.
+2. Apply the relevant change:
+   - **New file** → add a bullet under the most appropriate section with the relative filename link and a one-line description of the guide's purpose.
+   - **Deleted file** → remove its bullet from the list.
+   - **Renamed file** → update the filename in the link.
+   - **Title changed** → update the link label to match the new title.
+3. Do not add or remove sections in `docs/README.md` unless a file truly belongs to a new category not covered by any existing section.
+
+---
+
 ## Sync `docs/parameters-reference.md` with `reportportal/values.yaml`
 
 **When to apply:** After any change to `reportportal/values.yaml` — whether adding, removing, or modifying parameters.
