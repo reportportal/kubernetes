@@ -342,6 +342,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that `chmod`s the shared filesystem storage volume before the analyzer starts (storage.type=filesystem only) | `true` |
 | `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
 | `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
+| `serviceanalyzer.fixVolumePermissions.image.pullSecrets` | Image pull secrets for the init container image; merged with `global.imagePullSecrets` at the pod level | `[]` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.cpu` | Fix-volume-permissions init container CPU requests | `50m` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.memory` | Fix-volume-permissions init container memory requests | `50Mi` |
 | `serviceanalyzer.fixVolumePermissions.resources.limits.cpu` | Fix-volume-permissions init container CPU limits | `50m` |

@@ -29,7 +29,8 @@ spec:
       affinity:
         {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.global.imagePullSecrets }}
+      {{- $pullSecrets := concat (.Values.global.imagePullSecrets | default list) (.Values.serviceanalyzer.fixVolumePermissions.image.pullSecrets | default list) }}
+      {{- with $pullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}

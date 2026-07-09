@@ -742,6 +742,12 @@ serviceanalyzer:
     image:
       repository: busybox
       tag: "1.36"
+      ## @param serviceanalyzer.fixVolumePermissions.image.pullSecrets Image pull secrets for the
+      ## fix-volume-permissions init container. Merged with global.imagePullSecrets at the pod level.
+      ## Use when busybox is pulled from a private registry that requires separate credentials.
+      ##
+      pullSecrets: []
+      # - name: my-private-registry-secret
     resources:
       requests:
         cpu: 50m
