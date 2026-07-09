@@ -339,6 +339,13 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
 | `serviceanalyzer.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
 | `serviceanalyzer.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
+| `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that `chmod`s the shared filesystem storage volume before the analyzer starts (storage.type=filesystem only) | `true` |
+| `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
+| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
+| `serviceanalyzer.fixVolumePermissions.resources.requests.cpu` | Fix-volume-permissions init container CPU requests | `50m` |
+| `serviceanalyzer.fixVolumePermissions.resources.requests.memory` | Fix-volume-permissions init container memory requests | `50Mi` |
+| `serviceanalyzer.fixVolumePermissions.resources.limits.cpu` | Fix-volume-permissions init container CPU limits | `50m` |
+| `serviceanalyzer.fixVolumePermissions.resources.limits.memory` | Fix-volume-permissions init container memory limits | `100Mi` |
 | `serviceanalyzer.extraVolumes` | Extra volumes | `[]` |
 | `serviceanalyzer.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `serviceanalyzer.podLabels` | Pod labels | `{}` |
@@ -461,8 +468,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
+| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"/analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
+| `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
 | `storage.volume.annotations` | Volume annotations | `{}` |
 | `storage.volume.volumeConfig.type` | Volume config type | `""` |
 | `storage.volume.volumeConfig.hostPath` | Host path config | `{}` |
@@ -594,6 +603,6 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `k8sWaitFor.image.repository` | K8s wait for image repository | `reportportal/k8s-wait-for` |
 | `k8sWaitFor.image.tag` | K8s wait for image tag | `latest` |
-| `kubectl.image.repository` | Kubectl image repository (use `bitnamilegacy/kubectl` in FIPS 140–only envs if you see X25519 errors) | `bitnamisecure/kubectl` |
-| `kubectl.image.tag` | Kubectl image tag | `latest` |
+| `kubectl.image.repository` | Kubectl image repository for pre-upgrade cleanup hook | `rancher/kubectl` |
+| `kubectl.image.tag` | Kubectl image tag | `v1.35.6` |
 | `k8s.networking.ssl` | SSL between pods | `false` |

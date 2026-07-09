@@ -732,6 +732,23 @@ serviceanalyzer:
     limits:
       cpu: 50m
       memory: 100Mi
+  ## @param serviceanalyzer.fixVolumePermissions Init container that fixes permissions on the shared
+  ## filesystem storage volume (storage.type=filesystem only) before the analyzer starts. Useful when
+  ## the analyzer image runs under a different UID than the services that create project directories
+  ## (e.g. a hardened/non-root image). No-op/harmless when the analyzer runs as root.
+  ##
+  fixVolumePermissions:
+    enabled: true
+    image:
+      repository: busybox
+      tag: "1.36"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 50Mi
+      limits:
+        cpu: 50m
+        memory: 100Mi
   ## @param serviceanalyzer.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -1011,6 +1028,10 @@ storage:
     ##
     defaultPath: "/data/storage"
 
+    ## @param storage.volume.analyzerPath Default mount path inside containers for analyzer
+    ##
+    analyzerPath: "/analyzer"
+
     ## @param storage.volume.capacity Storage size for filesystem storage
     ## Examples: 5Gi, 10Gi, 100Gi
     ##
@@ -1021,6 +1042,12 @@ storage:
     ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
+
+    ## @param storage.volume.reclaimPolicy PersistentVolume reclaim policy when chart provisions a PV
+    ## Options: Retain, Delete
+    ## Retain keeps data on the node after PVC deletion; Delete removes the volume
+    ##
+    reclaimPolicy: Retain
 
     ## @param storage.volume.annotations Annotations for the PersistentVolumeClaim
     ##
@@ -1276,8 +1303,8 @@ k8sWaitFor:
 ##
 kubectl:
   image:
-    repository: bitnamisecure/kubectl
-    tag: latest
+    repository: rancher/kubectl
+    tag: v1.35.6
 
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
@@ -1395,7 +1422,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 2.19.4
+    tag: 2.19.6
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
@@ -1409,8 +1436,6 @@ opensearch:
       value: "true"
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
-
-
 
 ## @param minio External MinIO Helm Chart (chart default for backward compatibility)
 ## Set minio.install to false when using external S3.

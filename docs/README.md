@@ -12,6 +12,7 @@ This directory contains installation and configuration guides for ReportPortal o
 
 ## Storage Configuration
 
+- [Filesystem Storage on a Single-Node Cluster](filesystem-one-node.md) — Use filesystem storage with local-path or hostPath on Rancher Desktop, Minikube, or one-node k3s
 - [S3 and Filesystem Storage on EKS](s3-storage-eks.md) — Configure Amazon S3 (with IRSA) or shared filesystem (PVC) storage for EKS deployments
 
 ## Installation Guides

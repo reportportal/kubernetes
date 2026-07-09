@@ -33,11 +33,11 @@ spec:
       containers:
       - name: delete-job
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "kubectl") }}"
-        command:
-        - /bin/sh
-        - -c
-        - |
-          kubectl delete job {{ include "reportportal.fullname" . }}-migrations --ignore-not-found=true
+        args:
+        - delete
+        - job
+        - {{ include "reportportal.fullname" . }}-migrations
+        - --ignore-not-found=true
         resources:
           {{- toYaml .Values.hooks.preUpgrade.resources | nindent 10 }}
       {{- if .Values.hooks.nodeSelector }}

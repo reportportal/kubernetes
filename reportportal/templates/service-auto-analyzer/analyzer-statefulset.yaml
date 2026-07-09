@@ -34,6 +34,23 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
+      {{- if and (eq (include "reportportal.storageType" .) "filesystem") .Values.serviceanalyzer.fixVolumePermissions.enabled }}
+      - name: fix-volume-permissions
+        image: "{{ if .Values.global.imageRegistry }}{{ .Values.global.imageRegistry }}/{{ end }}{{ .Values.serviceanalyzer.fixVolumePermissions.image.repository }}:{{ .Values.serviceanalyzer.fixVolumePermissions.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - "mkdir -p {{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }} && chmod -R a+rwX {{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        resources:
+          {{- toYaml .Values.serviceanalyzer.fixVolumePermissions.resources | nindent 10 }}
+        volumeMounts:
+        - name: shared-volume
+          mountPath: {{ .Values.storage.volume.defaultPath | default "/data/storage" }}
+      {{- end }}
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
@@ -68,7 +85,7 @@ spec:
           value: "{{ include "reportportal.datastoreType" . }}"
         {{- if eq $storageType "filesystem" }}
         - name: FILESYSTEM_DEFAULT_PATH
-          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
         {{- end }}
         {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
         {{- if eq $storageType "minio" }}
@@ -106,7 +123,7 @@ spec:
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
         - name: DATASTORE_DEFAULTBUCKETNAME
-          value: "{{ .Values.storage.bucket.bucketDefaultName }}/analyzer"
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
