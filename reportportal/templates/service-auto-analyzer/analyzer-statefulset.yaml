@@ -42,7 +42,24 @@ spec:
         command:
           - sh
           - -c
-          - "mkdir -p {{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }} && chmod -R a+rwX {{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
+          - |
+            set -eu
+            path="{{ .Values.storage.volume.defaultPath | default "/data/storage" | trimSuffix "/" }}/{{ include "reportportal.analyzerSubpath" . }}"
+            owner="{{ .Values.serviceanalyzer.fixVolumePermissions.user }}:{{ .Values.serviceanalyzer.fixVolumePermissions.group }}"
+            marker="${path}/.permissions-v1-{{ .Values.serviceanalyzer.fixVolumePermissions.user }}-{{ .Values.serviceanalyzer.fixVolumePermissions.group }}"
+            echo "[fix-volume-permissions] Ensuring analyzer storage directory exists: ${path}"
+            mkdir -p "${path}"
+            if [ -f "${marker}" ]; then
+              echo "[fix-volume-permissions] Permissions already initialized for ${owner}; skipping recursive update"
+              exit 0
+            fi
+            echo "[fix-volume-permissions] Updating ownership to ${owner} and restricting access"
+            chown -R "${owner}" "${path}"
+            chmod -R u+rwX,go-rwx "${path}"
+            touch "${marker}"
+            chown "${owner}" "${marker}"
+            chmod 600 "${marker}"
+            echo "[fix-volume-permissions] Permission initialization completed"
         securityContext:
           runAsUser: 0
           runAsNonRoot: false
@@ -86,7 +103,7 @@ spec:
           value: "{{ include "reportportal.datastoreType" . }}"
         {{- if eq $storageType "filesystem" }}
         - name: FILESYSTEM_DEFAULT_PATH
-          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" | trimSuffix "/" }}/{{ include "reportportal.analyzerSubpath" . }}"
         {{- end }}
         {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
         {{- if eq $storageType "minio" }}
@@ -124,7 +141,7 @@ spec:
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
         - name: DATASTORE_DEFAULTBUCKETNAME
-          value: "{{ .Values.storage.bucket.bucketDefaultName }}{{ .Values.storage.volume.analyzerPath | default "/analyzer" }}"
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}/{{ include "reportportal.analyzerSubpath" . }}"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}

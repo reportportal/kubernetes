@@ -222,7 +222,7 @@ Common causes:
 
 - `accessMode: ReadWriteMany` with `local-path` — change to `ReadWriteOnce`
 - `storageClassName` does not match any provisioner — use `kubectl get sc` and pick an existing class
-- For hostPath: directory missing on the node — create it (see Option B)
+- The selected StorageClass or CSI driver cannot satisfy the requested access mode
 
 ### Pods fail with volume mount errors
 
@@ -230,33 +230,44 @@ Common causes:
 kubectl describe pod -n reportportal <pod-name>
 ```
 
-For hostPath, confirm the path exists on the node (see Option B). Permission changes such as `chmod 777` are not required on single-node Rancher Desktop **when all pods run their default (root) image**.
+Check the pod events for mount errors and confirm that the selected StorageClass supports the requested access mode.
 
 ### Analyzer `PermissionError` with non-root / hardened images
 
 **Background — why this matters:** Starting with Docker Hardened Images (DHI), the `service-auto-analyzer` image runs as a non-root user (`uid=65532`) rather than `root`. The other ReportPortal services (`serviceapi`, `uat`, `servicejobs`) still run as root by default and create their per-project directories (e.g. `/data/storage/prj-1/`) with owner-only write permissions. If the analyzer ever needed to write to those same directories it would get a `PermissionError`.
 
-**How the chart avoids this:** the analyzer is pointed at its own isolated subdirectory via `storage.volume.analyzerPath` (default: `/analyzer`), so `FILESYSTEM_DEFAULT_PATH` inside the container resolves to `/data/storage/analyzer`. The analyzer creates and owns everything under that subtree itself and never touches the `prj-*` directories that the other services manage. This matches [upstream ReportPortal's reference configuration](https://github.com/reportportal/reportportal/blob/master/docker-compose.yml).
+**How the chart avoids this:** the analyzer is pointed at its own isolated subdirectory via `storage.volume.analyzerPath` (default: `analyzer`), so `FILESYSTEM_DEFAULT_PATH` inside the container resolves to `/data/storage/analyzer`. The analyzer creates and owns everything under that subtree itself and never touches the `prj-*` directories that the other services manage. This matches [upstream ReportPortal's reference configuration](https://github.com/reportportal/reportportal/blob/master/docker-compose.yml).
 
 You can verify the correct layout after deployment:
 
 ```bash
 kubectl exec -n reportportal -it reportportal-analyzer-0 -- ls -la /data/storage
 # Expected:
-# drwxrwxrwx  root:root   analyzer/     ← analyzer's own subtree
+# drwx------  65532:65532 analyzer/     ← analyzer's private subtree
 # drwxr-x--x  root:root   prj-1/        ← api-owned, analyzer never writes here
 # drwxr-x--x  root:root   prj-keystore/
 ```
 
-> **Important — `storage.volume.analyzerPath`:** if you customise `storage.volume.defaultPath`, keep `analyzerPath` set to a non-empty subpath (default `"/analyzer"`) so the analyzer's storage remains isolated. Setting `analyzerPath: ""` would point the analyzer at the same root as the other services and will cause `PermissionError` when running a non-root image.
+> **Important — `storage.volume.analyzerPath`:** if you customise `storage.volume.defaultPath`, keep `analyzerPath` set to a non-empty subpath (default `analyzer`) so the analyzer's storage remains isolated. Setting `analyzerPath: ""` would point the analyzer at the same root as the other services and will cause `PermissionError` when running a non-root image.
 
 **`fix-volume-permissions` init container:** even with path isolation, a `PermissionError` can still occur when first deploying a DHI image on top of an existing PVC where `/data/storage/analyzer/` was previously created as `root:root` (for example, after an in-place image upgrade from a non-hardened build). To handle this bootstrap case, the chart adds a `fix-volume-permissions` init container to the analyzer StatefulSet whenever `storage.type: filesystem` and `serviceanalyzer.fixVolumePermissions.enabled: true` (default). It runs as root and executes:
 
 ```sh
-mkdir -p /data/storage/analyzer && chmod -R a+rwX /data/storage/analyzer
+mkdir -p /data/storage/analyzer &&
+chown -R 65532:65532 /data/storage/analyzer &&
+chmod -R u+rwX,go-rwx /data/storage/analyzer
 ```
 
-This targets only the `analyzer` subdirectory (not the whole shared volume), so it is fast regardless of how many per-project attachments exist. After the first run, the analyzer owns all directories it creates, so subsequent pod restarts complete the init container instantly.
+This targets only the `analyzer` subdirectory (not the whole shared volume), transfers existing data to the configured analyzer UID/GID, and removes group/other access. The defaults are `serviceanalyzer.fixVolumePermissions.user: 65532` and `group: 65532`; override them if the analyzer image uses another UID/GID.
+
+After a successful recursive update, the init container creates a versioned marker named `.permissions-v1-<uid>-<gid>` in the analyzer directory. On later pod restarts it detects this marker and skips the expensive recursive `chown` and `chmod`. Changing the configured UID/GID produces a different marker and automatically runs the migration again.
+
+The init container logs whether it applied or skipped the update:
+
+```bash
+kubectl logs -n reportportal reportportal-analyzer-0 \
+  -c fix-volume-permissions
+```
 
 To disable the init container (e.g. when all images run as root):
 

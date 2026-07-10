@@ -735,13 +735,18 @@ serviceanalyzer:
   ## @param serviceanalyzer.fixVolumePermissions Init container that fixes permissions on the shared
   ## filesystem storage volume (storage.type=filesystem only) before the analyzer starts. Useful when
   ## the analyzer image runs under a different UID than the services that create project directories
-  ## (e.g. a hardened/non-root image). No-op/harmless when the analyzer runs as root.
+  ## (e.g. a hardened/non-root image).
   ##
   fixVolumePermissions:
     enabled: true
+    ## @param serviceanalyzer.fixVolumePermissions.user Owner UID for the analyzer filesystem subtree
+    ## @param serviceanalyzer.fixVolumePermissions.group Owner GID for the analyzer filesystem subtree
+    ##
+    user: 65532
+    group: 65532
     image:
       repository: busybox
-      tag: "1.36"
+      tag: latest
       ## @param serviceanalyzer.fixVolumePermissions.image.pullSecrets Image pull secrets for the
       ## fix-volume-permissions init container. Merged with global.imagePullSecrets at the pod level.
       ## Use when busybox is pulled from a private registry that requires separate credentials.
@@ -1036,7 +1041,7 @@ storage:
 
     ## @param storage.volume.analyzerPath Default mount path inside containers for analyzer
     ##
-    analyzerPath: "/analyzer"
+    analyzerPath: "analyzer"
 
     ## @param storage.volume.capacity Storage size for filesystem storage
     ## Examples: 5Gi, 10Gi, 100Gi

@@ -100,6 +100,15 @@ Returns: minio, s3, or filesystem
 {{- end -}}
 
 {{/*
+Analyzer storage subpath, normalised to have no leading or trailing slash.
+Accepts both "analyzer" and "/analyzer" style values so that overrides from
+older chart versions (which shipped with a leading slash) continue to work.
+*/}}
+{{- define "reportportal.analyzerSubpath" -}}
+{{- .Values.storage.volume.analyzerPath | default "analyzer" | trimPrefix "/" | trimSuffix "/" -}}
+{{- end -}}
+
+{{/*
 Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
 */}}
 {{- define "reportportal.datastoreType" -}}

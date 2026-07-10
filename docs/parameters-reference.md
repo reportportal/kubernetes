@@ -339,7 +339,9 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
 | `serviceanalyzer.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
 | `serviceanalyzer.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
-| `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that `chmod`s the shared filesystem storage volume before the analyzer starts (storage.type=filesystem only) | `true` |
+| `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that fixes ownership and permissions on the analyzer filesystem subtree (storage.type=filesystem only) | `true` |
+| `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
+| `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
 | `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
 | `serviceanalyzer.fixVolumePermissions.image.pullSecrets` | Image pull secrets for the init container image; merged with `global.imagePullSecrets` at the pod level | `[]` |
@@ -469,7 +471,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
-| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"/analyzer"` |
+| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
