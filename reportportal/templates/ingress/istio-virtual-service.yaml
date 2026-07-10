@@ -1,0 +1,76 @@
+{{- if .Values.istio.enable }}
+{{- $fullName := include "reportportal.fullname" . -}}
+{{- $path := .Values.istio.path -}}
+{{- $basePath := "" -}}
+{{- if $path -}}
+  {{- if eq $path "/" -}}
+    {{- $basePath = "" -}}
+  {{- else -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+{{- end -}}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ $fullName }}-virtual-service
+  labels: {{ include "labels" . | indent 4 }}
+  {{- with .Values.istio.virtualService.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  hosts:
+    {{- if .Values.istio.hosts }}
+    {{- if kindIs "slice" .Values.istio.hosts }}
+    {{- toYaml .Values.istio.hosts | nindent 4 }}
+    {{- else }}
+    - {{ .Values.istio.hosts | quote }}
+    {{- end }}
+    {{- else }}
+    - "*"
+    {{- end }}
+  gateways:
+    {{- if .Values.istio.gateway.create }}
+    - {{ .Values.istio.gateway.name | default (printf "%s-istio-gateway" $fullName) }}
+    {{- else }}
+    - {{ if .Values.istio.gateway.namespace }}{{ .Values.istio.gateway.namespace }}/{{ end }}{{ .Values.istio.gateway.name }}
+    {{- end }}
+  http:
+    # Route for API service (most specific, must be first)
+    - match:
+        - uri:
+            prefix: "{{ $basePath }}/api"
+      route:
+        - destination:
+            host: {{ $fullName }}-api
+            port:
+              number: {{ .Values.serviceapi.service.port | default 8585 }}
+    # Route for UAT (authorization) service
+    - match:
+        - uri:
+            prefix: "{{ $basePath }}/uat"
+      route:
+        - destination:
+            host: {{ $fullName }}-uat
+            port:
+              number: {{ .Values.uat.service.port | default 9999 }}
+    # Route for UI service
+    - match:
+        - uri:
+            prefix: "{{ $basePath }}/ui"
+      route:
+        - destination:
+            host: {{ $fullName }}-ui
+            port:
+              number: {{ .Values.serviceui.service.port | default 8080 }}
+    # Route for index service (root path catch-all, must be last)
+    - match:
+        - uri:
+            prefix: "{{ $basePath | default "/" }}"
+      route:
+        - destination:
+            host: {{ $fullName }}-index
+            port:
+              number: {{ .Values.serviceindex.service.port | default 8080 }}
+{{- end }}

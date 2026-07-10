@@ -70,6 +70,28 @@ For detailed configuration guides, see:
 - [Install ReportPortal on Minikube](../docs/minikube-install.md) - For local development
 - [Gateway API Deployment Guide](../docs/gateway-api-deployment-guide.md) - Modern alternative to Ingress
 
+### Istio Ingress Gateway
+
+For clusters that already run Istio as a service mesh, the chart can render native
+`Gateway` and `VirtualService` resources instead of a Kubernetes `Ingress`.
+
+```bash
+helm install my-release reportportal/reportportal \
+  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set istio.enable=true \
+  --set istio.hosts="reportportal.example.com" \
+  --set ingress.enable=false \
+  --set gatewayAPI.enable=false
+```
+
+> **Gateway selector:** the default `istio.gateway.selector` is `istio: ingressgateway`,
+> which matches a standard `istioctl install` deployment. If your ingress gateway was
+> installed via the `istio/gateway` Helm chart (pod label `istio: ingress`), override
+> it: `--set "istio.gateway.selector.istio=ingress"`.
+
+For TLS, attaching to an existing Gateway, multiple hostnames, and troubleshooting tips
+see the [Istio Ingress Gateway Deployment Guide](../docs/istio-deployment-guide.md).
+
 ### Install the chart with dependencies
 
 ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives.
@@ -220,6 +242,8 @@ helm install my-release \
 ### Configuration Guides
 
 * [Storage Configuration Examples](../docs/storage-examples.md) - Detailed examples for MinIO, AWS S3, and filesystem storage
+* [Gateway API Deployment Guide](../docs/gateway-api-deployment-guide.md) - Modern alternative to Ingress using Kubernetes Gateway API
+* [Istio Ingress Gateway Deployment Guide](../docs/istio-deployment-guide.md) - For clusters running Istio as a service mesh
 
 ## Community / Support
 

@@ -1287,6 +1287,76 @@ gatewayAPI:
       ##
       certificateRefs: null
 
+## @section Istio Ingress Gateway Configuration
+## Enable when your cluster already runs Istio as a service mesh.
+## This renders an Istio Gateway + VirtualService instead of a Kubernetes Ingress.
+## Requires Istio to be installed (istiod + istio-ingressgateway).
+##
+istio:
+  ## @param istio.enable Enable Istio Gateway and VirtualService resources
+  ##
+  enable: false
+
+  ## @param istio.hosts Hostname(s) the Gateway and VirtualService will match
+  ## Can be a single string or a list. Use "*" to match any host.
+  ## Example:
+  ##   hosts: reportportal.example.com
+  ## or:
+  ##   hosts:
+  ##     - reportportal.example.com
+  ##
+  hosts: null
+
+  ## @param istio.path Base path prefix for all routes (default: "")
+  ## Example: "/reportportal" routes /reportportal/ui, /reportportal/api, etc.
+  ##
+  path: ""
+
+  ## @param istio.gateway Istio Gateway resource configuration
+  ##
+  gateway:
+    ## @param istio.gateway.create Create a Gateway resource (set false to attach to an existing one)
+    ##
+    create: true
+
+    ## @param istio.gateway.name Override the Gateway name (defaults to <fullname>-istio-gateway)
+    ##
+    name: ""
+
+    ## @param istio.gateway.namespace Namespace of an existing Gateway to attach to
+    ## Only used when gateway.create=false
+    ##
+    namespace: ""
+
+    ## @param istio.gateway.selector Istio ingress gateway pod selector labels
+    ## Defaults to the standard istio-ingressgateway selector.
+    ##
+    selector:
+      istio: ingressgateway
+
+    ## @param istio.gateway.tls TLS configuration
+    ##
+    tls:
+      ## @param istio.gateway.tls.enable Add an HTTPS listener on port 443
+      ##
+      enable: false
+
+      ## @param istio.gateway.tls.mode Istio TLS mode: SIMPLE, MUTUAL, or PASSTHROUGH
+      ##
+      mode: SIMPLE
+
+      ## @param istio.gateway.tls.credentialName Kubernetes Secret name holding the TLS cert/key
+      ## Secret must exist in the same namespace as the Gateway.
+      ##
+      credentialName: ""
+
+  ## @param istio.virtualService VirtualService configuration
+  ##
+  virtualService:
+    ## @param istio.virtualService.annotations Annotations for the VirtualService
+    ##
+    annotations: {}
+
 ## @section Additional configuration
 ##
 ## Role Based Access
