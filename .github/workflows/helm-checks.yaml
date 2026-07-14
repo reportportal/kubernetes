@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -15,6 +15,15 @@ jobs:
         uses: azure/setup-helm@v4.3.0
         with:
           version: v4.1.0
+
+      - name: Install helm-values-schema-json plugin
+        run: helm plugin install https://github.com/losisin/helm-values-schema-json.git --verify=false
+
+      - name: Verify values schema is up to date
+        run: |
+          cd reportportal
+          helm schema --values values.yaml --draft 7 --use-helm-docs --output values.schema.generated.json
+          diff -u values.schema.json values.schema.generated.json
 
       - uses: actions/setup-python@v6
         with:
