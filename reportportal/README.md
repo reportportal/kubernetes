@@ -97,7 +97,7 @@ helm install my-release \
 
 > **Note:** If you disable install dependencies, you must provide new values (e.g., host, port, username, etc) for your predeployed dependencies.
 
-All configuration variables are presented in the [value.yaml](https://github.com/reportportal/kubernetes/blob/master/values.yaml) file.
+All configuration variables are presented in the [values.yaml](https://github.com/reportportal/kubernetes/blob/master/reportportal/values.yaml) file.
 
 > **Parameters Reference:** For a complete list of all configurable parameters with their default values, see the [Parameters Reference](../docs/parameters-reference.md).
 
@@ -141,7 +141,7 @@ helm install my-release \
   reportportal/reportportal
 ```
 
-> **Storage Examples:** See [Storage Configuration Examples](../docs/storage-examples.md) for detailed configuration examples including AWS S3 with IAM roles, GKE Filestore, and more.
+> **Storage guides:** See [S3 and Filesystem Storage on EKS](../docs/s3-storage-eks.md) and [Filesystem Storage on a Single-Node Cluster](../docs/filesystem-one-node.md) for detailed configuration examples including AWS S3 with IAM roles and on-premise filesystem storage.
 
 ### Configure Pod Disruption Budgets and Resource Quotas
 
@@ -186,7 +186,7 @@ For fetching chart dependencies, use the command:
 helm dependency build .
 ```
 
-> This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/Chart.yaml) by the chart.
+> This command fetches all the dependencies [required](https://github.com/reportportal/kubernetes/blob/master/reportportal/Chart.yaml) by the chart.
 
 To install the chart directly from local sources, use:
 
@@ -215,11 +215,12 @@ helm install my-release \
 
 * [General User Manual](https://reportportal.io/docs/)
 * [Expert guide and hacks for deploying ReportPortal on Kubernetes](https://reportportal.io/docs/installation-steps/deploy-with-kubernetes/)
-* [Quick Start Guide for Google Cloud Platform GKE](./docs/quick-start-gcp-gke.md)
+* [Quick Start Guide for Google Cloud Platform GKE](../docs/gke-install.md)
 
 ### Configuration Guides
 
-* [Storage Configuration Examples](../docs/storage-examples.md) - Detailed examples for MinIO, AWS S3, and filesystem storage
+* [S3 and Filesystem Storage on EKS](../docs/s3-storage-eks.md) - AWS S3 with IAM roles and shared filesystem storage
+* [Filesystem Storage on a Single-Node Cluster](../docs/filesystem-one-node.md) - Local filesystem storage for development and single-node clusters
 
 ## Community / Support
 

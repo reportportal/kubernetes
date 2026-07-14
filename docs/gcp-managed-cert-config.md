@@ -32,8 +32,8 @@ Comprehensive documentation is available at [Google-managed SSL certificates](ht
 - [Install the Google Cloud CLI](https://cloud.google.com/sdk/docs/install).
 - [Install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 - [Set up default gcloud settings](https://cloud.google.com/sdk/gcloud/reference/init).
-- [Set up Environment Variables](./quick-start-gcp-gke.md#set-up-environment-variables).
-- [Get cluster credentials for kubectl](./quick-start-gcp-gke.md#get-cluster-credentials-for-kubectl)
+- [Set up Environment Variables](./gke-install.md#set-up-environment-variables).
+- [Get cluster credentials for kubectl](./gke-install.md#get-cluster-credentials-for-kubectl)
 
 ## Add a Google-managed SSL via Helm chart
 

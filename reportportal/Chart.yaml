@@ -1,4 +1,6 @@
 apiVersion: v2
+type: application
+kubeVersion: ">=1.26.0-0"
 appVersion: "26.0.3"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
@@ -21,8 +23,8 @@ keywords:
 home: https://reportportal.io
 icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
 annotations:
-  category: Infrastructure
-  licenses: Apache-2.0
+  artifacthub.io/category: integration-delivery
+  artifacthub.io/license: Apache-2.0
 maintainers:
   - name: reportportal
     email: support@reportportal.io
