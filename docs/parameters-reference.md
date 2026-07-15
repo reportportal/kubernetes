@@ -587,7 +587,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `rabbitmq.ingress.tls` | RabbitMQ ingress TLS | `[]` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
-| `opensearch.image.tag` | OpenSearch image tag | `2.19.4` |
+| `opensearch.image.tag` | OpenSearch image tag | `2.19.6` |
 | `opensearch.singleNode` | Single node mode | `true` |
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
