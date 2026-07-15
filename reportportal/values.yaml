@@ -1,5 +1,10 @@
 ## ReportPortal.io AI-powered Test Automation Dashboard
 ##
+## Schema note: `values.schema.json` is generated from these defaults. Avoid YAML `null`
+## for fields that environment overlays set to strings, arrays, or objects. Use `""`,
+## `[]`, or `{}` instead, and add `# @schema oneOf: [...]` when a field accepts
+## multiple types. Regenerate with `helm schema --values values.yaml --draft 7
+## --use-helm-docs --output values.schema.json` after changing defaults.
 
 ## @section Global configuration
 ##
@@ -1183,11 +1188,11 @@ ingress:
   ##
   annotations: {}
   tls:
-    certificates: null
+    certificates: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
     certificate:
       gcpManaged: false
-      privateKey: null
-      certificate: null
+      privateKey: ""
+      certificate: ""
 
 ## @section Gateway API Configuration
 ## Gateway API is the modern replacement for Ingress, recommended by Kubernetes.
@@ -1210,14 +1215,14 @@ gatewayAPI:
   ##     - reportportal.example.com
   ##     - rp.example.com
   ##
-  hostnames: null
+  hostnames: [] # @schema oneOf: [{"type": "null"}, {"type": "string"}, {"type": "array", "items": {"type": "string"}}]
   ## @param gatewayAPI.path Base path prefix for all routes
   ##
   path: ""
   ## @param gatewayAPI.parentRefs Custom parent references (advanced)
   ## If not set, gatewayRef will be used to construct parentRefs
   ##
-  parentRefs: null
+  parentRefs: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
   ## @param gatewayAPI.gatewayRef Reference to an existing Gateway
   ## Used when parentRefs is not set
   ##
@@ -1240,7 +1245,7 @@ gatewayAPI:
     ## @param gatewayAPI.httpRoute.backendRefs Backend reference options
     ##
     backendRefs:
-      weight: null
+      weight: null # @schema oneOf: [{"type": "null"}, {"type": "integer"}]
     ## @param gatewayAPI.httpRoute.additionalRules Additional routing rules
     ##
     additionalRules: []
@@ -1268,7 +1273,7 @@ gatewayAPI:
     ## @param gatewayAPI.gateway.listeners Custom listeners (optional, overrides defaults)
     ## If not specified, HTTP (and optionally HTTPS) listeners will be created
     ##
-    listeners: null
+    listeners: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
     ## @param gatewayAPI.gateway.tls TLS configuration for the Gateway
     ##
     tls:
@@ -1283,7 +1288,7 @@ gatewayAPI:
       secretName: ""
       ## @param gatewayAPI.gateway.tls.certificateRefs Custom certificate references
       ##
-      certificateRefs: null
+      certificateRefs: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
 
 ## @section Additional configuration
 ##

@@ -56,7 +56,14 @@
                             "type": "boolean"
                         },
                         "listeners": {
-                            "type": "null"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "array"
+                                }
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -65,7 +72,14 @@
                             "type": "object",
                             "properties": {
                                 "certificateRefs": {
-                                    "type": "null"
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "array"
+                                        }
+                                    ]
                                 },
                                 "enable": {
                                     "type": "boolean"
@@ -95,7 +109,20 @@
                     }
                 },
                 "hostnames": {
-                    "type": "null"
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
                 },
                 "httpRoute": {
                     "type": "object",
@@ -110,14 +137,28 @@
                             "type": "object",
                             "properties": {
                                 "weight": {
-                                    "type": "null"
+                                    "oneOf": [
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "integer"
+                                        }
+                                    ]
                                 }
                             }
                         }
                     }
                 },
                 "parentRefs": {
-                    "type": "null"
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "array"
+                        }
+                    ]
                 },
                 "path": {
                     "type": "string"
@@ -330,18 +371,25 @@
                             "type": "object",
                             "properties": {
                                 "certificate": {
-                                    "type": "null"
+                                    "type": "string"
                                 },
                                 "gcpManaged": {
                                     "type": "boolean"
                                 },
                                 "privateKey": {
-                                    "type": "null"
+                                    "type": "string"
                                 }
                             }
                         },
                         "certificates": {
-                            "type": "null"
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "array"
+                                }
+                            ]
                         }
                     }
                 }
