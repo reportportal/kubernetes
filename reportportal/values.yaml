@@ -81,7 +81,7 @@ serviceindex:
 
   ## @param serviceindex.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
     # - name: init-container
     #   image: busybox
     #   command: ['sh', '-c', 'echo "Hello, World!"']
@@ -173,7 +173,7 @@ serviceui:
 
   ## @param serviceui.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
 
   ## @param serviceui.extraVolumes define the extra volumes
   ##
@@ -285,7 +285,7 @@ serviceapi:
       memory: 2Gi
   ## @param serviceapi.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
   ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container
   ##
   initContainerResources:
@@ -480,7 +480,7 @@ uat:
   samlSessionLiveTime: 4320
   ## @param uat.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
   ## @param uat.initContainerResources Resources for the migrations-waiting-init container
   ##
   initContainerResources:
@@ -627,7 +627,7 @@ servicejobs:
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
   ## @param servicejobs.chunksize define the number of binaries to be removed from binary storage by servicejobs.storageProjectCron within one job execution
-  chunksize: 200000
+  chunksize: 200000 # @schema oneOf: [{"type": "integer"}, {"type": "string"}]
   ## @param.servicejobs.resources define the resources for the service jobs
   resources:
     requests:
@@ -638,7 +638,7 @@ servicejobs:
       memory: 512Mi
   ## @param servicejobs.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
   ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container
   ##
   initContainerResources:
@@ -722,7 +722,7 @@ serviceanalyzer:
       memory: 1Gi
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
-  extraInitContainers: {}
+  extraInitContainers: []
   ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container
   ##
   initContainerResources:
@@ -875,7 +875,7 @@ database:
   passwordKeyName: "postgresql-password"
   ## @param database.endpoint by default "{{ .Release.Name }}-postgresql.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}"
   ##
-  endpoint:
+  endpoint: ""
   port: &dbport 5432
   user: &dbuser postgres
   dbName: &dbname reportportal
@@ -901,7 +901,7 @@ msgbroker:
   ssl: false
   ## @param msgbroker.endpoint by default "{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}"
   ##
-  endpoint:
+  endpoint: ""
   port: &msgbrokerPort 5672
   user: &msgbrokerUser rabbitmq
   apiport: &msgbrokerApiPort 15672
@@ -921,7 +921,7 @@ searchengine:
   passwordKeyName: "password"
   ## @param searchengine.endpoint URL without protocol and port. By default, opensearch-cluster-master.{{ .Release.Namespace }}.svc.{{ .Values.global.clusterDomain }}
   ##
-  endpoint:
+  endpoint: ""
   ## @param searchengine.ssl configure SSL connection to the search engine
   ## Incoming parameters: true (HTTPS), false (HTTP)
   ##
@@ -929,10 +929,10 @@ searchengine:
   port: &searchenginePort 9200
   ## @param searchengine.user Inline username (used when secretName is not set)
   ##
-  user:
+  user: ""
   ## @param searchengine.password Inline password (used when secretName is not set)
   ##
-  password:
+  password: ""
 
 ## @section Storage Configuration
 ##
@@ -979,9 +979,7 @@ storage:
   ## For S3: leave empty to use AWS default endpoints
   ## For custom S3-compatible: specify endpoint URL (without protocol/port)
   ##
-  endpoint:
-
-  ## @param storage.ssl Enable SSL/TLS for storage connections
+  endpoint: ""
   ## true = HTTPS, false = HTTP
   ##
   ssl: false
@@ -1138,7 +1136,7 @@ ingress:
   enable: true
   ## @param ingress.hosts can be a list or a single string
   ##
-  hosts: null
+  hosts: [] # @schema oneOf: [{"type": "null"}, {"type": "string"}, {"type": "array", "items": {"type": "string"}}]
   path: ""
   class: nginx
   ## @param ingress.annotations Ingress annotations

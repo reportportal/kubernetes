@@ -12,7 +12,7 @@
                     "type": "string"
                 },
                 "endpoint": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
@@ -305,7 +305,20 @@
                     "type": "boolean"
                 },
                 "hosts": {
-                    "type": "null"
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
                 },
                 "path": {
                     "type": "string"
@@ -518,7 +531,7 @@
                 },
                 "apiuser": {},
                 "endpoint": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "password": {
                     "type": "string"
@@ -714,10 +727,10 @@
             "type": "object",
             "properties": {
                 "endpoint": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "password": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "passwordKeyName": {
                     "type": "string"
@@ -732,7 +745,7 @@
                     "type": "boolean"
                 },
                 "user": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "userKeyName": {
                     "type": "string"
@@ -749,7 +762,7 @@
                     "type": "array"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "extraVolumeMounts": {
                     "type": "array"
@@ -1064,7 +1077,7 @@
                     "type": "array"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "extraVolumeMounts": {
                     "type": "array"
@@ -1310,7 +1323,7 @@
                     "type": "object"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "image": {
                     "type": "object",
@@ -1486,7 +1499,14 @@
                     "type": "object"
                 },
                 "chunksize": {
-                    "type": "integer"
+                    "oneOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "coreJobs": {
                     "type": "object",
@@ -1521,7 +1541,7 @@
                     "type": "array"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "extraVolumeMounts": {
                     "type": "array"
@@ -1730,7 +1750,7 @@
                     "type": "object"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "extraVolumeMounts": {
                     "type": "array"
@@ -1938,7 +1958,7 @@
                     }
                 },
                 "endpoint": {
-                    "type": "null"
+                    "type": "string"
                 },
                 "port": {
                     "type": "string"
@@ -2035,7 +2055,7 @@
                     "type": "array"
                 },
                 "extraInitContainers": {
-                    "type": "object"
+                    "type": "array"
                 },
                 "extraVolumeMounts": {
                     "type": "array"
