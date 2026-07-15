@@ -632,7 +632,7 @@ servicejobs:
     cleanStorageCron: 0 0 */24 * * *
     storageProjectCron: 0 */5 * * * *
   ## @param servicejobs.chunksize define the number of binaries to be removed from binary storage by servicejobs.storageProjectCron within one job execution
-  chunksize: 200000 # @schema oneOf: [{"type": "integer"}, {"type": "string"}]
+  chunksize: 200000
   ## @param.servicejobs.resources define the resources for the service jobs
   resources:
     requests:
@@ -1141,7 +1141,7 @@ ingress:
   enable: true
   ## @param ingress.hosts can be a list or a single string
   ##
-  hosts: [] # @schema oneOf: [{"type": "null"}, {"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+  hosts: []
   path: ""
   class: nginx
   ## @param ingress.annotations Ingress annotations
@@ -1188,7 +1188,7 @@ ingress:
   ##
   annotations: {}
   tls:
-    certificates: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
+    certificates: []
     certificate:
       gcpManaged: false
       privateKey: ""
@@ -1215,14 +1215,14 @@ gatewayAPI:
   ##     - reportportal.example.com
   ##     - rp.example.com
   ##
-  hostnames: [] # @schema oneOf: [{"type": "null"}, {"type": "string"}, {"type": "array", "items": {"type": "string"}}]
+  hostnames: []
   ## @param gatewayAPI.path Base path prefix for all routes
   ##
   path: ""
   ## @param gatewayAPI.parentRefs Custom parent references (advanced)
   ## If not set, gatewayRef will be used to construct parentRefs
   ##
-  parentRefs: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
+  parentRefs: []
   ## @param gatewayAPI.gatewayRef Reference to an existing Gateway
   ## Used when parentRefs is not set
   ##
@@ -1245,7 +1245,7 @@ gatewayAPI:
     ## @param gatewayAPI.httpRoute.backendRefs Backend reference options
     ##
     backendRefs:
-      weight: null # @schema oneOf: [{"type": "null"}, {"type": "integer"}]
+      weight: null
     ## @param gatewayAPI.httpRoute.additionalRules Additional routing rules
     ##
     additionalRules: []
@@ -1273,7 +1273,7 @@ gatewayAPI:
     ## @param gatewayAPI.gateway.listeners Custom listeners (optional, overrides defaults)
     ## If not specified, HTTP (and optionally HTTPS) listeners will be created
     ##
-    listeners: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
+    listeners: []
     ## @param gatewayAPI.gateway.tls TLS configuration for the Gateway
     ##
     tls:
@@ -1288,7 +1288,7 @@ gatewayAPI:
       secretName: ""
       ## @param gatewayAPI.gateway.tls.certificateRefs Custom certificate references
       ##
-      certificateRefs: [] # @schema oneOf: [{"type": "null"}, {"type": "array"}]
+      certificateRefs: []
 
 ## @section Additional configuration
 ##
