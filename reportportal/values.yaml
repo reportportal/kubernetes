@@ -1,10 +1,5 @@
 ## ReportPortal.io AI-powered Test Automation Dashboard
 ##
-## Schema note: `values.schema.json` is generated from these defaults. Avoid YAML `null`
-## for fields that environment overlays set to strings, arrays, or objects. Use `""`,
-## `[]`, or `{}` instead, and add `# @schema oneOf: [...]` when a field accepts
-## multiple types. Regenerate with `helm schema --values values.yaml --draft 7
-## --use-helm-docs --output values.schema.json` after changing defaults.
 
 ## @section Global configuration
 ##

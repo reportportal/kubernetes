@@ -73,24 +73,25 @@
 
 ## Keep `reportportal/values.schema.json` in Sync with `reportportal/values.yaml`
 
-**When to apply:** After any change to `reportportal/values.yaml` defaults or to `# @schema` annotations.
+**When to apply:** After any change to `reportportal/values.yaml` defaults that affects validation (types, new parameters, or removed parameters).
 
 **Steps:**
 
 1. Read `reportportal/values.yaml` and identify changed defaults.
-2. Regenerate the schema:
+2. Update `reportportal/values.schema.json` to match. Regenerate as a starting point if needed:
 
    ```bash
    cd reportportal
+   helm plugin install https://github.com/losisin/helm-values-schema-json.git --verify=false
    helm schema --values values.yaml --draft 7 --use-helm-docs --output values.schema.json
    ```
 
-3. Commit both `values.yaml` and `values.schema.json` in the same change.
-4. Run `helm lint .` in `reportportal/` to verify the chart still passes validation.
+3. After regeneration, manually restore `oneOf` rules for fields that accept multiple types (for example `ingress.hosts`, `servicejobs.chunksize`). Do not add schema annotations to `values.yaml`.
+4. Commit both files in the same change.
+5. Run `helm lint .` and `ct lint --charts .` in `reportportal/` to verify validation still passes.
 
 ### Default-value rules
 
 - Do **not** use YAML `null` for fields that overlays typically set to a string, array, or object (for example `database.endpoint`, `ingress.hosts`, `gatewayAPI.hostnames`). Use `""`, `[]`, or `{}` instead.
 - Use `[]` for list fields such as `extraInitContainers`, not `{}`.
-- When a field accepts multiple types, keep a safe default and add a `# @schema oneOf: [...]` annotation on the same line in `values.yaml`.
-- Never commit a schema generated from stale `null` defaults; CI compares the committed schema to a freshly generated file on every PR.
+- Keep flexible-type rules in `values.schema.json`, not as inline comments in `values.yaml`.
