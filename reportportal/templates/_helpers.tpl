@@ -89,27 +89,31 @@ Global context overrides service-specific context
 
 {{/*
 Get storage type with default "minio" and validation.
-Returns: minio, seaweedfs, s3, s3-compatible, aws-s3, or filesystem
+Returns: minio, s3, s3-compatible, aws-s3, or filesystem
 */}}
 {{- define "reportportal.storageType" -}}
 {{- $storageType := .Values.storage.type | default "minio" -}}
-{{- if not (has $storageType (list "seaweedfs" "minio" "s3" "s3-compatible" "aws-s3" "filesystem")) -}}
-{{- fail "storage.type must be one of: seaweedfs, minio, s3, s3-compatible, aws-s3, filesystem" -}}
+{{- if not (has $storageType (list "minio" "s3" "s3-compatible" "aws-s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: minio, s3, s3-compatible, aws-s3, filesystem" -}}
 {{- end -}}
 {{- $storageType -}}
 {{- end -}}
 
 {{/*
+Analyzer storage subpath, normalised to have no leading or trailing slash.
+Accepts both "analyzer" and "/analyzer" style values so that overrides from
+older chart versions (which shipped with a leading slash) continue to work.
+*/}}
+{{- define "reportportal.analyzerSubpath" -}}
+{{- .Values.storage.volume.analyzerPath | default "analyzer" | trimPrefix "/" | trimSuffix "/" -}}
+{{- end -}}
+
+{{/*
 Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
-SeaweedFS exposes a standard S3-compatible API, so it maps to the "minio" JClouds provider.
-All other storage types pass through unchanged (minio, s3, s3-compatible, aws-s3, filesystem).
+All storage types pass through unchanged (minio, s3, s3-compatible, aws-s3, filesystem).
 */}}
 {{- define "reportportal.datastoreType" -}}
-{{- $storageType := include "reportportal.storageType" . -}}
-{{- if eq $storageType "seaweedfs" -}}minio
-{{- else -}}
-{{- $storageType -}}
-{{- end -}}
+{{- include "reportportal.storageType" . -}}
 {{- end -}}
 
 {{/*
@@ -117,14 +121,13 @@ Returns the DATASTORE_TYPE value for the auto-analyzer service only.
 The analyzer uses a different provider mapping from other services:
   - filesystem    → "filesystem"     (pass through)
   - minio         → "minio"          (pass through)
-  - seaweedfs     → "minio"          (S3-compatible, uses the same minio provider)
   - s3            → "s3"             (pass through)
   - s3-compatible → "minio"          (S3-compatible, uses the same minio provider)
   - aws-s3        → "s3"             (analyzer expects "s3", not "aws-s3")
 */}}
 {{- define "reportportal.analyzerDatastoreType" -}}
 {{- $storageType := include "reportportal.storageType" . -}}
-{{- if or (eq $storageType "seaweedfs") (eq $storageType "s3-compatible") -}}minio
+{{- if eq $storageType "s3-compatible" -}}minio
 {{- else if eq $storageType "aws-s3" -}}s3
 {{- else -}}
 {{- $storageType -}}
@@ -132,22 +135,17 @@ The analyzer uses a different provider mapping from other services:
 {{- end -}}
 
 {{/*
-Returns the full S3 endpoint URL for minio and seaweedfs storage types.
+Returns the full S3 endpoint URL for minio and s3-compatible storage types.
 Port is auto-selected based on storage type when storage.port is empty:
-  seaweedfs → 8333 (SeaweedFS S3 gateway default)
-  minio     → 9000 (MinIO API default)
+  minio / s3-compatible → 9000 (MinIO API default)
 Override storage.endpoint to point at an external or custom service.
 */}}
 {{- define "reportportal.storageEndpoint" -}}
 {{- $storageType := include "reportportal.storageType" . -}}
 {{- $scheme := ternary "https" "http" .Values.storage.ssl -}}
-{{- if eq $storageType "minio" -}}
+{{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") -}}
   {{- $port := .Values.storage.port | default 9000 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
-  {{- printf "%s://%s:%v" $scheme $host $port -}}
-{{- else if eq $storageType "seaweedfs" -}}
-  {{- $port := .Values.storage.port | default 8333 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-seaweedfs-all-in-one.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
+  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) -}}
   {{- printf "%s://%s:%v" $scheme $host $port -}}
 {{- end -}}
 {{- end -}}

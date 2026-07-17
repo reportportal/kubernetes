@@ -1,10 +1,12 @@
 apiVersion: v2
-appVersion: "26.0.2"
+type: application
+kubeVersion: ">=1.26.0-0"
+appVersion: "26.0.3"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
 name: reportportal
-version: 26.3.13
+version: 26.5.28
 sources:
   - https://github.com/reportportal/kubernetes/tree/master/reportportal
 keywords:
@@ -21,8 +23,8 @@ keywords:
 home: https://reportportal.io
 icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
 annotations:
-  category: Infrastructure
-  licenses: Apache-2.0
+  artifacthub.io/category: integration-delivery
+  artifacthub.io/license: Apache-2.0
 maintainers:
   - name: reportportal
     email: support@reportportal.io
@@ -42,7 +44,7 @@ dependencies:
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
-    version: 2.36.0
+    version: 2.38.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version
@@ -50,9 +52,3 @@ dependencies:
     version: 17.0.16
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
-  # SeaweedFS dependency - Apache 2.0 licensed S3-compatible alternative to MinIO
-  # Run `helm search repo seaweedfs/seaweedfs` to verify the latest available version
-  - name: seaweedfs
-    version: 4.15.0
-    repository: https://seaweedfs.github.io/seaweedfs/helm
-    condition: seaweedfs.install

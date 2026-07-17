@@ -104,12 +104,12 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
+          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}'
         # Database settings
         - name: RP_DB_HOST
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
         - name: RP_DB_PORT
           value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
@@ -133,8 +133,8 @@ spec:
         - name: DATASTORE_PATH
           value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
         {{- end }}
-        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
-        {{- if or (eq $storageType "minio") (eq $storageType "seaweedfs") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
         - name: DATASTORE_ENDPOINT
           value: "{{ include "reportportal.storageEndpoint" . }}"
         {{- end }}
@@ -176,25 +176,35 @@ spec:
         {{- end }}
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
+        {{- if .Values.servicejobs.startupProbe.enabled }}
+        startupProbe:
+          httpGet:
+            path: "/jobs/health"
+            port: 8686
+          initialDelaySeconds: {{ .Values.servicejobs.startupProbe.initialDelaySeconds | default 10 }}
+          periodSeconds: {{ .Values.servicejobs.startupProbe.periodSeconds | default 10 }}
+          timeoutSeconds: {{ .Values.servicejobs.startupProbe.timeoutSeconds | default 5 }}
+          failureThreshold: {{ .Values.servicejobs.startupProbe.failureThreshold | default 12 }}
+        {{- end }}
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
+          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 10 }}
           timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 10 }}
+          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 3 }}
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
+          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 20 }}
           timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 10 }}
+          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}

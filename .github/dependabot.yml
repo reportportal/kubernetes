@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # Scans reportportal/values.yaml for container image tags (repository + tag fields).
+  # Also updates Helm subchart versions in Chart.yaml.
+  - package-ecosystem: helm
+    directory: /reportportal
+    schedule:
+      interval: weekly
+    groups:
+      helm-images:
+        patterns:
+          - "*"

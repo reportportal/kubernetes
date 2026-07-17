@@ -53,14 +53,24 @@ spec:
           limits:
             cpu: {{ .Values.serviceui.resources.limits.cpu }}
             memory: {{ .Values.serviceui.resources.limits.memory }}
+        {{- if .Values.serviceui.startupProbe.enabled }}
+        startupProbe:
+          httpGet:
+            path: "/ui/health"
+            port: 8080
+          initialDelaySeconds: {{ .Values.serviceui.startupProbe.initialDelaySeconds | default 5 }}
+          periodSeconds: {{ .Values.serviceui.startupProbe.periodSeconds | default 5 }}
+          timeoutSeconds: {{ .Values.serviceui.startupProbe.timeoutSeconds | default 3 }}
+          failureThreshold: {{ .Values.serviceui.startupProbe.failureThreshold | default 12 }}
+        {{- end }}
         {{- if .Values.serviceui.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "/ui/health"
             port: 8080
-          initialDelaySeconds: {{ .Values.serviceui.readinessProbe.initialDelaySeconds | default 30 }}
-          periodSeconds: {{ .Values.serviceui.readinessProbe.periodSeconds | default 10 }}
-          timeoutSeconds: {{ .Values.serviceui.readinessProbe.timeoutSeconds | default 5 }}
+          initialDelaySeconds: {{ .Values.serviceui.readinessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.serviceui.readinessProbe.periodSeconds | default 5 }}
+          timeoutSeconds: {{ .Values.serviceui.readinessProbe.timeoutSeconds | default 3 }}
           failureThreshold: {{ .Values.serviceui.readinessProbe.failureThreshold | default 3 }}
           successThreshold: {{ .Values.serviceui.readinessProbe.successThreshold | default 1 }}
         {{- end }}
@@ -69,8 +79,8 @@ spec:
           httpGet:
             path: "/ui/health"
             port: 8080
-          initialDelaySeconds: {{ .Values.serviceui.livenessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.serviceui.livenessProbe.periodSeconds | default 30 }}
+          initialDelaySeconds: {{ .Values.serviceui.livenessProbe.initialDelaySeconds | default 0 }}
+          periodSeconds: {{ .Values.serviceui.livenessProbe.periodSeconds | default 20 }}
           timeoutSeconds: {{ .Values.serviceui.livenessProbe.timeoutSeconds | default 5 }}
           failureThreshold: {{ .Values.serviceui.livenessProbe.failureThreshold | default 3 }}
         {{- end }}

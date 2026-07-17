@@ -23,4 +23,4 @@ charts/
 tmp/
 temp/
 tmp*
-examples/
+test/

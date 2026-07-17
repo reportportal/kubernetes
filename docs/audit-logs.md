@@ -10,7 +10,7 @@ In your values:
 serviceapi:
   auditLogs:
     enable: true
-    loglevel: info  # or debug, etc.
+    loglevel: info
 ```
 
 This enables the `AUDIT_LOGGER` env in the API container and mounts the `audit-log-volume` at `/var/log` for the API container. Any additional container you add via `extraContainers` can mount the same volume name to read the log file.
@@ -36,7 +36,7 @@ serviceapi:
         name: reportportal-fluentbit-audit
   extraContainers:
     - name: fluentbit
-      image: fluent/fluent-bit:2.2
+      image: fluent/fluent-bit:latest
       volumeMounts:
         - name: audit-log-volume
           mountPath: /var/log

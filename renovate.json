@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "helmv3": {
+    "fileMatch": [
+      "reportportal/Chart\\.yaml$"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "helmv3"
+      ],
+      "enabled": false
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "enabled": false
+    }
+  ]
+}
