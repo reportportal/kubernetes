@@ -654,7 +654,6 @@
                     "properties": {
                         "database": {},
                         "password": {},
-                        "postgresPassword": {},
                         "username": {}
                     }
                 },
@@ -672,20 +671,10 @@
                 "install": {
                     "type": "boolean"
                 },
-                "primary": {
+                "service": {
                     "type": "object",
                     "properties": {
-                        "service": {
-                            "type": "object",
-                            "properties": {
-                                "ports": {
-                                    "type": "object",
-                                    "properties": {
-                                        "postgresql": {}
-                                    }
-                                }
-                            }
-                        }
+                        "port": {}
                     }
                 }
             }
@@ -693,25 +682,26 @@
         "rabbitmq": {
             "type": "object",
             "properties": {
+                "additionalPlugins": {
+                    "type": "array"
+                },
                 "auth": {
                     "type": "object",
                     "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
                         "password": {},
                         "username": {}
                     }
                 },
-                "containerPorts": {
+                "config": {
                     "type": "object",
                     "properties": {
-                        "amqp": {},
-                        "manager": {}
+                        "extraConfiguration": {
+                            "type": "string"
+                        }
                     }
-                },
-                "extraConfiguration": {
-                    "type": "string"
-                },
-                "extraPlugins": {
-                    "type": "string"
                 },
                 "image": {
                     "type": "object",
@@ -724,16 +714,15 @@
                         }
                     }
                 },
-                "ingress": {
-                    "type": "object",
-                    "properties": {
-                        "tls": {
-                            "type": "array"
-                        }
-                    }
-                },
                 "install": {
                     "type": "boolean"
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "amqpPort": {},
+                        "managementPort": {}
+                    }
                 }
             }
         },
