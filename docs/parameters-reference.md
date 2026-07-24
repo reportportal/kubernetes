@@ -586,7 +586,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `rabbitmq.config.extraConfiguration` | Extra RabbitMQ config (permits RabbitMQ 4.3 `queue_master_locator` used by ReportPortal) | `deprecated_features.permit.queue_master_locator = true` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
-| `opensearch.image.tag` | OpenSearch image tag | `2.19.6` |
+| `opensearch.image.tag` | OpenSearch image tag | `3.7.0` |
 | `opensearch.singleNode` | Single node mode | `true` |
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
