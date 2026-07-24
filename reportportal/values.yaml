@@ -1381,7 +1381,7 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: "18.4"
+    tag: 18.4
   auth:
     username: *dbuser
     password: *dbpassword
@@ -1396,7 +1396,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: "4.3.3-management"
+    tag: 4.3.3-management
   auth:
     enabled: true
     username: *msgbrokerUser
@@ -1411,7 +1411,7 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  ## RabbitMQ 4.3 denies queue_master_locator by default; ReportPortal API still needs it
+  ## RabbitMQ 4.3 denies queue_master_locator by default; ReportPortal API needs it
   ##
   config:
     extraConfiguration: |
