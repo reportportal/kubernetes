@@ -1379,23 +1379,19 @@ resourceQuota:
 ## @section External dependencies installation configuration
 ##
 ## @param postgresql External PostgreSQL Helm Chart as dependency
+## Set postgresql.install to `false` if using a Cloud/On-Premise managed PostgreSQL
 ##
 postgresql:
-  ## set to `false` if using a Cloud/On-Premise managed database
-  ##
   install: true
   image:
-    repository: bitnamilegacy/postgresql
-    tag: 17.5.0-debian-12-r20
+    repository: postgres
+    tag: 18.4
   auth:
-    postgresPassword: *dbpassword
     username: *dbuser
     password: *dbpassword
     database: *dbname
-  primary:
-    service:
-      ports:
-        postgresql: *dbport
+  service:
+    port: *dbport
 
 ## @param rabbitmq External RabbitMQ Helm Chart as dependency
 ## Set @param rabbitmq.install to `false` if using a Cloud/On-Premise managed RabbitMQ
@@ -1403,30 +1399,27 @@ postgresql:
 rabbitmq:
   install: true
   image:
-    repository: bitnamilegacy/rabbitmq
-    tag: 4.1.2-debian-12-r1
+    repository: rabbitmq
+    tag: 4.3.3-management
   auth:
+    enabled: true
     username: *msgbrokerUser
     password: *msgbrokerPass
-  containerPorts:
-    amqp: *msgbrokerPort
-    manager: *msgbrokerApiPort
-  ## @param rabbitmq.extraPlugins define additional RabbitMQ plugins to be enabled
-  ## Required for the ReportPortal to work
+  service:
+    amqpPort: *msgbrokerPort
+    managementPort: *msgbrokerApiPort
+  ## @param rabbitmq.additionalPlugins extra RabbitMQ plugins
+  ## Shovel and consistent-hash exchange plugins are required for ReportPortal
   ##
-  extraPlugins: >
-    rabbitmq_auth_backend_ldap
-    rabbitmq_consistent_hash_exchange
-    rabbitmq_shovel
-    rabbitmq_shovel_management
-  ## @param rabbitmq.extraConfiguration additional RabbitMQ configuration
-  ## @param rabbitmq.extraConfiguration.max_message_size increases the maximum allowed size for a single message
-  ## 128 MB (134217728 bytes) recommended for ReportPortal
+  additionalPlugins:
+    - rabbitmq_consistent_hash_exchange
+    - rabbitmq_shovel
+    - rabbitmq_shovel_management
+  ## RabbitMQ 4.3 denies queue_master_locator by default; ReportPortal API needs it
   ##
-  extraConfiguration: |-
-    max_message_size = 134217728
-  ingress:
-    tls: []
+  config:
+    extraConfiguration: |
+      deprecated_features.permit.queue_master_locator = true
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch

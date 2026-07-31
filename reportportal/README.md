@@ -78,8 +78,8 @@ The following table lists the configurable parameters of the chart and their def
 
 |Parameter|Description|Default|
 |-|-|-|
-|`postgresql.install`|Allow PostgreSQL Bitnami Helm Chart to be installed as a dependency|`true`|
-|`rabbitmq.install`|Allow RabbitmQ Helm Bitnami Chart to be installed as a dependency|`true`|
+|`postgresql.install`|Allow PostgreSQL Helm Chart (CloudPirates) to be installed as a dependency|`true`|
+|`rabbitmq.install`|Allow RabbitMQ Helm Chart (CloudPirates) to be installed as a dependency|`true`|
 |`opensearch.install`|Allow Open Search Helm Chart to be installed as a dependency|`true`|
 |`minio.install`|Allow MinIO Helm Chart to be installed as a dependency (chart default)|`true`|
 
