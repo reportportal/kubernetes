@@ -248,7 +248,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -418,7 +425,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 }
@@ -434,7 +448,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 }
@@ -453,7 +474,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -523,46 +551,27 @@
         },
         "minio": {
             "type": "object",
+            "additionalProperties": true,
             "properties": {
-                "auth": {
-                    "type": "object",
-                    "properties": {
-                        "rootPassword": {},
-                        "rootUser": {}
-                    }
-                },
-                "console": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        }
-                    }
+                "install": {
+                    "type": "boolean"
                 },
                 "image": {
                     "type": "object",
+                    "additionalProperties": true,
                     "properties": {
                         "repository": {
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "install": {
-                    "type": "boolean"
-                },
-                "persistence": {
-                    "type": "object",
-                    "properties": {
-                        "annotations": {
-                            "type": "object",
-                            "properties": {
-                                "helm.sh/resource-policy": {
+                            "oneOf": [
+                                {
                                     "type": "string"
+                                },
+                                {
+                                    "type": "number"
                                 }
-                            }
+                            ]
                         }
                     }
                 }
@@ -603,44 +612,27 @@
         },
         "opensearch": {
             "type": "object",
+            "additionalProperties": true,
             "properties": {
-                "extraEnvs": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "value": {
-                                "type": "string"
-                            }
-                        }
-                    }
+                "install": {
+                    "type": "boolean"
                 },
-                "httpPort": {},
                 "image": {
                     "type": "object",
+                    "additionalProperties": true,
                     "properties": {
                         "repository": {
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "install": {
-                    "type": "boolean"
-                },
-                "singleNode": {
-                    "type": "boolean"
-                },
-                "startupProbe": {
-                    "type": "object",
-                    "properties": {
-                        "initialDelaySeconds": {
-                            "type": "integer"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 }
@@ -648,80 +640,56 @@
         },
         "postgresql": {
             "type": "object",
+            "additionalProperties": true,
             "properties": {
-                "auth": {
-                    "type": "object",
-                    "properties": {
-                        "database": {},
-                        "password": {},
-                        "username": {}
-                    }
+                "install": {
+                    "type": "boolean"
                 },
                 "image": {
                     "type": "object",
+                    "additionalProperties": true,
                     "properties": {
                         "repository": {
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
-                    }
-                },
-                "install": {
-                    "type": "boolean"
-                },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "port": {}
                     }
                 }
             }
         },
         "rabbitmq": {
             "type": "object",
+            "additionalProperties": true,
             "properties": {
-                "additionalPlugins": {
-                    "type": "array"
-                },
-                "auth": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "password": {},
-                        "username": {}
-                    }
-                },
-                "config": {
-                    "type": "object",
-                    "properties": {
-                        "extraConfiguration": {
-                            "type": "string"
-                        }
-                    }
+                "install": {
+                    "type": "boolean"
                 },
                 "image": {
                     "type": "object",
+                    "additionalProperties": true,
                     "properties": {
                         "repository": {
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
-                    }
-                },
-                "install": {
-                    "type": "boolean"
-                },
-                "service": {
-                    "type": "object",
-                    "properties": {
-                        "amqpPort": {},
-                        "managementPort": {}
                     }
                 }
             }
@@ -826,7 +794,14 @@
                                     "type": "string"
                                 },
                                 "tag": {
-                                    "type": "string"
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
                                 }
                             }
                         },
@@ -869,7 +844,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -1132,7 +1114,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -1369,7 +1358,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -1593,7 +1589,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -1802,7 +1805,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },
@@ -2110,7 +2120,14 @@
                             "type": "string"
                         },
                         "tag": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         }
                     }
                 },

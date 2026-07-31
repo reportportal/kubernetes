@@ -86,9 +86,53 @@
    helm schema --values values.yaml --draft 7 --use-helm-docs --output values.schema.json
    ```
 
-3. After regeneration, manually restore `oneOf` rules for fields that accept multiple types (for example `ingress.hosts`, `servicejobs.chunksize`). Do not add schema annotations to `values.yaml`.
+3. After regeneration, manually restore flexible-type and dependency rules (see below). Do not add schema annotations to `values.yaml`.
 4. Commit both files in the same change.
 5. Run `helm lint .` and `ct lint --charts .` in `reportportal/` to verify validation still passes.
+
+### Post-regeneration fixes
+
+Restore these after every `helm schema` run; the generator emits string-only / closed trees from `values.yaml` defaults:
+
+1. **Image tags** — every `*.image.tag` must accept both unquoted numbers and quoted strings (YAML parses `18.4` as a number, `"18.4"` as a string):
+
+   ```json
+   "tag": {
+     "oneOf": [
+       { "type": "string" },
+       { "type": "number" }
+     ]
+   }
+   ```
+
+2. **Other multi-type fields** — restore existing `oneOf` rules (for example `ingress.hosts`, `servicejobs.chunksize`, `gatewayAPI` listener/hostname refs).
+
+3. **External dependencies** — keep `postgresql`, `rabbitmq`, `opensearch`, and `minio` as open passthrough objects so users can set any upstream chart values (ingress, resources, persistence, etc.). Do not regenerate a closed subset of dependency keys. Preferred shape:
+
+   ```json
+   "postgresql": {
+     "type": "object",
+     "additionalProperties": true,
+     "properties": {
+       "install": { "type": "boolean" },
+       "image": {
+         "type": "object",
+         "additionalProperties": true,
+         "properties": {
+           "repository": { "type": "string" },
+           "tag": {
+             "oneOf": [
+               { "type": "string" },
+               { "type": "number" }
+             ]
+           }
+         }
+       }
+     }
+   }
+   ```
+
+   Apply the same pattern to `rabbitmq`, `opensearch`, and `minio`.
 
 ### Default-value rules
 
