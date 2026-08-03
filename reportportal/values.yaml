@@ -1396,7 +1396,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.3-management
+    tag: 4.3.4-management
   auth:
     enabled: true
     username: *msgbrokerUser

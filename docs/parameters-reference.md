@@ -576,7 +576,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `postgresql.service.port` | PostgreSQL service port | `5432` |
 | `rabbitmq.install` | Install RabbitMQ (CloudPirates chart) | `true` |
 | `rabbitmq.image.repository` | RabbitMQ image repository | `rabbitmq` |
-| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.3-management` |
+| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.4-management` |
 | `rabbitmq.auth.enabled` | Enable RabbitMQ authentication | `true` |
 | `rabbitmq.auth.username` | RabbitMQ username | `rabbitmq` |
 | `rabbitmq.auth.password` | RabbitMQ password | `rabbitmqpassword` |
