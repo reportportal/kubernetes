@@ -37,8 +37,8 @@ dependencies:
     condition: postgresql.install
   # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
-    version: 16.0.11
-    repository: https://charts.bitnami.com/bitnami
+    version: 0.21.9
+    repository: oci://registry-1.docker.io/cloudpirates
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
