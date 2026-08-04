@@ -2,6 +2,7 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule:
       interval: weekly
     groups:
@@ -13,6 +14,7 @@ updates:
   # reportportal/values.yaml are owned by Renovate's helm-values manager.
   - package-ecosystem: helm
     directory: /reportportal
+    target-branch: develop
     exclude-paths:
       - values.yaml
     schedule:
