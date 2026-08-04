@@ -160,6 +160,11 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.auditLogs.enable` | Enable audit logs | `false` |
 | `serviceapi.auditLogs.loglevel` | Audit log level | `info` |
 | `serviceapi.allowDeleteAccount` | Allow delete account | `true` |
+| `serviceapi.auth.sessionLiveTime` | UI/OAuth session lifetime in seconds (`RP_SESSION_LIVE`) | `86400` |
+| `serviceapi.auth.samlSessionLiveTime` | SAML session lifetime in seconds (`RP_SAML_SESSION-LIVE`) | `4320` |
+| `serviceapi.auth.superadminInitPasswd.secretName` | Existing Secret with the initial superadmin password | `""` |
+| `serviceapi.auth.superadminInitPasswd.passwordKeyName` | Key in that Secret holding the password | `superadmin-password` |
+| `serviceapi.auth.superadminInitPasswd.password` | Plain-text initial superadmin password (first launch only) | `""` |
 | `serviceapi.cronJobs.interruptBrockenLaunches` | Interrupt broken launches duration | `PT1H` |
 | `serviceapi.cronJobs.loadPlugins` | Load plugins duration | `PT10S` |
 | `serviceapi.patternAnalysis.batchSize` | Pattern analysis batch size | `100` |
@@ -192,71 +197,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.secret.readOnly` | Secret read only | `true` |
 | `serviceapi.secret.data` | Secret data | `{}` |
 | `serviceapi.hostAliases` | Host aliases | `[]` |
-
-## UAT (Authorization) Service Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `uat.name` | Service name | `uat` |
-| `uat.image.repository` | Image repository | `reportportal/service-authorization` |
-| `uat.image.tag` | Image tag | `5.15.0` |
-| `uat.pullPolicy` | Image pull policy | `Always` |
-| `uat.replicaCount` | Number of replicas | `1` |
-| `uat.startupProbe.enabled` | Enable startup probe | `true` |
-| `uat.startupProbe.initialDelaySeconds` | Initial delay | `10` |
-| `uat.startupProbe.periodSeconds` | Period | `10` |
-| `uat.startupProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.startupProbe.failureThreshold` | Failure threshold | `24` |
-| `uat.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `uat.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.readinessProbe.periodSeconds` | Period | `10` |
-| `uat.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `uat.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.livenessProbe.periodSeconds` | Period | `20` |
-| `uat.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.resources.requests.cpu` | CPU requests | `100m` |
-| `uat.resources.requests.memory` | Memory requests | `512Mi` |
-| `uat.resources.limits.cpu` | CPU limits | `500m` |
-| `uat.resources.limits.memory` | Memory limits | `1Gi` |
-| `uat.sessionLiveTime` | Session live time | `86400` |
-| `uat.samlSessionLiveTime` | SAML session live time | `4320` |
-| `uat.extraInitContainers` | Init containers | `{}` |
-| `uat.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
-| `uat.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
-| `uat.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
-| `uat.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
-| `uat.extraVolumes` | Extra volumes | `[]` |
-| `uat.extraVolumeMounts` | Extra volume mounts | `[]` |
-| `uat.superadminInitPasswd.secretName` | Superadmin password secret name | `""` |
-| `uat.superadminInitPasswd.passwordKeyName` | Superadmin password key name | `superadmin-password` |
-| `uat.superadminInitPasswd.password` | Superadmin password | `""` |
-| `uat.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"` |
-| `uat.extraEnvs` | Extra environment variables | `[]` |
-| `uat.podLabels` | Pod labels | `{}` |
-| `uat.podAnnotations` | Pod annotations | `{}` |
-| `uat.securityContext` | Security context | `{}` |
-| `uat.nodeSelector` | Node selector | `{}` |
-| `uat.affinity` | Affinity rules | `{}` |
-| `uat.serviceAccountName` | Service account name | `""` |
-| `uat.tolerations` | Tolerations | `[]` |
-| `uat.strategy` | Deployment strategy | `{}` |
-| `uat.pdb.create` | Create PDB | `false` |
-| `uat.pdb.minAvailable` | PDB min available | `""` |
-| `uat.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `uat.secret.enabled` | Enable secret | `false` |
-| `uat.secret.mountPath` | Secret mount path | `/etc/secret-volume` |
-| `uat.secret.readOnly` | Secret read only | `true` |
-| `uat.secret.data` | Secret data | `{}` |
-| `uat.service.type` | Service type | `""` |
-| `uat.service.portName` | Port name | `""` |
-| `uat.service.nodePort` | Node port | `""` |
-| `uat.service.extraPorts` | Extra ports | `[]` |
-| `uat.service.annotations` | Service annotations | `{}` |
-| `uat.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-| `uat.hostAliases` | Host aliases | `[]` |
 
 ## Service Jobs Configuration
 
@@ -471,7 +411,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
-| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"analyzer"` |
+| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/jobs use | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |

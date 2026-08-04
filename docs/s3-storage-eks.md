@@ -170,7 +170,7 @@ Install or upgrade ReportPortal using Helm (use the path to your chart, e.g. `./
 
 ```bash
 helm install my-release ./reportportal \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   -f values-s3.yaml
 ```
 

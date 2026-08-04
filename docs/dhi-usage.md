@@ -211,7 +211,7 @@ helm upgrade --install reportportal ./reportportal \
   --namespace reportportal \
   --create-namespace \
   -f dhi-values.yaml \
-  --set uat.superadminInitPasswd.password='<strong-password>'
+  --set serviceapi.auth.superadminInitPasswd.password='<strong-password>'
 ```
 
 If you already have a values file for storage, ingress, or other settings, pass multiple `-f` flags; later files override earlier ones.

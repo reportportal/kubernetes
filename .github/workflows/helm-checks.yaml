@@ -48,7 +48,7 @@ jobs:
       - name: Template validation
         run: |
           helm template reportportal-test ./reportportal \
-            --set uat.superadminInitPasswd.password="testpassword123" \
+            --set serviceapi.auth.superadminInitPasswd.password="testpassword123" \
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \

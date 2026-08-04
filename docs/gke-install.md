@@ -244,14 +244,13 @@ For installing ReportPortal on GKE Autopilot Cluster, you need to set the:
 
 - ingress controller as a `gce`
 - superadmin password
-- resources requests for api, uat, and analyzer services
+- resources requests for api and analyzer services
 
 ```bash
 helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --set ingress.class=gce \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set uat.resources.requests.memory=1Gi \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set serviceapi.resources.requests.cpu=1000m \
   --set serviceapi.resources.requests.memory=2Gi \
   --set serviceanalyzer.resources.requests.memory=1Gi \
@@ -267,8 +266,7 @@ helm install \
   ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --set ingress.class=gce \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
-  --set uat.resources.requests.memory=1Gi \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set serviceapi.resources.requests.cpu=1000m \
   --set serviceapi.resources.requests.memory=2Gi \
   --set serviceanalyzer.resources.requests.memory=1Gi \
@@ -293,7 +291,7 @@ For installing ReportPortal on GKE Standard Cluster you need to set:
 helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --set ingress.class=gce \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --version ${VERSION}
 ```
 
@@ -305,7 +303,7 @@ to `standard-rwx` and disable MinIO installation:
 helm install ${RELEASE_NAME} \
   oci://${REPO_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/reportportal \
   --set ingress.class=gce \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
   --set storage.volume.storageClassName=standard-rwx \
   --set minio.install=false \

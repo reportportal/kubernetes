@@ -2,7 +2,7 @@
 
 This guide explains how to run ReportPortal with **filesystem storage** on a Kubernetes cluster using a PersistentVolumeClaim backed by local or shared storage.
 
-All ReportPortal services — `api`, `uat`, `jobs`, and `analyzer` — share a **single PVC**. The storage backend must therefore support the `ReadWriteMany` access mode when pods are spread across multiple nodes, or `ReadWriteOnce` on a single-node cluster where all pods co-locate. See [storageclass.info/drivers](https://storageclass.info/drivers) for a full list of CSI drivers and their supported access modes.
+All ReportPortal services — `api`, `jobs`, and `analyzer` — share a **single PVC**. The storage backend must therefore support the `ReadWriteMany` access mode when pods are spread across multiple nodes, or `ReadWriteOnce` on a single-node cluster where all pods co-locate. See [storageclass.info/drivers](https://storageclass.info/drivers) for a full list of CSI drivers and their supported access modes.
 
 For production multi-node clusters with shared storage (EFS, NFS, Filestore), see [S3 and Filesystem Storage on EKS](s3-storage-eks.md).
 
@@ -30,14 +30,14 @@ ReportPortal supports three storage backends:
 | `s3` | Production cloud object storage |
 | `filesystem` | Shared directory on a PersistentVolume |
 
-Filesystem storage avoids running MinIO and stores attachments on a single shared PVC. All services — `api`, `uat`, `jobs`, and `analyzer` — mount the **same PVC** at `/data/storage`. The analyzer writes exclusively to its own **`/data/storage/analyzer/`** subdirectory so it never contends with per-project attachment directories created by the other services.
+Filesystem storage avoids running MinIO and stores attachments on a single shared PVC. All services — `api`, `jobs`, and `analyzer` — mount the **same PVC** at `/data/storage`. The analyzer writes exclusively to its own **`/data/storage/analyzer/`** subdirectory so it never contends with per-project attachment directories created by the other services.
 
 **How it works:**
 
 ```
                   ┌─────────────────────────────────────────┐
                   │              shared PVC                 │
-api, uat, jobs ──▶│  /data/storage/                         │  attachments, per-project uploads
+api, jobs      ──▶│  /data/storage/                         │  attachments, per-project uploads
 analyzer       ──▶│  /data/storage/analyzer/                │  ML models, log-analysis indices
                   └─────────────────────────────────────────┘
                                     │
@@ -143,7 +143,7 @@ helm install reportportal ./reportportal \
   --namespace reportportal \
   --create-namespace \
   -f test/fs-values.yaml \
-  --set uat.superadminInitPasswd.password="ChangeMe123"
+  --set serviceapi.auth.superadminInitPasswd.password="ChangeMe123"
 ```
 
 Or from the Helm repo:
@@ -159,7 +159,7 @@ helm install reportportal reportportal/reportportal \
   --set storage.volume.storageClassName=local-path \
   --set storage.volume.accessMode=ReadWriteOnce \
   --set minio.install=false \
-  --set uat.superadminInitPasswd.password="ChangeMe123"
+  --set serviceapi.auth.superadminInitPasswd.password="ChangeMe123"
 ```
 
 ---
@@ -198,7 +198,7 @@ minikube tunnel   # in a separate terminal, if using LoadBalancer
 kubectl get ingress -n reportportal
 ```
 
-Default credentials: `superadmin` / the password you set with `uat.superadminInitPasswd.password`.
+Default credentials: `superadmin` / the password you set with `serviceapi.auth.superadminInitPasswd.password`.
 
 ---
 
@@ -234,7 +234,7 @@ Check the pod events for mount errors and confirm that the selected StorageClass
 
 ### Analyzer `PermissionError` with non-root / hardened images
 
-**Background — why this matters:** Starting with Docker Hardened Images (DHI), the `service-auto-analyzer` image runs as a non-root user (`uid=65532`) rather than `root`. The other ReportPortal services (`serviceapi`, `uat`, `servicejobs`) still run as root by default and create their per-project directories (e.g. `/data/storage/prj-1/`) with owner-only write permissions. If the analyzer ever needed to write to those same directories it would get a `PermissionError`.
+**Background — why this matters:** Starting with Docker Hardened Images (DHI), the `service-auto-analyzer` image runs as a non-root user (`uid=65532`) rather than `root`. The other ReportPortal services (`serviceapi`, `servicejobs`) still run as root by default and create their per-project directories (e.g. `/data/storage/prj-1/`) with owner-only write permissions. If the analyzer ever needed to write to those same directories it would get a `PermissionError`.
 
 **How the chart avoids this:** the analyzer is pointed at its own isolated subdirectory via `storage.volume.analyzerPath` (default: `analyzer`), so `FILESYSTEM_DEFAULT_PATH` inside the container resolves to `/data/storage/analyzer`. The analyzer creates and owns everything under that subtree itself and never touches the `prj-*` directories that the other services manage. This matches [upstream ReportPortal's reference configuration](https://github.com/reportportal/reportportal/blob/master/docker-compose.yml).
 

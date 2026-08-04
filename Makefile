@@ -33,7 +33,7 @@ install-source: deps-update deps-build repo-add repo-update
 	@ echo "Superadmin password: ${SUPERADMIN_PASSWORD}, storage type: ${STORAGE_TYPE}"
 	@ helm install ${APP_NAME} \
 		./reportportal \
-		--set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+		--set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
 		--set storage.type=${STORAGE_TYPE} \
 		--set minio.install=${MINIO_INSTALL}
 
@@ -42,7 +42,7 @@ install-repo: repo-add repo-update
 	@ echo "Superadmin password: ${SUPERADMIN_PASSWORD}, storage type: ${STORAGE_TYPE}"
 	@ helm install ${APP_NAME} \
 		reportportal/reportportal \
-		--set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+		--set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
 		--set storage.type=${STORAGE_TYPE} \
 		--set minio.install=${MINIO_INSTALL}
 

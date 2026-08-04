@@ -58,7 +58,7 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
   --set minio.install=false
 ```
@@ -70,7 +70,7 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 #### Install from GitHub repo
@@ -89,7 +89,7 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
   --set minio.install=false
 ```
@@ -99,7 +99,7 @@ If you want to use Minio as a storage:
 ```bash
 helm install reportportal \
   ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 ### Access ReportPortal

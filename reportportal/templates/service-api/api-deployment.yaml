@@ -93,6 +93,20 @@ spec:
           {{- end }}
             - name: RP_ENVIRONMENT_VARIABLE_ALLOW_DELETE_ACCOUNT
               value: "{{ .Values.serviceapi.allowDeleteAccount }}"
+          {{- if .Values.serviceapi.auth.superadminInitPasswd.secretName }}
+            - name: RP_INITIAL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.serviceapi.auth.superadminInitPasswd.secretName }}"
+                  key: "{{ .Values.serviceapi.auth.superadminInitPasswd.passwordKeyName }}"
+          {{- else }}
+            - name: RP_INITIAL_ADMIN_PASSWORD
+              value: "{{ .Values.serviceapi.auth.superadminInitPasswd.password }}"
+          {{- end }}
+            - name: RP_SESSION_LIVE
+              value: "{{ .Values.serviceapi.auth.sessionLiveTime }}"
+            - name: RP_SAML_SESSION-LIVE
+              value: "{{ .Values.serviceapi.auth.samlSessionLiveTime }}"
             - name: LOGGING_LEVEL_ORG_HIBERNATE_SQL
               value: "info"
             - name: RP_REQUESTLOGGING

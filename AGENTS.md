@@ -53,7 +53,6 @@
 | Service Index Configuration | `serviceindex.*` |
 | Service UI Configuration | `serviceui.*` |
 | Service API Configuration | `serviceapi.*` |
-| UAT (Authorization) Service Configuration | `uat.*` |
 | Service Jobs Configuration | `servicejobs.*` |
 | Service Analyzer Configuration | `serviceanalyzer.*` |
 | Migrations Configuration | `migrations.*` |

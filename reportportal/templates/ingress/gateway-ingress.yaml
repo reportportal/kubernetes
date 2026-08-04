@@ -66,13 +66,6 @@ spec:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/uat
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-uat
-            port:
-              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -99,13 +92,6 @@ spec:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/uat
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-uat
-            port:
-              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -131,13 +117,6 @@ spec:
             name: {{ $fullName }}-ui
             port:
               name: {{ $.Values.serviceui.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/uat
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-uat
-            port:
-              name: {{ $.Values.uat.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:

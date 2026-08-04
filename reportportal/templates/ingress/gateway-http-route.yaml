@@ -65,14 +65,6 @@ spec:
       backendRefs:
         - name: {{ $fullName }}-ui
           port: {{ .Values.serviceui.service.port | default 8080 }}
-    # Route for UAT (authorization) service
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/uat
-      backendRefs:
-        - name: {{ $fullName }}-uat
-          port: {{ .Values.uat.service.port | default 9999 }}
     # Route for API service
     - matches:
         - path:

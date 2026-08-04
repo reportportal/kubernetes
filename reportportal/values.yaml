@@ -333,6 +333,27 @@ serviceapi:
   ## @param serviceapi.allowDeleteAccount enable or disable "Delete Account" button in UI
   ##
   allowDeleteAccount: true
+  ## @param serviceapi.auth Authentication and session settings for the API service
+  ## (formerly provided by the standalone UAT / service-authorization component)
+  ##
+  auth:
+    ## @param serviceapi.auth.sessionLiveTime UI/OAuth session lifetime in seconds (maps to RP_SESSION_LIVE)
+    ##
+    sessionLiveTime: 86400
+    ## @param serviceapi.auth.samlSessionLiveTime SAML session lifetime in seconds (maps to RP_SAML_SESSION-LIVE)
+    ##
+    samlSessionLiveTime: 4320
+    ## @param serviceapi.auth.superadminInitPasswd Initial superadmin password used only on first launch.
+    ## Changing this value on redeployments does not update an already-created superadmin password.
+    ## Prefer referencing an existing Secret via secretName instead of setting password in plain text.
+    ## @param serviceapi.auth.superadminInitPasswd.secretName Existing Secret that holds the superadmin password (skips chart-managed Secret)
+    ## @param serviceapi.auth.superadminInitPasswd.passwordKeyName Key inside the Secret that stores the password
+    ## @param serviceapi.auth.superadminInitPasswd.password Plain-text initial password when secretName is empty
+    ##
+    superadminInitPasswd:
+      secretName: ""
+      passwordKeyName: "superadmin-password"
+      password: ""
   ## @param serviceapi.cronJobs define the configuration for the cron jobs
   ##
   cronJobs:
@@ -440,145 +461,7 @@ serviceapi:
     #     - "foo.remote"
     #     - "bar.remote"
 
-## @param serviceapi Core ReportPortal service for the authorization
-##
-uat:
-  name: uat
-  image:
-    repository: reportportal/service-authorization
-    tag: 5.15.0
-  pullPolicy: Always
-  replicaCount: 1
-  ## @param uat.startupProbe configure startup probe
-  ##
-  startupProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 24
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 3
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 20
-    timeoutSeconds: 5
-    failureThreshold: 3
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
-  sessionLiveTime: 86400
-  samlSessionLiveTime: 4320
-  ## @param uat.extraInitContainers init containers
-  ##
-  extraInitContainers: []
-  ## @param uat.initContainerResources Resources for the migrations-waiting-init container
-  ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
-  ## @param uat.extraVolumes define the extra volumes
-  ##
-  extraVolumes: []
-  ## @param uat.extraVolumeMounts define the extra volume mounts
-  ##
-  extraVolumeMounts: []
-  ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
-  ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
-  ##
-  superadminInitPasswd:
-    secretName: ""
-    passwordKeyName: "superadmin-password"
-    password: ""
-  ## @param uat.javaArgs define the configuration for the JVM.
-  ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
-  ##
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
-  ## @param uat.extraEnvs define the extra environment variables
-  ##
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  ## @param uat.nodeSelector define which Nodes the Pods are scheduled on
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  serviceAccountName: ""
-  ## @param uat.tolerations Service-specific tolerations for the authorization service
-  tolerations: []
-  ## @param uat.strategy Deployment strategy for the authorization service
-  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  ##
-  strategy: {}
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 1
-    #   maxUnavailable: 0
-  ## @param uat.pdb Service-specific pod disruption budget for the authorization service
-  pdb:
-    create: false
-    minAvailable: ""
-    maxUnavailable: ""
-  ## @param uat.secret define the secret configuration
-  ## e.g. provide a custom java keystore used in jvmArgs:
-  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
-  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
-  ## keytool -list -keystore custom-pki.jks -storepass changeit
-  ## Generate base64 data and paste it in your values.yaml:
-  ## cat custom-pki.jks | base64 -w
-  ##
-  secret:
-    enabled: false
-    mountPath: /etc/secret-volume
-    readOnly: true
-    data: {}
-      # custom-pki.jks: <base64-data>
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
-    ## @param uat.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
-    ##
-    labels: {}
-  ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
-  ##
-  hostAliases: []
-    # - ip: "127.0.0.1"
-    #   hostnames:
-    #     - "foo.local"
-    #     - "bar.local"
-    # - ip: "10.1.2.3"
-    #   hostnames:
-    #     - "foo.remote"
-    #     - "bar.remote"
-
-## @param serviceapi Core ReportPortal service for the CRON jobs to clean the database and storage
+## @param servicejobs Core ReportPortal service for the CRON jobs to clean the database and storage
 ##
 servicejobs:
   name: jobs

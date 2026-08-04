@@ -28,10 +28,10 @@ helm repo add reportportal https://k8s.reportportal.io && helm repo update repor
 Install the chart:
 
 ```bash
-helm install my-release --set uat.superadminInitPasswd.password="MyPassword" reportportal/reportportal
+helm install my-release --set serviceapi.auth.superadminInitPasswd.password="MyPassword" reportportal/reportportal
 ```
 
-> **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the Auth service not starting
+> **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the API service not starting
 
 ## Uninstalling the Chart
 
@@ -56,7 +56,7 @@ Supported `ingress.class` values include:
 
 ```bash
 helm install my-release reportportal/reportportal \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   --set ingress.class=traefik
 ```
 
@@ -116,14 +116,14 @@ ReportPortal supports three storage types: **minio**, **s3**, and **filesystem**
 **Default (MinIO):**
 ```bash
 helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   reportportal/reportportal
 ```
 
 **For Production with AWS S3:**
 ```bash
 helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   --set storage.type=s3 \
   --set storage.region=us-east-1 \
   --set storage.bucket.bucketDefaultName=my-reportportal-bucket \
@@ -134,7 +134,7 @@ helm install my-release \
 **For Production with Filesystem:**
 ```bash
 helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   --set storage.type=filesystem \
   --set storage.volume.capacity=100Gi \
   --set minio.install=false \
@@ -149,7 +149,7 @@ For enhanced availability and resource management in production deployments, you
 
 ```bash
 helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   --set podDisruptionBudget.enabled=true \
   --set resourceQuota.enabled=true \
   --set resourceQuota.services=15 \
@@ -191,7 +191,7 @@ helm dependency build .
 To install the chart directly from local sources, use:
 
 ```bash
-helm install my-release --set uat.superadminInitPasswd.password="MyPassword" ./reportportal
+helm install my-release --set serviceapi.auth.superadminInitPasswd.password="MyPassword" ./reportportal
 ```
 
 ### Install specific version
@@ -206,7 +206,7 @@ To install a specific version of a chart, use:
 
 ```bash
 helm install my-release \
-  --set uat.superadminInitPasswd.password="MyPassword" \
+  --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   reportportal/reportportal \
   --version 23.2
 ```

@@ -84,35 +84,6 @@ spec:
       component: {{ include "reportportal.fullname" . }}-api
 {{- end }}
 
-{{- /* UAT (Authorization) PodDisruptionBudget */ -}}
-{{- if or .Values.global.pdb.create .Values.uat.pdb.create }}
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: {{ include "reportportal.fullname" . }}-uat-pdb
-  labels: {{ include "labels" . | indent 4 }}
-spec:
-  {{- if .Values.global.pdb.create }}
-  {{- if .Values.global.pdb.minAvailable }}
-  minAvailable: {{ .Values.global.pdb.minAvailable }}
-  {{- end }}
-  {{- if .Values.global.pdb.maxUnavailable }}
-  maxUnavailable: {{ .Values.global.pdb.maxUnavailable }}
-  {{- end }}
-  {{- else }}
-  {{- if .Values.uat.pdb.minAvailable }}
-  minAvailable: {{ .Values.uat.pdb.minAvailable }}
-  {{- end }}
-  {{- if .Values.uat.pdb.maxUnavailable }}
-  maxUnavailable: {{ .Values.uat.pdb.maxUnavailable }}
-  {{- end }}
-  {{- end }}
-  selector:
-    matchLabels:
-      component: {{ include "reportportal.fullname" . }}-uat
-{{- end }}
-
 {{- /* Service Jobs PodDisruptionBudget */ -}}
 {{- if or .Values.global.pdb.create .Values.servicejobs.pdb.create }}
 ---

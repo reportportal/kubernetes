@@ -92,15 +92,15 @@ You need a Gateway controller implementation. See [Gateway Controller: Envoy Gat
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                        HTTPRoute                             │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
-│  │   /     │ │  /ui    │ │  /uat   │ │  /api   │           │
-│  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘           │
-└───────┼──────────┼──────────┼──────────┼────────────────────┘
-        ▼          ▼          ▼          ▼
-   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
-   │ Index  │ │   UI   │ │  UAT   │ │  API   │
-   │Service │ │Service │ │Service │ │Service │
-   └────────┘ └────────┘ └────────┘ └────────┘
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐                       │
+│  │   /     │ │  /ui    │ │  /api   │                       │
+│  └────┬────┘ └────┬────┘ └────┬────┘                       │
+└───────┼──────────┼──────────┼────────────────────────────────┘
+        ▼          ▼          ▼
+   ┌────────┐ ┌────────┐ ┌────────┐
+   │ Index  │ │   UI   │ │  API   │
+   │Service │ │Service │ │Service │
+   └────────┘ └────────┘ └────────┘
 ```
 
 ## Deployment Steps
@@ -142,7 +142,7 @@ helm install reportportal reportportal/reportportal \
   --namespace reportportal \
   --create-namespace \
   --values values-gateway-api.yaml \
-  --set uat.superadminInitPasswd.password="YourSecurePassword"
+  --set serviceapi.auth.superadminInitPasswd.password="YourSecurePassword"
 ```
 
 ### Step 3: Verify Deployment
@@ -422,7 +422,6 @@ gatewayAPI:
 This creates routes:
 - `/reportportal` → Index service
 - `/reportportal/ui` → UI service
-- `/reportportal/uat` → UAT service
 - `/reportportal/api` → API service
 
 ### Example 4: Multiple Hostnames
