@@ -34,21 +34,21 @@ maintainers:
 dependencies:
   # PostgreSQL dependency - update postgresql.image.tag in values.yaml when changing this version
   - name: postgresql
-    version: 16.7.21
+    version: 18.8.5
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.install
   # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
-    version: 16.0.11
+    version: 16.0.14
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
-    version: 2.38.0
+    version: 3.7.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version
   - name: minio
-    version: 17.0.16
+    version: 17.0.21
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
