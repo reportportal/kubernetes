@@ -1,108 +1,138 @@
-# AWS Application Load Balancer (ALB) Deployment Guide for ReportPortal
+# AWS Load Balancer Integration with ReportPortal on EKS
 
-This guide provides comprehensive instructions for deploying ReportPortal on AWS EKS using the AWS Application Load Balancer (ALB) Ingress Controller.
+This guide explains how to deploy ReportPortal on Amazon EKS using the AWS Application Load Balancer (ALB) managed by the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/).
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
-- [ALB Configuration Overview](#alb-configuration-overview)
-- [Deployment Steps](#deployment-steps)
-- [Configuration Examples](#configuration-examples)
-- [Troubleshooting](#troubleshooting)
+- [ALB Configuration](#alb-configuration)
+  - [How ALB Works on EKS](#how-alb-works-on-eks)
+  - [Deployment Steps](#alb-deployment-steps)
+  - [Configuration Examples](#alb-configuration-examples)
+  - [Troubleshooting](#alb-troubleshooting)
 - [Best Practices](#best-practices)
+- [Additional Resources](#additional-resources)
+
+---
 
 ## Prerequisites
 
 ### 1. AWS EKS Cluster
-- EKS cluster running Kubernetes 1.19+
-- AWS Load Balancer Controller installed
-- Proper IAM permissions for ALB creation
+
+- Amazon EKS cluster (Kubernetes v1.20+)
+- [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html) installed in the cluster
+- IAM permissions that allow the controller to create and manage load balancers
+
+> **Install the AWS Load Balancer Controller first.** Follow the [official Helm installation guide](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html) — do not skip this step.
 
 ### 2. Required AWS Resources
-- VPC with public/private subnets
-- Security groups allowing HTTP/HTTPS traffic
-- SSL/TLS certificate in AWS Certificate Manager (ACM)
-- Route 53 hosted zone (optional, for custom domains)
 
-### 3. AWS Load Balancer Controller Installation
+| Resource | Purpose |
+|---|---|
+| VPC with public/private subnets | Load balancer placement |
+| Security groups | Control inbound/outbound traffic |
+| ACM certificate | TLS termination (HTTPS) |
+| Route 53 hosted zone | Custom domain (optional) |
 
-The AWS Load Balancer Controller must be installed in your EKS cluster before deploying ReportPortal with ALB.
+### 3. Subnet Tagging
 
-**Recommended Installation Method:**
-- **Helm (Recommended)**: [Install AWS Load Balancer Controller using Helm](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html)
+The AWS Load Balancer Controller discovers subnets automatically using tags. Make sure your subnets are tagged correctly:
 
-> **Note**: Follow the official AWS documentation for the most up-to-date installation instructions, as installation methods and requirements may change over time.
+| Subnet type | Required tag | Value |
+|---|---|---|
+| Public (internet-facing ALB) | `kubernetes.io/role/elb` | `1` |
+| Private (internal ALB) | `kubernetes.io/role/internal-elb` | `1` |
+| Both | `kubernetes.io/cluster/<cluster-name>` | `shared` or `owned` |
 
-## ALB Configuration Overview
+Missing subnet tags are the most common reason a load balancer fails to be created.
 
-**Important**: By default, ReportPortal uses `nginx` as the ingress class. To use ALB, you must set `ingress.class: alb` in your values.yaml file.
+---
 
-ReportPortal's ALB integration includes:
+## ALB Configuration
 
-### 1. Ingress Configuration
-- **Class**: `alb` (set via `ingress.class`)
-- **TLS**: Handled via AWS Certificate Manager (ACM) ARN
-- **Path-based routing**: Routes traffic to different services based on URL paths
+### How ALB Works on EKS
 
-### 2. Service Routing
-The ALB routes traffic to the following services:
-- `/` → `service-index` (port 8080)
-- `/ui` → `service-ui` (port 8080) 
-- `/uat` → `service-authorization` (port 9999)
-- `/api` → `service-api` (port 8585)
+```
+Browser → ALB (Layer 7) → Kubernetes Ingress → Services → Pods
+```
 
-### 3. Health Checks
-Each service has individual health check configurations:
-- **Index Service**: `/{path}/health`
-- **UI Service**: `/{path}/ui/health`
-- **UAT Service**: `/{path}/uat/health`
-- **API Service**: `/{path}/api/health`
+When you create a Kubernetes `Ingress` resource with `ingress.class: alb`, the AWS Load Balancer Controller:
+1. Reads the `Ingress` spec and its annotations
+2. Provisions an ALB in your AWS account
+3. Creates listener rules that route traffic to the correct Kubernetes Services by URL path
 
-## Deployment Steps
+ReportPortal's Helm chart creates this `Ingress` automatically when `ingress.class: alb` is set in your values file.
 
-### 1. Create Values File
+### ALB Service Routing
 
-Create a `values-alb.yaml` file with ALB-specific configuration:
+The ALB routes incoming requests by path to the following ReportPortal services:
+
+| URL path | Service | Port |
+|---|---|---|
+| `/` | `service-index` | 8080 |
+| `/ui` | `service-ui` | 8080 |
+| `/uat` | `service-authorization` | 9999 |
+| `/api` | `service-api` | 8585 |
+
+### ALB Deployment Steps
+
+#### Step 1: Create a Values File
+
+Create `values-alb.yaml` with your ALB configuration:
 
 ```yaml
-# ALB Ingress Configuration
 ingress:
   enable: true
   hosts:
-    - "your-domain.com"  # Replace with your domain
-  path: ""  # Set to "/reportportal" if deploying to subpath
-  class: alb
+    - "your-domain.com"        # Replace with your actual domain
+  path: ""                     # Use "/reportportal" if deploying to a subpath
+  class: alb                   # Must be "alb" — the default is "nginx"
   annotations:
-    # Basic ALB configuration
-    alb.ingress.kubernetes.io/scheme: "internet-facing"  # or "internal"
+    # --- Scheme ---
+    # "internet-facing" creates a public ALB; use "internal" for private (VPC-only) access
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+
+    # --- Target type ---
+    # "ip" routes directly to Pod IPs — recommended when using VPC CNI
     alb.ingress.kubernetes.io/target-type: "ip"
+
+    # --- Listeners ---
+    # Accept both HTTP (for the redirect below) and HTTPS
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+
+    # Automatically redirect all HTTP traffic to HTTPS
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    
-    # Load balancer grouping (optional)
+
+    # --- TLS ---
+    # ARN of your certificate in AWS Certificate Manager
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
+
+    # --- Load balancer grouping (optional) ---
+    # Allows multiple Ingress resources to share a single ALB, reducing cost
     alb.ingress.kubernetes.io/group.name: "k8s-reportportal"
     alb.ingress.kubernetes.io/group.order: "1"
-    
-    # Health check settings
+
+    # --- Health checks ---
     alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
     alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
     alb.ingress.kubernetes.io/success-codes: "200"
     alb.ingress.kubernetes.io/healthy-threshold-count: "2"
     alb.ingress.kubernetes.io/unhealthy-threshold-count: "2"
-    
-    # Security settings
+
+    # --- Networking (optional — auto-discovered when subnets are tagged correctly) ---
     alb.ingress.kubernetes.io/security-groups: "sg-xxxxxxxxx,sg-yyyyyyyyy"
     alb.ingress.kubernetes.io/subnets: "subnet-xxxxxxxxx,subnet-yyyyyyyyy"
-    
-    # SSL/TLS settings
-    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:region:account:certificate/certificate-id"
-    
-    # Additional ALB attributes
+
+    # --- Performance ---
+    # Increase the idle timeout if you run long-running API requests
     alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"
+
+    # --- Session stickiness (optional) ---
+    # Pins a user's requests to the same pod for 24 hours via a cookie
     alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
 ```
 
-### 2. Deploy ReportPortal
+#### Step 2: Deploy ReportPortal
 
 ```bash
 # Add the Helm repository
@@ -116,42 +146,66 @@ helm install reportportal reportportal/reportportal \
   --values values-alb.yaml
 ```
 
-### 3. Verify Deployment
+#### Step 3: Verify the Deployment
 
 ```bash
-# Check ingress status
+# Check that the Ingress resource was created and has an address
 kubectl get ingress -n reportportal
 
-# Check ALB creation
-aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName, `k8s-reportportal`)]'
+# Verify the ALB was provisioned in AWS
+aws elbv2 describe-load-balancers \
+  --query 'LoadBalancers[?contains(LoadBalancerName, `k8s-reportportal`)]'
 
-# Check target groups
-aws elbv2 describe-target-groups --query 'TargetGroups[?contains(TargetGroupName, `k8s-reportportal`)]'
+# Check that target groups are healthy
+aws elbv2 describe-target-groups \
+  --query 'TargetGroups[?contains(TargetGroupName, `k8s-reportportal`)]'
 ```
 
-## Configuration Examples
+The `ADDRESS` field in `kubectl get ingress` shows the ALB DNS name once provisioning completes (usually 2–3 minutes).
 
-### Example 1: Basic ALB Configuration
+#### Step 4: Configure DNS
+
+Point your domain at the ALB using an **Alias** record in Route 53 (recommended) or a **CNAME**:
+
+```bash
+# Get the ALB DNS name
+kubectl get ingress -n reportportal -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}'
+```
+
+In the AWS Console → Route 53 → your hosted zone, create:
+- **Type**: `A` (Alias) pointing to the ALB DNS name, **or**
+- **Type**: `CNAME` pointing to the ALB DNS name (not supported at the zone apex)
+
+---
+
+### ALB Configuration Examples
+
+#### Example 1: Minimal Setup (HTTPS only)
+
+The simplest configuration to get HTTPS working:
 
 ```yaml
 ingress:
   enable: true
-  hosts: 
+  hosts:
     - reportportal.example.com
   class: alb
   annotations:
     alb.ingress.kubernetes.io/scheme: "internet-facing"
     alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 ```
 
-### Example 2: Internal ALB with Custom Security Groups
+#### Example 2: Internal ALB with Custom Security Groups
+
+For deployments accessible only within your VPC:
 
 ```yaml
 ingress:
   enable: true
-  hosts: 
-   - internal-reportportal.example.com
+  hosts:
+    - internal-reportportal.example.com
   class: alb
   annotations:
     alb.ingress.kubernetes.io/scheme: "internal"
@@ -161,84 +215,116 @@ ingress:
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
 ```
 
-### Example 3: ALB with Session Stickiness
+#### Example 3: ALB with Session Stickiness
+
+Recommended when users experience intermittent session drops:
 
 ```yaml
 ingress:
   enable: true
-  hosts: 
+  hosts:
     - reportportal.example.com
   class: alb
   annotations:
     alb.ingress.kubernetes.io/scheme: "internet-facing"
     alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+    alb.ingress.kubernetes.io/target-group-attributes: "stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=86400"
 ```
 
-## Troubleshooting
+---
 
-### Common Issues
+### ALB Troubleshooting
 
-#### 1. ALB Not Created
+#### ALB was not created
+
 ```bash
-# Check AWS Load Balancer Controller logs
+# Look for errors in the AWS Load Balancer Controller logs
 kubectl logs -n kube-system deployment/aws-load-balancer-controller
 
-# Verify IAM permissions
-aws iam get-role-policy --role-name aws-load-balancer-controller --policy-name AWSLoadBalancerControllerIAMPolicy
+# Confirm the controller has the required IAM permissions
+aws iam get-role-policy \
+  --role-name aws-load-balancer-controller \
+  --policy-name AWSLoadBalancerControllerIAMPolicy
 ```
 
-#### 2. SSL Certificate Issues
-```bash
-# Verify certificate ARN
-aws acm describe-certificate --certificate-arn "arn:aws:acm:region:account:certificate/certificate-id"
+Common causes:
+- Missing IAM permissions on the controller's service account
+- Subnets not tagged correctly (see [Subnet Tagging](#3-subnet-tagging))
+- No available subnets found in the VPC
 
-# Check certificate status
-aws acm list-certificates --query 'CertificateSummaryList[?DomainName==`your-domain.com`]'
+#### SSL certificate not working
+
+```bash
+# Confirm the certificate exists and is in "Issued" status
+aws acm describe-certificate \
+  --certificate-arn "arn:aws:acm:region:account:certificate/certificate-id"
+
+# Find a certificate by domain name
+aws acm list-certificates \
+  --query 'CertificateSummaryList[?DomainName==`your-domain.com`]'
 ```
 
-### Debugging Commands
+#### Pods not receiving traffic
 
 ```bash
-# Check ingress events
+# Inspect Ingress events for provisioning errors
 kubectl describe ingress -n reportportal
 
-# Check ALB target health
+# Check target health in the ALB target group
 aws elbv2 describe-target-health --target-group-arn <target-group-arn>
 
-# Check ALB listeners
+# Check ALB listeners and routing rules
 aws elbv2 describe-listeners --load-balancer-arn <alb-arn>
 ```
 
+---
+
 ## Best Practices
 
-### 1. Security
-- Use internal ALB for private access
-- Implement proper security groups
-- Use AWS WAF for additional protection
-- Enable access logs for monitoring
+### Security
 
-### 2. Monitoring
-- Enable ALB access logs
-- Set up CloudWatch alarms
-- Monitor target group health
-- Track response times and error rates
+- Use `scheme: internal` for deployments not intended for public internet access
+- Define explicit security groups rather than relying on auto-generated rules
+- Enable [AWS WAF](https://aws.amazon.com/waf/) on ALB for additional Layer 7 threat protection
+- Always enforce HTTPS — never expose ReportPortal over plain HTTP in production
 
-### 3. High Availability
-- Deploy across multiple AZs
-- Use multiple subnets
-- Implement proper health checks
+### Monitoring
+
+- Enable **access logs** on the ALB (stored in S3) via `load-balancer-attributes`
+- Create **CloudWatch alarms** on:
+  - `UnHealthyHostCount > 0` — target group health degraded
+  - `HTTPCode_Target_5XX_Count` — backend errors
+- Monitor target group health regularly: `aws elbv2 describe-target-health`
+
+### High Availability
+
+- Always specify subnets in **at least two Availability Zones**
+- Use `healthy-threshold-count: 2` and `unhealthy-threshold-count: 2` for fast failover detection
+- For ALB, use `group.name` + `group.order` when sharing a load balancer across multiple Ingress resources
+
+### Cost
+
+- ALB is billed per LCU (request rate, active connections, rule evaluations per hour)
+- Use `alb.ingress.kubernetes.io/group.name` to share a single ALB across multiple Helm releases and reduce per-LB costs
+
+---
 
 ## Additional Resources
 
 - [AWS Load Balancer Controller Documentation](https://kubernetes-sigs.github.io/aws-load-balancer-controller/)
-- [ReportPortal Documentation](https://reportportal.io/docs)
+- [ALB Ingress Annotations Reference](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/ingress/annotations/)
+- [Install AWS Load Balancer Controller (Helm)](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html)
 - [Route application and HTTP traffic with Application Load Balancers](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
+- [ReportPortal Documentation](https://reportportal.io/docs)
+- [ReportPortal GitHub Issues](https://github.com/reportportal/kubernetes/issues)
+
+---
 
 ## Support
 
 For issues specific to ReportPortal ALB deployment:
+
 - Check the [ReportPortal GitHub Issues](https://github.com/reportportal/kubernetes/issues)
-- Review AWS Load Balancer Controller logs
-- Consult AWS support for ALB-specific issues
+- Review AWS Load Balancer Controller logs: `kubectl logs -n kube-system deployment/aws-load-balancer-controller`
+- Consult AWS support for load balancer provisioning issues

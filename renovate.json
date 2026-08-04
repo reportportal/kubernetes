@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": [
+    "helm-values"
+  ],
+  "helm-values": {
+    "managerFilePatterns": [
+      "/^reportportal/values\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "helm-values"
+      ],
+      "groupName": "ReportPortal container images",
+      "schedule": [
+        "before 6am on monday"
+      ]
+    }
+  ]
+}

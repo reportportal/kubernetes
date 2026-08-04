@@ -29,11 +29,46 @@ spec:
       affinity:
         {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.global.imagePullSecrets }}
+      {{- $pullSecrets := concat (.Values.global.imagePullSecrets | default list) (.Values.serviceanalyzer.fixVolumePermissions.image.pullSecrets | default list) }}
+      {{- with $pullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
+      {{- if and (eq (include "reportportal.storageType" .) "filesystem") .Values.serviceanalyzer.fixVolumePermissions.enabled }}
+      - name: fix-volume-permissions
+        image: "{{ if .Values.global.imageRegistry }}{{ .Values.global.imageRegistry }}/{{ end }}{{ .Values.serviceanalyzer.fixVolumePermissions.image.repository }}:{{ .Values.serviceanalyzer.fixVolumePermissions.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            set -eu
+            path="{{ .Values.storage.volume.defaultPath | default "/data/storage" | trimSuffix "/" }}/{{ include "reportportal.analyzerSubpath" . }}"
+            owner="{{ .Values.serviceanalyzer.fixVolumePermissions.user }}:{{ .Values.serviceanalyzer.fixVolumePermissions.group }}"
+            marker="${path}/.permissions-v1-{{ .Values.serviceanalyzer.fixVolumePermissions.user }}-{{ .Values.serviceanalyzer.fixVolumePermissions.group }}"
+            echo "[fix-volume-permissions] Ensuring analyzer storage directory exists: ${path}"
+            mkdir -p "${path}"
+            if [ -f "${marker}" ]; then
+              echo "[fix-volume-permissions] Permissions already initialized for ${owner}; skipping recursive update"
+              exit 0
+            fi
+            echo "[fix-volume-permissions] Updating ownership to ${owner} and restricting access"
+            chown -R "${owner}" "${path}"
+            chmod -R u+rwX,go-rwx "${path}"
+            touch "${marker}"
+            chown "${owner}" "${marker}"
+            chmod 600 "${marker}"
+            echo "[fix-volume-permissions] Permission initialization completed"
+        securityContext:
+          runAsUser: 0
+          runAsNonRoot: false
+        resources:
+          {{- toYaml .Values.serviceanalyzer.fixVolumePermissions.resources | nindent 10 }}
+        volumeMounts:
+        - name: shared-volume
+          mountPath: {{ .Values.storage.volume.defaultPath | default "/data/storage" }}
+      {{- end }}
       - name: migrations-waiting-init
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
         imagePullPolicy: IfNotPresent
@@ -68,7 +103,7 @@ spec:
           value: "{{ include "reportportal.datastoreType" . }}"
         {{- if eq $storageType "filesystem" }}
         - name: FILESYSTEM_DEFAULT_PATH
-          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
+          value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" | trimSuffix "/" }}/{{ include "reportportal.analyzerSubpath" . }}"
         {{- end }}
         {{- if or (eq $storageType "minio") (eq $storageType "s3") }}
         {{- if eq $storageType "minio" }}
@@ -106,7 +141,7 @@ spec:
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
         - name: DATASTORE_DEFAULTBUCKETNAME
-          value: "{{ .Values.storage.bucket.bucketDefaultName }}/analyzer"
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}/{{ include "reportportal.analyzerSubpath" . }}"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
@@ -118,13 +153,13 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: AMQP_URL
-          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}/
+          value: {{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}/
         - name: AMQP_EXCHANGE_NAME
           value: "{{ .Values.msgbroker.analyzerExchangeName | default "analyzer-default" }}"
         - name: AMQP_VIRTUAL_HOST
           value: "{{ .Values.msgbroker.vhost }}"
         - name: ES_HOSTS
-          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.cluster.local" .Release.Namespace) }}:{{ .Values.searchengine.port }}"
+          value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.searchengine.port }}"
         {{- if .Values.searchengine.secretName }}
         - name: ES_USER
           valueFrom:
@@ -146,11 +181,25 @@ spec:
         - name: UWSGI_WORKERS
           value: "{{ .Values.serviceanalyzer.uwsgiWorkers }}"
         {{- end }}
+        {{- if .Values.serviceanalyzer.startupProbe.enabled }}
+        startupProbe:
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.startupProbe.timeoutSeconds 2) }})"
+          initialDelaySeconds: {{ .Values.serviceanalyzer.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.serviceanalyzer.startupProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.serviceanalyzer.startupProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.serviceanalyzer.startupProbe.failureThreshold }}
+        {{- end }}
         {{- if .Values.serviceanalyzer.readinessProbe.enabled }}
         readinessProbe:
-          httpGet:
-            path: /
-            port: 5001
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.readinessProbe.timeoutSeconds 2) }})"
           initialDelaySeconds: {{ .Values.serviceanalyzer.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.readinessProbe.timeoutSeconds }}
@@ -159,9 +208,11 @@ spec:
         {{- end }}
         {{- if .Values.serviceanalyzer.livenessProbe.enabled }}
         livenessProbe:
-          httpGet:
-            path: /
-            port: 5001
+          exec:
+            command:
+              - python
+              - -c
+              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.livenessProbe.timeoutSeconds 2) }})"
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}

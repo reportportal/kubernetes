@@ -91,7 +91,7 @@ spec:
               value: "{{ .Values.msgbroker.password }}"
           {{- end }}
             - name: RP_AMQP_ADDRESSES
-              value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+              value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}'
           {{- if .Values.uat.superadminInitPasswd.secretName }}
             - name: RP_INITIAL_ADMIN_PASSWORD
               valueFrom:
@@ -111,7 +111,7 @@ spec:
             - name: RP_SESSION_LIVE
               value: "{{ .Values.uat.sessionLiveTime }}"
             - name: RP_DB_HOST
-              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
             - name: RP_DB_PORT
               value: "{{ .Values.database.port }}"
             - name: RP_DB_NAME
@@ -177,25 +177,35 @@ spec:
             - name: DATASTORE_DEFAULTBUCKETNAME
               value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         {{- end }}
+        {{- if .Values.uat.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: "{{ $path }}/uat/health"
+              port: 9999
+            initialDelaySeconds: {{ .Values.uat.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.startupProbe.failureThreshold }}
+          {{- end }}
         {{- if .Values.uat.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: "{{ $path }}/uat/health"
               port: 9999
-            initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 60 }}
-            periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 40 }}
-            timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold | default 10 }}
+            initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold }}
           {{- end }}
         {{- if .Values.uat.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: "{{ $path }}/uat/health"
               port: 9999
-            initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 60 }}
-            periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 40 }}
-            timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 10 }}
+            initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold }}
         {{- end }}
           volumeMounts:
           {{- if .Values.uat.secret.enabled }}

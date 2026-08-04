@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -32,7 +32,7 @@ jobs:
     needs: lint-test
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -52,5 +52,4 @@ jobs:
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \
-            --set seaweedfs.install=false \
             --set minio.install=true > /dev/null

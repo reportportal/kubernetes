@@ -104,12 +104,12 @@ spec:
           value: "{{ .Values.msgbroker.password }}"
         {{- end }}
         - name: RP_AMQP_API_ADDRESS
-          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.apiport }}/api
+          value: {{ ternary "https" "http" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.apiuser }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.apiport }}/api
         - name: RP_AMQP_ADDRESSES
-          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}:{{ .Values.msgbroker.port }}'
+          value: '{{ ternary "amqps" "amqp" .Values.msgbroker.ssl }}://{{ .Values.msgbroker.user }}:$(RP_AMQP_PASS)@{{ .Values.msgbroker.endpoint | default (printf "%s-rabbitmq.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.msgbroker.port }}'
         # Database settings
         - name: RP_DB_HOST
-          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace) }}
+          value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}
         - name: RP_DB_PORT
           value: "{{ .Values.database.port }}"
         - name: RP_DB_NAME
@@ -176,25 +176,35 @@ spec:
         {{- end }}
         - name: RP_AMQP_MAXLOGCONSUMER
           value: "1"
+        {{- if .Values.servicejobs.startupProbe.enabled }}
+        startupProbe:
+          httpGet:
+            path: "/jobs/health"
+            port: 8686
+          initialDelaySeconds: {{ .Values.servicejobs.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.servicejobs.startupProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.servicejobs.startupProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.servicejobs.startupProbe.failureThreshold }}
+        {{- end }}
         {{- if .Values.servicejobs.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds | default 40 }}
-          timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold | default 10 }}
+          initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.servicejobs.readinessProbe.failureThreshold }}
         {{- end }}
         {{- if .Values.servicejobs.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: "/jobs/health"
             port: 8686
-          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds | default 60 }}
-          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds | default 40 }}
-          timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds | default 5 }}
-          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold | default 10 }}
+          initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.servicejobs.livenessProbe.failureThreshold }}
         {{- end }}
         volumeMounts:
           {{- if eq (include "reportportal.storageType" .) "filesystem" }}

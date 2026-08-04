@@ -100,6 +100,15 @@ Returns: minio, s3, or filesystem
 {{- end -}}
 
 {{/*
+Analyzer storage subpath, normalised to have no leading or trailing slash.
+Accepts both "analyzer" and "/analyzer" style values so that overrides from
+older chart versions (which shipped with a leading slash) continue to work.
+*/}}
+{{- define "reportportal.analyzerSubpath" -}}
+{{- .Values.storage.volume.analyzerPath | default "analyzer" | trimPrefix "/" | trimSuffix "/" -}}
+{{- end -}}
+
+{{/*
 Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
 */}}
 {{- define "reportportal.datastoreType" -}}
@@ -117,7 +126,7 @@ Override storage.endpoint to point at an external or custom service.
 {{- $scheme := ternary "https" "http" .Values.storage.ssl -}}
 {{- if eq $storageType "minio" -}}
   {{- $port := .Values.storage.port | default 9000 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.cluster.local" .Release.Name .Release.Namespace) -}}
+  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) -}}
   {{- printf "%s://%s:%v" $scheme $host $port -}}
 {{- end -}}
 {{- end -}}
