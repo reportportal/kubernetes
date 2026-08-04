@@ -9,13 +9,15 @@ updates:
         patterns:
           - "*"
 
-  # Scans reportportal/values.yaml for container image tags (repository + tag fields).
-  # Also updates Helm subchart versions in Chart.yaml.
+  # Updates Helm chart dependencies and Chart.lock. Container image tags in
+  # reportportal/values.yaml are owned by Renovate's helm-values manager.
   - package-ecosystem: helm
     directory: /reportportal
+    exclude-paths:
+      - values.yaml
     schedule:
       interval: weekly
     groups:
-      helm-images:
+      helm-dependencies:
         patterns:
           - "*"

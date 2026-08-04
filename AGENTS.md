@@ -139,3 +139,27 @@ Restore these after every `helm schema` run; the generator emits string-only / c
 - Do **not** use YAML `null` for fields that overlays typically set to a string, array, or object (for example `database.endpoint`, `ingress.hosts`, `gatewayAPI.hostnames`). Use `""`, `[]`, or `{}` instead.
 - Use `[]` for list fields such as `extraInitContainers`, not `{}`.
 - Keep flexible-type rules in `values.schema.json`, not as inline comments in `values.yaml`.
+
+---
+
+## Check pinned utility images on chart releases (`reportportal/Chart.yaml`)
+
+**When to apply:** Whenever `reportportal/Chart.yaml` `version` and/or `appVersion` changes for a release.
+
+**Images to verify** (pinned defaults in `reportportal/values.yaml`, not ReportPortal service images):
+
+| Values path | Repository | Purpose |
+|-------------|------------|---------|
+| `serviceanalyzer.fixVolumePermissions.image.tag` | `busybox` | Filesystem permission-fix init container |
+| `kubectl.image.tag` | `rancher/kubectl` | Pre-upgrade cleanup hook |
+
+**Steps:**
+
+1. Read current tags from `reportportal/values.yaml`.
+2. Look up the latest stable tags:
+   - BusyBox: Docker Hub `library/busybox` (prefer a numeric stable tag such as `1.38`, not `latest`).
+   - rancher/kubectl: GitHub Container Registry / Docker Hub `rancher/kubectl` (prefer a Kubernetes-aligned tag such as `v1.35.x`, not `latest`).
+3. If a newer stable tag exists and is compatible, update `reportportal/values.yaml`.
+4. Sync `docs/parameters-reference.md` defaults for those parameters.
+5. Keep `values.schema.json` in sync if the change affects schema defaults/types.
+6. Do **not** use mutable tags (`latest`) for these release-pinned utility images.

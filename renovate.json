@@ -3,23 +3,23 @@
   "extends": [
     "config:recommended"
   ],
-  "helmv3": {
-    "fileMatch": [
-      "reportportal/Chart\\.yaml$"
+  "enabledManagers": [
+    "helm-values"
+  ],
+  "helm-values": {
+    "managerFilePatterns": [
+      "/^reportportal/values\\.ya?ml$/"
     ]
   },
   "packageRules": [
     {
       "matchManagers": [
-        "helmv3"
+        "helm-values"
       ],
-      "enabled": false
-    },
-    {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "enabled": false
+      "groupName": "ReportPortal container images",
+      "schedule": [
+        "before 6am on monday"
+      ]
     }
   ]
 }

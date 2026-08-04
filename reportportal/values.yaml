@@ -746,7 +746,7 @@ serviceanalyzer:
     group: 65532
     image:
       repository: busybox
-      tag: latest
+      tag: "1.38"
       ## @param serviceanalyzer.fixVolumePermissions.image.pullSecrets Image pull secrets for the
       ## fix-volume-permissions init container. Merged with global.imagePullSecrets at the pod level.
       ## Use when busybox is pulled from a private registry that requires separate credentials.
@@ -1051,6 +1051,12 @@ storage:
     ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
+
+    ## @param storage.volume.accessModes Kubernetes access modes for the PersistentVolume and PersistentVolumeClaim
+    ## Use ReadWriteOnce for single-node local-path storage; use ReadWriteMany for shared filesystem storage.
+    ##
+    accessModes:
+      - ReadWriteMany
 
     ## @param storage.volume.reclaimPolicy PersistentVolume reclaim policy when chart provisions a PV
     ## Options: Retain, Delete

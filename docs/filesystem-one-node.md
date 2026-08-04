@@ -73,7 +73,7 @@ local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsu
 
 Use this when your cluster has a default **ReadWriteOnce** provisioner such as `local-path`. No manual directory setup is required.
 
-The chart defaults to **ReadWriteMany**, which `local-path` does not support. Override `accessMode` to **ReadWriteOnce**. On a single node, all ReportPortal pods schedule on the same node and can share that volume.
+The chart defaults to **ReadWriteMany**, which `local-path` does not support. Override `accessModes` to **ReadWriteOnce**. On a single node, all ReportPortal pods schedule on the same node and can share that volume.
 
 Create `values-fs.yaml`:
 
@@ -87,7 +87,8 @@ storage:
     defaultPath: "/data/storage"
     capacity: 10Gi
     storageClassName: local-path
-    accessMode: ReadWriteOnce
+    accessModes:
+      - ReadWriteOnce
     volumeConfig:
       type: ""   # empty = dynamic provisioning by local-path
 ```
@@ -120,7 +121,8 @@ storage:
     defaultPath: "/data/storage"
     capacity: 10Gi
     storageClassName: efs-sc          # your ReadWriteMany StorageClass
-    accessModes: ReadWriteMany
+    accessModes:
+      - ReadWriteMany
     reclaimPolicy: Retain             # Retain (default) or Delete — see note below
     volumeConfig:
       type: ""                        # empty = dynamic provisioning by the StorageClass
@@ -157,7 +159,7 @@ helm install reportportal reportportal/reportportal \
   --create-namespace \
   --set storage.type=filesystem \
   --set storage.volume.storageClassName=local-path \
-  --set storage.volume.accessMode=ReadWriteOnce \
+  --set storage.volume.accessModes[0]=ReadWriteOnce \
   --set minio.install=false \
   --set uat.superadminInitPasswd.password="ChangeMe123"
 ```
@@ -220,7 +222,7 @@ kubectl describe pvc -n reportportal
 
 Common causes:
 
-- `accessMode: ReadWriteMany` with `local-path` — change to `ReadWriteOnce`
+- `accessModes: [ReadWriteMany]` with `local-path` — change to `[ReadWriteOnce]`
 - `storageClassName` does not match any provisioner — use `kubectl get sc` and pick an existing class
 - The selected StorageClass or CSI driver cannot satisfy the requested access mode
 

@@ -343,7 +343,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
-| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
+| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.38` |
 | `serviceanalyzer.fixVolumePermissions.image.pullSecrets` | Image pull secrets for the init container image; merged with `global.imagePullSecrets` at the pod level | `[]` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.cpu` | Fix-volume-permissions init container CPU requests | `50m` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.memory` | Fix-volume-permissions init container memory requests | `50Mi` |
@@ -474,6 +474,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
+| `storage.volume.accessModes` | Kubernetes access modes for the PersistentVolume and PersistentVolumeClaim | `["ReadWriteMany"]` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
 | `storage.volume.annotations` | Volume annotations | `{}` |
 | `storage.volume.volumeConfig.type` | Volume config type | `""` |

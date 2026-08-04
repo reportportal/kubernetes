@@ -202,30 +202,30 @@ spec:
             httpGet:
               path: "{{ $path }}/api/health"
               port: 8585
-            initialDelaySeconds: {{ .Values.serviceapi.startupProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.serviceapi.startupProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.serviceapi.startupProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.serviceapi.startupProbe.failureThreshold | default 15 }}
+            initialDelaySeconds: {{ .Values.serviceapi.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.serviceapi.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.serviceapi.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.serviceapi.startupProbe.failureThreshold }}
           {{- end }}
           {{- if .Values.serviceapi.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: "{{ $path }}/api/health"
               port: 8585
-            initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds | default 0 }}
-            periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds | default 3 }}
-            failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.serviceapi.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.serviceapi.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.serviceapi.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.serviceapi.readinessProbe.failureThreshold }}
           {{- end }}
           {{- if .Values.serviceapi.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: "{{ $path }}/api/health"
               port: 8585
-            initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds | default 0 }}
-            periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds | default 20 }}
-            timeoutSeconds: {{ .Values.serviceapi.livenessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.serviceapi.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.serviceapi.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.serviceapi.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.serviceapi.livenessProbe.failureThreshold }}
           {{- end }}
           volumeMounts:
           {{- if .Values.serviceapi.secret.enabled }}

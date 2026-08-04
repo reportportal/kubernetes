@@ -182,30 +182,30 @@ spec:
             httpGet:
               path: "{{ $path }}/uat/health"
               port: 9999
-            initialDelaySeconds: {{ .Values.uat.startupProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.uat.startupProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.uat.startupProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.uat.startupProbe.failureThreshold | default 18 }}
+            initialDelaySeconds: {{ .Values.uat.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.startupProbe.failureThreshold }}
           {{- end }}
         {{- if .Values.uat.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: "{{ $path }}/uat/health"
               port: 9999
-            initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds | default 0 }}
-            periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.uat.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.readinessProbe.failureThreshold }}
           {{- end }}
         {{- if .Values.uat.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: "{{ $path }}/uat/health"
               port: 9999
-            initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds | default 0 }}
-            periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds | default 20 }}
-            timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ .Values.uat.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.uat.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.uat.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.uat.livenessProbe.failureThreshold }}
         {{- end }}
           volumeMounts:
           {{- if .Values.uat.secret.enabled }}

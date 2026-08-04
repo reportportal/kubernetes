@@ -9,6 +9,7 @@
 charts/
 /reportportal/charts/
 /reportportal/Chart.lock
+/reportportal/values.schema.generated.json
 
 # Other
 *.xml
