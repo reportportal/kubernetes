@@ -1298,11 +1298,6 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  ## RabbitMQ 4.3 denies queue_master_locator by default; ReportPortal API needs it
-  ##
-  config:
-    extraConfiguration: |
-      deprecated_features.permit.queue_master_locator = true
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
