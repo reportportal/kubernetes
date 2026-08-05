@@ -712,7 +712,7 @@ serviceanalyzer:
     repository: reportportal/service-auto-analyzer
     tag: 5.15.5
   pullPolicy: Always
-  uwsgiWorkers: 2
+  uwsgiWorkers: 1
   resources:
     requests:
       cpu: 500m
