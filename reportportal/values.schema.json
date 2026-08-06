@@ -21,7 +21,14 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "secretName": {
                     "type": "string"
@@ -584,7 +591,14 @@
                     "type": "string"
                 },
                 "apiport": {
-                    "type": "integer"
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "apiuser": {},
                 "endpoint": {
@@ -594,7 +608,14 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "secretName": {
                     "type": "string"
@@ -741,7 +762,14 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "secretName": {
                     "type": "string"
@@ -1000,7 +1028,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"
@@ -1301,7 +1336,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"
@@ -1484,7 +1526,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"
@@ -1742,7 +1791,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"
@@ -1934,7 +1990,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"
@@ -2008,7 +2071,14 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "string"
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "region": {
                     "type": "string"
@@ -2302,7 +2372,14 @@
                             "type": "object"
                         },
                         "nodePort": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
                         },
                         "portName": {
                             "type": "string"

@@ -107,6 +107,23 @@ Restore these after every `helm schema` run; the generator emits string-only / c
 
 2. **Other multi-type fields** — restore existing `oneOf` rules (for example `ingress.hosts`, `servicejobs.chunksize`, `gatewayAPI` listener/hostname refs).
 
+   **Ports** — every infrastructure / service port field must accept both unquoted numbers and quoted strings (YAML parses `9000` as a number, `"9000"` as a string; overlays use either form):
+
+   - `database.port`
+   - `msgbroker.port`, `msgbroker.apiport`
+   - `searchengine.port`
+   - `storage.port`
+   - `*.service.nodePort`
+
+   ```json
+   "port": {
+     "oneOf": [
+       { "type": "string" },
+       { "type": "number" }
+     ]
+   }
+   ```
+
 3. **External dependencies** — keep `postgresql`, `rabbitmq`, `opensearch`, and `minio` as open passthrough objects so users can set any upstream chart values (ingress, resources, persistence, etc.). Do not regenerate a closed subset of dependency keys. Preferred shape:
 
    ```json
