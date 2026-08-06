@@ -1319,7 +1319,7 @@ k8sWaitFor:
 kubectl:
   image:
     repository: rancher/kubectl
-    tag: v1.35.6
+    tag: v1.36.2
 
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
