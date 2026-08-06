@@ -569,7 +569,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `postgresql.install` | Install PostgreSQL (CloudPirates `postgres` chart via alias) | `true` |
 | `postgresql.image.repository` | PostgreSQL image repository | `postgres` |
-| `postgresql.image.tag` | PostgreSQL image tag | `18.4` |
+| `postgresql.image.tag` | PostgreSQL image tag (quote in values so YAML keeps a string) | `"18.4"` |
 | `postgresql.auth.username` | PostgreSQL username | `postgres` |
 | `postgresql.auth.password` | PostgreSQL password | `rppassword` |
 | `postgresql.auth.database` | PostgreSQL database | `reportportal` |

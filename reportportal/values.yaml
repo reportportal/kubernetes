@@ -1381,7 +1381,8 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: 18.4
+    # Quoted: CloudPirates postgres chart schema requires string (YAML 18.4 is a number)
+    tag: "18.4"
   auth:
     username: *dbuser
     password: *dbpassword
