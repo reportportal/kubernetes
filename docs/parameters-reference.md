@@ -568,27 +568,26 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `postgresql.install` | Install PostgreSQL | `true` |
-| `postgresql.image.repository` | PostgreSQL image repository | `bitnamilegacy/postgresql` |
-| `postgresql.image.tag` | PostgreSQL image tag | `17.5.0-debian-12-r20` |
-| `postgresql.auth.postgresPassword` | PostgreSQL password | `rppassword` |
+| `postgresql.install` | Install PostgreSQL (CloudPirates `postgres` chart via alias) | `true` |
+| `postgresql.image.repository` | PostgreSQL image repository | `postgres` |
+| `postgresql.image.tag` | PostgreSQL image tag | `"18.4"` |
 | `postgresql.auth.username` | PostgreSQL username | `postgres` |
 | `postgresql.auth.password` | PostgreSQL password | `rppassword` |
 | `postgresql.auth.database` | PostgreSQL database | `reportportal` |
-| `postgresql.primary.service.ports.postgresql` | PostgreSQL port | `5432` |
-| `rabbitmq.install` | Install RabbitMQ | `true` |
-| `rabbitmq.image.repository` | RabbitMQ image repository | `bitnamilegacy/rabbitmq` |
-| `rabbitmq.image.tag` | RabbitMQ image tag | `4.1.2-debian-12-r1` |
+| `postgresql.service.port` | PostgreSQL service port | `5432` |
+| `rabbitmq.install` | Install RabbitMQ (CloudPirates chart) | `true` |
+| `rabbitmq.image.repository` | RabbitMQ image repository | `rabbitmq` |
+| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.4-management` |
+| `rabbitmq.auth.enabled` | Enable RabbitMQ authentication | `true` |
 | `rabbitmq.auth.username` | RabbitMQ username | `rabbitmq` |
 | `rabbitmq.auth.password` | RabbitMQ password | `rabbitmqpassword` |
-| `rabbitmq.containerPorts.amqp` | RabbitMQ AMQP port | `5672` |
-| `rabbitmq.containerPorts.manager` | RabbitMQ manager port | `15672` |
-| `rabbitmq.extraPlugins` | RabbitMQ extra plugins | Various plugins |
-| `rabbitmq.extraConfiguration` | RabbitMQ extra configuration | `max_message_size = 134217728` |
-| `rabbitmq.ingress.tls` | RabbitMQ ingress TLS | `[]` |
+| `rabbitmq.service.amqpPort` | RabbitMQ AMQP port | `5672` |
+| `rabbitmq.service.managementPort` | RabbitMQ management port | `15672` |
+| `rabbitmq.additionalPlugins` | Extra RabbitMQ plugins (`consistent-hash` + shovel required) | `[rabbitmq_consistent_hash_exchange, rabbitmq_shovel, rabbitmq_shovel_management]` |
+| `rabbitmq.config.extraConfiguration` | Extra RabbitMQ config (permits RabbitMQ 4.3 `queue_master_locator` used by ReportPortal) | `deprecated_features.permit.queue_master_locator = true` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
-| `opensearch.image.tag` | OpenSearch image tag | `2.19.6` |
+| `opensearch.image.tag` | OpenSearch image tag | `3.7.0` |
 | `opensearch.singleNode` | Single node mode | `true` |
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |

@@ -21,6 +21,7 @@ This directory contains installation and configuration guides for ReportPortal o
 - [Install ReportPortal on Minikube](minikube-install.md) — Local development setup with Minikube
 - [Helm Pre-upgrade Guide](helm-pre-upgrade.md) — Required steps before upgrading the Helm chart
 - [Parameters Reference](parameters-reference.md) — Complete reference for all Helm chart values
+- [Docker Hardened Images (DHI) Usage](dhi-usage.md) — Configure PostgreSQL and RabbitMQ with Docker Hardened Images
 - [Audit Logs and Log Collection](audit-logs.md) — Enable audit logging and ship logs to external backends
 
 ## Google Kubernetes Engine (GKE) Application
