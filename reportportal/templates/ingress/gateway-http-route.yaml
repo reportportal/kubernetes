@@ -46,26 +46,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    # Route for index service (root path)
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath | default "/" }}
-      backendRefs:
-        - name: {{ $fullName }}-index
-          port: {{ .Values.serviceindex.service.port | default 8080 }}
-          {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
-          weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
-          {{- end }}
-    # Route for UI service
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/ui
-      backendRefs:
-        - name: {{ $fullName }}-ui
-          port: {{ .Values.serviceui.service.port | default 8080 }}
-    # Route for API service
+    # More specific /api before the / catch-all
     - matches:
         - path:
             type: PathPrefix
@@ -73,6 +54,17 @@ spec:
       backendRefs:
         - name: {{ $fullName }}-api
           port: {{ .Values.serviceapi.service.port | default 8585 }}
+    # Default / (covers /ui) → UI
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      backendRefs:
+        - name: {{ $fullName }}-ui
+          port: {{ .Values.serviceui.service.port | default 8080 }}
+          {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          {{- end }}
     {{- with .Values.gatewayAPI.httpRoute.additionalRules }}
     {{- toYaml . | nindent 4 }}
     {{- end }}

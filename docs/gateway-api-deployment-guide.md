@@ -92,15 +92,15 @@ You need a Gateway controller implementation. See [Gateway Controller: Envoy Gat
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                        HTTPRoute                             │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐                       │
-│  │   /     │ │  /ui    │ │  /api   │                       │
-│  └────┬────┘ └────┬────┘ └────┬────┘                       │
-└───────┼──────────┼──────────┼────────────────────────────────┘
-        ▼          ▼          ▼
-   ┌────────┐ ┌────────┐ ┌────────┐
-   │ Index  │ │   UI   │ │  API   │
-   │Service │ │Service │ │Service │
-   └────────┘ └────────┘ └────────┘
+│           ┌─────────┐ ┌─────────┐                           │
+│           │  /api   │ │    /    │                           │
+│           └────┬────┘ └────┬────┘                           │
+└────────────────┼──────────┼──────────────────────────────────┘
+                 ▼          ▼
+            ┌────────┐ ┌────────┐
+            │  API   │ │   UI   │
+            │Service │ │Service │
+            └────────┘ └────────┘
 ```
 
 ## Deployment Steps
@@ -420,9 +420,8 @@ gatewayAPI:
 ```
 
 This creates routes:
-- `/reportportal` → Index service
-- `/reportportal/ui` → UI service
 - `/reportportal/api` → API service
+- `/reportportal` → UI service (covers `/reportportal/ui`)
 
 ### Example 4: Multiple Hostnames
 

@@ -63,97 +63,6 @@ global:
     ##
     maxUnavailable: "1"
 
-## @param serviceindex Core ReportPortal service for the indexing
-##
-serviceindex:
-  name: index
-  image:
-    repository: reportportal/service-index
-    tag: 5.15.0
-  pullPolicy: Always
-  resources:
-    requests:
-      cpu: 150m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
-
-  ## @param serviceindex.extraInitContainers init containers
-  ##
-  extraInitContainers: []
-    # - name: init-container
-    #   image: busybox
-    #   command: ['sh', '-c', 'echo "Hello, World!"']
-    #   resources:
-    #     requests:
-    #       cpu: 10m
-    #       memory: 10Mi
-    #     limits:
-    #       cpu: 100m
-    #       memory: 100Mi
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  serviceAccountName: ""
-  ## @param serviceindex.startupProbe configure startup probe
-  ##
-  startupProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 3
-    failureThreshold: 12
-  ## @param serviceindex.readinessProbe configure readiness probe
-  ##
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 5
-    timeoutSeconds: 3
-    failureThreshold: 3
-    successThreshold: 1
-  ## @param serviceindex.livenessProbe configure liveness probe
-  ##
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 20
-    timeoutSeconds: 5
-    failureThreshold: 3
-  ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ## Use disktype: "ssd" for specific disk type.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  ## @param serviceindex.tolerations Service-specific tolerations for the index service
-  tolerations: []
-  ## @param serviceindex.strategy Deployment strategy for the index service
-  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  ##
-  strategy: {}
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 1
-    #   maxUnavailable: 0
-  ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
-  pdb:
-    create: false
-    minAvailable: ""
-    maxUnavailable: ""
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
-    ## @param serviceindex.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
-    ##
-    labels: {}
-
 ## @param serviceui Core ReportPortal service
 ##
 serviceui:
@@ -1178,7 +1087,7 @@ gatewayAPI:
 ## ref: https://kubernetes.io/docs/admin/authorization/rbac/
 ##
 rbac:
-  ## @param rbac is required for service-index in order to collect status/info over all services
+  ## @param rbac.create Create RBAC Role and RoleBinding (used by the pre-upgrade cleanup hook)
   ##
   create: true
   ## @param rbac.rules define the rules for ReportPortal

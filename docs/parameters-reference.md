@@ -24,53 +24,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.pdb.minAvailable` | Minimum number/percentage of pods that should remain scheduled | `""` |
 | `global.pdb.maxUnavailable` | Maximum number/percentage of pods that may be made unavailable | `"1"` |
 
-## Service Index Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `serviceindex.name` | Service name | `index` |
-| `serviceindex.image.repository` | Image repository | `reportportal/service-index` |
-| `serviceindex.image.tag` | Image tag | `5.15.0` |
-| `serviceindex.pullPolicy` | Image pull policy | `Always` |
-| `serviceindex.resources.requests.cpu` | CPU requests | `150m` |
-| `serviceindex.resources.requests.memory` | Memory requests | `128Mi` |
-| `serviceindex.resources.limits.cpu` | CPU limits | `200m` |
-| `serviceindex.resources.limits.memory` | Memory limits | `256Mi` |
-| `serviceindex.extraInitContainers` | Init containers | `{}` |
-| `serviceindex.podLabels` | Pod labels | `{}` |
-| `serviceindex.podAnnotations` | Pod annotations | `{}` |
-| `serviceindex.securityContext` | Security context | `{}` |
-| `serviceindex.serviceAccountName` | Service account name | `""` |
-| `serviceindex.startupProbe.enabled` | Enable startup probe | `true` |
-| `serviceindex.startupProbe.initialDelaySeconds` | Initial delay | `5` |
-| `serviceindex.startupProbe.periodSeconds` | Period | `5` |
-| `serviceindex.startupProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.startupProbe.failureThreshold` | Failure threshold | `12` |
-| `serviceindex.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceindex.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.readinessProbe.periodSeconds` | Period | `5` |
-| `serviceindex.readinessProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.readinessProbe.successThreshold` | Success threshold | `1` |
-| `serviceindex.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceindex.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.livenessProbe.periodSeconds` | Period | `20` |
-| `serviceindex.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `serviceindex.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.nodeSelector` | Node selector | `{}` |
-| `serviceindex.affinity` | Affinity rules | `{}` |
-| `serviceindex.tolerations` | Tolerations | `[]` |
-| `serviceindex.strategy` | Deployment strategy | `{}` |
-| `serviceindex.pdb.create` | Create PDB | `false` |
-| `serviceindex.pdb.minAvailable` | PDB min available | `""` |
-| `serviceindex.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `serviceindex.service.type` | Service type | `""` |
-| `serviceindex.service.portName` | Port name | `""` |
-| `serviceindex.service.nodePort` | Node port | `""` |
-| `serviceindex.service.extraPorts` | Extra ports | `[]` |
-| `serviceindex.service.annotations` | Service annotations | `{}` |
-| `serviceindex.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-
 ## Service UI Configuration
 
 | Parameter | Description | Default |
@@ -468,7 +421,7 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `rbac.create` | Create RBAC resources | `true` |
+| `rbac.create` | Create RBAC Role and RoleBinding (used by the pre-upgrade cleanup hook) | `true` |
 | `rbac.rules` | RBAC rules | `[]` |
 
 ## Hooks Configuration

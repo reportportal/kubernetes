@@ -50,7 +50,6 @@
 | Section | Covers |
 |---------|--------|
 | Global Configuration | `global.*` |
-| Service Index Configuration | `serviceindex.*` |
 | Service UI Configuration | `serviceui.*` |
 | Service API Configuration | `serviceapi.*` |
 | Service Jobs Configuration | `servicejobs.*` |

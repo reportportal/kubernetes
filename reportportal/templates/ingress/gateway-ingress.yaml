@@ -52,20 +52,6 @@ spec:
   - host: {{ $host }}
     http:
       paths:
-      - path: {{ $basePath | default "/" }}
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-index
-            port:
-              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/ui
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-ui
-            port:
-              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -73,25 +59,18 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: {{ $basePath | default "/" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
   {{- end }}
   {{- else if kindIs "string" .Values.ingress.hosts }}
   - host: {{ .Values.ingress.hosts }}
     http:
       paths:
-      - path: {{ $basePath | default "/" }}
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-index
-            port:
-              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/ui
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-ui
-            port:
-              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -99,24 +78,17 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: {{ $basePath | default "/" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
   {{- end }}
   {{- else }}
   - http:
       paths:
-      - path: {{ $basePath | default "/" }}
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-index
-            port:
-              name: {{ $.Values.serviceindex.service.portName | default "headless" }}
-      - path: {{ $basePath | default "" }}/ui
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-ui
-            port:
-              name: {{ $.Values.serviceui.service.portName | default "headless" }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -124,6 +96,13 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      - path: {{ $basePath | default "/" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ $.Values.serviceui.service.portName | default "headless" }}
   {{- end }}
 status:
   loadBalancer: {}

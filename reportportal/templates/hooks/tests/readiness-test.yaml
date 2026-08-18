@@ -15,7 +15,6 @@ spec:
     args:
     - >
       for url in \
-        "http://{{ include "reportportal.fullname" . }}-index:8080/health" \
         "http://{{ include "reportportal.fullname" . }}-ui:8080/ui/health" \
         "http://{{ include "reportportal.fullname" . }}-api:8585/api/health" \
         "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"
