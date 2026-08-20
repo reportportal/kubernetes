@@ -36,17 +36,17 @@ dependencies:
   # Chart package name is `postgres`; alias keeps values key and service name as `postgresql`
   - name: postgres
     alias: postgresql
-    version: 0.19.11
+    version: 0.19.14
     repository: oci://registry-1.docker.io/cloudpirates
     condition: postgresql.install
   # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
-    version: 0.21.9
+    version: 0.21.15
     repository: oci://registry-1.docker.io/cloudpirates
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
-    version: 3.7.0
+    version: 3.8.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version
