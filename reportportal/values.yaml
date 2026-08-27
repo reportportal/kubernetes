@@ -1387,7 +1387,7 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: "18.4"
+    tag: "0.20.1"
   auth:
     username: *dbuser
     password: *dbpassword
@@ -1402,7 +1402,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.4-management
+    tag: 0.21.18
   auth:
     enabled: true
     username: *msgbrokerUser
