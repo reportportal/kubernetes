@@ -36,12 +36,12 @@ dependencies:
   # Chart package name is `postgres`; alias keeps values key and service name as `postgresql`
   - name: postgres
     alias: postgresql
-    version: 0.19.14
+    version: 0.20.1
     repository: oci://registry-1.docker.io/cloudpirates
     condition: postgresql.install
   # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
-    version: 0.21.15
+    version: 0.21.18
     repository: oci://registry-1.docker.io/cloudpirates
     condition: rabbitmq.install
   # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
@@ -51,6 +51,6 @@ dependencies:
     condition: opensearch.install
   # MinIO dependency - update minio.image.tag in values.yaml when changing this version
   - name: minio
-    version: 17.0.16
+    version: 17.0.21
     repository: https://charts.bitnami.com/bitnami
     condition: minio.install
