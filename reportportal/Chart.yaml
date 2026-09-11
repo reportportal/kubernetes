@@ -1,7 +1,7 @@
 apiVersion: v2
 type: application
 kubeVersion: ">=1.26.0-0"
-appVersion: "26.0.3"
+appVersion: "26.1"
 description: |
   ReportPortal.io is a TestOps service, that provides increased capabilities
   to speed up results analysis and reporting through the use of built-in analytic features.
