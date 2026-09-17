@@ -1634,6 +1634,23 @@
                 "extraInitContainers": {
                     "type": "array"
                 },
+                "extraNginxConfig": {
+                    "type": "object",
+                    "properties": {
+                        "config": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "existingConfigMap": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "extraVolumeMounts": {
                     "type": "array"
                 },

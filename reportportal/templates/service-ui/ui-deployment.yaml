@@ -23,6 +23,9 @@ spec:
         {{- range $key, $value := .Values.serviceui.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
+        {{- if and .Values.serviceui.extraNginxConfig.enabled (not .Values.serviceui.extraNginxConfig.existingConfigMap) .Values.serviceui.extraNginxConfig.config }}
+        checksum/nginx-config: {{ toYaml .Values.serviceui.extraNginxConfig.config | sha256sum }}
+        {{- end }}
     spec:
       {{- with .Values.serviceui.affinity }}
       affinity:
@@ -43,6 +46,10 @@ spec:
         env:
         - name: RP_SERVER_PORT
           value: "8080"
+        {{- if .Values.serviceui.extraNginxConfig.enabled }}
+        - name: EXTRA_NGINX_CONFIG
+          value: "{{ include "reportportal.ui.nginxConfigMountPath" . }}/*.conf"
+        {{- end }}
         ports:
         - containerPort: 8080
           protocol: TCP
@@ -85,10 +92,20 @@ spec:
           failureThreshold: {{ .Values.serviceui.livenessProbe.failureThreshold | default 3 }}
         {{- end }}
         volumeMounts:
+          {{- if .Values.serviceui.extraNginxConfig.enabled }}
+            - name: nginx-extra-conf
+              mountPath: {{ include "reportportal.ui.nginxConfigMountPath" . }}
+              readOnly: true
+          {{- end }}
           {{- if .Values.serviceui.extraVolumeMounts }}
             {{ toYaml .Values.serviceui.extraVolumeMounts | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if .Values.serviceui.extraNginxConfig.enabled }}
+        - name: nginx-extra-conf
+          configMap:
+            name: {{ include "reportportal.ui.nginxConfigMapName" . }}
+        {{- end }}
         {{- if .Values.serviceui.extraVolumes }}
           {{ toYaml .Values.serviceui.extraVolumes | nindent 8 }}
         {{- end }}
