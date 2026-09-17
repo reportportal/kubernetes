@@ -88,6 +88,26 @@ Global context overrides service-specific context
 {{- end -}}
 
 {{/*
+Directory the additional Nginx snippets are mounted to. Fixed by the service-ui
+image, which includes /etc/nginx/extra-conf.d/*.conf into its server block.
+Mounting anywhere else would either be ignored or shadow the built-in config.
+*/}}
+{{- define "reportportal.ui.nginxConfigMountPath" -}}
+/etc/nginx/extra-conf.d
+{{- end -}}
+
+{{/*
+Name of the ConfigMap holding the additional Nginx snippets for the UI service.
+*/}}
+{{- define "reportportal.ui.nginxConfigMapName" -}}
+{{- if .Values.serviceui.extraNginxConfig.existingConfigMap -}}
+{{- .Values.serviceui.extraNginxConfig.existingConfigMap -}}
+{{- else -}}
+{{- printf "%s-ui-nginx" (include "reportportal.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get storage type with default "minio" and validation.
 Returns: minio, s3, or filesystem
 */}}

@@ -186,6 +186,28 @@ serviceui:
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
+
+  ## Additional server-level Nginx snippets for the UI container.
+  ## They are mounted at /etc/nginx/extra-conf.d and included inside the existing
+  ## `server` block of the image, so the snippets may contain directives such as
+  ## `location`, `set` and `proxy_set_header`, but must not contain an `http` or
+  ## `server` block.
+  ##
+  extraNginxConfig:
+    ## @param serviceui.extraNginxConfig.enabled mount the snippets into the UI container
+    ##
+    enabled: false
+    ## @param serviceui.extraNginxConfig.existingConfigMap use an already existing ConfigMap; when set, `config` is ignored
+    ##
+    existingConfigMap: ""
+    ## @param serviceui.extraNginxConfig.config snippets rendered into a ConfigMap, keyed by file name
+    ##
+    config: {}
+      # deployment-info.conf: |
+      #   location = /deployment-info {
+      #       default_type text/plain;
+      #       return 200 "service-ui";
+      #   }
   podLabels: {}
   affinity: {}
   podAnnotations: {}
