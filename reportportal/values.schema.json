@@ -1845,6 +1845,9 @@
                 "affinity": {
                     "type": "object"
                 },
+                "extraEnvs": {
+                    "type": "array"
+                },
                 "extraInitContainers": {
                     "type": "array"
                 },
