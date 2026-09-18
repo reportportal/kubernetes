@@ -95,6 +95,16 @@ serviceui:
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
+  ## @param serviceui.extraEnvs define the extra environment variables
+  ##
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
 
   ## Additional server-level Nginx snippets for the UI container.
   ## They are mounted at /etc/nginx/extra-conf.d and included inside the existing

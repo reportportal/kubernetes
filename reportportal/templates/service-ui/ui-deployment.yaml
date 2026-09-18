@@ -50,6 +50,9 @@ spec:
         - name: EXTRA_NGINX_CONFIG
           value: "{{ include "reportportal.ui.nginxConfigMountPath" . }}/*.conf"
         {{- end }}
+        {{- if .Values.serviceui.extraEnvs }}
+        {{- toYaml .Values.serviceui.extraEnvs | nindent 8 }}
+        {{- end }}
         ports:
         - containerPort: 8080
           protocol: TCP

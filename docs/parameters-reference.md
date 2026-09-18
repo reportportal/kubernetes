@@ -40,6 +40,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceui.extraInitContainers` | Init containers | `{}` |
 | `serviceui.extraVolumes` | Extra volumes | `[]` |
 | `serviceui.extraVolumeMounts` | Extra volume mounts | `[]` |
+| `serviceui.extraEnvs` | Extra environment variables | `[]` |
 | `serviceui.extraNginxConfig.enabled` | Mount additional server-level Nginx snippets into the UI container at `/etc/nginx/extra-conf.d` | `false` |
 | `serviceui.extraNginxConfig.existingConfigMap` | Use an already existing ConfigMap with the snippets; when set, `config` is ignored | `""` |
 | `serviceui.extraNginxConfig.config` | Snippets rendered into a ConfigMap, keyed by file name | `{}` |
