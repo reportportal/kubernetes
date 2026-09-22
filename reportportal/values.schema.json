@@ -359,6 +359,9 @@
                 "enable": {
                     "type": "boolean"
                 },
+                "extraPaths": {
+                    "type": "array"
+                },
                 "hosts": {
                     "oneOf": [
                         {

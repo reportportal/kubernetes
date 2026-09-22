@@ -1177,6 +1177,19 @@ ingress:
   hosts: []
   path: ""
   class: nginx
+  ## @param ingress.extraPaths additional ingress paths, rendered before the built-in ones
+  ## Each entry is a raw Ingress HTTPIngressPath. Rendered ahead of the `/`, `/ui`,
+  ## `/uat` and `/api` rules so that ALB action paths such as `ssl-redirect`, which
+  ## must be evaluated first, can be declared here.
+  ##
+  extraPaths: []
+    # - path: /grafana/
+    #   pathType: Prefix
+    #   backend:
+    #     service:
+    #       name: reportportal-ui
+    #       port:
+    #         name: headless
   ## @param ingress.annotations Ingress annotations
   ## Add annotations based on your ingress controller
   ##

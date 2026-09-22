@@ -498,6 +498,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `ingress.hosts` | Ingress hosts | `null` |
 | `ingress.path` | Ingress path | `""` |
 | `ingress.class` | Ingress class (`nginx`, `traefik`, `gce`, `alb`, or other; maps to `spec.ingressClassName`) | `nginx` |
+| `ingress.extraPaths` | Additional raw Ingress paths, rendered before the built-in `/`, `/ui`, `/uat` and `/api` rules | `[]` |
 | `ingress.annotations` | Ingress annotations (key-value map) | `{}` |
 | `ingress.tls.certificates` | TLS certificates | `null` |
 | `ingress.tls.certificate.gcpManaged` | GCP managed certificate | `false` |

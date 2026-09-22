@@ -52,6 +52,9 @@ spec:
   - host: {{ $host }}
     http:
       paths:
+      {{- with $.Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
@@ -85,6 +88,9 @@ spec:
   - host: {{ .Values.ingress.hosts }}
     http:
       paths:
+      {{- with .Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
@@ -117,6 +123,9 @@ spec:
   {{- else }}
   - http:
       paths:
+      {{- with .Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
