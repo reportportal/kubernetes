@@ -10,12 +10,13 @@ updates:
         patterns:
           - "*"
 
+  # Updates Helm chart dependencies and Chart.lock. Container image tags in
+  # reportportal/values.yaml are owned by Renovate's helm-values manager.
   - package-ecosystem: helm
     directory: /reportportal
     target-branch: develop
     exclude-paths:
-      - reportportal/values.yaml
-      - "*/values.yaml"
+      - values.yaml
     schedule:
       interval: weekly
     groups:
