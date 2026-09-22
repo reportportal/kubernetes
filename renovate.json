@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  "baseBranchPatterns": [
+    "develop"
+  ],
   "enabledManagers": [
     "helm-values"
   ],
@@ -11,8 +14,22 @@
       "/^reportportal/values\\.ya?ml$/"
     ]
   },
+  "labels": [
+    "dependencies",
+    "helm"
+  ],
+  "dependencyDashboard": true,
   "packageRules": [
     {
+      "description": "Do not propose updates away from mutable latest pins",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchCurrentValue": "latest",
+      "enabled": false
+    },
+    {
+      "description": "Pinned images in reportportal/values.yaml (ReportPortal services + Helm dependency overrides)",
       "matchManagers": [
         "helm-values"
       ],

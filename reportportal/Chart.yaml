@@ -29,27 +29,20 @@ maintainers:
   - name: reportportal
     email: support@reportportal.io
 
-# IMPORTANT: When updating any dependency version below, you must also update the corresponding image tag in values.yaml
-# This ensures the Helm chart uses the same version as the container images
 dependencies:
-  # PostgreSQL dependency - update postgresql.image.tag in values.yaml when changing this version
-  # Chart package name is `postgres`; alias keeps values key and service name as `postgresql`
   - name: postgres
     alias: postgresql
     version: 0.19.14
     repository: oci://registry-1.docker.io/cloudpirates
     condition: postgresql.install
-  # RabbitMQ dependency - update rabbitmq.image.tag in values.yaml when changing this version
   - name: rabbitmq
     version: 0.21.15
     repository: oci://registry-1.docker.io/cloudpirates
     condition: rabbitmq.install
-  # OpenSearch dependency - update opensearch.image.tag in values.yaml when changing this version
   - name: opensearch
     version: 3.8.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
-  # MinIO dependency - update minio.image.tag in values.yaml when changing this version
   - name: minio
     version: 17.0.16
     repository: https://charts.bitnami.com/bitnami
