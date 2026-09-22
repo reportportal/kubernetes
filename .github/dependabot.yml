@@ -1,21 +1,14 @@
 version: 2
 updates:
+  # GitHub Actions only. Helm Chart.yaml + values.yaml image pins are owned by Renovate
+  # (helmv3 + helm-values). Dependabot's helm ecosystem collapses chart name `postgres`
+  # with image repository `postgres` and rewrites tags to chart versions (#556).
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule:
       interval: weekly
     groups:
       github-actions:
-        patterns:
-          - "*"
-
-  # Scans reportportal/values.yaml for container image tags (repository + tag fields).
-  # Also updates Helm subchart versions in Chart.yaml.
-  - package-ecosystem: helm
-    directory: /reportportal
-    schedule:
-      interval: weekly
-    groups:
-      helm-images:
         patterns:
           - "*"

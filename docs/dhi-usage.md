@@ -43,7 +43,7 @@ OpenSearch and MinIO are unchanged by this guide.
 
 ## Prerequisites
 
-- Kubernetes cluster and Helm 3.4+
+- Kubernetes cluster and Helm 3.8+
 - ReportPortal chart with CloudPirates PostgreSQL and RabbitMQ dependencies
 - Access to Docker Hardened Images (`dhi.io`) for your organization
 - `kubectl` access to the target namespace

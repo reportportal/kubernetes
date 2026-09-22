@@ -967,6 +967,19 @@ ingress:
   hosts: []
   path: ""
   class: nginx
+  ## @param ingress.extraPaths additional ingress paths, rendered before the built-in ones
+  ## Each entry is a raw Ingress HTTPIngressPath. Rendered ahead of the built-in `/api`
+  ## and `/` rules so that ALB action paths such as `ssl-redirect`, which must be
+  ## evaluated first, can be declared here.
+  ##
+  extraPaths: []
+    # - path: /grafana/
+    #   pathType: Prefix
+    #   backend:
+    #     service:
+    #       name: reportportal-ui
+    #       port:
+    #         name: headless
   ## @param ingress.annotations Ingress annotations
   ## Add annotations based on your ingress controller
   ##
@@ -1209,7 +1222,7 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: 18.4
+    tag: 18.6
   auth:
     username: *dbuser
     password: *dbpassword
@@ -1224,7 +1237,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.4-management
+    tag: 4.3.6-management
   auth:
     enabled: true
     username: *msgbrokerUser

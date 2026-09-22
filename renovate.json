@@ -3,23 +3,56 @@
   "extends": [
     "config:recommended"
   ],
+  "baseBranchPatterns": [
+    "develop"
+  ],
+  "enabledManagers": [
+    "helmv3",
+    "helm-values"
+  ],
   "helmv3": {
-    "fileMatch": [
-      "reportportal/Chart\\.yaml$"
+    "managerFilePatterns": [
+      "/^reportportal/Chart\\.ya?ml$/"
     ]
   },
+  "helm-values": {
+    "managerFilePatterns": [
+      "/^reportportal/values\\.ya?ml$/"
+    ]
+  },
+  "labels": [
+    "dependencies",
+    "helm"
+  ],
+  "dependencyDashboard": true,
   "packageRules": [
     {
+      "description": "Do not propose updates away from mutable latest pins",
       "matchManagers": [
-        "helmv3"
+        "helm-values"
       ],
+      "matchCurrentValue": "latest",
       "enabled": false
     },
     {
+      "description": "Helm subchart versions in reportportal/Chart.yaml",
       "matchManagers": [
-        "github-actions"
+        "helmv3"
       ],
-      "enabled": false
+      "groupName": "Helm chart dependencies",
+      "schedule": [
+        "before 6am on monday"
+      ]
+    },
+    {
+      "description": "Pinned images in reportportal/values.yaml (ReportPortal services + Helm dependency overrides)",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "groupName": "ReportPortal container images",
+      "schedule": [
+        "before 6am on monday"
+      ]
     }
   ]
 }
