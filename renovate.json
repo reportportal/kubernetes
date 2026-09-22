@@ -7,14 +7,8 @@
     "develop"
   ],
   "enabledManagers": [
-    "helmv3",
     "helm-values"
   ],
-  "helmv3": {
-    "managerFilePatterns": [
-      "/^reportportal/Chart\\.ya?ml$/"
-    ]
-  },
   "helm-values": {
     "managerFilePatterns": [
       "/^reportportal/values\\.ya?ml$/"
@@ -33,16 +27,6 @@
       ],
       "matchCurrentValue": "latest",
       "enabled": false
-    },
-    {
-      "description": "Helm subchart versions in reportportal/Chart.yaml",
-      "matchManagers": [
-        "helmv3"
-      ],
-      "groupName": "Helm chart dependencies",
-      "schedule": [
-        "before 6am on monday"
-      ]
     },
     {
       "description": "Pinned images in reportportal/values.yaml (ReportPortal services + Helm dependency overrides)",
