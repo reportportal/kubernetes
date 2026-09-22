@@ -575,14 +575,14 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `postgresql.install` | Install PostgreSQL (CloudPirates `postgres` chart via alias) | `true` |
 | `postgresql.image.repository` | PostgreSQL image repository | `postgres` |
-| `postgresql.image.tag` | PostgreSQL image tag | `"18.4"` |
+| `postgresql.image.tag` | PostgreSQL image tag | `"18.6"` |
 | `postgresql.auth.username` | PostgreSQL username | `postgres` |
 | `postgresql.auth.password` | PostgreSQL password | `rppassword` |
 | `postgresql.auth.database` | PostgreSQL database | `reportportal` |
 | `postgresql.service.port` | PostgreSQL service port | `5432` |
 | `rabbitmq.install` | Install RabbitMQ (CloudPirates chart) | `true` |
 | `rabbitmq.image.repository` | RabbitMQ image repository | `rabbitmq` |
-| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.4-management` |
+| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.6-management` |
 | `rabbitmq.auth.enabled` | Enable RabbitMQ authentication | `true` |
 | `rabbitmq.auth.username` | RabbitMQ username | `rabbitmq` |
 | `rabbitmq.auth.password` | RabbitMQ password | `rabbitmqpassword` |
