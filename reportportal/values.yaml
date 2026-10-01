@@ -1432,7 +1432,7 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: "18.6"
+    tag: "0.20.6"
   auth:
     username: *dbuser
     password: *dbpassword
