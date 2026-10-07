@@ -1,0 +1,156 @@
+{{- if .Values.servicemcp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reportportal.fullname" . }}-mcp
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.servicemcp.replicaCount | default 1 }}
+  {{- with .Values.servicemcp.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-mcp
+  template:
+    metadata:
+      labels:
+        {{- range $key, $value := .Values.servicemcp.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        component: {{ include "reportportal.fullname" . }}-mcp
+      {{- with .Values.servicemcp.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.servicemcp.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.servicemcp.extraInitContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.servicemcp.name | default "mcp" }}
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "servicemcp") }}"
+          imagePullPolicy: {{ .Values.servicemcp.pullPolicy }}
+          {{- with .Values.servicemcp.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: MCP_MODE
+              value: http
+            - name: MCP_SERVER_HOST
+              value: "0.0.0.0"
+            - name: MCP_SERVER_PORT
+              value: "8080"
+            - name: RP_HOST
+              value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-api{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:8585
+            - name: RP_MCP_ANALYTICS_OFF
+              value: {{ .Values.servicemcp.analyticsOff | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.servicemcp.logLevel | default "info" | quote }}
+            - name: RP_CONNECTION_TIMEOUT
+              value: {{ .Values.servicemcp.connectionTimeout | quote }}
+            - name: RP_INSECURE_TLS
+              value: {{ .Values.servicemcp.tls.insecure | quote }}
+            {{- if gt (int .Values.servicemcp.maxWorkers) 0 }}
+            - name: RP_MAX_WORKERS
+              value: {{ .Values.servicemcp.maxWorkers | quote }}
+            {{- end }}
+            {{- if .Values.servicemcp.tls.caCert.secretName }}
+            - name: RP_TLS_CA_CERT
+              value: "/etc/reportportal/tls/ca.crt"
+            {{- end }}
+            {{- with .Values.servicemcp.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.servicemcp.resources | nindent 12 }}
+          {{- if .Values.servicemcp.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.servicemcp.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.servicemcp.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.servicemcp.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.servicemcp.startupProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.servicemcp.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.servicemcp.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.servicemcp.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.servicemcp.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.servicemcp.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.servicemcp.readinessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.servicemcp.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: {{ .Values.servicemcp.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.servicemcp.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.servicemcp.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.servicemcp.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if or .Values.servicemcp.tls.caCert.secretName .Values.servicemcp.extraVolumeMounts }}
+          volumeMounts:
+            {{- if .Values.servicemcp.tls.caCert.secretName }}
+            - name: mcp-ca-cert
+              mountPath: /etc/reportportal/tls
+              readOnly: true
+            {{- end }}
+            {{- with .Values.servicemcp.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+      {{- with .Values.servicemcp.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.servicemcp.tls.caCert.secretName .Values.servicemcp.extraVolumes }}
+      volumes:
+        {{- if .Values.servicemcp.tls.caCert.secretName }}
+        - name: mcp-ca-cert
+          secret:
+            secretName: {{ .Values.servicemcp.tls.caCert.secretName | quote }}
+            items:
+              - key: {{ .Values.servicemcp.tls.caCert.key | quote }}
+                path: ca.crt
+        {{- end }}
+        {{- with .Values.servicemcp.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.servicemcp.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.servicemcp.securityContext) | nindent 8 }}
+      serviceAccountName: {{ .Values.servicemcp.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.servicemcp.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+{{- end }}

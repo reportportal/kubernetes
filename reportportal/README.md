@@ -70,6 +70,10 @@ For detailed configuration guides, see:
 - [Install ReportPortal on Minikube](../docs/minikube-install.md) - For local development
 - [Gateway API Deployment Guide](../docs/gateway-api-deployment-guide.md) - Modern alternative to Ingress
 
+### Optional MCP Server
+
+The chart includes optional ReportPortal MCP Server support for connecting AI clients to ReportPortal; it is disabled by default and adds `/mcp` to the existing ReportPortal Ingress or Gateway API when those resources are enabled. See the [ReportPortal MCP Server Deployment Guide](../docs/mcp-server.md) for installation, authentication, client, TLS, and runtime configuration.
+
 ### Install the chart with dependencies
 
 ReportPortal relies on several essential dependencies, without which it cannot function properly. It is feasible to substitute these dependencies with available On-Premise or Cloud alternatives.

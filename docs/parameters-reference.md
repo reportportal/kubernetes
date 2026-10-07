@@ -612,5 +612,64 @@ This document provides a comprehensive reference of all configurable parameters 
 | `k8sWaitFor.image.repository` | K8s wait for image repository | `reportportal/k8s-wait-for` |
 | `k8sWaitFor.image.tag` | K8s wait for image tag | `latest` |
 | `kubectl.image.repository` | Kubectl image repository for pre-upgrade cleanup hook | `rancher/kubectl` |
-| `kubectl.image.tag` | Kubectl image tag | `v1.35.6` |
+| `kubectl.image.tag` | Kubectl image tag | `v1.36.2` |
 | `k8s.networking.ssl` | SSL between pods | `false` |
+
+## Service MCP Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `servicemcp.enabled` | Enable the ReportPortal MCP server | `false` |
+| `servicemcp.name` | Service name | `mcp` |
+| `servicemcp.image.repository` | Image repository | `reportportal/mcp-server` |
+| `servicemcp.image.tag` | Image tag | `1.3.3` |
+| `servicemcp.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `servicemcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
+| `servicemcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |
+| `servicemcp.connectionTimeout` | ReportPortal API connection timeout in seconds | `30` |
+| `servicemcp.tls.insecure` | Disable TLS certificate verification; mutually exclusive with a CA Secret | `false` |
+| `servicemcp.tls.caCert.secretName` | Existing Secret containing the ReportPortal CA certificate | `""` |
+| `servicemcp.tls.caCert.key` | Secret key containing the PEM CA certificate | `ca.crt` |
+| `servicemcp.resources.requests.cpu` | CPU requests | `100m` |
+| `servicemcp.resources.requests.memory` | Memory requests | `128Mi` |
+| `servicemcp.resources.limits.cpu` | CPU limits | `200m` |
+| `servicemcp.resources.limits.memory` | Memory limits | `256Mi` |
+| `servicemcp.startupProbe.enabled` | Enable startup probe | `true` |
+| `servicemcp.startupProbe.initialDelaySeconds` | Startup probe initial delay | `5` |
+| `servicemcp.startupProbe.periodSeconds` | Startup probe period | `5` |
+| `servicemcp.startupProbe.timeoutSeconds` | Startup probe timeout | `3` |
+| `servicemcp.startupProbe.failureThreshold` | Startup probe failure threshold | `12` |
+| `servicemcp.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `servicemcp.readinessProbe.initialDelaySeconds` | Readiness probe initial delay | `0` |
+| `servicemcp.readinessProbe.periodSeconds` | Readiness probe period | `5` |
+| `servicemcp.readinessProbe.timeoutSeconds` | Readiness probe timeout | `3` |
+| `servicemcp.readinessProbe.failureThreshold` | Readiness probe failure threshold | `3` |
+| `servicemcp.readinessProbe.successThreshold` | Readiness probe success threshold | `1` |
+| `servicemcp.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `servicemcp.livenessProbe.initialDelaySeconds` | Liveness probe initial delay | `0` |
+| `servicemcp.livenessProbe.periodSeconds` | Liveness probe period | `20` |
+| `servicemcp.livenessProbe.timeoutSeconds` | Liveness probe timeout | `5` |
+| `servicemcp.livenessProbe.failureThreshold` | Liveness probe failure threshold | `3` |
+| `servicemcp.extraEnvs` | Additional environment variables | `[]` |
+| `servicemcp.extraInitContainers` | Additional init containers | `[]` |
+| `servicemcp.extraContainers` | Additional sidecar containers | `[]` |
+| `servicemcp.extraVolumes` | Additional pod volumes | `[]` |
+| `servicemcp.extraVolumeMounts` | Additional MCP container volume mounts | `[]` |
+| `servicemcp.podLabels` | Pod labels | `{}` |
+| `servicemcp.podAnnotations` | Pod annotations | `{}` |
+| `servicemcp.securityContext` | Pod security context | `{}` |
+| `servicemcp.containerSecurityContext` | MCP container security context | `{}` |
+| `servicemcp.serviceAccountName` | Service account name | `""` |
+| `servicemcp.nodeSelector` | Node selector | `{}` |
+| `servicemcp.affinity` | Affinity rules | `{}` |
+| `servicemcp.tolerations` | Tolerations | `[]` |
+| `servicemcp.strategy` | Deployment strategy | `{}` |
+| `servicemcp.pdb.create` | Create MCP Pod Disruption Budget | `false` |
+| `servicemcp.pdb.minAvailable` | MCP PDB minimum available | `""` |
+| `servicemcp.pdb.maxUnavailable` | MCP PDB maximum unavailable | `""` |
+| `servicemcp.service.type` | Service type | `""` |
+| `servicemcp.service.portName` | Port name | `""` |
+| `servicemcp.service.nodePort` | Node port | `""` |
+| `servicemcp.service.extraPorts` | Extra ports | `[]` |
+| `servicemcp.service.annotations` | Service annotations | `{}` |
+| `servicemcp.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
