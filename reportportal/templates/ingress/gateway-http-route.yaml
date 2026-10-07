@@ -52,6 +52,12 @@ spec:
         - path:
             type: PathPrefix
             value: {{ $basePath }}/mcp
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /mcp
       backendRefs:
         - name: {{ $fullName }}-mcp
           port: 8080

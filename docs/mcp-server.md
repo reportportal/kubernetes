@@ -83,8 +83,9 @@ https://<reportportal-host>/<base-path>/mcp
 For example:
 
 - `ingress.hosts: [reportportal.example.com]` and an empty `ingress.path` produce `https://reportportal.example.com/mcp`.
-- `ingress.path: /reportportal` produces `https://reportportal.example.com/reportportal/mcp`.
-- Gateway API uses `gatewayAPI.hostnames` and `gatewayAPI.path` in the same way.
+- Gateway API with `gatewayAPI.path: /reportportal` exposes `https://reportportal.example.com/reportportal/mcp` and rewrites it to the MCP server's `/mcp` endpoint.
+
+Kubernetes Ingress has no portable per-path URL rewrite. When MCP is enabled through the shared Ingress, keep `ingress.path` empty unless the selected Ingress controller provides a separate MCP-specific rewrite configuration.
 
 If neither Ingress nor Gateway API is enabled, the MCP server is available only inside the cluster at:
 
