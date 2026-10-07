@@ -46,7 +46,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- if .Values.servicemcp.enabled }}
+    {{- if .Values.mcp.enabled }}
     # Route for the optional MCP server
     - matches:
         - path:

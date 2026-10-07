@@ -1,31 +1,31 @@
-{{- if .Values.servicemcp.enabled }}
+{{- if .Values.mcp.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "reportportal.fullname" . }}-mcp
   labels: {{ include "labels" . | nindent 4 }}
-    {{- with .Values.servicemcp.service.labels }}
+    {{- with .Values.mcp.service.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
   annotations:
-    service: {{ .Values.servicemcp.name | default "mcp" }}
+    service: {{ .Values.mcp.name | default "mcp" }}
     infoEndpoint: "/info"
     healthEndpoint: "/health"
-    {{- with .Values.servicemcp.service.annotations }}
+    {{- with .Values.mcp.service.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  type: {{ .Values.servicemcp.service.type | default "ClusterIP" }}
+  type: {{ .Values.mcp.service.type | default "ClusterIP" }}
   ports:
-    - name: {{ .Values.servicemcp.service.portName | default "headless" }}
+    - name: {{ .Values.mcp.service.portName | default "headless" }}
       port: 8080
       targetPort: 8080
       protocol: TCP
-      {{- if and (or (eq .Values.servicemcp.service.type "NodePort") (eq .Values.servicemcp.service.type "LoadBalancer")) (not (empty .Values.servicemcp.service.nodePort)) }}
-      nodePort: {{ .Values.servicemcp.service.nodePort }}
+      {{- if and (or (eq .Values.mcp.service.type "NodePort") (eq .Values.mcp.service.type "LoadBalancer")) (not (empty .Values.mcp.service.nodePort)) }}
+      nodePort: {{ .Values.mcp.service.nodePort }}
       {{- end }}
-    {{- if .Values.servicemcp.service.extraPorts }}
-    {{ toYaml .Values.servicemcp.service.extraPorts | nindent 4 }}
+    {{- if .Values.mcp.service.extraPorts }}
+    {{ toYaml .Values.mcp.service.extraPorts | nindent 4 }}
     {{- end }}
   selector:
     component: {{ include "reportportal.fullname" . }}-mcp

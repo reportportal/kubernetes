@@ -34,7 +34,7 @@ helm install reportportal reportportal/reportportal \
   --namespace reportportal \
   --create-namespace \
   --set uat.superadminInitPasswd.password="ChangeMe" \
-  --set servicemcp.enabled=true
+  --set mcp.enabled=true
 ```
 
 Or enable MCP on an existing release:
@@ -43,13 +43,13 @@ Or enable MCP on an existing release:
 helm upgrade reportportal reportportal/reportportal \
   --namespace reportportal \
   --reuse-values \
-  --set servicemcp.enabled=true
+  --set mcp.enabled=true
 ```
 
-For additional MCP configuration, create a `values-mcp.yaml` file and pass it with `-f values-mcp.yaml` instead of using `--set servicemcp.enabled=true`:
+For additional MCP configuration, create a `values-mcp.yaml` file and pass it with `-f values-mcp.yaml` instead of using `--set mcp.enabled=true`:
 
 ```yaml
-servicemcp:
+mcp:
   enabled: true
   analyticsOff: true
   resources:
@@ -146,7 +146,7 @@ Other HTTP-capable MCP clients use the same endpoint and headers. See the [Repor
 Example production overrides:
 
 ```yaml
-servicemcp:
+mcp:
   enabled: true
   analyticsOff: true
   connectionTimeout: 60
@@ -160,7 +160,9 @@ servicemcp:
       memory: 512Mi
 ```
 
-Additional environment variables can be supplied through `servicemcp.extraEnvs`. See the [Parameters Reference](parameters-reference.md#service-mcp-configuration) for all available values.
+The chart adds a built-in init container that waits for the ReportPortal API pod before starting MCP. Its requests and limits come from `global.initContainerResources`; `mcp.initContainerResources` is used only when the global value is empty.
+
+Additional environment variables can be supplied through `mcp.extraEnvs`. See the [Parameters Reference](parameters-reference.md#mcp-server-configuration) for all available values.
 
 ## Private CA for In-Cluster HTTPS
 
@@ -181,7 +183,7 @@ k8s:
   networking:
     ssl: true
 
-servicemcp:
+mcp:
   enabled: true
   tls:
     caCert:
@@ -194,7 +196,7 @@ The chart mounts the certificate read-only and sets `RP_TLS_CA_CERT` automatical
 For temporary testing only, certificate verification can be disabled:
 
 ```yaml
-servicemcp:
+mcp:
   tls:
     insecure: true
 ```

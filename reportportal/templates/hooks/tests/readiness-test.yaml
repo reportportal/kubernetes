@@ -19,7 +19,7 @@ spec:
         "http://{{ include "reportportal.fullname" . }}-ui:8080/ui/health" \
         "http://{{ include "reportportal.fullname" . }}-api:8585/api/health" \
         "http://{{ include "reportportal.fullname" . }}-uat:9999/uat/health" \
-        {{- if .Values.servicemcp.enabled }}
+        {{- if .Values.mcp.enabled }}
         "http://{{ include "reportportal.fullname" . }}-mcp:8080/health" \
         {{- end }}
         "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"

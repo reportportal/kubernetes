@@ -172,7 +172,7 @@ spec:
 {{- end }}
 
 {{- /* Optional MCP server PodDisruptionBudget */ -}}
-{{- if and .Values.servicemcp.enabled (or .Values.global.pdb.create .Values.servicemcp.pdb.create) }}
+{{- if and .Values.mcp.enabled (or .Values.global.pdb.create .Values.mcp.pdb.create) }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -188,10 +188,10 @@ spec:
   maxUnavailable: {{ . }}
   {{- end }}
   {{- else }}
-  {{- with .Values.servicemcp.pdb.minAvailable }}
+  {{- with .Values.mcp.pdb.minAvailable }}
   minAvailable: {{ . }}
   {{- end }}
-  {{- with .Values.servicemcp.pdb.maxUnavailable }}
+  {{- with .Values.mcp.pdb.maxUnavailable }}
   maxUnavailable: {{ . }}
   {{- end }}
   {{- end }}

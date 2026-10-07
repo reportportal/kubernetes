@@ -55,14 +55,14 @@ spec:
       {{- with $.Values.ingress.extraPaths }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- if $.Values.servicemcp.enabled }}
+      {{- if $.Values.mcp.enabled }}
       - path: {{ $basePath | default "" }}/mcp
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-mcp
             port:
-              name: {{ $.Values.servicemcp.service.portName | default "headless" }}
+              name: {{ $.Values.mcp.service.portName | default "headless" }}
       {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
@@ -100,14 +100,14 @@ spec:
       {{- with .Values.ingress.extraPaths }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- if .Values.servicemcp.enabled }}
+      {{- if .Values.mcp.enabled }}
       - path: {{ $basePath | default "" }}/mcp
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-mcp
             port:
-              name: {{ .Values.servicemcp.service.portName | default "headless" }}
+              name: {{ .Values.mcp.service.portName | default "headless" }}
       {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
@@ -144,14 +144,14 @@ spec:
       {{- with .Values.ingress.extraPaths }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- if .Values.servicemcp.enabled }}
+      {{- if .Values.mcp.enabled }}
       - path: {{ $basePath | default "" }}/mcp
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-mcp
             port:
-              name: {{ .Values.servicemcp.service.portName | default "headless" }}
+              name: {{ .Values.mcp.service.portName | default "headless" }}
       {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix

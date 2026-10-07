@@ -41,6 +41,15 @@ global:
   ## @param global.securityContext Default security context for all pods
   ##
   securityContext: {}
+  ## @param global.initContainerResources Default resources for built-in wait init containers. Overrides service-specific values when non-empty.
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
   ##
@@ -318,15 +327,9 @@ serviceapi:
   ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container
+  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param serviceapi.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -513,15 +516,9 @@ uat:
   ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param uat.initContainerResources Resources for the migrations-waiting-init container
+  ## @param uat.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param uat.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -671,15 +668,9 @@ servicejobs:
   ## @param servicejobs.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container
+  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param servicejobs.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -755,15 +746,9 @@ serviceanalyzer:
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container
+  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param serviceanalyzer.fixVolumePermissions Init container that fixes permissions on the shared
   ## filesystem storage volume (storage.type=filesystem only) before the analyzer starts. Useful when
   ## the analyzer image runs under a different UID than the services that create project directories
@@ -900,13 +885,13 @@ migrations:
     minAvailable: ""
     maxUnavailable: ""
 
-## @section Service MCP Configuration
+## @section MCP Server Configuration
 ## Optional Model Context Protocol server for ReportPortal.
 ## Enable it and configure an MCP client as described at:
 ## https://reportportal.io/docs/external-integrations/MCPServer/
 ##
-servicemcp:
-  ## @param servicemcp.enabled Enable the ReportPortal MCP server
+mcp:
+  ## @param mcp.enabled Enable the ReportPortal MCP server
   ##
   enabled: false
   name: mcp
@@ -914,24 +899,24 @@ servicemcp:
     repository: reportportal/mcp-server
     tag: 1.3.3
   pullPolicy: IfNotPresent
-  ## @param servicemcp.analyticsOff Disable anonymous MCP usage analytics
+  ## @param mcp.analyticsOff Disable anonymous MCP usage analytics
   ##
   analyticsOff: true
-  ## @param servicemcp.maxWorkers Maximum concurrent HTTP requests. Zero uses the application default.
+  ## @param mcp.maxWorkers Maximum concurrent HTTP requests. Zero uses the application default.
   ##
   maxWorkers: 0
-  ## @param servicemcp.connectionTimeout ReportPortal API connection timeout in seconds
+  ## @param mcp.connectionTimeout ReportPortal API connection timeout in seconds
   ##
   connectionTimeout: 30
   tls:
-    ## @param servicemcp.tls.insecure Disable TLS certificate verification for ReportPortal API calls. Mutually exclusive with caCert.secretName.
+    ## @param mcp.tls.insecure Disable TLS certificate verification for ReportPortal API calls. Mutually exclusive with caCert.secretName.
     ##
     insecure: false
     caCert:
-      ## @param servicemcp.tls.caCert.secretName Existing Secret containing the ReportPortal CA certificate
+      ## @param mcp.tls.caCert.secretName Existing Secret containing the ReportPortal CA certificate
       ##
       secretName: ""
-      ## @param servicemcp.tls.caCert.key Key in the existing Secret containing the PEM CA certificate
+      ## @param mcp.tls.caCert.key Key in the existing Secret containing the PEM CA certificate
       ##
       key: ca.crt
   resources:
@@ -960,19 +945,22 @@ servicemcp:
     periodSeconds: 20
     timeoutSeconds: 5
     failureThreshold: 3
-  ## @param servicemcp.extraEnvs Additional MCP server environment variables
+  ## @param mcp.extraEnvs Additional MCP server environment variables
   ##
   extraEnvs: []
-  ## @param servicemcp.extraInitContainers Additional init containers
+  ## @param mcp.extraInitContainers Additional init containers
   ##
   extraInitContainers: []
-  ## @param servicemcp.extraContainers Additional sidecar containers
+  ## @param mcp.initContainerResources Resources for the API waiting init container, used when global.initContainerResources is empty
+  ##
+  initContainerResources: {}
+  ## @param mcp.extraContainers Additional sidecar containers
   ##
   extraContainers: []
-  ## @param servicemcp.extraVolumes Additional pod volumes, for example a custom CA certificate
+  ## @param mcp.extraVolumes Additional pod volumes, for example a custom CA certificate
   ##
   extraVolumes: []
-  ## @param servicemcp.extraVolumeMounts Additional MCP container volume mounts
+  ## @param mcp.extraVolumeMounts Additional MCP container volume mounts
   ##
   extraVolumeMounts: []
   podLabels: {}
@@ -982,10 +970,10 @@ servicemcp:
   serviceAccountName: ""
   nodeSelector: {}
   affinity: {}
-  ## @param servicemcp.tolerations Service-specific tolerations for the MCP server
+  ## @param mcp.tolerations Service-specific tolerations for the MCP server
   ##
   tolerations: []
-  ## @param servicemcp.strategy Deployment strategy for the MCP server
+  ## @param mcp.strategy Deployment strategy for the MCP server
   ##
   strategy: {}
   pdb:
@@ -998,7 +986,7 @@ servicemcp:
     nodePort: ""
     extraPorts: []
     annotations: {}
-    ## @param servicemcp.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ## @param mcp.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
     ##
     labels: {}
 

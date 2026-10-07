@@ -195,6 +195,33 @@
                 "imageRegistry": {
                     "type": "string"
                 },
+                "initContainerResources": {
+                    "type": "object",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
                 "nameOverride": {
                     "type": "string"
                 },
@@ -1842,7 +1869,7 @@
                 }
             }
         },
-        "servicemcp": {
+        "mcp": {
             "type": "object",
             "properties": {
                 "affinity": {
@@ -1869,6 +1896,33 @@
                 },
                 "extraInitContainers": {
                     "type": "array"
+                },
+                "initContainerResources": {
+                    "type": "object",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 },
                 "extraVolumeMounts": {
                     "type": "array"
