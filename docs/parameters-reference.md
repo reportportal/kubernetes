@@ -19,6 +19,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.serviceAccount.annotations` | Service account annotations | `{}` |
 | `global.argocd.enabled` | Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade-cleanup job. Set to true when deploying with ArgoCD to ensure proper resource ordering | `false` |
 | `global.securityContext` | Default security context for all pods | `{}` |
+| `global.initContainerResources.requests.cpu` | Built-in wait init container CPU requests | `50m` |
+| `global.initContainerResources.requests.memory` | Built-in wait init container memory requests | `100Mi` |
+| `global.initContainerResources.limits.cpu` | Built-in wait init container CPU limits | `50m` |
+| `global.initContainerResources.limits.memory` | Built-in wait init container memory limits | `100Mi` |
 | `global.tolerations` | Global tolerations for all components | `[]` |
 | `global.pdb.create` | Enable/disable Pod Disruption Budget creation | `true` |
 | `global.pdb.minAvailable` | Minimum number/percentage of pods that should remain scheduled | `""` |
@@ -154,10 +158,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.resources.limits.cpu` | CPU limits | `1000m` |
 | `serviceapi.resources.limits.memory` | Memory limits | `2Gi` |
 | `serviceapi.extraInitContainers` | Init containers | `{}` |
-| `serviceapi.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
-| `serviceapi.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
-| `serviceapi.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
-| `serviceapi.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
+| `serviceapi.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
 | `serviceapi.extraVolumes` | Extra volumes | `[]` |
 | `serviceapi.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `serviceapi.extraContainers` | Additional sidecar containers (e.g. audit log collector) | `[]` |
@@ -228,10 +229,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `uat.sessionLiveTime` | Session live time | `86400` |
 | `uat.samlSessionLiveTime` | SAML session live time | `4320` |
 | `uat.extraInitContainers` | Init containers | `{}` |
-| `uat.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
-| `uat.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
-| `uat.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
-| `uat.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
+| `uat.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
 | `uat.extraVolumes` | Extra volumes | `[]` |
 | `uat.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `uat.superadminInitPasswd.secretName` | Superadmin password secret name | `""` |
@@ -299,10 +297,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.resources.limits.cpu` | CPU limits | `250m` |
 | `servicejobs.resources.limits.memory` | Memory limits | `512Mi` |
 | `servicejobs.extraInitContainers` | Init containers | `{}` |
-| `servicejobs.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
-| `servicejobs.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
-| `servicejobs.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
-| `servicejobs.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
+| `servicejobs.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
 | `servicejobs.extraVolumes` | Extra volumes | `[]` |
 | `servicejobs.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `servicejobs.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"` |
@@ -339,10 +334,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.resources.limits.cpu` | CPU limits | `500m` |
 | `serviceanalyzer.resources.limits.memory` | Memory limits | `1Gi` |
 | `serviceanalyzer.extraInitContainers` | Init containers | `{}` |
-| `serviceanalyzer.initContainerResources.requests.cpu` | Migrations-waiting init container CPU requests | `50m` |
-| `serviceanalyzer.initContainerResources.requests.memory` | Migrations-waiting init container memory requests | `100Mi` |
-| `serviceanalyzer.initContainerResources.limits.cpu` | Migrations-waiting init container CPU limits | `50m` |
-| `serviceanalyzer.initContainerResources.limits.memory` | Migrations-waiting init container memory limits | `100Mi` |
+| `serviceanalyzer.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
 | `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that fixes ownership and permissions on the analyzer filesystem subtree (storage.type=filesystem only) | `true` |
 | `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
@@ -612,5 +604,65 @@ This document provides a comprehensive reference of all configurable parameters 
 | `k8sWaitFor.image.repository` | K8s wait for image repository | `reportportal/k8s-wait-for` |
 | `k8sWaitFor.image.tag` | K8s wait for image tag | `latest` |
 | `kubectl.image.repository` | Kubectl image repository for pre-upgrade cleanup hook | `rancher/kubectl` |
-| `kubectl.image.tag` | Kubectl image tag | `v1.35.6` |
+| `kubectl.image.tag` | Kubectl image tag | `v1.36.2` |
 | `k8s.networking.ssl` | SSL between pods | `false` |
+
+## MCP Server Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `mcp.enabled` | Enable the ReportPortal MCP server | `false` |
+| `mcp.name` | Service name | `mcp` |
+| `mcp.image.repository` | Image repository | `reportportal/mcp-server` |
+| `mcp.image.tag` | Image tag | `1.3.3` |
+| `mcp.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
+| `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |
+| `mcp.connectionTimeout` | ReportPortal API connection timeout in seconds | `30` |
+| `mcp.tls.insecure` | Disable TLS certificate verification; mutually exclusive with a CA Secret | `false` |
+| `mcp.tls.caCert.secretName` | Existing Secret containing the ReportPortal CA certificate | `""` |
+| `mcp.tls.caCert.key` | Secret key containing the PEM CA certificate | `ca.crt` |
+| `mcp.resources.requests.cpu` | CPU requests | `100m` |
+| `mcp.resources.requests.memory` | Memory requests | `128Mi` |
+| `mcp.resources.limits.cpu` | CPU limits | `200m` |
+| `mcp.resources.limits.memory` | Memory limits | `256Mi` |
+| `mcp.startupProbe.enabled` | Enable startup probe | `true` |
+| `mcp.startupProbe.initialDelaySeconds` | Startup probe initial delay | `5` |
+| `mcp.startupProbe.periodSeconds` | Startup probe period | `5` |
+| `mcp.startupProbe.timeoutSeconds` | Startup probe timeout | `3` |
+| `mcp.startupProbe.failureThreshold` | Startup probe failure threshold | `12` |
+| `mcp.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `mcp.readinessProbe.initialDelaySeconds` | Readiness probe initial delay | `0` |
+| `mcp.readinessProbe.periodSeconds` | Readiness probe period | `5` |
+| `mcp.readinessProbe.timeoutSeconds` | Readiness probe timeout | `3` |
+| `mcp.readinessProbe.failureThreshold` | Readiness probe failure threshold | `3` |
+| `mcp.readinessProbe.successThreshold` | Readiness probe success threshold | `1` |
+| `mcp.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `mcp.livenessProbe.initialDelaySeconds` | Liveness probe initial delay | `0` |
+| `mcp.livenessProbe.periodSeconds` | Liveness probe period | `20` |
+| `mcp.livenessProbe.timeoutSeconds` | Liveness probe timeout | `5` |
+| `mcp.livenessProbe.failureThreshold` | Liveness probe failure threshold | `3` |
+| `mcp.extraEnvs` | Additional environment variables | `[]` |
+| `mcp.extraInitContainers` | Additional init containers | `[]` |
+| `mcp.initContainerResources` | API wait init container resources, used when the global value is empty | `{}` |
+| `mcp.extraContainers` | Additional sidecar containers | `[]` |
+| `mcp.extraVolumes` | Additional pod volumes | `[]` |
+| `mcp.extraVolumeMounts` | Additional MCP container volume mounts | `[]` |
+| `mcp.podLabels` | Pod labels | `{}` |
+| `mcp.podAnnotations` | Pod annotations | `{}` |
+| `mcp.securityContext` | Pod security context | `{}` |
+| `mcp.containerSecurityContext` | MCP container security context | `{}` |
+| `mcp.serviceAccountName` | Service account name | `""` |
+| `mcp.nodeSelector` | Node selector | `{}` |
+| `mcp.affinity` | Affinity rules | `{}` |
+| `mcp.tolerations` | Tolerations | `[]` |
+| `mcp.strategy` | Deployment strategy | `{}` |
+| `mcp.pdb.create` | Create MCP Pod Disruption Budget | `false` |
+| `mcp.pdb.minAvailable` | MCP PDB minimum available | `""` |
+| `mcp.pdb.maxUnavailable` | MCP PDB maximum unavailable | `""` |
+| `mcp.service.type` | Service type | `""` |
+| `mcp.service.portName` | Port name | `""` |
+| `mcp.service.nodePort` | Node port | `""` |
+| `mcp.service.extraPorts` | Extra ports | `[]` |
+| `mcp.service.annotations` | Service annotations | `{}` |
+| `mcp.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |

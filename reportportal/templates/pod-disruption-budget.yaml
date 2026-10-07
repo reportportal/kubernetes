@@ -169,4 +169,33 @@ spec:
   selector:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-analyzer
-{{- end }} 
+{{- end }}
+
+{{- /* Optional MCP server PodDisruptionBudget */ -}}
+{{- if and .Values.mcp.enabled (or .Values.global.pdb.create .Values.mcp.pdb.create) }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.fullname" . }}-mcp-pdb
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- with .Values.global.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- else }}
+  {{- with .Values.mcp.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.mcp.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.fullname" . }}-mcp
+{{- end }}

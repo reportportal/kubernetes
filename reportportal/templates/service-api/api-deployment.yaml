@@ -51,12 +51,7 @@ spec:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
           resources:
-            requests:
-              cpu: {{ .Values.serviceapi.initContainerResources.requests.cpu }}
-              memory: {{ .Values.serviceapi.initContainerResources.requests.memory }}
-            limits:
-              cpu: {{ .Values.serviceapi.initContainerResources.limits.cpu }}
-              memory: {{ .Values.serviceapi.initContainerResources.limits.memory }}
+            {{- include "reportportal.initContainerResources" (dict "Values" .Values "serviceContext" .Values.serviceapi.initContainerResources) | nindent 12 }}
       {{- if .Values.serviceapi.extraInitContainers }}
         {{ toYaml .Values.serviceapi.extraInitContainers | nindent 8 }}
       {{- end }}

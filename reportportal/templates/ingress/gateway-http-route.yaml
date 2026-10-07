@@ -46,6 +46,22 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+    {{- if .Values.mcp.enabled }}
+    # Route for the optional MCP server
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/mcp
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /mcp
+      backendRefs:
+        - name: {{ $fullName }}-mcp
+          port: 8080
+    {{- end }}
     # Route for index service (root path)
     - matches:
         - path:
