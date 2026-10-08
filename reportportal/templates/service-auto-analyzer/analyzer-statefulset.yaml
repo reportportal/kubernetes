@@ -76,12 +76,7 @@ spec:
           - "pod-wr"
           - "-lcomponent={{ include "reportportal.fullname" . }}-api"
         resources:
-          requests:
-            cpu: {{ .Values.serviceanalyzer.initContainerResources.requests.cpu }}
-            memory: {{ .Values.serviceanalyzer.initContainerResources.requests.memory }}
-          limits:
-            cpu: {{ .Values.serviceanalyzer.initContainerResources.limits.cpu }}
-            memory: {{ .Values.serviceanalyzer.initContainerResources.limits.memory }}
+          {{- include "reportportal.initContainerResources" (dict "Values" .Values "serviceContext" .Values.serviceanalyzer.initContainerResources) | nindent 10 }}
       {{- if .Values.serviceanalyzer.extraInitContainers }}
       {{ toYaml .Values.serviceanalyzer.extraInitContainers | nindent 6 }}
       {{- end }}

@@ -55,6 +55,15 @@ spec:
       {{- with $.Values.ingress.extraPaths }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
+      {{- if $.Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ $.Values.mcp.service.portName | default "headless" }}
+      {{- end }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
         backend:
@@ -77,26 +86,14 @@ spec:
       {{- with .Values.ingress.extraPaths }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
-      - path: {{ $basePath | default "" }}/api
+      {{- if .Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
         pathType: Prefix
         backend:
           service:
-            name: {{ $fullName }}-api
+            name: {{ $fullName }}-mcp
             port:
-              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
-      - path: {{ $basePath | default "/" }}
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ $fullName }}-ui
-            port:
-              name: {{ $.Values.serviceui.service.portName | default "headless" }}
-  {{- end }}
-  {{- else }}
-  - http:
-      paths:
-      {{- with .Values.ingress.extraPaths }}
-      {{- toYaml . | nindent 6 }}
+              name: {{ .Values.mcp.service.portName | default "headless" }}
       {{- end }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
@@ -104,14 +101,44 @@ spec:
           service:
             name: {{ $fullName }}-api
             port:
-              name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+              name: {{ .Values.serviceapi.service.portName | default "headless" }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
           service:
             name: {{ $fullName }}-ui
             port:
-              name: {{ $.Values.serviceui.service.portName | default "headless" }}
+              name: {{ .Values.serviceui.service.portName | default "headless" }}
+  {{- end }}
+  {{- else }}
+  - http:
+      paths:
+      {{- with .Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      - path: {{ $basePath | default "" }}/api
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              name: {{ .Values.serviceapi.service.portName | default "headless" }}
+      - path: {{ $basePath | default "/" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-ui
+            port:
+              name: {{ .Values.serviceui.service.portName | default "headless" }}
   {{- end }}
 status:
   loadBalancer: {}

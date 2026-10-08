@@ -88,6 +88,19 @@ Global context overrides service-specific context
 {{- end -}}
 
 {{/*
+Resolve resources for built-in wait init containers.
+Global resources take precedence over service-specific resources.
+*/}}
+{{- define "reportportal.initContainerResources" -}}
+{{- $globalResources := .Values.global.initContainerResources -}}
+{{- if not (empty $globalResources) -}}
+{{- $globalResources | toYaml -}}
+{{- else -}}
+{{- .serviceContext | toYaml -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Directory the additional Nginx snippets are mounted to. Fixed by the service-ui
 image, which includes /etc/nginx/extra-conf.d/*.conf into its server block.
 Mounting anywhere else would either be ignored or shadow the built-in config.
