@@ -32,11 +32,11 @@ maintainers:
 dependencies:
   - name: postgres
     alias: postgresql
-    version: 0.20.5
+    version: 0.21.0
     repository: oci://registry-1.docker.io/cloudpirates
     condition: postgresql.install
   - name: rabbitmq
-    version: 0.21.28
+    version: 0.21.29
     repository: oci://registry-1.docker.io/cloudpirates
     condition: rabbitmq.install
   - name: opensearch
