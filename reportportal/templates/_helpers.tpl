@@ -190,8 +190,12 @@ Priority:
   {{- if and $path (ne $path "/") -}}
     {{- $basePath = trimSuffix "/" $path -}}
   {{- end -}}
-  {{- $tlsConfigured := or (not (empty .Values.ingress.tls.certificates)) .Values.ingress.tls.certificate.gcpManaged (and .Values.ingress.tls.certificate.privateKey .Values.ingress.tls.certificate.certificate) -}}
-  {{- $scheme = ternary "https" "http" (or $tlsConfigured .Values.k8s.networking.ssl) -}}
+  {{/*
+    External Ingress hosts must use https for MCP OAuth (server rejects http except loopback).
+    TLS may be terminated outside chart values (controller cert, LB, ssl-redirect), so prefer
+    https whenever an Ingress host is used.
+  */}}
+  {{- $scheme = "https" -}}
 {{- else if and .Values.gatewayAPI.enable .Values.gatewayAPI.hostnames -}}
   {{- if kindIs "slice" .Values.gatewayAPI.hostnames -}}
     {{- $host = index .Values.gatewayAPI.hostnames 0 -}}
@@ -202,7 +206,7 @@ Priority:
   {{- if and $path (ne $path "/") -}}
     {{- $basePath = trimSuffix "/" $path -}}
   {{- end -}}
-  {{- $scheme = ternary "https" "http" (or .Values.gatewayAPI.gateway.tls.enable .Values.k8s.networking.ssl) -}}
+  {{- $scheme = "https" -}}
 {{- end -}}
 {{- if $host -}}
 {{- printf "%s://%s%s/mcp" $scheme $host $basePath -}}

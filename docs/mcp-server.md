@@ -130,9 +130,11 @@ mcp:
 `MCP_PUBLIC_URL` is resolved automatically:
 
 1. `mcp.oauth.publicUrl` when set in an overlay (not present in chart defaults)
-2. Ingress host + path when `ingress.enable` and `ingress.hosts` are set
-3. Gateway hostname + path when `gatewayAPI.enable` and `gatewayAPI.hostnames` are set
+2. Ingress host + path when `ingress.enable` and `ingress.hosts` are set (always `https`)
+3. Gateway hostname + path when `gatewayAPI.enable` and `gatewayAPI.hostnames` are set (always `https`)
 4. Otherwise the in-cluster MCP Service URL
+
+Ingress/Gateway-derived URLs always use `https` because the MCP server rejects `http` for non-loopback hosts, and TLS is often terminated outside chart `ingress.tls` values (controller cert, LB, `ssl-redirect`).
 
 Example Ingress-derived URL with `ingress.hosts: [reportportal.example.com]` and `ingress.path: /reportportal`:
 
