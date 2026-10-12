@@ -897,7 +897,7 @@ mcp:
   name: mcp
   image:
     repository: reportportal/mcp-server
-    tag: 1.3.3
+    tag: 1.4.0
   pullPolicy: IfNotPresent
   ## @param mcp.analyticsOff Disable anonymous MCP usage analytics
   ##
