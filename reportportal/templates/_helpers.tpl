@@ -164,5 +164,53 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 {{- end -}}
 
+{{/*
+Public MCP URL used for OAuth metadata (MCP_PUBLIC_URL).
+
+Priority:
+  1. mcp.oauth.publicUrl when set in an overlay
+  2. Ingress host + path when ingress.enable and ingress.hosts are set
+  3. Gateway API hostname + path when gatewayAPI.enable and gatewayAPI.hostnames are set
+  4. In-cluster MCP Service URL
+*/}}
+{{- define "reportportal.mcp.publicUrl" -}}
+{{- if .Values.mcp.oauth.publicUrl -}}
+{{- .Values.mcp.oauth.publicUrl -}}
+{{- else -}}
+{{- $basePath := "" -}}
+{{- $host := "" -}}
+{{- $scheme := ternary "https" "http" .Values.k8s.networking.ssl -}}
+{{- if and .Values.ingress.enable .Values.ingress.hosts -}}
+  {{- if kindIs "slice" .Values.ingress.hosts -}}
+    {{- $host = index .Values.ingress.hosts 0 -}}
+  {{- else -}}
+    {{- $host = .Values.ingress.hosts -}}
+  {{- end -}}
+  {{- $path := .Values.ingress.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{- $tlsConfigured := or (not (empty .Values.ingress.tls.certificates)) .Values.ingress.tls.certificate.gcpManaged (and .Values.ingress.tls.certificate.privateKey .Values.ingress.tls.certificate.certificate) -}}
+  {{- $scheme = ternary "https" "http" (or $tlsConfigured .Values.k8s.networking.ssl) -}}
+{{- else if and .Values.gatewayAPI.enable .Values.gatewayAPI.hostnames -}}
+  {{- if kindIs "slice" .Values.gatewayAPI.hostnames -}}
+    {{- $host = index .Values.gatewayAPI.hostnames 0 -}}
+  {{- else -}}
+    {{- $host = .Values.gatewayAPI.hostnames -}}
+  {{- end -}}
+  {{- $path := .Values.gatewayAPI.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{- $scheme = ternary "https" "http" (or .Values.gatewayAPI.gateway.tls.enable .Values.k8s.networking.ssl) -}}
+{{- end -}}
+{{- if $host -}}
+{{- printf "%s://%s%s/mcp" $scheme $host $basePath -}}
+{{- else -}}
+{{- printf "%s://%s-mcp.%s.svc.%s:8080/mcp" (ternary "https" "http" .Values.k8s.networking.ssl) (include "reportportal.fullname" .) .Release.Namespace .Values.global.clusterDomain -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 
 

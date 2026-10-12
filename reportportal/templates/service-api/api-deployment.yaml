@@ -68,6 +68,16 @@ spec:
           {{- if .Values.serviceapi.extraEnvs }}
             {{ toYaml .Values.serviceapi.extraEnvs | nindent 12 }}
           {{- end }}
+          {{- if and .Values.mcp.enabled ((.Values.mcp).oauth).enabled }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI
+              value: {{ .Values.mcp.oauth.issuer | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI
+              value: {{ .Values.mcp.oauth.jwksUrl | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM
+              value: {{ .Values.mcp.oauth.api.usernameClaim | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER
+              value: {{ .Values.mcp.oauth.api.userResolver | quote }}
+          {{- end }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "{{ $path }}/api"
             - name: COM_TA_REPORTPORTAL_JOB_LOAD_PLUGINS_CRON

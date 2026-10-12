@@ -81,6 +81,20 @@ spec:
             - name: RP_TLS_CA_CERT
               value: "/etc/reportportal/tls/ca.crt"
             {{- end }}
+            {{- if ((.Values.mcp).oauth).enabled }}
+            - name: MCP_OAUTH_ENABLED
+              value: "true"
+            - name: MCP_PUBLIC_URL
+              value: {{ include "reportportal.mcp.publicUrl" . | quote }}
+            - name: MCP_OAUTH_ISSUER
+              value: {{ required "mcp.oauth.issuer is required when mcp.oauth.enabled is true" .Values.mcp.oauth.issuer | quote }}
+            - name: MCP_OAUTH_JWKS_URL
+              value: {{ required "mcp.oauth.jwksUrl is required when mcp.oauth.enabled is true" .Values.mcp.oauth.jwksUrl | quote }}
+            - name: MCP_OAUTH_AUDIENCE
+              value: {{ required "mcp.oauth.audience is required when mcp.oauth.enabled is true" .Values.mcp.oauth.audience | quote }}
+            - name: MCP_OAUTH_SCOPE
+              value: {{ required "mcp.oauth.scope is required when mcp.oauth.enabled is true" .Values.mcp.oauth.scope | quote }}
+            {{- end }}
             {{- with .Values.mcp.extraEnvs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

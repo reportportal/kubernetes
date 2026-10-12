@@ -908,6 +908,48 @@ mcp:
   ## @param mcp.connectionTimeout ReportPortal API connection timeout in seconds
   ##
   connectionTimeout: 30
+  ## @section MCP OAuth resource-server settings
+  ## Optional OAuth 2.1 resource-server authentication for MCP HTTP endpoints.
+  ## Disabled and empty by default for open-source deployments. When enabled, set
+  ## issuer / jwksUrl / audience / scope (all required by the MCP server).
+  ## MCP_PUBLIC_URL resolution order:
+  ##   1. mcp.oauth.publicUrl when set in an overlay (key omitted from chart defaults)
+  ##   2. Ingress host + path when ingress.enable and ingress.hosts are set
+  ##   3. Gateway API hostname + path when gatewayAPI.enable and hostnames are set
+  ##   4. In-cluster MCP Service URL
+  ## issuer and jwksUrl are also applied to the ReportPortal API Azure OAuth2 provider
+  ## so MCP and API share one Entra ID configuration.
+  ##
+  oauth:
+    ## @param mcp.oauth.enabled Enable OAuth for MCP HTTP endpoints and the matching API Azure provider (MCP_OAUTH_ENABLED)
+    ##
+    enabled: false
+    ## @param mcp.oauth.issuer OAuth issuer URL (MCP_OAUTH_ISSUER, RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI)
+    ## Example (Azure Entra ID): https://login.microsoftonline.com/<tenant-id>/v2.0
+    ##
+    issuer: ""
+    ## @param mcp.oauth.jwksUrl JWKS URL for JWT verification (MCP_OAUTH_JWKS_URL, RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI)
+    ## Example (Azure Entra ID): https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys
+    ##
+    jwksUrl: ""
+    ## @param mcp.oauth.audience Expected JWT aud claim — MCP app registration client ID (MCP_OAUTH_AUDIENCE)
+    ##
+    audience: ""
+    ## @param mcp.oauth.scope OAuth scope advertised to clients (MCP_OAUTH_SCOPE)
+    ## Example: api://<app-id>/access_as_user
+    ##
+    scope: ""
+    ## API-side Azure identity mapping applied when mcp.oauth.enabled is true
+    ##
+    api:
+      ## @param mcp.oauth.api.usernameClaim JWT claim used as the ReportPortal username (RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM)
+      ## Example: oid
+      ##
+      usernameClaim: ""
+      ## @param mcp.oauth.api.userResolver How API resolves the Azure identity to a ReportPortal user (RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER)
+      ## Example: EXTERNAL
+      ##
+      userResolver: ""
   tls:
     ## @param mcp.tls.insecure Disable TLS certificate verification for ReportPortal API calls. Mutually exclusive with caCert.secretName.
     ##

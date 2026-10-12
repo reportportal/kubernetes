@@ -2146,6 +2146,40 @@
                 },
                 "tolerations": {
                     "type": "array"
+                },
+                "oauth": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "publicUrl": {
+                            "type": "string"
+                        },
+                        "issuer": {
+                            "type": "string"
+                        },
+                        "jwksUrl": {
+                            "type": "string"
+                        },
+                        "audience": {
+                            "type": "string"
+                        },
+                        "scope": {
+                            "type": "string"
+                        },
+                        "api": {
+                            "type": "object",
+                            "properties": {
+                                "usernameClaim": {
+                                    "type": "string"
+                                },
+                                "userResolver": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 }
             },
             "allOf": [

@@ -619,6 +619,14 @@ This document provides a comprehensive reference of all configurable parameters 
 | `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
 | `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |
 | `mcp.connectionTimeout` | ReportPortal API connection timeout in seconds | `30` |
+| `mcp.oauth.enabled` | Enable OAuth for MCP HTTP endpoints and the matching API Azure provider (`MCP_OAUTH_ENABLED`) | `false` |
+| `mcp.oauth.publicUrl` | Optional MCP URL override (`MCP_PUBLIC_URL`); when unset, derived from Ingress/Gateway hosts or the in-cluster Service URL | unset |
+| `mcp.oauth.issuer` | OAuth issuer URL (`MCP_OAUTH_ISSUER`, `RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI`) | `""` |
+| `mcp.oauth.jwksUrl` | JWKS URL for JWT verification (`MCP_OAUTH_JWKS_URL`, `RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI`) | `""` |
+| `mcp.oauth.audience` | Expected JWT `aud` claim — MCP app registration client ID (`MCP_OAUTH_AUDIENCE`) | `""` |
+| `mcp.oauth.scope` | OAuth scope advertised to clients (`MCP_OAUTH_SCOPE`) | `""` |
+| `mcp.oauth.api.usernameClaim` | JWT claim used as the ReportPortal username (`RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM`) | `""` |
+| `mcp.oauth.api.userResolver` | How API resolves the Azure identity (`RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER`) | `""` |
 | `mcp.tls.insecure` | Disable TLS certificate verification; mutually exclusive with a CA Secret | `false` |
 | `mcp.tls.caCert.secretName` | Existing Secret containing the ReportPortal CA certificate | `""` |
 | `mcp.tls.caCert.key` | Secret key containing the PEM CA certificate | `ca.crt` |

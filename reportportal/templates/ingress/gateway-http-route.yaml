@@ -61,6 +61,16 @@ spec:
       backendRefs:
         - name: {{ $fullName }}-mcp
           port: 8080
+    {{- if ((.Values.mcp).oauth).enabled }}
+    # OAuth protected-resource metadata (RFC 9728); kept at origin root
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/oauth-protected-resource
+      backendRefs:
+        - name: {{ $fullName }}-mcp
+          port: 8080
+    {{- end }}
     {{- end }}
     # Route for index service (root path)
     - matches:

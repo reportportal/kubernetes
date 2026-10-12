@@ -57,6 +57,7 @@
 | Service Jobs Configuration | `servicejobs.*` |
 | Service Analyzer Configuration | `serviceanalyzer.*` |
 | Migrations Configuration | `migrations.*` |
+| MCP Server Configuration | `mcp.*` |
 | Database Configuration | `database.*` |
 | Message Broker Configuration | `msgbroker.*` |
 | Search Engine Configuration | `searchengine.*` |
