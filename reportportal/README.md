@@ -14,7 +14,7 @@ ReportPortal is a TestOps service, that provides increased capabilities to speed
 
 > **Note:** The minimal requirements for a ReportPortal 1-node solution are 2 CPUs and 6Gi of memory
 
-* Kubernetes v1.26+
+* Kubernetes v1.35+
 * Helm Package Manager v3.4+
 
 ## Installing the Chart
