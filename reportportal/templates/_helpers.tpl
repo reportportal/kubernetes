@@ -89,14 +89,15 @@ Global context overrides service-specific context
 
 {{/*
 Resolve resources for built-in wait init containers.
-Global resources take precedence over service-specific resources.
+Non-empty service-specific resources take precedence; otherwise use
+global.initContainerResources.
 */}}
 {{- define "reportportal.initContainerResources" -}}
-{{- $globalResources := .Values.global.initContainerResources -}}
-{{- if not (empty $globalResources) -}}
-{{- $globalResources | toYaml -}}
+{{- $serviceResources := .serviceContext -}}
+{{- if not (empty $serviceResources) -}}
+{{- $serviceResources | toYaml -}}
 {{- else -}}
-{{- .serviceContext | toYaml -}}
+{{- .Values.global.initContainerResources | toYaml -}}
 {{- end -}}
 {{- end -}}
 

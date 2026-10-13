@@ -41,7 +41,7 @@ global:
   ## @param global.securityContext Default security context for all pods
   ##
   securityContext: {}
-  ## @param global.initContainerResources Default resources for built-in wait init containers. Overrides service-specific values when non-empty.
+  ## @param global.initContainerResources Default resources for built-in wait init containers. Used when a service's initContainerResources is empty.
   ##
   initContainerResources:
     requests:
@@ -327,7 +327,7 @@ serviceapi:
   ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
+  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
   initContainerResources: {}
   ## @param serviceapi.extraVolumes define the extra volumes
@@ -516,7 +516,7 @@ uat:
   ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param uat.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
+  ## @param uat.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
   initContainerResources: {}
   ## @param uat.extraVolumes define the extra volumes
@@ -668,7 +668,7 @@ servicejobs:
   ## @param servicejobs.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
+  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
   initContainerResources: {}
   ## @param servicejobs.extraVolumes define the extra volumes
@@ -746,7 +746,7 @@ serviceanalyzer:
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container, used when global.initContainerResources is empty
+  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
   initContainerResources: {}
   ## @param serviceanalyzer.fixVolumePermissions Init container that fixes permissions on the shared
@@ -993,7 +993,7 @@ mcp:
   ## @param mcp.extraInitContainers Additional init containers
   ##
   extraInitContainers: []
-  ## @param mcp.initContainerResources Resources for the API waiting init container, used when global.initContainerResources is empty
+  ## @param mcp.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
   ##
   initContainerResources: {}
   ## @param mcp.extraContainers Additional sidecar containers

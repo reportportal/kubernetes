@@ -1,3 +1,8 @@
+{{- if .Values.serviceui.extraNginxConfig.enabled -}}
+{{- if and (not .Values.serviceui.extraNginxConfig.existingConfigMap) (empty .Values.serviceui.extraNginxConfig.config) -}}
+{{- fail "serviceui.extraNginxConfig: when enabled is true, set either config (non-empty) or existingConfigMap" -}}
+{{- end -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
