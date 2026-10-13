@@ -1,0 +1,10 @@
+{{- if and .Values.serviceui.extraNginxConfig.enabled (not .Values.serviceui.extraNginxConfig.existingConfigMap) .Values.serviceui.extraNginxConfig.config -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reportportal.ui.nginxConfigMapName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "labels" . | indent 4 }}
+data:
+{{ toYaml .Values.serviceui.extraNginxConfig.config | indent 2 }}
+{{- end }}

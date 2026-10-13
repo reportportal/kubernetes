@@ -1,0 +1,32 @@
+{{- if .Values.mcp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reportportal.fullname" . }}-mcp
+  labels: {{ include "labels" . | nindent 4 }}
+    {{- with .Values.mcp.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    service: {{ .Values.mcp.name | default "mcp" }}
+    infoEndpoint: "/info"
+    healthEndpoint: "/health"
+    {{- with .Values.mcp.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.mcp.service.type | default "ClusterIP" }}
+  ports:
+    - name: {{ .Values.mcp.service.portName | default "headless" }}
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+      {{- if and (or (eq .Values.mcp.service.type "NodePort") (eq .Values.mcp.service.type "LoadBalancer")) (not (empty .Values.mcp.service.nodePort)) }}
+      nodePort: {{ .Values.mcp.service.nodePort }}
+      {{- end }}
+    {{- if .Values.mcp.service.extraPorts }}
+    {{ toYaml .Values.mcp.service.extraPorts | nindent 4 }}
+    {{- end }}
+  selector:
+    component: {{ include "reportportal.fullname" . }}-mcp
+{{- end }}

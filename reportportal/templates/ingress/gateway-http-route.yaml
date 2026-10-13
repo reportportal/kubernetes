@@ -46,17 +46,6 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    # Route for index service (root path)
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath | default "/" }}
-      backendRefs:
-        - name: {{ $fullName }}-index
-          port: {{ .Values.serviceindex.service.port | default 8080 }}
-          {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
-          weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
-          {{- end }}
     # Route for UI service
     - matches:
         - path:
@@ -81,6 +70,43 @@ spec:
       backendRefs:
         - name: {{ $fullName }}-api
           port: {{ .Values.serviceapi.service.port | default 8585 }}
+    {{- if .Values.mcp.enabled }}
+    # Route for the optional MCP server
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/mcp
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /mcp
+      backendRefs:
+        - name: {{ $fullName }}-mcp
+          port: 8080
+    {{- if ((.Values.mcp).oauth).enabled }}
+    # OAuth protected-resource metadata (RFC 9728); kept at origin root
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/oauth-protected-resource
+      backendRefs:
+        - name: {{ $fullName }}-mcp
+          port: 8080
+    {{- end }}
+    {{- end }}
+    # Route for index service (root catch-all; must stay after more specific prefixes)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      backendRefs:
+        - name: {{ $fullName }}-index
+          port: {{ .Values.serviceindex.service.port | default 8080 }}
+          {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
+          {{- end }}
     {{- with .Values.gatewayAPI.httpRoute.additionalRules }}
     {{- toYaml . | nindent 4 }}
     {{- end }}

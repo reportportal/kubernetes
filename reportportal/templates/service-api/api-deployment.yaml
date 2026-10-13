@@ -51,12 +51,7 @@ spec:
             - "job-wr"
             - {{ include "reportportal.fullname" . }}-migrations
           resources:
-            requests:
-              cpu: {{ .Values.serviceapi.initContainerResources.requests.cpu }}
-              memory: {{ .Values.serviceapi.initContainerResources.requests.memory }}
-            limits:
-              cpu: {{ .Values.serviceapi.initContainerResources.limits.cpu }}
-              memory: {{ .Values.serviceapi.initContainerResources.limits.memory }}
+            {{- include "reportportal.initContainerResources" (dict "Values" .Values "serviceContext" .Values.serviceapi.initContainerResources) | nindent 12 }}
       {{- if .Values.serviceapi.extraInitContainers }}
         {{ toYaml .Values.serviceapi.extraInitContainers | nindent 8 }}
       {{- end }}
@@ -72,6 +67,16 @@ spec:
           env:
           {{- if .Values.serviceapi.extraEnvs }}
             {{ toYaml .Values.serviceapi.extraEnvs | nindent 12 }}
+          {{- end }}
+          {{- if and .Values.mcp.enabled ((.Values.mcp).oauth).enabled }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI
+              value: {{ .Values.mcp.oauth.issuer | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI
+              value: {{ .Values.mcp.oauth.jwksUrl | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM
+              value: {{ .Values.mcp.oauth.api.usernameClaim | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER
+              value: {{ .Values.mcp.oauth.api.userResolver | quote }}
           {{- end }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "{{ $path }}/api"

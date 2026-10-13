@@ -14,7 +14,7 @@ ReportPortal is a TestOps service, that provides increased capabilities to speed
 
 > **Note:** The minimal requirements for a ReportPortal 1-node solution are 2 CPUs and 6Gi of memory
 
-* Kubernetes v1.26+
+* Kubernetes v1.35+
 * Helm Package Manager v3.4+
 
 ## Installing the Chart
@@ -69,6 +69,10 @@ For detailed configuration guides, see:
 - [Install ReportPortal on GKE](../docs/gke-install.md) - For Google Kubernetes Engine
 - [Install ReportPortal on Minikube](../docs/minikube-install.md) - For local development
 - [Gateway API Deployment Guide](../docs/gateway-api-deployment-guide.md) - Modern alternative to Ingress
+
+### Optional MCP Server
+
+The chart includes optional ReportPortal MCP Server support for connecting AI clients to ReportPortal; it is disabled by default and adds `/mcp` to the existing ReportPortal Ingress or Gateway API when those resources are enabled. See the [ReportPortal MCP Server Deployment Guide](../docs/mcp-server.md) for installation, authentication, client, TLS, and runtime configuration.
 
 ### Install the chart with dependencies
 

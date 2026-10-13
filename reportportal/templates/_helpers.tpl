@@ -88,6 +88,40 @@ Global context overrides service-specific context
 {{- end -}}
 
 {{/*
+Resolve resources for built-in wait init containers.
+Non-empty service-specific resources take precedence; otherwise use
+global.initContainerResources.
+*/}}
+{{- define "reportportal.initContainerResources" -}}
+{{- $serviceResources := .serviceContext -}}
+{{- if not (empty $serviceResources) -}}
+{{- $serviceResources | toYaml -}}
+{{- else -}}
+{{- .Values.global.initContainerResources | toYaml -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Directory the additional Nginx snippets are mounted to. Fixed by the service-ui
+image, which includes /etc/nginx/extra-conf.d/*.conf into its server block.
+Mounting anywhere else would either be ignored or shadow the built-in config.
+*/}}
+{{- define "reportportal.ui.nginxConfigMountPath" -}}
+/etc/nginx/extra-conf.d
+{{- end -}}
+
+{{/*
+Name of the ConfigMap holding the additional Nginx snippets for the UI service.
+*/}}
+{{- define "reportportal.ui.nginxConfigMapName" -}}
+{{- if .Values.serviceui.extraNginxConfig.existingConfigMap -}}
+{{- .Values.serviceui.extraNginxConfig.existingConfigMap -}}
+{{- else -}}
+{{- printf "%s-ui-nginx" (include "reportportal.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get storage type with default "minio" and validation.
 Returns: minio, s3, or filesystem
 */}}
@@ -128,6 +162,58 @@ Override storage.endpoint to point at an external or custom service.
   {{- $port := .Values.storage.port | default 9000 -}}
   {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) -}}
   {{- printf "%s://%s:%v" $scheme $host $port -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Public MCP URL used for OAuth metadata (MCP_PUBLIC_URL).
+
+Priority:
+  1. mcp.oauth.publicUrl when set in an overlay
+  2. Ingress host + path when ingress.enable and ingress.hosts are set
+  3. Gateway API hostname + path when gatewayAPI.enable and gatewayAPI.hostnames are set
+  4. In-cluster MCP Service URL
+*/}}
+{{- define "reportportal.mcp.publicUrl" -}}
+{{- if .Values.mcp.oauth.publicUrl -}}
+{{- .Values.mcp.oauth.publicUrl -}}
+{{- else -}}
+{{- $basePath := "" -}}
+{{- $host := "" -}}
+{{- $scheme := ternary "https" "http" .Values.k8s.networking.ssl -}}
+{{- if and .Values.ingress.enable .Values.ingress.hosts -}}
+  {{- if kindIs "slice" .Values.ingress.hosts -}}
+    {{- $host = index .Values.ingress.hosts 0 -}}
+  {{- else -}}
+    {{- $host = .Values.ingress.hosts -}}
+  {{- end -}}
+  {{- $path := .Values.ingress.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{/*
+    External Ingress hosts must use https for MCP OAuth (server rejects http except loopback).
+    TLS may be terminated outside chart values (controller cert, LB, ssl-redirect), so prefer
+    https whenever an Ingress host is used.
+  */}}
+  {{- $scheme = "https" -}}
+{{- else if and .Values.gatewayAPI.enable .Values.gatewayAPI.hostnames -}}
+  {{- if kindIs "slice" .Values.gatewayAPI.hostnames -}}
+    {{- $host = index .Values.gatewayAPI.hostnames 0 -}}
+  {{- else -}}
+    {{- $host = .Values.gatewayAPI.hostnames -}}
+  {{- end -}}
+  {{- $path := .Values.gatewayAPI.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{- $scheme = "https" -}}
+{{- end -}}
+{{- if $host -}}
+{{- printf "%s://%s%s/mcp" $scheme $host $basePath -}}
+{{- else -}}
+{{- printf "%s://%s-mcp.%s.svc.%s:8080/mcp" (ternary "https" "http" .Values.k8s.networking.ssl) (include "reportportal.fullname" .) .Release.Namespace .Values.global.clusterDomain -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 

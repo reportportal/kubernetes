@@ -41,6 +41,15 @@ global:
   ## @param global.securityContext Default security context for all pods
   ##
   securityContext: {}
+  ## @param global.initContainerResources Default resources for built-in wait init containers. Used when a service's initContainerResources is empty.
+  ##
+  initContainerResources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 50m
+      memory: 100Mi
   ## @param global.tolerations Global tolerations for all components (overrides service-specific tolerations)
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
   ##
@@ -69,7 +78,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   resources:
     requests:
@@ -160,7 +169,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -186,6 +195,38 @@ serviceui:
     # - name: extra-volume
     #   mountPath: /path/to/mount
     #   readOnly: true
+  ## @param serviceui.extraEnvs define the extra environment variables
+  ##
+  extraEnvs: []
+    # - name: EXTRA_ENV
+    #   value: "TRUE"
+    # - name: EXTRA_ENV_SECRET
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: "additional-credentials"
+    #       key: username
+
+  ## Additional server-level Nginx snippets for the UI container.
+  ## They are mounted at /etc/nginx/extra-conf.d and included inside the existing
+  ## `server` block of the image, so the snippets may contain directives such as
+  ## `location`, `set` and `proxy_set_header`, but must not contain an `http` or
+  ## `server` block.
+  ##
+  extraNginxConfig:
+    ## @param serviceui.extraNginxConfig.enabled mount the snippets into the UI container
+    ##
+    enabled: false
+    ## @param serviceui.extraNginxConfig.existingConfigMap use an already existing ConfigMap; when set, `config` is ignored
+    ##
+    existingConfigMap: ""
+    ## @param serviceui.extraNginxConfig.config snippets rendered into a ConfigMap, keyed by file name
+    ##
+    config: {}
+      # deployment-info.conf: |
+      #   location = /deployment-info {
+      #       default_type text/plain;
+      #       return 200 "service-ui";
+      #   }
   podLabels: {}
   affinity: {}
   podAnnotations: {}
@@ -253,7 +294,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.4
+    tag: 5.15.5
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -286,15 +327,9 @@ serviceapi:
   ## @param serviceapi.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container
+  ## @param serviceapi.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param serviceapi.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -446,7 +481,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   replicaCount: 1
   ## @param uat.startupProbe configure startup probe
@@ -481,15 +516,9 @@ uat:
   ## @param uat.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param uat.initContainerResources Resources for the migrations-waiting-init container
+  ## @param uat.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param uat.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -584,7 +613,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.15.2
+    tag: 5.15.3
   pullPolicy: Always
   ## @param servicejobs.startupProbe configure startup probe
   ##
@@ -639,15 +668,9 @@ servicejobs:
   ## @param servicejobs.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container
+  ## @param servicejobs.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param servicejobs.extraVolumes define the extra volumes
   ##
   extraVolumes: []
@@ -710,7 +733,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   uwsgiWorkers: 1
   resources:
@@ -723,15 +746,9 @@ serviceanalyzer:
   ## @param serviceanalyzer.extraInitContainers init containers
   ##
   extraInitContainers: []
-  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container
+  ## @param serviceanalyzer.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
   ##
-  initContainerResources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 50m
-      memory: 100Mi
+  initContainerResources: {}
   ## @param serviceanalyzer.fixVolumePermissions Init container that fixes permissions on the shared
   ## filesystem storage volume (storage.type=filesystem only) before the analyzer starts. Useful when
   ## the analyzer image runs under a different UID than the services that create project directories
@@ -840,7 +857,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.4
+    tag: 5.15.5
   resources:
     requests:
       cpu: 100m
@@ -867,6 +884,153 @@ migrations:
     create: false
     minAvailable: ""
     maxUnavailable: ""
+
+## @section MCP Server Configuration
+## Optional Model Context Protocol server for ReportPortal.
+## Enable it and configure an MCP client as described at:
+## https://reportportal.io/docs/external-integrations/MCPServer/
+##
+mcp:
+  ## @param mcp.enabled Enable the ReportPortal MCP server
+  ##
+  enabled: false
+  name: mcp
+  image:
+    repository: reportportal/mcp-server
+    tag: 1.4.0
+  pullPolicy: IfNotPresent
+  ## @param mcp.analyticsOff Disable anonymous MCP usage analytics
+  ##
+  analyticsOff: true
+  ## @param mcp.maxWorkers Maximum concurrent HTTP requests. Zero uses the application default.
+  ##
+  maxWorkers: 0
+  ## @param mcp.connectionTimeout ReportPortal API connection timeout in seconds
+  ##
+  connectionTimeout: 30
+  ## @section MCP OAuth resource-server settings
+  ## Optional OAuth 2.1 resource-server authentication for MCP HTTP endpoints.
+  ## Disabled and empty by default for open-source deployments. When enabled, set
+  ## issuer / jwksUrl / audience / scope (all required by the MCP server).
+  ## MCP_PUBLIC_URL resolution order:
+  ##   1. mcp.oauth.publicUrl when set in an overlay (key omitted from chart defaults)
+  ##   2. Ingress host + path when ingress.enable and ingress.hosts are set
+  ##   3. Gateway API hostname + path when gatewayAPI.enable and hostnames are set
+  ##   4. In-cluster MCP Service URL
+  ## issuer and jwksUrl are also applied to the ReportPortal API Azure OAuth2 provider
+  ## so MCP and API share one Entra ID configuration.
+  ##
+  oauth:
+    ## @param mcp.oauth.enabled Enable OAuth for MCP HTTP endpoints and the matching API Azure provider (MCP_OAUTH_ENABLED)
+    ##
+    enabled: false
+    ## @param mcp.oauth.issuer OAuth issuer URL (MCP_OAUTH_ISSUER, RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI)
+    ## Example (Azure Entra ID): https://login.microsoftonline.com/<tenant-id>/v2.0
+    ##
+    issuer: ""
+    ## @param mcp.oauth.jwksUrl JWKS URL for JWT verification (MCP_OAUTH_JWKS_URL, RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI)
+    ## Example (Azure Entra ID): https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys
+    ##
+    jwksUrl: ""
+    ## @param mcp.oauth.audience Expected JWT aud claim — MCP app registration client ID (MCP_OAUTH_AUDIENCE)
+    ##
+    audience: ""
+    ## @param mcp.oauth.scope OAuth scope advertised to clients (MCP_OAUTH_SCOPE)
+    ## Example: api://<app-id>/access_as_user
+    ##
+    scope: ""
+    ## API-side Azure identity mapping applied when mcp.oauth.enabled is true
+    ##
+    api:
+      ## @param mcp.oauth.api.usernameClaim JWT claim used as the ReportPortal username (RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM)
+      ## Example: oid
+      ##
+      usernameClaim: ""
+      ## @param mcp.oauth.api.userResolver How API resolves the Azure identity to a ReportPortal user (RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER)
+      ## Example: EXTERNAL
+      ##
+      userResolver: ""
+  tls:
+    ## @param mcp.tls.insecure Disable TLS certificate verification for ReportPortal API calls. Mutually exclusive with caCert.secretName.
+    ##
+    insecure: false
+    caCert:
+      ## @param mcp.tls.caCert.secretName Existing Secret containing the ReportPortal CA certificate
+      ##
+      secretName: ""
+      ## @param mcp.tls.caCert.key Key in the existing Secret containing the PEM CA certificate
+      ##
+      key: ca.crt
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 12
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+  ## @param mcp.extraEnvs Additional MCP server environment variables
+  ##
+  extraEnvs: []
+  ## @param mcp.extraInitContainers Additional init containers
+  ##
+  extraInitContainers: []
+  ## @param mcp.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
+  ##
+  initContainerResources: {}
+  ## @param mcp.extraContainers Additional sidecar containers
+  ##
+  extraContainers: []
+  ## @param mcp.extraVolumes Additional pod volumes, for example a custom CA certificate
+  ##
+  extraVolumes: []
+  ## @param mcp.extraVolumeMounts Additional MCP container volume mounts
+  ##
+  extraVolumeMounts: []
+  podLabels: {}
+  podAnnotations: {}
+  securityContext: {}
+  containerSecurityContext: {}
+  serviceAccountName: ""
+  nodeSelector: {}
+  affinity: {}
+  ## @param mcp.tolerations Service-specific tolerations for the MCP server
+  ##
+  tolerations: []
+  ## @param mcp.strategy Deployment strategy for the MCP server
+  ##
+  strategy: {}
+  pdb:
+    create: false
+    minAvailable: ""
+    maxUnavailable: ""
+  service:
+    type: ""
+    portName: ""
+    nodePort: ""
+    extraPorts: []
+    annotations: {}
+    ## @param mcp.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
+    ##
+    labels: {}
 
 ## @section Infrastructure configuration
 ##
@@ -1145,6 +1309,19 @@ ingress:
   hosts: []
   path: ""
   class: nginx
+  ## @param ingress.extraPaths additional ingress paths, rendered before the built-in ones
+  ## Each entry is a raw Ingress HTTPIngressPath. Rendered ahead of the `/`, `/ui`,
+  ## `/uat` and `/api` rules so that ALB action paths such as `ssl-redirect`, which
+  ## must be evaluated first, can be declared here.
+  ##
+  extraPaths: []
+    # - path: /grafana/
+    #   pathType: Prefix
+    #   backend:
+    #     service:
+    #       name: reportportal-ui
+    #       port:
+    #         name: headless
   ## @param ingress.annotations Ingress annotations
   ## Add annotations based on your ingress controller
   ##
@@ -1387,7 +1564,7 @@ postgresql:
   install: true
   image:
     repository: postgres
-    tag: "18.4"
+    tag: "18.6"
   auth:
     username: *dbuser
     password: *dbpassword
@@ -1402,7 +1579,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.4-management
+    tag: 4.3.6-management
   auth:
     enabled: true
     username: *msgbrokerUser

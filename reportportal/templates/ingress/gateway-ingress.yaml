@@ -52,6 +52,9 @@ spec:
   - host: {{ $host }}
     http:
       paths:
+      {{- with $.Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
@@ -80,11 +83,32 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      {{- if $.Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ $.Values.mcp.service.portName | default "headless" }}
+      {{- if (($.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ $.Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
   {{- end }}
   {{- else if kindIs "string" .Values.ingress.hosts }}
   - host: {{ .Values.ingress.hosts }}
     http:
       paths:
+      {{- with .Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
@@ -113,10 +137,31 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      {{- if .Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- if ((.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
   {{- end }}
   {{- else }}
   - http:
       paths:
+      {{- with .Values.ingress.extraPaths }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       - path: {{ $basePath | default "/" }}
         pathType: Prefix
         backend:
@@ -145,6 +190,24 @@ spec:
             name: {{ $fullName }}-api
             port:
               name: {{ $.Values.serviceapi.service.portName | default "headless" }}
+      {{- if .Values.mcp.enabled }}
+      - path: {{ $basePath | default "" }}/mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- if ((.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
   {{- end }}
 status:
   loadBalancer: {}

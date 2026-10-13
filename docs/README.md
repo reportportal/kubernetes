@@ -9,6 +9,7 @@ This directory contains installation and configuration guides for ReportPortal o
 - [Cert-Manager Configuration](cert-manager-config.md) — Automated TLS certificate provisioning with Let's Encrypt
 - [Certificates Management](certificates-management.md) — Managing TLS certificates for secure HTTPS connections
 - [Google Managed Certificates Configuration](gcp-managed-cert-config.md) — GCP-managed SSL certificates for GKE deployments
+- [Additional Nginx Server Configuration for Service UI](service-ui-nginx-config.md) — Mount extra server-level Nginx snippets into the UI container
 
 ## Storage Configuration
 
@@ -19,6 +20,7 @@ This directory contains installation and configuration guides for ReportPortal o
 
 - [Install ReportPortal on GKE](gke-install.md) — Full installation guide for Google Kubernetes Engine
 - [Install ReportPortal on Minikube](minikube-install.md) — Local development setup with Minikube
+- [ReportPortal MCP Server Deployment Guide](mcp-server.md) — Enable the MCP service and configure authentication, AI clients, TLS, and networking
 - [Helm Pre-upgrade Guide](helm-pre-upgrade.md) — Required steps before upgrading the Helm chart
 - [Parameters Reference](parameters-reference.md) — Complete reference for all Helm chart values
 - [Docker Hardened Images (DHI) Usage](dhi-usage.md) — Configure PostgreSQL and RabbitMQ with Docker Hardened Images
