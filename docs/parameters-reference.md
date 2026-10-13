@@ -34,7 +34,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceindex.name` | Service name | `index` |
 | `serviceindex.image.repository` | Image repository | `reportportal/service-index` |
-| `serviceindex.image.tag` | Image tag | `5.15.1` |
+| `serviceindex.image.tag` | Image tag | `5.15.2` |
 | `serviceindex.pullPolicy` | Image pull policy | `Always` |
 | `serviceindex.resources.requests.cpu` | CPU requests | `150m` |
 | `serviceindex.resources.requests.memory` | Memory requests | `128Mi` |
@@ -81,7 +81,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceui.name` | Service name | `ui` |
 | `serviceui.image.repository` | Image repository | `reportportal/service-ui` |
-| `serviceui.image.tag` | Image tag | `5.15.5` |
+| `serviceui.image.tag` | Image tag | `5.15.6` |
 | `serviceui.pullPolicy` | Image pull policy | `Always` |
 | `serviceui.replicaCount` | Number of replicas | `1` |
 | `serviceui.resources.requests.cpu` | CPU requests | `100m` |
@@ -135,7 +135,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.4` |
+| `serviceapi.image.tag` | Image tag | `5.15.5` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
 | `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
@@ -204,7 +204,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `uat.name` | Service name | `uat` |
 | `uat.image.repository` | Image repository | `reportportal/service-authorization` |
-| `uat.image.tag` | Image tag | `5.15.1` |
+| `uat.image.tag` | Image tag | `5.15.2` |
 | `uat.pullPolicy` | Image pull policy | `Always` |
 | `uat.replicaCount` | Number of replicas | `1` |
 | `uat.startupProbe.enabled` | Enable startup probe | `true` |
@@ -266,7 +266,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.2` |
+| `servicejobs.image.tag` | Image tag | `5.15.3` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
 | `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
 | `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
@@ -326,7 +326,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.5` |
+| `serviceanalyzer.image.tag` | Image tag | `5.15.6` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -388,7 +388,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.4` |
+| `migrations.image.tag` | Image tag | `5.15.5` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |

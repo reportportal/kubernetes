@@ -78,7 +78,7 @@ serviceindex:
   name: index
   image:
     repository: reportportal/service-index
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   resources:
     requests:
@@ -169,7 +169,7 @@ serviceui:
   name: ui
   image:
     repository: reportportal/service-ui
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   replicaCount: 1
   resources:
@@ -294,7 +294,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.4
+    tag: 5.15.5
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -481,7 +481,7 @@ uat:
   name: uat
   image:
     repository: reportportal/service-authorization
-    tag: 5.15.1
+    tag: 5.15.2
   pullPolicy: Always
   replicaCount: 1
   ## @param uat.startupProbe configure startup probe
@@ -613,7 +613,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.15.2
+    tag: 5.15.3
   pullPolicy: Always
   ## @param servicejobs.startupProbe configure startup probe
   ##
@@ -733,7 +733,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   uwsgiWorkers: 1
   resources:
@@ -857,7 +857,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.4
+    tag: 5.15.5
   resources:
     requests:
       cpu: 100m
