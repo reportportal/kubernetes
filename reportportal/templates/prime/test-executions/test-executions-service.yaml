@@ -1,0 +1,37 @@
+{{- if include "reportportal.prime.testExecutions.enabled" . }}
+{{- $fullname := include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") -}}
+{{- $servicePort := .Values.prime.testExecutions.service.port | default 5000 -}}
+{{- $monitoringPort := .Values.prime.testExecutions.service.monitoringPort | default 9600 -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}
+  labels: {{ include "labels" . | nindent 4 }}
+    {{- with .Values.prime.testExecutions.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    service: {{ .Values.prime.testExecutions.name | default "test-executions" }}
+    {{- with .Values.prime.testExecutions.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.prime.testExecutions.service.type | default "ClusterIP" }}
+  ports:
+    - name: {{ .Values.prime.testExecutions.service.portName | default "logstash" }}
+      port: {{ $servicePort }}
+      targetPort: {{ $servicePort }}
+      protocol: TCP
+      {{- if and (or (eq (.Values.prime.testExecutions.service.type | default "ClusterIP") "NodePort") (eq (.Values.prime.testExecutions.service.type | default "ClusterIP") "LoadBalancer")) (not (empty .Values.prime.testExecutions.service.nodePort)) }}
+      nodePort: {{ .Values.prime.testExecutions.service.nodePort }}
+      {{- end }}
+    - name: monitoring
+      port: {{ $monitoringPort }}
+      targetPort: {{ $monitoringPort }}
+      protocol: TCP
+    {{- if .Values.prime.testExecutions.service.extraPorts }}
+    {{ toYaml .Values.prime.testExecutions.service.extraPorts | nindent 4 }}
+    {{- end }}
+  selector:
+    component: {{ $fullname }}
+{{- end }}
