@@ -20,6 +20,12 @@ spec:
         {{- if .Values.mcp.enabled }}
         "http://{{ include "reportportal.fullname" . }}-mcp:8080/health" \
         {{- end }}
+        {{- if include "reportportal.prime.testExecutions.enabled" . }}
+        "http://{{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}:{{ .Values.prime.testExecutions.service.monitoringPort | default 9600 }}/" \
+        {{- end }}
+        {{- if include "reportportal.prime.scim.enabled" . }}
+        "http://{{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}:{{ .Values.prime.scim.service.port | default 8080 }}{{ include "reportportal.prime.scim.healthUrlPath" . }}" \
+        {{- end }}
         "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"
       do
         echo "Checking $url";

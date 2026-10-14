@@ -109,6 +109,54 @@ X-Project: <reportportal-project>
 
 The token must have access to the selected project. Do not place API tokens in Helm values or Kubernetes manifests.
 
+## Optional OAuth (Azure Entra ID)
+
+OAuth is disabled by default. Azure / JWT fields stay empty for open-source installs. When you enable MCP OAuth, set the issuer, JWKS URL, audience, scope, and API identity-mapping fields in one place:
+
+```yaml
+mcp:
+  enabled: true
+  oauth:
+    enabled: true
+    issuer: https://login.microsoftonline.com/<tenant-id>/v2.0
+    jwksUrl: https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys
+    audience: <mcp-app-client-id>
+    scope: api://<mcp-app-client-id>/access_as_user
+    api:
+      usernameClaim: oid
+      userResolver: EXTERNAL
+```
+
+`MCP_PUBLIC_URL` is resolved automatically:
+
+1. `mcp.oauth.publicUrl` when set in an overlay (not present in chart defaults)
+2. Ingress host + path when `ingress.enable` and `ingress.hosts` are set (always `https`)
+3. Gateway hostname + path when `gatewayAPI.enable` and `gatewayAPI.hostnames` are set (always `https`)
+4. Otherwise the in-cluster MCP Service URL
+
+Ingress/Gateway-derived URLs always use `https` because the MCP server rejects `http` for non-loopback hosts, and TLS is often terminated outside chart `ingress.tls` values (controller cert, LB, `ssl-redirect`).
+
+Example Ingress-derived URL with `ingress.hosts: [reportportal.example.com]` and `ingress.path: /reportportal`:
+
+```text
+https://reportportal.example.com/reportportal/mcp
+```
+
+Force a specific URL when needed:
+
+```yaml
+mcp:
+  oauth:
+    publicUrl: https://reportportal.example.com/mcp
+```
+
+`mcp.oauth.enabled: true` configures both:
+
+- MCP resource-server env vars (`MCP_OAUTH_*`, `MCP_PUBLIC_URL`)
+- ReportPortal API Azure provider env vars from the same issuer/JWKS values (`RP_OAUTH2_PROVIDERS_AZURE_*`)
+
+It also exposes `/.well-known/oauth-protected-resource` on the Ingress / Gateway HTTPRoute for OAuth metadata discovery.
+
 ## Configure Cursor
 
 Open **Cursor Settings → Tools & MCP → Add Custom MCP**, then add the remote server to `mcp.json`:

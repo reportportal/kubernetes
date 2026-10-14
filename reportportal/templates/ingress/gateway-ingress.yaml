@@ -63,6 +63,24 @@ spec:
             name: {{ $fullName }}-mcp
             port:
               name: {{ $.Values.mcp.service.portName | default "headless" }}
+      {{- if (($.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ $.Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" $ }}
+      - path: {{ $basePath | default "" }}{{ $.Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" $ "suffix" "scim") }}
+            port:
+              name: {{ $.Values.prime.scim.service.portName | default "http" }}
       {{- end }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
@@ -94,6 +112,24 @@ spec:
             name: {{ $fullName }}-mcp
             port:
               name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- if ((.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" . }}
+      - path: {{ $basePath | default "" }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+            port:
+              name: {{ .Values.prime.scim.service.portName | default "http" }}
       {{- end }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix
@@ -124,6 +160,24 @@ spec:
             name: {{ $fullName }}-mcp
             port:
               name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- if ((.Values.mcp).oauth).enabled }}
+      - path: /.well-known/oauth-protected-resource
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-mcp
+            port:
+              name: {{ .Values.mcp.service.portName | default "headless" }}
+      {{- end }}
+      {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" . }}
+      - path: {{ $basePath | default "" }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+            port:
+              name: {{ .Values.prime.scim.service.portName | default "http" }}
       {{- end }}
       - path: {{ $basePath | default "" }}/api
         pathType: Prefix

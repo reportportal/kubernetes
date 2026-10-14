@@ -68,6 +68,16 @@ spec:
           {{- if .Values.serviceapi.extraEnvs }}
             {{ toYaml .Values.serviceapi.extraEnvs | nindent 12 }}
           {{- end }}
+          {{- if and .Values.mcp.enabled ((.Values.mcp).oauth).enabled }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI
+              value: {{ .Values.mcp.oauth.issuer | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI
+              value: {{ .Values.mcp.oauth.jwksUrl | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM
+              value: {{ .Values.mcp.oauth.api.usernameClaim | quote }}
+            - name: RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER
+              value: {{ .Values.mcp.oauth.api.userResolver | quote }}
+          {{- end }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: "{{ $path }}/api"
             - name: COM_TA_REPORTPORTAL_JOB_LOAD_PLUGINS_CRON
@@ -82,6 +92,12 @@ spec:
               value: "{{ .Values.serviceapi.patternAnalysis.prefetchCount }}"
             - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_CONSUMERS-COUNT
               value: "{{ .Values.serviceapi.patternAnalysis.consumersCount }}"
+          {{- if include "reportportal.prime.testExecutions.enabled" . }}
+            - name: RP_OPENSEARCH_URL
+              value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.searchengine.port }}"
+            - name: RP_OPENSEARCH_INDEX
+              value: {{ .Values.prime.testExecutions.index.name | quote }}
+          {{- end }}
           {{- if .Values.serviceapi.auditLogs.enable }}
             - name: AUDIT_LOGGER
               value: "{{ .Values.serviceapi.auditLogs.loglevel }}"

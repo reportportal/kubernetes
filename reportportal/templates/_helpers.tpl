@@ -89,14 +89,15 @@ Global context overrides service-specific context
 
 {{/*
 Resolve resources for built-in wait init containers.
-Global resources take precedence over service-specific resources.
+Non-empty service-specific resources take precedence; otherwise use
+global.initContainerResources.
 */}}
 {{- define "reportportal.initContainerResources" -}}
-{{- $globalResources := .Values.global.initContainerResources -}}
-{{- if not (empty $globalResources) -}}
-{{- $globalResources | toYaml -}}
+{{- $serviceResources := .serviceContext -}}
+{{- if not (empty $serviceResources) -}}
+{{- $serviceResources | toYaml -}}
 {{- else -}}
-{{- .serviceContext | toYaml -}}
+{{- .Values.global.initContainerResources | toYaml -}}
 {{- end -}}
 {{- end -}}
 
@@ -183,5 +184,125 @@ Override storage.endpoint to point at an external or custom service.
 {{- end -}}
 {{- end -}}
 
+{{/*
+Public MCP URL used for OAuth metadata (MCP_PUBLIC_URL).
+
+Priority:
+  1. mcp.oauth.publicUrl when set in an overlay
+  2. Ingress host + path when ingress.enable and ingress.hosts are set
+  3. Gateway API hostname + path when gatewayAPI.enable and gatewayAPI.hostnames are set
+  4. In-cluster MCP Service URL
+*/}}
+{{- define "reportportal.mcp.publicUrl" -}}
+{{- if .Values.mcp.oauth.publicUrl -}}
+{{- .Values.mcp.oauth.publicUrl -}}
+{{- else -}}
+{{- $basePath := "" -}}
+{{- $host := "" -}}
+{{- $scheme := ternary "https" "http" .Values.k8s.networking.ssl -}}
+{{- if and .Values.ingress.enable .Values.ingress.hosts -}}
+  {{- if kindIs "slice" .Values.ingress.hosts -}}
+    {{- $host = index .Values.ingress.hosts 0 -}}
+  {{- else -}}
+    {{- $host = .Values.ingress.hosts -}}
+  {{- end -}}
+  {{- $path := .Values.ingress.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{/*
+    External Ingress hosts must use https for MCP OAuth (server rejects http except loopback).
+    TLS may be terminated outside chart values (controller cert, LB, ssl-redirect), so prefer
+    https whenever an Ingress host is used.
+  */}}
+  {{- $scheme = "https" -}}
+{{- else if and .Values.gatewayAPI.enable .Values.gatewayAPI.hostnames -}}
+  {{- if kindIs "slice" .Values.gatewayAPI.hostnames -}}
+    {{- $host = index .Values.gatewayAPI.hostnames 0 -}}
+  {{- else -}}
+    {{- $host = .Values.gatewayAPI.hostnames -}}
+  {{- end -}}
+  {{- $path := .Values.gatewayAPI.path -}}
+  {{- if and $path (ne $path "/") -}}
+    {{- $basePath = trimSuffix "/" $path -}}
+  {{- end -}}
+  {{- $scheme = "https" -}}
+{{- end -}}
+{{- if $host -}}
+{{- printf "%s://%s%s/mcp" $scheme $host $basePath -}}
+{{- else -}}
+{{- printf "%s://%s-mcp.%s.svc.%s:8080/mcp" (ternary "https" "http" .Values.k8s.networking.ssl) (include "reportportal.fullname" .) .Release.Namespace .Values.global.clusterDomain -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true when the Test Executions Prime feature should be deployed.
+*/}}
+{{- define "reportportal.prime.testExecutions.enabled" -}}
+{{- if and .Values.prime.enabled .Values.prime.testExecutions.enabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true when the SCIM Bridge Prime feature should be deployed.
+*/}}
+{{- define "reportportal.prime.scim.enabled" -}}
+{{- if and .Values.prime.enabled .Values.prime.scim.enabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Fully qualified name for a Prime component.
+Usage: include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions")
+*/}}
+{{- define "reportportal.prime.fullname" -}}
+{{- printf "%s-%s" (include "reportportal.fullname" .root) .suffix | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Image reference for a Prime component (nested under .Values.prime.<componentKey>).
+Usage: include "reportportal.prime.image" (dict "root" . "componentKey" "testExecutions")
+Fails when repository or tag is empty and the component is enabled.
+*/}}
+{{- define "reportportal.prime.image" -}}
+{{- $root := .root -}}
+{{- $comp := index $root.Values.prime .componentKey -}}
+{{- $repo := required (printf "prime.%s.image.repository is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.repository -}}
+{{- $tag := required (printf "prime.%s.image.tag is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.tag -}}
+{{- $globalRegistry := $root.Values.global.imageRegistry -}}
+{{- if $globalRegistry -}}
+{{- printf "%s/%s:%s" $globalRegistry $repo $tag -}}
+{{- else -}}
+{{- printf "%s:%s" $repo $tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Merged imagePullSecrets for a Prime component (global + component-level).
+Usage: include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKey" "testExecutions")
+*/}}
+{{- define "reportportal.prime.imagePullSecrets" -}}
+{{- $root := .root -}}
+{{- $comp := index $root.Values.prime .componentKey -}}
+{{- $secrets := concat ($root.Values.global.imagePullSecrets | default list) ($comp.image.pullSecrets | default list) -}}
+{{- if $secrets -}}
+{{- toYaml $secrets -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+SCIM health-check path (base path + healthPath).
+*/}}
+{{- define "reportportal.prime.scim.healthUrlPath" -}}
+{{- $base := .Values.prime.scim.path | default "/scim/v2" | trimSuffix "/" -}}
+{{- $health := .Values.prime.scim.healthPath | default "/ServiceProviderConfig" -}}
+{{- if not (hasPrefix "/" $health) -}}
+{{- $health = printf "/%s" $health -}}
+{{- end -}}
+{{- printf "%s%s" $base $health -}}
+{{- end -}}
 
 

@@ -12,7 +12,7 @@ This repository houses the Helm chart for ReportPortal, a powerful and flexible 
 
 ## Prerequisites
 
-* Kubernetes v1.26+
+* Kubernetes v1.35+
 * Helm Package Manager v3.4+
 
 ## Documentation

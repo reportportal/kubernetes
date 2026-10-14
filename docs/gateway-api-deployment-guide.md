@@ -43,7 +43,7 @@ The latest version ([v1.4.1](https://github.com/kubernetes-sigs/gateway-api)) in
 ## Prerequisites
 
 ### 1. Kubernetes Cluster
-- Kubernetes 1.26+ (Gateway API v1.4.1)
+- Kubernetes 1.35+ (Gateway API v1.4.1)
 - kubectl configured with cluster access
 
 ### 2. Gateway API CRDs

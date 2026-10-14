@@ -61,6 +61,26 @@ spec:
       backendRefs:
         - name: {{ $fullName }}-mcp
           port: 8080
+    {{- if ((.Values.mcp).oauth).enabled }}
+    # OAuth protected-resource metadata (RFC 9728); kept at origin root
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/oauth-protected-resource
+      backendRefs:
+        - name: {{ $fullName }}-mcp
+          port: 8080
+    {{- end }}
+    {{- end }}
+    {{- if include "reportportal.prime.scim.enabled" . }}
+    # Route for Prime SCIM Bridge
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+      backendRefs:
+        - name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+          port: {{ .Values.prime.scim.service.port | default 8080 }}
     {{- end }}
     # More specific /api before the / catch-all
     - matches:

@@ -19,10 +19,10 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.serviceAccount.annotations` | Service account annotations | `{}` |
 | `global.argocd.enabled` | Enable ArgoCD webhooks for ServiceAccount, Role, RoleBinding, and pre-upgrade-cleanup job. Set to true when deploying with ArgoCD to ensure proper resource ordering | `false` |
 | `global.securityContext` | Default security context for all pods | `{}` |
-| `global.initContainerResources.requests.cpu` | Built-in wait init container CPU requests | `50m` |
-| `global.initContainerResources.requests.memory` | Built-in wait init container memory requests | `100Mi` |
-| `global.initContainerResources.limits.cpu` | Built-in wait init container CPU limits | `50m` |
-| `global.initContainerResources.limits.memory` | Built-in wait init container memory limits | `100Mi` |
+| `global.initContainerResources.requests.cpu` | Default wait init container CPU requests (used when service initContainerResources is empty) | `50m` |
+| `global.initContainerResources.requests.memory` | Default wait init container memory requests (used when service initContainerResources is empty) | `100Mi` |
+| `global.initContainerResources.limits.cpu` | Default wait init container CPU limits (used when service initContainerResources is empty) | `50m` |
+| `global.initContainerResources.limits.memory` | Default wait init container memory limits (used when service initContainerResources is empty) | `100Mi` |
 | `global.tolerations` | Global tolerations for all components | `[]` |
 | `global.pdb.create` | Enable/disable Pod Disruption Budget creation | `true` |
 | `global.pdb.minAvailable` | Minimum number/percentage of pods that should remain scheduled | `""` |
@@ -34,7 +34,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceui.name` | Service name | `ui` |
 | `serviceui.image.repository` | Image repository | `reportportal/service-ui` |
-| `serviceui.image.tag` | Image tag | `5.15.3` |
+| `serviceui.image.tag` | Image tag | `5.15.6` |
 | `serviceui.pullPolicy` | Image pull policy | `Always` |
 | `serviceui.replicaCount` | Number of replicas | `1` |
 | `serviceui.resources.requests.cpu` | CPU requests | `100m` |
@@ -88,7 +88,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.2` |
+| `serviceapi.image.tag` | Image tag | `5.15.5` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
 | `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
@@ -111,7 +111,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.resources.limits.cpu` | CPU limits | `1000m` |
 | `serviceapi.resources.limits.memory` | Memory limits | `2Gi` |
 | `serviceapi.extraInitContainers` | Init containers | `{}` |
-| `serviceapi.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
+| `serviceapi.initContainerResources` | Migrations-waiting init container resources; overrides global when non-empty | `{}` |
 | `serviceapi.extraVolumes` | Extra volumes | `[]` |
 | `serviceapi.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `serviceapi.extraContainers` | Additional sidecar containers (e.g. audit log collector) | `[]` |
@@ -162,7 +162,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.1` |
+| `servicejobs.image.tag` | Image tag | `5.15.3` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
 | `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
 | `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
@@ -193,7 +193,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.resources.limits.cpu` | CPU limits | `250m` |
 | `servicejobs.resources.limits.memory` | Memory limits | `512Mi` |
 | `servicejobs.extraInitContainers` | Init containers | `{}` |
-| `servicejobs.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
+| `servicejobs.initContainerResources` | Migrations-waiting init container resources; overrides global when non-empty | `{}` |
 | `servicejobs.extraVolumes` | Extra volumes | `[]` |
 | `servicejobs.extraVolumeMounts` | Extra volume mounts | `[]` |
 | `servicejobs.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:+UseG1GC -XX:+UseStringDeduplication -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=60 -XX:MaxRAMPercentage=70.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"` |
@@ -222,7 +222,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.2` |
+| `serviceanalyzer.image.tag` | Image tag | `5.15.6` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -230,7 +230,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.resources.limits.cpu` | CPU limits | `500m` |
 | `serviceanalyzer.resources.limits.memory` | Memory limits | `1Gi` |
 | `serviceanalyzer.extraInitContainers` | Init containers | `{}` |
-| `serviceanalyzer.initContainerResources` | Migrations-waiting init container resources, used when the global value is empty | `{}` |
+| `serviceanalyzer.initContainerResources` | Migrations-waiting init container resources; overrides global when non-empty | `{}` |
 | `serviceanalyzer.fixVolumePermissions.enabled` | Run an init container that fixes ownership and permissions on the analyzer filesystem subtree (storage.type=filesystem only) | `true` |
 | `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
@@ -284,7 +284,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.2` |
+| `migrations.image.tag` | Image tag | `5.15.5` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |
@@ -509,11 +509,19 @@ This document provides a comprehensive reference of all configurable parameters 
 | `mcp.enabled` | Enable the ReportPortal MCP server | `false` |
 | `mcp.name` | Service name | `mcp` |
 | `mcp.image.repository` | Image repository | `reportportal/mcp-server` |
-| `mcp.image.tag` | Image tag | `1.3.3` |
+| `mcp.image.tag` | Image tag | `1.4.0` |
 | `mcp.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
 | `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |
 | `mcp.connectionTimeout` | ReportPortal API connection timeout in seconds | `30` |
+| `mcp.oauth.enabled` | Enable OAuth for MCP HTTP endpoints and the matching API Azure provider (`MCP_OAUTH_ENABLED`) | `false` |
+| `mcp.oauth.publicUrl` | Optional MCP URL override (`MCP_PUBLIC_URL`); when unset, derived from Ingress/Gateway hosts or the in-cluster Service URL | unset |
+| `mcp.oauth.issuer` | OAuth issuer URL (`MCP_OAUTH_ISSUER`, `RP_OAUTH2_PROVIDERS_AZURE_ISSUER_URI`) | `""` |
+| `mcp.oauth.jwksUrl` | JWKS URL for JWT verification (`MCP_OAUTH_JWKS_URL`, `RP_OAUTH2_PROVIDERS_AZURE_JWK_SET_URI`) | `""` |
+| `mcp.oauth.audience` | Expected JWT `aud` claim — MCP app registration client ID (`MCP_OAUTH_AUDIENCE`) | `""` |
+| `mcp.oauth.scope` | OAuth scope advertised to clients (`MCP_OAUTH_SCOPE`) | `""` |
+| `mcp.oauth.api.usernameClaim` | JWT claim used as the ReportPortal username (`RP_OAUTH2_PROVIDERS_AZURE_USERNAME_CLAIM`) | `""` |
+| `mcp.oauth.api.userResolver` | How API resolves the Azure identity (`RP_OAUTH2_PROVIDERS_AZURE_USER_RESOLVER`) | `""` |
 | `mcp.tls.insecure` | Disable TLS certificate verification; mutually exclusive with a CA Secret | `false` |
 | `mcp.tls.caCert.secretName` | Existing Secret containing the ReportPortal CA certificate | `""` |
 | `mcp.tls.caCert.key` | Secret key containing the PEM CA certificate | `ca.crt` |
@@ -539,7 +547,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `mcp.livenessProbe.failureThreshold` | Liveness probe failure threshold | `3` |
 | `mcp.extraEnvs` | Additional environment variables | `[]` |
 | `mcp.extraInitContainers` | Additional init containers | `[]` |
-| `mcp.initContainerResources` | API wait init container resources, used when the global value is empty | `{}` |
+| `mcp.initContainerResources` | API wait init container resources; overrides global when non-empty | `{}` |
 | `mcp.extraContainers` | Additional sidecar containers | `[]` |
 | `mcp.extraVolumes` | Additional pod volumes | `[]` |
 | `mcp.extraVolumeMounts` | Additional MCP container volume mounts | `[]` |
