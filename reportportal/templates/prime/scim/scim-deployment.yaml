@@ -1,0 +1,170 @@
+{{- if include "reportportal.prime.scim.enabled" . }}
+{{- $fullname := include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") -}}
+{{- $servicePort := .Values.prime.scim.service.port | default 8080 -}}
+{{- $healthPath := include "reportportal.prime.scim.healthUrlPath" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.prime.scim.autoscaling.enabled }}
+  replicas: {{ .Values.prime.scim.replicaCount | default 1 }}
+  {{- end }}
+  {{- with .Values.prime.scim.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ $fullname }}
+  template:
+    metadata:
+      labels:
+        {{- range $key, $value := .Values.prime.scim.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        component: {{ $fullname }}
+      {{- with .Values.prime.scim.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.prime.scim.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- $pullSecrets := include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKey" "scim") }}
+      {{- if $pullSecrets }}
+      imagePullSecrets:
+        {{- $pullSecrets | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: api-waiting-init
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "pod-wr"
+            - "-lcomponent={{ include "reportportal.fullname" . }}-api"
+          resources:
+            {{- include "reportportal.initContainerResources" (dict "Values" .Values "serviceContext" .Values.prime.scim.initContainerResources) | nindent 12 }}
+      {{- with .Values.prime.scim.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.prime.scim.name | default "scim" }}
+          image: "{{ include "reportportal.prime.image" (dict "root" . "componentKey" "scim") }}"
+          imagePullPolicy: {{ .Values.prime.scim.pullPolicy }}
+          {{- with .Values.prime.scim.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: {{ .Values.prime.scim.service.portName | default "http" }}
+              containerPort: {{ $servicePort }}
+              protocol: TCP
+          env:
+            - name: SCIM_HOST
+              value: {{ .Values.prime.scim.host | quote }}
+            - name: SCIM_PORT
+              value: {{ $servicePort | quote }}
+            - name: SCIM_ADDRESS
+              value: "{{ .Values.prime.scim.host }}:{{ $servicePort }}"
+            - name: SCIM_BASE_PATH
+              value: {{ .Values.prime.scim.path | quote }}
+            - name: SCIM_LOG_LEVEL
+              value: {{ .Values.prime.scim.logLevel | default "INFO" | quote }}
+            - name: SCIM_RP_API_URL
+              value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-api{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:8585/api
+            - name: SCIM_DOCUMENTATION_URI
+              value: {{ .Values.prime.scim.documentationUri | quote }}
+            - name: SCIM_MAX_RESULTS
+              value: {{ .Values.prime.scim.maxResults | quote }}
+            {{- if and .Values.prime.scim.configMap .Values.prime.scim.configMap.enabled }}
+            - name: SCIM_GROUP_PROJECT_PATTERN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.prime.scim.configMap.name | required "prime.scim.configMap.name is required when prime.scim.configMap.enabled is true" }}
+                  key: groupProjectPattern
+            - name: SCIM_GROUP_EXCEPTION_PATTERN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.prime.scim.configMap.name }}
+                  key: groupExceptionPattern
+            - name: SCIM_GROUP_DEFAULT_PROJECT_ROLE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.prime.scim.configMap.name }}
+                  key: groupDefaultProjectRole
+            {{- else }}
+            - name: SCIM_GROUP_PROJECT_PATTERN
+              value: {{ .Values.prime.scim.groupProjectPattern | quote }}
+            - name: SCIM_GROUP_EXCEPTION_PATTERN
+              value: {{ .Values.prime.scim.groupExceptionPattern | default "none" | quote }}
+            - name: SCIM_GROUP_DEFAULT_PROJECT_ROLE
+              value: {{ .Values.prime.scim.groupDefaultProjectRole | default "member" | quote }}
+            {{- end }}
+            {{- with .Values.prime.scim.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.prime.scim.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ $healthPath }}
+              port: {{ .Values.prime.scim.service.portName | default "http" }}
+            initialDelaySeconds: {{ .Values.prime.scim.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.scim.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.scim.startupProbe.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.prime.scim.startupProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.prime.scim.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ $healthPath }}
+              port: {{ .Values.prime.scim.service.portName | default "http" }}
+            initialDelaySeconds: {{ .Values.prime.scim.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.scim.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.scim.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.prime.scim.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.prime.scim.readinessProbe.successThreshold | default 1 }}
+          {{- end }}
+          {{- if .Values.prime.scim.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ $healthPath }}
+              port: {{ .Values.prime.scim.service.portName | default "http" }}
+            initialDelaySeconds: {{ .Values.prime.scim.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.scim.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.scim.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.prime.scim.livenessProbe.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.prime.scim.resources | nindent 12 }}
+          {{- with .Values.prime.scim.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.prime.scim.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prime.scim.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.prime.scim.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.prime.scim.securityContext) | nindent 8 }}
+      serviceAccountName: {{ .Values.prime.scim.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.prime.scim.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+{{- end }}

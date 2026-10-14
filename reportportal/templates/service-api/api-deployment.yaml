@@ -92,6 +92,12 @@ spec:
               value: "{{ .Values.serviceapi.patternAnalysis.prefetchCount }}"
             - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_CONSUMERS-COUNT
               value: "{{ .Values.serviceapi.patternAnalysis.consumersCount }}"
+          {{- if include "reportportal.prime.testExecutions.enabled" . }}
+            - name: RP_OPENSEARCH_URL
+              value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.searchengine.port }}"
+            - name: RP_OPENSEARCH_INDEX
+              value: {{ .Values.prime.testExecutions.index.name | quote }}
+          {{- end }}
           {{- if .Values.serviceapi.auditLogs.enable }}
             - name: AUDIT_LOGGER
               value: "{{ .Values.serviceapi.auditLogs.loglevel }}"

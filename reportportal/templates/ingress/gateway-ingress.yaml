@@ -101,6 +101,15 @@ spec:
               name: {{ $.Values.mcp.service.portName | default "headless" }}
       {{- end }}
       {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" $ }}
+      - path: {{ $basePath | default "" }}{{ $.Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" $ "suffix" "scim") }}
+            port:
+              name: {{ $.Values.prime.scim.service.portName | default "http" }}
+      {{- end }}
   {{- end }}
   {{- else if kindIs "string" .Values.ingress.hosts }}
   - host: {{ .Values.ingress.hosts }}
@@ -155,6 +164,15 @@ spec:
               name: {{ .Values.mcp.service.portName | default "headless" }}
       {{- end }}
       {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" . }}
+      - path: {{ $basePath | default "" }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+            port:
+              name: {{ .Values.prime.scim.service.portName | default "http" }}
+      {{- end }}
   {{- end }}
   {{- else }}
   - http:
@@ -207,6 +225,15 @@ spec:
             port:
               name: {{ .Values.mcp.service.portName | default "headless" }}
       {{- end }}
+      {{- end }}
+      {{- if include "reportportal.prime.scim.enabled" . }}
+      - path: {{ $basePath | default "" }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+            port:
+              name: {{ .Values.prime.scim.service.portName | default "http" }}
       {{- end }}
   {{- end }}
 status:

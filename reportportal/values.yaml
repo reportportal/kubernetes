@@ -1032,6 +1032,245 @@ mcp:
     ##
     labels: {}
 
+## @section Prime Features Configuration
+## Optional paid Prime features. Disabled by default. Images are empty because
+## they are provided to subscribers with a Prime subscription.
+##
+prime:
+  ## @param prime.enabled Master switch for all Prime features
+  ##
+  enabled: false
+
+  ## @section Test Executions (Prime)
+  ## Flat searchable test-execution indexing via a private Logstash image.
+  ## Ref: https://reportportal.io/docs/test-executions/
+  ##
+  testExecutions:
+    ## @param prime.testExecutions.enabled Enable Test Executions when prime.enabled is true
+    ##
+    enabled: true
+    name: test-executions
+    image:
+      ## @param prime.testExecutions.image.repository Private Test Executions (Logstash) image repository. Required when enabled.
+      ##
+      repository: ""
+      ## @param prime.testExecutions.image.tag Private image tag. Required when enabled.
+      ##
+      tag: ""
+      ## @param prime.testExecutions.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
+      ##
+      pullSecrets: []
+    pullPolicy: IfNotPresent
+    replicaCount: 1
+    ## @param prime.testExecutions.javaOpts JVM options passed via LS_JAVA_OPTS
+    ##
+    javaOpts: "-Xms512m -Xmx1536m -XX:+UseG1GC"
+    ## @param prime.testExecutions.scheduleCron Cron for JDBC polling of test items
+    ##
+    scheduleCron: "*/2 * * * * *"
+    ## @param prime.testExecutions.sqlLimit Max rows per JDBC query (test items)
+    ##
+    sqlLimit: "1000"
+    ## @param prime.testExecutions.scheduleCronLaunches Cron for the dedicated launches pipeline
+    ##
+    scheduleCronLaunches: "*/3 * * * * *"
+    ## @param prime.testExecutions.sqlLimitLaunches Max rows per JDBC query (launches)
+    ##
+    sqlLimitLaunches: "20"
+    ## @param prime.testExecutions.index OpenSearch index settings for Test Executions
+    ##
+    index:
+      name: "test_executions"
+      shards: "1"
+      replicas: "1"
+    ## @param prime.testExecutions.cleanup Jobs cleanup settings applied when Test Executions is enabled
+    ##
+    cleanup:
+      ## @param prime.testExecutions.cleanup.cron Cron for cleaning deleted test items (Jobs)
+      ##
+      cron: "0 0 * * * *"
+      ## @param prime.testExecutions.cleanup.retentionPeriod Retention period for deleted test items
+      ##
+      retentionPeriod: "1"
+    ## @param prime.testExecutions.log4j2 Optional custom Log4j2 configuration
+    ##
+    log4j2:
+      enabled: false
+      properties: ""
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+      successThreshold: 1
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 3
+      successThreshold: 1
+    securityContext: {}
+    containerSecurityContext: {}
+    extraEnvs: []
+    extraInitContainers: []
+    ## @param prime.testExecutions.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
+    ##
+    initContainerResources: {}
+    extraContainers: []
+    extraVolumes: []
+    extraVolumeMounts: []
+    podLabels: {}
+    podAnnotations: {}
+    serviceAccountName: ""
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    strategy: {}
+    pdb:
+      create: false
+      minAvailable: ""
+      maxUnavailable: ""
+    service:
+      type: ""
+      port: 5000
+      monitoringPort: 9600
+      portName: ""
+      nodePort: ""
+      extraPorts: []
+      annotations: {}
+      labels: {}
+
+  ## @section SCIM Bridge (Prime)
+  ## Automated user and group provisioning via the SCIM protocol.
+  ## Ref: https://reportportal.io/docs/external-integrations/UserProvisioning/Scim/overview/
+  ##
+  scim:
+    ## @param prime.scim.enabled Enable SCIM Bridge when prime.enabled is true
+    ##
+    enabled: true
+    name: scim
+    image:
+      ## @param prime.scim.image.repository Private SCIM Bridge image repository. Required when enabled.
+      ##
+      repository: ""
+      ## @param prime.scim.image.tag Private image tag. Required when enabled.
+      ##
+      tag: ""
+      ## @param prime.scim.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
+      ##
+      pullSecrets: []
+    pullPolicy: IfNotPresent
+    replicaCount: 1
+    ## @param prime.scim.host Bind address for the SCIM server
+    ##
+    host: 0.0.0.0
+    ## @param prime.scim.path Base path for the SCIM service (also used for Ingress / Gateway API)
+    ##
+    path: /scim/v2
+    ## @param prime.scim.documentationUri Documentation URI advertised by the SCIM service
+    ##
+    documentationUri: https://reportportal.io/doc
+    ## @param prime.scim.logLevel Log level (DEBUG, INFO, WARN, ERROR)
+    ##
+    logLevel: INFO
+    ## @param prime.scim.maxResults Maximum results per SCIM response
+    ##
+    maxResults: 100
+    ## @param prime.scim.groupProjectPattern Regex for mapping IdP groups to ReportPortal projects
+    ##
+    groupProjectPattern: "^rp-(?P<projectName>[^-]+)(?:-(?P<projectRole>[^-]+))?$"
+    ## @param prime.scim.groupExceptionPattern Regex to exclude groups. Use "none" to disable.
+    ##
+    groupExceptionPattern: "none"
+    ## @param prime.scim.groupDefaultProjectRole Default project role for group assignments
+    ##
+    groupDefaultProjectRole: "member"
+    ## @param prime.scim.configMap Load group patterns from an existing ConfigMap
+    ##
+    configMap:
+      enabled: false
+      name: ""
+    ## @param prime.scim.healthPath Health check path appended to scim.path
+    ##
+    healthPath: /ServiceProviderConfig
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 30
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+      successThreshold: 1
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+    securityContext: {}
+    containerSecurityContext: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 100
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: ""
+    extraEnvs: []
+    extraInitContainers: []
+    ## @param prime.scim.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
+    ##
+    initContainerResources: {}
+    extraContainers: []
+    extraVolumes: []
+    extraVolumeMounts: []
+    podLabels: {}
+    podAnnotations: {}
+    serviceAccountName: ""
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    strategy: {}
+    pdb:
+      create: false
+      minAvailable: ""
+      maxUnavailable: ""
+    service:
+      type: ""
+      port: 8080
+      portName: ""
+      nodePort: ""
+      extraPorts: []
+      annotations: {}
+      labels: {}
+
 ## @section Infrastructure configuration
 ##
 database:
