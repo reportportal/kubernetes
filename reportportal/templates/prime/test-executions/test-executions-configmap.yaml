@@ -1,0 +1,11 @@
+{{- if and (include "reportportal.prime.testExecutions.enabled" .) .Values.prime.testExecutions.log4j2.enabled }}
+{{- $fullname := include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullname }}-log4j
+  labels: {{ include "labels" . | nindent 4 }}
+data:
+  log4j2.properties: |
+{{- .Values.prime.testExecutions.log4j2.properties | nindent 4 }}
+{{- end }}

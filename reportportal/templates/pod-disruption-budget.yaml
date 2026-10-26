@@ -199,3 +199,61 @@ spec:
     matchLabels:
       component: {{ include "reportportal.fullname" . }}-mcp
 {{- end }}
+
+{{- /* Optional Prime Test Executions PodDisruptionBudget */ -}}
+{{- if and (include "reportportal.prime.testExecutions.enabled" .) (or .Values.global.pdb.create .Values.prime.testExecutions.pdb.create) }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}-pdb
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- with .Values.global.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- else }}
+  {{- with .Values.prime.testExecutions.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.prime.testExecutions.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}
+{{- end }}
+
+{{- /* Optional Prime SCIM Bridge PodDisruptionBudget */ -}}
+{{- if and (include "reportportal.prime.scim.enabled" .) (or .Values.global.pdb.create .Values.prime.scim.pdb.create) }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}-pdb
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  {{- if .Values.global.pdb.create }}
+  {{- with .Values.global.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.global.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- else }}
+  {{- with .Values.prime.scim.pdb.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.prime.scim.pdb.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+{{- end }}

@@ -38,6 +38,20 @@ To check Gateway status:
 {{- end }}
 {{- end }}
 
+{{- if include "reportportal.prime.testExecutions.enabled" . }}
+
+Prime Test Executions is enabled.
+  Docs: https://reportportal.io/docs/test-executions/
+  Service: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}
+{{- end }}
+{{- if include "reportportal.prime.scim.enabled" . }}
+
+Prime SCIM Bridge is enabled.
+  Docs: https://reportportal.io/docs/external-integrations/UserProvisioning/Scim/overview/
+  Service: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+  Path: {{ .Values.prime.scim.path | default "/scim/v2" }}
+{{- end }}
+
 {{- if .Values.serviceapi.auditLogs.enable }}
 
 ⚠️  WARNING: Audit logging is enabled!

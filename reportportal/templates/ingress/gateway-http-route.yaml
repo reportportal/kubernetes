@@ -96,6 +96,16 @@ spec:
           port: 8080
     {{- end }}
     {{- end }}
+    {{- if include "reportportal.prime.scim.enabled" . }}
+    # Route for Prime SCIM Bridge
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+      backendRefs:
+        - name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+          port: {{ .Values.prime.scim.service.port | default 8080 }}
+    {{- end }}
     # Route for index service (root catch-all; must stay after more specific prefixes)
     - matches:
         - path:

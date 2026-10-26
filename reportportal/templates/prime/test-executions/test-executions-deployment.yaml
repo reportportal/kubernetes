@@ -1,0 +1,209 @@
+{{- if include "reportportal.prime.testExecutions.enabled" . }}
+{{- $fullname := include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") -}}
+{{- $monitoringPort := .Values.prime.testExecutions.service.monitoringPort | default 9600 -}}
+{{- $servicePort := .Values.prime.testExecutions.service.port | default 5000 -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  labels: {{ include "labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.prime.testExecutions.replicaCount | default 1 }}
+  {{- with .Values.prime.testExecutions.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      component: {{ $fullname }}
+  template:
+    metadata:
+      labels:
+        {{- range $key, $value := .Values.prime.testExecutions.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        component: {{ $fullname }}
+      {{- if or .Values.prime.testExecutions.log4j2.enabled .Values.prime.testExecutions.podAnnotations }}
+      annotations:
+        {{- if .Values.prime.testExecutions.log4j2.enabled }}
+        checksum/log4j2: {{ .Values.prime.testExecutions.log4j2.properties | sha256sum }}
+        {{- end }}
+        {{- range $key, $value := .Values.prime.testExecutions.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+      {{- end }}
+    spec:
+      {{- with .Values.prime.testExecutions.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- $pullSecrets := include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKey" "testExecutions") }}
+      {{- if $pullSecrets }}
+      imagePullSecrets:
+        {{- $pullSecrets | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: api-waiting-init
+          image: "{{ include "reportportal.image" (dict "Values" .Values "service" "k8sWaitFor") }}"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "pod-wr"
+            - "-lcomponent={{ include "reportportal.fullname" . }}-api"
+          resources:
+            {{- include "reportportal.initContainerResources" (dict "Values" .Values "serviceContext" .Values.prime.testExecutions.initContainerResources) | nindent 12 }}
+      {{- with .Values.prime.testExecutions.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.prime.testExecutions.name | default "test-executions" }}
+          image: "{{ include "reportportal.prime.image" (dict "root" . "componentKey" "testExecutions") }}"
+          imagePullPolicy: {{ .Values.prime.testExecutions.pullPolicy }}
+          {{- with .Values.prime.testExecutions.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ $servicePort }}
+              name: {{ .Values.prime.testExecutions.service.portName | default "logstash" }}
+              protocol: TCP
+            - containerPort: {{ $monitoringPort }}
+              name: monitoring
+              protocol: TCP
+          env:
+            - name: CONFIG_SUPPORT_ESCAPE
+              value: "true"
+            - name: DB_HOST
+              value: {{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.dbName | quote }}
+            - name: POSTGRES_JDBC_URL
+              value: jdbc:postgresql://{{ .Values.database.endpoint | default (printf "%s-postgresql.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.database.port }}/{{ .Values.database.dbName }}{{- if eq .Values.database.ssl "require" }}?sslmode=require{{- end }}
+            - name: POSTGRES_JDBC_USER
+              value: {{ .Values.database.user | quote }}
+            - name: POSTGRES_JDBC_PASSWORD
+              {{- if .Values.database.secretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secretName }}
+                  key: {{ .Values.database.passwordKeyName }}
+              {{- else }}
+              value: {{ .Values.database.password | quote }}
+              {{- end }}
+            - name: SQL_LIMIT
+              value: {{ .Values.prime.testExecutions.sqlLimit | quote }}
+            - name: OPENSEARCH_HOSTS
+              value: "{{ ternary "https" "http" .Values.searchengine.ssl }}://{{ .Values.searchengine.endpoint | default (printf "opensearch-cluster-master.%s.svc.%s" .Release.Namespace .Values.global.clusterDomain) }}:{{ .Values.searchengine.port }}"
+            - name: OPENSEARCH_USER
+              {{- if .Values.searchengine.secretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.searchengine.secretName }}
+                  key: {{ .Values.searchengine.userKeyName | default "username" }}
+              {{- else }}
+              value: {{ .Values.searchengine.user | default "" | quote }}
+              {{- end }}
+            - name: OPENSEARCH_PASSWORD
+              {{- if .Values.searchengine.secretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.searchengine.secretName }}
+                  key: {{ .Values.searchengine.passwordKeyName | default "password" }}
+              {{- else }}
+              value: {{ .Values.searchengine.password | default "" | quote }}
+              {{- end }}
+            - name: SCHEDULE_CRON
+              value: {{ .Values.prime.testExecutions.scheduleCron | quote }}
+            - name: SCHEDULE_CRON_LAUNCHES
+              value: {{ .Values.prime.testExecutions.scheduleCronLaunches | quote }}
+            - name: SQL_LIMIT_LAUNCHES
+              value: {{ .Values.prime.testExecutions.sqlLimitLaunches | quote }}
+            - name: TEST_ITEMS_INDEX
+              value: {{ .Values.prime.testExecutions.index.name | quote }}
+            - name: LS_JAVA_OPTS
+              value: {{ .Values.prime.testExecutions.javaOpts | quote }}
+            - name: INDEX_SHARDS
+              value: {{ .Values.prime.testExecutions.index.shards | quote }}
+            - name: INDEX_REPLICAS
+              value: {{ .Values.prime.testExecutions.index.replicas | quote }}
+            {{- with .Values.prime.testExecutions.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.prime.testExecutions.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: /
+              port: {{ $monitoringPort }}
+            initialDelaySeconds: {{ .Values.prime.testExecutions.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.testExecutions.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.testExecutions.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.prime.testExecutions.startupProbe.failureThreshold }}
+            successThreshold: {{ .Values.prime.testExecutions.startupProbe.successThreshold | default 1 }}
+          {{- end }}
+          {{- if .Values.prime.testExecutions.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ $monitoringPort }}
+            initialDelaySeconds: {{ .Values.prime.testExecutions.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.testExecutions.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.testExecutions.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.prime.testExecutions.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.prime.testExecutions.readinessProbe.successThreshold | default 1 }}
+          {{- end }}
+          {{- if .Values.prime.testExecutions.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ $monitoringPort }}
+            initialDelaySeconds: {{ .Values.prime.testExecutions.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.prime.testExecutions.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.prime.testExecutions.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.prime.testExecutions.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.prime.testExecutions.livenessProbe.successThreshold | default 1 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.prime.testExecutions.resources | nindent 12 }}
+          {{- if or .Values.prime.testExecutions.log4j2.enabled .Values.prime.testExecutions.extraVolumeMounts }}
+          volumeMounts:
+            {{- if .Values.prime.testExecutions.log4j2.enabled }}
+            - name: log4j-config
+              mountPath: /usr/share/logstash/config/log4j2.properties
+              subPath: log4j2.properties
+            {{- end }}
+            {{- with .Values.prime.testExecutions.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+      {{- with .Values.prime.testExecutions.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.prime.testExecutions.log4j2.enabled .Values.prime.testExecutions.extraVolumes }}
+      volumes:
+        {{- if .Values.prime.testExecutions.log4j2.enabled }}
+        - name: log4j-config
+          configMap:
+            name: {{ $fullname }}-log4j
+        {{- end }}
+        {{- with .Values.prime.testExecutions.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.prime.testExecutions.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- include "reportportal.securityContext" (dict "Values" .Values "serviceContext" .Values.prime.testExecutions.securityContext) | nindent 8 }}
+      serviceAccountName: {{ .Values.prime.testExecutions.serviceAccountName | default (include "reportportal.serviceAccountName" .) }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- with .Values.prime.testExecutions.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+{{- end }}

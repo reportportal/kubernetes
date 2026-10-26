@@ -1,0 +1,34 @@
+{{- if include "reportportal.prime.scim.enabled" . }}
+{{- $fullname := include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") -}}
+{{- $servicePort := .Values.prime.scim.service.port | default 8080 -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}
+  labels: {{ include "labels" . | nindent 4 }}
+    {{- with .Values.prime.scim.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    service: {{ .Values.prime.scim.name | default "scim" }}
+    infoEndpoint: {{ .Values.prime.scim.path | default "/scim/v2" | quote }}
+    healthEndpoint: {{ include "reportportal.prime.scim.healthUrlPath" . | quote }}
+    {{- with .Values.prime.scim.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.prime.scim.service.type | default "ClusterIP" }}
+  ports:
+    - name: {{ .Values.prime.scim.service.portName | default "http" }}
+      port: {{ $servicePort }}
+      targetPort: {{ .Values.prime.scim.service.portName | default "http" }}
+      protocol: TCP
+      {{- if and (or (eq (.Values.prime.scim.service.type | default "ClusterIP") "NodePort") (eq (.Values.prime.scim.service.type | default "ClusterIP") "LoadBalancer")) (not (empty .Values.prime.scim.service.nodePort)) }}
+      nodePort: {{ .Values.prime.scim.service.nodePort }}
+      {{- end }}
+    {{- if .Values.prime.scim.service.extraPorts }}
+    {{ toYaml .Values.prime.scim.service.extraPorts | nindent 4 }}
+    {{- end }}
+  selector:
+    component: {{ $fullname }}
+{{- end }}

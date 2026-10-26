@@ -82,6 +82,12 @@ spec:
           value: "{{ .Values.servicejobs.coreJobs.cleanEventsCron }}"
         - name: RP_ENVIRONMENT_VARIABLE_CLEAN_STORAGE_CHUNKSIZE
           value: "{{ .Values.servicejobs.chunksize }}"
+        {{- if include "reportportal.prime.testExecutions.enabled" . }}
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_DELETEDTESTITEMS_CRON
+          value: {{ .Values.prime.testExecutions.cleanup.cron | quote }}
+        - name: RP_ENVIRONMENT_VARIABLE_CLEAN_DELETEDTESTITEMS_RETENTIONPERIOD
+          value: {{ .Values.prime.testExecutions.cleanup.retentionPeriod | quote }}
+        {{- end }}
         {{- if .Values.servicejobs.jvmArgs }}
         - name: JAVA_OPTS
           value: "{{ .Values.servicejobs.jvmArgs }}"
