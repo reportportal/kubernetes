@@ -1818,7 +1818,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.6-management
+    tag: 4.4.0-management
   auth:
     enabled: true
     username: *msgbrokerUser
@@ -1846,7 +1846,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 3.8.0
+    tag: 3.9.0
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
