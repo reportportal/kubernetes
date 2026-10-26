@@ -203,7 +203,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -655,7 +655,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.5
+    tag: 5.15.6
   resources:
     requests:
       cpu: 100m
@@ -840,7 +840,7 @@ prime:
   enabled: false
 
   ## @section Test Executions (Prime)
-  ## Flat searchable test-execution indexing via a private Logstash image.
+  ## Flat searchable test-execution indexing via a private image.
   ## Ref: https://reportportal.io/docs/test-executions/
   ##
   testExecutions:
@@ -849,7 +849,7 @@ prime:
     enabled: true
     name: test-executions
     image:
-      ## @param prime.testExecutions.image.repository Private Test Executions (Logstash) image repository. Required when enabled.
+      ## @param prime.testExecutions.image.repository Private Test Executions image repository. Required when enabled.
       ##
       repository: ""
       ## @param prime.testExecutions.image.tag Private image tag. Required when enabled.
@@ -955,7 +955,7 @@ prime:
       labels: {}
 
   ## @section SCIM Bridge (Prime)
-  ## Automated user and group provisioning via the SCIM protocol.
+  ## Automated user and group provisioning via the System for Cross-domain Identity Management protocol.
   ## Ref: https://reportportal.io/docs/external-integrations/UserProvisioning/Scim/overview/
   ##
   scim:
@@ -1614,7 +1614,7 @@ rabbitmq:
   install: true
   image:
     repository: rabbitmq
-    tag: 4.3.6-management
+    tag: 4.4.0-management
   auth:
     enabled: true
     username: *msgbrokerUser
@@ -1637,7 +1637,7 @@ opensearch:
   install: true
   image:
     repository: opensearchproject/opensearch
-    tag: 3.8.0
+    tag: 3.9.0
   ## @param opensearch.singleNode If "true", replicas will be forced from 3 to 1
   ##
   singleNode: true
