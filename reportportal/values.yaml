@@ -1157,7 +1157,7 @@ prime:
       labels: {}
 
   ## @section SCIM Bridge (Prime)
-  ## Automated user and group provisioning via the SCIM protocol.
+  ## Automated user and group provisioning via the System for Cross-domain Identity Management protocol.
   ## Ref: https://reportportal.io/docs/external-integrations/UserProvisioning/Scim/overview/
   ##
   scim:
