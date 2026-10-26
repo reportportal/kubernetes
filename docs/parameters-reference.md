@@ -715,7 +715,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `postgresql.service.port` | PostgreSQL service port | `5432` |
 | `rabbitmq.install` | Install RabbitMQ (CloudPirates chart) | `true` |
 | `rabbitmq.image.repository` | RabbitMQ image repository | `rabbitmq` |
-| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.3.6-management` |
+| `rabbitmq.image.tag` | RabbitMQ image tag (management image for HTTP API) | `4.4.0-management` |
 | `rabbitmq.auth.enabled` | Enable RabbitMQ authentication | `true` |
 | `rabbitmq.auth.username` | RabbitMQ username | `rabbitmq` |
 | `rabbitmq.auth.password` | RabbitMQ password | `rabbitmqpassword` |
@@ -725,7 +725,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `rabbitmq.config.extraConfiguration` | Extra RabbitMQ config (permits RabbitMQ 4.3 `queue_master_locator` used by ReportPortal) | `deprecated_features.permit.queue_master_locator = true` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
-| `opensearch.image.tag` | OpenSearch image tag | `3.8.0` |
+| `opensearch.image.tag` | OpenSearch image tag | `3.9.0` |
 | `opensearch.singleNode` | Single node mode | `true` |
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
