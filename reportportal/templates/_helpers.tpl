@@ -240,7 +240,9 @@ Fully qualified name for a Prime component.
 Usage: include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions")
 */}}
 {{- define "reportportal.prime.fullname" -}}
-{{- printf "%s-%s" (include "reportportal.fullname" .root) .suffix | trunc 63 | trimSuffix "-" -}}
+{{- $suffixLen := add (len .suffix) 1 -}}
+{{- $maxRootLen := sub 63 $suffixLen -}}
+{{- printf "%s-%s" (include "reportportal.fullname" .root | trunc $maxRootLen | trimSuffix "-") .suffix -}}
 {{- end -}}
 
 {{/*

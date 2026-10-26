@@ -405,6 +405,147 @@ This document provides a comprehensive reference of all configurable parameters 
 | `migrations.pdb.minAvailable` | PDB min available | `""` |
 | `migrations.pdb.maxUnavailable` | PDB max unavailable | `""` |
 
+## Prime Features Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `prime.enabled` | Master switch for all Prime features | `false` |
+| `prime.testExecutions.enabled` | Enable Test Executions when prime.enabled is true | `true` |
+| `prime.testExecutions.name` | Service name | `test-executions` |
+| `prime.testExecutions.image.repository` | Private Test Executions image repository. Required when enabled. | `""` |
+| `prime.testExecutions.image.tag` | Private image tag. Required when enabled. | `""` |
+| `prime.testExecutions.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
+| `prime.testExecutions.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `prime.testExecutions.replicaCount` | Number of replicas | `1` |
+| `prime.testExecutions.javaOpts` | JVM options passed via LS_JAVA_OPTS | `"-Xms512m -Xmx1536m -XX:+UseG1GC"` |
+| `prime.testExecutions.scheduleCron` | Cron for JDBC polling of test items | `"*/2 * * * * *"` |
+| `prime.testExecutions.sqlLimit` | Max rows per JDBC query (test items) | `"1000"` |
+| `prime.testExecutions.scheduleCronLaunches` | Cron for the dedicated launches pipeline | `"*/3 * * * * *"` |
+| `prime.testExecutions.sqlLimitLaunches` | Max rows per JDBC query (launches) | `"20"` |
+| `prime.testExecutions.index.name` | OpenSearch index name for Test Executions | `"test_executions"` |
+| `prime.testExecutions.index.shards` | OpenSearch index shards | `"1"` |
+| `prime.testExecutions.index.replicas` | OpenSearch index replicas | `"1"` |
+| `prime.testExecutions.cleanup.cron` | Cron for cleaning deleted test items (Jobs) | `"0 0 * * * *"` |
+| `prime.testExecutions.cleanup.retentionPeriod` | Retention period for deleted test items | `"1"` |
+| `prime.testExecutions.log4j2.enabled` | Enable custom Log4j2 configuration | `false` |
+| `prime.testExecutions.log4j2.properties` | Custom Log4j2 configuration | `""` |
+| `prime.testExecutions.resources.requests.cpu` | CPU requests | `500m` |
+| `prime.testExecutions.resources.requests.memory` | Memory requests | `512Mi` |
+| `prime.testExecutions.resources.limits.cpu` | CPU limits | `1000m` |
+| `prime.testExecutions.resources.limits.memory` | Memory limits | `2Gi` |
+| `prime.testExecutions.startupProbe.enabled` | Enable startup probe | `true` |
+| `prime.testExecutions.startupProbe.initialDelaySeconds` | Initial delay | `10` |
+| `prime.testExecutions.startupProbe.periodSeconds` | Period | `10` |
+| `prime.testExecutions.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `prime.testExecutions.startupProbe.failureThreshold` | Failure threshold | `30` |
+| `prime.testExecutions.startupProbe.successThreshold` | Success threshold | `1` |
+| `prime.testExecutions.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `prime.testExecutions.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
+| `prime.testExecutions.readinessProbe.periodSeconds` | Period | `10` |
+| `prime.testExecutions.readinessProbe.timeoutSeconds` | Timeout | `5` |
+| `prime.testExecutions.readinessProbe.failureThreshold` | Failure threshold | `3` |
+| `prime.testExecutions.readinessProbe.successThreshold` | Success threshold | `1` |
+| `prime.testExecutions.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `prime.testExecutions.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
+| `prime.testExecutions.livenessProbe.periodSeconds` | Period | `30` |
+| `prime.testExecutions.livenessProbe.timeoutSeconds` | Timeout | `10` |
+| `prime.testExecutions.livenessProbe.failureThreshold` | Failure threshold | `3` |
+| `prime.testExecutions.livenessProbe.successThreshold` | Success threshold | `1` |
+| `prime.testExecutions.securityContext` | Security context | `{}` |
+| `prime.testExecutions.containerSecurityContext` | Container security context | `{}` |
+| `prime.testExecutions.extraEnvs` | Extra environment variables | `[]` |
+| `prime.testExecutions.extraInitContainers` | Extra init containers | `[]` |
+| `prime.testExecutions.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
+| `prime.testExecutions.extraContainers` | Extra containers | `[]` |
+| `prime.testExecutions.extraVolumes` | Extra volumes | `[]` |
+| `prime.testExecutions.extraVolumeMounts` | Extra volume mounts | `[]` |
+| `prime.testExecutions.podLabels` | Pod labels | `{}` |
+| `prime.testExecutions.podAnnotations` | Pod annotations | `{}` |
+| `prime.testExecutions.serviceAccountName` | Service account name | `""` |
+| `prime.testExecutions.nodeSelector` | Node selector | `{}` |
+| `prime.testExecutions.affinity` | Affinity rules | `{}` |
+| `prime.testExecutions.tolerations` | Tolerations | `[]` |
+| `prime.testExecutions.strategy` | Deployment strategy | `{}` |
+| `prime.testExecutions.pdb.create` | Create PDB | `false` |
+| `prime.testExecutions.pdb.minAvailable` | PDB min available | `""` |
+| `prime.testExecutions.pdb.maxUnavailable` | PDB max unavailable | `""` |
+| `prime.testExecutions.service.type` | Service type | `""` |
+| `prime.testExecutions.service.port` | Service port | `5000` |
+| `prime.testExecutions.service.monitoringPort` | Monitoring port | `9600` |
+| `prime.testExecutions.service.portName` | Port name | `""` |
+| `prime.testExecutions.service.nodePort` | Node port | `""` |
+| `prime.testExecutions.service.extraPorts` | Extra ports | `[]` |
+| `prime.testExecutions.service.annotations` | Service annotations | `{}` |
+| `prime.testExecutions.service.labels` | Service labels | `{}` |
+| `prime.scim.enabled` | Enable SCIM Bridge when prime.enabled is true | `true` |
+| `prime.scim.name` | Service name | `scim` |
+| `prime.scim.image.repository` | Private SCIM Bridge image repository. Required when enabled. | `""` |
+| `prime.scim.image.tag` | Private image tag. Required when enabled. | `""` |
+| `prime.scim.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
+| `prime.scim.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `prime.scim.replicaCount` | Number of replicas | `1` |
+| `prime.scim.host` | Bind address for the SCIM server | `0.0.0.0` |
+| `prime.scim.path` | Base path for the SCIM service (also used for Ingress / Gateway API) | `/scim/v2` |
+| `prime.scim.documentationUri` | Documentation URI advertised by the SCIM service | `https://reportportal.io/doc` |
+| `prime.scim.logLevel` | Log level (DEBUG, INFO, WARN, ERROR) | `INFO` |
+| `prime.scim.maxResults` | Maximum results per SCIM response | `100` |
+| `prime.scim.groupProjectPattern` | Regex for mapping IdP groups to ReportPortal projects | `"^rp-(?P<projectName>[^-]+)(?:-(?P<projectRole>[^-]+))?$"` |
+| `prime.scim.groupExceptionPattern` | Regex to exclude groups. Use "none" to disable. | `"none"` |
+| `prime.scim.groupDefaultProjectRole` | Default project role for group assignments | `"member"` |
+| `prime.scim.configMap.enabled` | Load group patterns from an existing ConfigMap | `false` |
+| `prime.scim.configMap.name` | ConfigMap name | `""` |
+| `prime.scim.healthPath` | Health check path appended to scim.path | `/ServiceProviderConfig` |
+| `prime.scim.resources.requests.cpu` | CPU requests | `100m` |
+| `prime.scim.resources.requests.memory` | Memory requests | `128Mi` |
+| `prime.scim.resources.limits.cpu` | CPU limits | `500m` |
+| `prime.scim.resources.limits.memory` | Memory limits | `512Mi` |
+| `prime.scim.startupProbe.enabled` | Enable startup probe | `true` |
+| `prime.scim.startupProbe.initialDelaySeconds` | Initial delay | `0` |
+| `prime.scim.startupProbe.periodSeconds` | Period | `10` |
+| `prime.scim.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `prime.scim.startupProbe.failureThreshold` | Failure threshold | `30` |
+| `prime.scim.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `prime.scim.readinessProbe.initialDelaySeconds` | Initial delay | `5` |
+| `prime.scim.readinessProbe.periodSeconds` | Period | `5` |
+| `prime.scim.readinessProbe.timeoutSeconds` | Timeout | `3` |
+| `prime.scim.readinessProbe.failureThreshold` | Failure threshold | `3` |
+| `prime.scim.readinessProbe.successThreshold` | Success threshold | `1` |
+| `prime.scim.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `prime.scim.livenessProbe.initialDelaySeconds` | Initial delay | `30` |
+| `prime.scim.livenessProbe.periodSeconds` | Period | `10` |
+| `prime.scim.livenessProbe.timeoutSeconds` | Timeout | `5` |
+| `prime.scim.livenessProbe.failureThreshold` | Failure threshold | `3` |
+| `prime.scim.securityContext` | Security context | `{}` |
+| `prime.scim.containerSecurityContext` | Container security context | `{}` |
+| `prime.scim.autoscaling.enabled` | Enable autoscaling | `false` |
+| `prime.scim.autoscaling.minReplicas` | Minimum replicas | `1` |
+| `prime.scim.autoscaling.maxReplicas` | Maximum replicas | `100` |
+| `prime.scim.autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization percentage | `80` |
+| `prime.scim.autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage | `""` |
+| `prime.scim.extraEnvs` | Extra environment variables | `[]` |
+| `prime.scim.extraInitContainers` | Extra init containers | `[]` |
+| `prime.scim.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
+| `prime.scim.extraContainers` | Extra containers | `[]` |
+| `prime.scim.extraVolumes` | Extra volumes | `[]` |
+| `prime.scim.extraVolumeMounts` | Extra volume mounts | `[]` |
+| `prime.scim.podLabels` | Pod labels | `{}` |
+| `prime.scim.podAnnotations` | Pod annotations | `{}` |
+| `prime.scim.serviceAccountName` | Service account name | `""` |
+| `prime.scim.nodeSelector` | Node selector | `{}` |
+| `prime.scim.affinity` | Affinity rules | `{}` |
+| `prime.scim.tolerations` | Tolerations | `[]` |
+| `prime.scim.strategy` | Deployment strategy | `{}` |
+| `prime.scim.pdb.create` | Create PDB | `false` |
+| `prime.scim.pdb.minAvailable` | PDB min available | `""` |
+| `prime.scim.pdb.maxUnavailable` | PDB max unavailable | `""` |
+| `prime.scim.service.type` | Service type | `""` |
+| `prime.scim.service.port` | Service port | `8080` |
+| `prime.scim.service.portName` | Port name | `""` |
+| `prime.scim.service.nodePort` | Node port | `""` |
+| `prime.scim.service.extraPorts` | Extra ports | `[]` |
+| `prime.scim.service.annotations` | Service annotations | `{}` |
+| `prime.scim.service.labels` | Service labels | `{}` |
+
 ## Database Configuration
 
 | Parameter | Description | Default |
