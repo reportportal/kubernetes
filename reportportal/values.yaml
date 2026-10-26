@@ -294,7 +294,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.5
+    tag: 5.15.6
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -857,7 +857,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.5
+    tag: 5.15.6
   resources:
     requests:
       cpu: 100m
@@ -1042,7 +1042,7 @@ prime:
   enabled: false
 
   ## @section Test Executions (Prime)
-  ## Flat searchable test-execution indexing via a private Logstash image.
+  ## Flat searchable test-execution indexing via a private image.
   ## Ref: https://reportportal.io/docs/test-executions/
   ##
   testExecutions:
@@ -1051,7 +1051,7 @@ prime:
     enabled: true
     name: test-executions
     image:
-      ## @param prime.testExecutions.image.repository Private Test Executions (Logstash) image repository. Required when enabled.
+      ## @param prime.testExecutions.image.repository Private Test Executions image repository. Required when enabled.
       ##
       repository: ""
       ## @param prime.testExecutions.image.tag Private image tag. Required when enabled.
