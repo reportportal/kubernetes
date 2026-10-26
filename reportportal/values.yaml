@@ -1833,7 +1833,7 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  ## RabbitMQ 4.3 denies queue_master_locator by default; ReportPortal API needs it
+  ## RabbitMQ 4.4 denies queue_master_locator by default; ReportPortal API needs it
   ##
   config:
     extraConfiguration: |
