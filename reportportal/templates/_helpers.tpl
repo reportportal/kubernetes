@@ -260,7 +260,7 @@ Usage: include "reportportal.prime.fullname" (dict "root" . "suffix" "test-execu
 */}}
 {{- define "reportportal.prime.fullname" -}}
 {{- $suffixLen := add (len .suffix) 1 -}}
-{{- $maxRootLen := sub 63 $suffixLen -}}
+{{- $maxRootLen := sub 63 $suffixLen | int -}}
 {{- printf "%s-%s" (include "reportportal.fullname" .root | trunc $maxRootLen | trimSuffix "-") .suffix -}}
 {{- end -}}
 
