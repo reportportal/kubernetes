@@ -49,7 +49,8 @@ spec:
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "servicejobs") }}"
         imagePullPolicy: "{{ .Values.servicejobs.pullPolicy }}"
         ports:
-        - containerPort: 8686
+        - containerPort: {{ .Values.servicejobs.service.port | default 8686 }}
+          name: jobscore
           protocol: TCP
         resources:
           requests:
@@ -181,7 +182,7 @@ spec:
         startupProbe:
           httpGet:
             path: "/jobs/health"
-            port: 8686
+            port: jobscore
           initialDelaySeconds: {{ .Values.servicejobs.startupProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.servicejobs.startupProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.servicejobs.startupProbe.timeoutSeconds }}
@@ -191,7 +192,7 @@ spec:
         readinessProbe:
           httpGet:
             path: "/jobs/health"
-            port: 8686
+            port: jobscore
           initialDelaySeconds: {{ .Values.servicejobs.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.servicejobs.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.servicejobs.readinessProbe.timeoutSeconds }}
@@ -201,7 +202,7 @@ spec:
         livenessProbe:
           httpGet:
             path: "/jobs/health"
-            port: 8686
+            port: jobscore
           initialDelaySeconds: {{ .Values.servicejobs.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.servicejobs.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.servicejobs.livenessProbe.timeoutSeconds }}

@@ -26,7 +26,7 @@ spec:
         {{- if include "reportportal.prime.scim.enabled" . }}
         "http://{{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}:{{ .Values.prime.scim.service.port | default 8080 }}{{ include "reportportal.prime.scim.healthUrlPath" . }}" \
         {{- end }}
-        "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"
+        "http://{{ include "reportportal.fullname" . }}-jobs:{{ .Values.servicejobs.service.port | default 8686 }}/jobs/health"
       do
         echo "Checking $url";
         response=$(curl --write-out "%{http_code}" --silent --output /dev/null $url);

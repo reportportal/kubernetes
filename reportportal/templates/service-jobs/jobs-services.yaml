@@ -17,9 +17,9 @@ spec:
   type: {{ $.Values.servicejobs.service.type | default "ClusterIP"}}
   ports:
   - name: {{ $.Values.servicejobs.service.portName | default "headless" }}
-    port: 8686
+    port: {{ $.Values.servicejobs.service.port | default 8686 }}
     protocol: TCP
-    targetPort: 8686
+    targetPort: jobscore
 {{- if and (or (eq .Values.servicejobs.service.type "NodePort") (eq .Values.servicejobs.service.type "LoadBalancer")) (not (empty .Values.servicejobs.service.nodePort)) }}
     nodePort: {{ .Values.servicejobs.service.nodePort }}
 {{- end }}

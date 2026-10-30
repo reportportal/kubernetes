@@ -85,7 +85,7 @@ spec:
         image: "{{ include "reportportal.image" (dict "Values" .Values "service" "serviceanalyzer") }}"
         imagePullPolicy: "{{ .Values.serviceanalyzer.pullPolicy }}"
         ports:
-        - containerPort: 5001
+        - containerPort: {{ .Values.serviceanalyzer.service.port | default 5001 }}
           name: analyzercore
         resources:
           {{- toYaml .Values.serviceanalyzer.resources | nindent 10 }}
@@ -181,7 +181,7 @@ spec:
             command:
               - python
               - -c
-              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.startupProbe.timeoutSeconds 2) }})"
+              - "import urllib.request; urllib.request.urlopen('http://localhost:{{ .Values.serviceanalyzer.service.port | default 5001 }}/', timeout={{ max 1 (sub .Values.serviceanalyzer.startupProbe.timeoutSeconds 2) }})"
           initialDelaySeconds: {{ .Values.serviceanalyzer.startupProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.startupProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.startupProbe.timeoutSeconds }}
@@ -193,7 +193,7 @@ spec:
             command:
               - python
               - -c
-              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.readinessProbe.timeoutSeconds 2) }})"
+              - "import urllib.request; urllib.request.urlopen('http://localhost:{{ .Values.serviceanalyzer.service.port | default 5001 }}/', timeout={{ max 1 (sub .Values.serviceanalyzer.readinessProbe.timeoutSeconds 2) }})"
           initialDelaySeconds: {{ .Values.serviceanalyzer.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.readinessProbe.timeoutSeconds }}
@@ -206,7 +206,7 @@ spec:
             command:
               - python
               - -c
-              - "import urllib.request; urllib.request.urlopen('http://localhost:5001/', timeout={{ max 1 (sub .Values.serviceanalyzer.livenessProbe.timeoutSeconds 2) }})"
+              - "import urllib.request; urllib.request.urlopen('http://localhost:{{ .Values.serviceanalyzer.service.port | default 5001 }}/', timeout={{ max 1 (sub .Values.serviceanalyzer.livenessProbe.timeoutSeconds 2) }})"
           initialDelaySeconds: {{ .Values.serviceanalyzer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.serviceanalyzer.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.serviceanalyzer.livenessProbe.timeoutSeconds }}

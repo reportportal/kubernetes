@@ -83,9 +83,9 @@ spec:
             - name: COM_TA_REPORTPORTAL_JOB_LOAD_PLUGINS_CRON
               value: "{{ .Values.serviceapi.cronJobs.loadPlugins }}"
             - name: RP_ANALYZER_BASE_URL
-              value: "{{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-analyzer{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:5001"
+              value: "{{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-analyzer{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:{{ .Values.serviceanalyzer.service.port | default 5001 }}"
             - name: RP_JOBS_BASEURL
-              value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:8686/jobs
+              value: {{ ternary "https" "http" .Values.k8s.networking.ssl }}://{{ include "reportportal.fullname" . }}-jobs{{ printf ".%s.svc.%s" .Release.Namespace .Values.global.clusterDomain }}:{{ .Values.servicejobs.service.port | default 8686 }}/jobs
             - name: COM_TA_REPORTPORTAL_JOB_INTERRUPT_BROKEN_LAUNCHES_CRON
               value: "{{ .Values.serviceapi.cronJobs.interruptBrockenLaunches }}"
             - name: RP_ENVIRONMENT_VARIABLE_PATTERN-ANALYSIS_BATCH-SIZE

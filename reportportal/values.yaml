@@ -517,6 +517,9 @@ servicejobs:
     maxUnavailable: ""
   service:
     type: ""
+    ## @param servicejobs.service.port Service port for the jobs service
+    ##
+    port: 8686
     portName: ""
     nodePort: ""
     extraPorts: []
@@ -618,6 +621,9 @@ serviceanalyzer:
     maxUnavailable: ""
   service:
     type: ""
+    ## @param serviceanalyzer.service.port Service port for the analyzer
+    ##
+    port: 5001
     portName: ""
     nodePort: ""
     extraPorts: []

@@ -210,6 +210,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.pdb.minAvailable` | PDB min available | `""` |
 | `servicejobs.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `servicejobs.service.type` | Service type | `""` |
+| `servicejobs.service.port` | Service port for the jobs service | `8686` |
 | `servicejobs.service.portName` | Port name | `""` |
 | `servicejobs.service.nodePort` | Node port | `""` |
 | `servicejobs.service.extraPorts` | Extra ports | `[]` |
@@ -256,6 +257,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.pdb.minAvailable` | PDB min available | `""` |
 | `serviceanalyzer.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `serviceanalyzer.service.type` | Service type | `""` |
+| `serviceanalyzer.service.port` | Service port for the analyzer | `5001` |
 | `serviceanalyzer.service.portName` | Port name | `""` |
 | `serviceanalyzer.service.nodePort` | Node port | `""` |
 | `serviceanalyzer.service.extraPorts` | Extra ports | `[]` |
