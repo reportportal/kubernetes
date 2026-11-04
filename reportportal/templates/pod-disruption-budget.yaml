@@ -142,13 +142,13 @@ spec:
       component: {{ include "reportportal.fullname" . }}-mcp
 {{- end }}
 
-{{- /* Optional Prime Test Executions PodDisruptionBudget */ -}}
-{{- if and (include "reportportal.prime.testExecutions.enabled" .) (or .Values.global.pdb.create .Values.prime.testExecutions.pdb.create) }}
+{{- /* Optional Premium Test Executions PodDisruptionBudget */ -}}
+{{- if and (include "reportportal.premium.testExecutions.enabled" .) (or .Values.global.pdb.create .Values.premium.testExecutions.pdb.create) }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}-pdb
+  name: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "test-executions") }}-pdb
   labels: {{ include "labels" . | nindent 4 }}
 spec:
   {{- if .Values.global.pdb.create }}
@@ -159,25 +159,25 @@ spec:
   maxUnavailable: {{ . }}
   {{- end }}
   {{- else }}
-  {{- with .Values.prime.testExecutions.pdb.minAvailable }}
+  {{- with .Values.premium.testExecutions.pdb.minAvailable }}
   minAvailable: {{ . }}
   {{- end }}
-  {{- with .Values.prime.testExecutions.pdb.maxUnavailable }}
+  {{- with .Values.premium.testExecutions.pdb.maxUnavailable }}
   maxUnavailable: {{ . }}
   {{- end }}
   {{- end }}
   selector:
     matchLabels:
-      component: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}
+      component: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "test-executions") }}
 {{- end }}
 
-{{- /* Optional Prime SCIM Bridge PodDisruptionBudget */ -}}
-{{- if and (include "reportportal.prime.scim.enabled" .) (or .Values.global.pdb.create .Values.prime.scim.pdb.create) }}
+{{- /* Optional Premium SCIM Bridge PodDisruptionBudget */ -}}
+{{- if and (include "reportportal.premium.scim.enabled" .) (or .Values.global.pdb.create .Values.premium.scim.pdb.create) }}
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}-pdb
+  name: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}-pdb
   labels: {{ include "labels" . | nindent 4 }}
 spec:
   {{- if .Values.global.pdb.create }}
@@ -188,14 +188,14 @@ spec:
   maxUnavailable: {{ . }}
   {{- end }}
   {{- else }}
-  {{- with .Values.prime.scim.pdb.minAvailable }}
+  {{- with .Values.premium.scim.pdb.minAvailable }}
   minAvailable: {{ . }}
   {{- end }}
-  {{- with .Values.prime.scim.pdb.maxUnavailable }}
+  {{- with .Values.premium.scim.pdb.maxUnavailable }}
   maxUnavailable: {{ . }}
   {{- end }}
   {{- end }}
   selector:
     matchLabels:
-      component: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
+      component: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}
 {{- end }}

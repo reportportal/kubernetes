@@ -836,67 +836,64 @@ mcp:
     ##
     labels: {}
 
-## @section Prime Features Configuration
-## Optional paid Prime features. Disabled by default. Images are empty because
-## they are provided to subscribers with a Prime subscription.
+## @section Premium Features Configuration
+## Optional paid Premium features. Disabled by default. Images are empty because
+## they are provided to subscribers with a Premium subscription.
+## Ref: https://reportportal.io/docs/terms-and-conditions/PremiumFeatures/
 ##
-prime:
-  ## @param prime.enabled Master switch for all Prime features
-  ##
-  enabled: false
-
-  ## @section Test Executions (Prime)
+premium:
+  ## @section Test Executions (Premium)
   ## Flat searchable test-execution indexing via a private image.
   ## Ref: https://reportportal.io/docs/test-executions/
   ##
   testExecutions:
-    ## @param prime.testExecutions.enabled Enable Test Executions when prime.enabled is true
+    ## @param premium.testExecutions.enabled Enable Test Executions
     ##
-    enabled: true
+    enabled: false
     name: test-executions
     image:
-      ## @param prime.testExecutions.image.repository Private Test Executions image repository. Required when enabled.
+      ## @param premium.testExecutions.image.repository Private Test Executions image repository. Required when enabled.
       ##
       repository: ""
-      ## @param prime.testExecutions.image.tag Private image tag. Required when enabled.
+      ## @param premium.testExecutions.image.tag Private image tag. Required when enabled.
       ##
       tag: ""
-      ## @param prime.testExecutions.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
+      ## @param premium.testExecutions.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
       ##
       pullSecrets: []
     pullPolicy: IfNotPresent
     replicaCount: 1
-    ## @param prime.testExecutions.javaOpts JVM options passed via LS_JAVA_OPTS
+    ## @param premium.testExecutions.javaOpts JVM options passed via LS_JAVA_OPTS
     ##
     javaOpts: "-Xms512m -Xmx1536m -XX:+UseG1GC"
-    ## @param prime.testExecutions.scheduleCron Cron for JDBC polling of test items
+    ## @param premium.testExecutions.scheduleCron Cron for JDBC polling of test items
     ##
     scheduleCron: "*/2 * * * * *"
-    ## @param prime.testExecutions.sqlLimit Max rows per JDBC query (test items)
+    ## @param premium.testExecutions.sqlLimit Max rows per JDBC query (test items)
     ##
     sqlLimit: "1000"
-    ## @param prime.testExecutions.scheduleCronLaunches Cron for the dedicated launches pipeline
+    ## @param premium.testExecutions.scheduleCronLaunches Cron for the dedicated launches pipeline
     ##
     scheduleCronLaunches: "*/3 * * * * *"
-    ## @param prime.testExecutions.sqlLimitLaunches Max rows per JDBC query (launches)
+    ## @param premium.testExecutions.sqlLimitLaunches Max rows per JDBC query (launches)
     ##
     sqlLimitLaunches: "20"
-    ## @param prime.testExecutions.index OpenSearch index settings for Test Executions
+    ## @param premium.testExecutions.index OpenSearch index settings for Test Executions
     ##
     index:
       name: "test_executions"
       shards: "1"
       replicas: "1"
-    ## @param prime.testExecutions.cleanup Jobs cleanup settings applied when Test Executions is enabled
+    ## @param premium.testExecutions.cleanup Jobs cleanup settings applied when Test Executions is enabled
     ##
     cleanup:
-      ## @param prime.testExecutions.cleanup.cron Cron for cleaning deleted test items (Jobs)
+      ## @param premium.testExecutions.cleanup.cron Cron for cleaning deleted test items (Jobs)
       ##
       cron: "0 0 * * * *"
-      ## @param prime.testExecutions.cleanup.retentionPeriod Retention period for deleted test items
+      ## @param premium.testExecutions.cleanup.retentionPeriod Retention period for deleted test items
       ##
       retentionPeriod: "1"
-    ## @param prime.testExecutions.log4j2 Optional custom Log4j2 configuration
+    ## @param premium.testExecutions.log4j2 Optional custom Log4j2 configuration
     ##
     log4j2:
       enabled: false
@@ -933,7 +930,7 @@ prime:
     containerSecurityContext: {}
     extraEnvs: []
     extraInitContainers: []
-    ## @param prime.testExecutions.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
+    ## @param premium.testExecutions.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
     ##
     initContainerResources: {}
     extraContainers: []
@@ -960,57 +957,57 @@ prime:
       annotations: {}
       labels: {}
 
-  ## @section SCIM Bridge (Prime)
+  ## @section SCIM Bridge (Premium)
   ## Automated user and group provisioning via the System for Cross-domain Identity Management protocol.
   ## Ref: https://reportportal.io/docs/external-integrations/UserProvisioning/Scim/overview/
   ##
   scim:
-    ## @param prime.scim.enabled Enable SCIM Bridge when prime.enabled is true
+    ## @param premium.scim.enabled Enable SCIM Bridge
     ##
-    enabled: true
+    enabled: false
     name: scim
     image:
-      ## @param prime.scim.image.repository Private SCIM Bridge image repository. Required when enabled.
+      ## @param premium.scim.image.repository Private SCIM Bridge image repository. Required when enabled.
       ##
       repository: ""
-      ## @param prime.scim.image.tag Private image tag. Required when enabled.
+      ## @param premium.scim.image.tag Private image tag. Required when enabled.
       ##
       tag: ""
-      ## @param prime.scim.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
+      ## @param premium.scim.image.pullSecrets Component-specific image pull secrets (merged with global.imagePullSecrets)
       ##
       pullSecrets: []
     pullPolicy: IfNotPresent
     replicaCount: 1
-    ## @param prime.scim.host Bind address for the SCIM server
+    ## @param premium.scim.host Bind address for the SCIM server
     ##
     host: 0.0.0.0
-    ## @param prime.scim.path Base path for the SCIM service (also used for Ingress / Gateway API)
+    ## @param premium.scim.path Base path for the SCIM service (also used for Ingress / Gateway API)
     ##
     path: /scim/v2
-    ## @param prime.scim.documentationUri Documentation URI advertised by the SCIM service
+    ## @param premium.scim.documentationUri Documentation URI advertised by the SCIM service
     ##
     documentationUri: https://reportportal.io/doc
-    ## @param prime.scim.logLevel Log level (DEBUG, INFO, WARN, ERROR)
+    ## @param premium.scim.logLevel Log level (DEBUG, INFO, WARN, ERROR)
     ##
     logLevel: INFO
-    ## @param prime.scim.maxResults Maximum results per SCIM response
+    ## @param premium.scim.maxResults Maximum results per SCIM response
     ##
     maxResults: 100
-    ## @param prime.scim.groupProjectPattern Regex for mapping IdP groups to ReportPortal projects
+    ## @param premium.scim.groupProjectPattern Regex for mapping IdP groups to ReportPortal projects
     ##
     groupProjectPattern: "^rp-(?P<projectName>[^-]+)(?:-(?P<projectRole>[^-]+))?$"
-    ## @param prime.scim.groupExceptionPattern Regex to exclude groups. Use "none" to disable.
+    ## @param premium.scim.groupExceptionPattern Regex to exclude groups. Use "none" to disable.
     ##
     groupExceptionPattern: "none"
-    ## @param prime.scim.groupDefaultProjectRole Default project role for group assignments
+    ## @param premium.scim.groupDefaultProjectRole Default project role for group assignments
     ##
     groupDefaultProjectRole: "member"
-    ## @param prime.scim.configMap Load group patterns from an existing ConfigMap
+    ## @param premium.scim.configMap Load group patterns from an existing ConfigMap
     ##
     configMap:
       enabled: false
       name: ""
-    ## @param prime.scim.healthPath Health check path appended to scim.path
+    ## @param premium.scim.healthPath Health check path appended to scim.path
     ##
     healthPath: /ServiceProviderConfig
     resources:
@@ -1049,7 +1046,7 @@ prime:
       targetMemoryUtilizationPercentage: ""
     extraEnvs: []
     extraInitContainers: []
-    ## @param prime.scim.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
+    ## @param premium.scim.initContainerResources Resources for the API waiting init container. Overrides global.initContainerResources when non-empty.
     ##
     initContainerResources: {}
     extraContainers: []

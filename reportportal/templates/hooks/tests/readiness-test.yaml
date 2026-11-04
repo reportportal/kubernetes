@@ -20,11 +20,11 @@ spec:
         {{- if .Values.mcp.enabled }}
         "http://{{ include "reportportal.fullname" . }}-mcp:8080/health" \
         {{- end }}
-        {{- if include "reportportal.prime.testExecutions.enabled" . }}
-        "http://{{ include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions") }}:{{ .Values.prime.testExecutions.service.monitoringPort | default 9600 }}/" \
+        {{- if include "reportportal.premium.testExecutions.enabled" . }}
+        "http://{{ include "reportportal.premium.fullname" (dict "root" . "suffix" "test-executions") }}:{{ .Values.premium.testExecutions.service.monitoringPort | default 9600 }}/" \
         {{- end }}
-        {{- if include "reportportal.prime.scim.enabled" . }}
-        "http://{{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}:{{ .Values.prime.scim.service.port | default 8080 }}{{ include "reportportal.prime.scim.healthUrlPath" . }}" \
+        {{- if include "reportportal.premium.scim.enabled" . }}
+        "http://{{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}:{{ .Values.premium.scim.service.port | default 8080 }}{{ include "reportportal.premium.scim.healthUrlPath" . }}" \
         {{- end }}
         "http://{{ include "reportportal.fullname" . }}-jobs:{{ .Values.servicejobs.service.port | default 8686 }}/jobs/health"
       do

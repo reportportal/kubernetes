@@ -72,15 +72,15 @@ spec:
           port: 8080
     {{- end }}
     {{- end }}
-    {{- if include "reportportal.prime.scim.enabled" . }}
-    # Route for Prime SCIM Bridge
+    {{- if include "reportportal.premium.scim.enabled" . }}
+    # Route for Premium SCIM Bridge
     - matches:
         - path:
             type: PathPrefix
-            value: {{ $basePath }}{{ .Values.prime.scim.path | default "/scim/v2" }}
+            value: {{ $basePath }}{{ .Values.premium.scim.path | default "/scim/v2" }}
       backendRefs:
-        - name: {{ include "reportportal.prime.fullname" (dict "root" . "suffix" "scim") }}
-          port: {{ .Values.prime.scim.service.port | default 8080 }}
+        - name: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}
+          port: {{ .Values.premium.scim.service.port | default 8080 }}
     {{- end }}
     # More specific /api before the / catch-all
     - matches:

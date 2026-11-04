@@ -237,43 +237,43 @@ Priority:
 {{- end -}}
 
 {{/*
-Return true when the Test Executions Prime feature should be deployed.
+Return true when the Test Executions Premium feature should be deployed.
 */}}
-{{- define "reportportal.prime.testExecutions.enabled" -}}
-{{- if and .Values.prime.enabled .Values.prime.testExecutions.enabled -}}
+{{- define "reportportal.premium.testExecutions.enabled" -}}
+{{- if .Values.premium.testExecutions.enabled -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return true when the SCIM Bridge Prime feature should be deployed.
+Return true when the SCIM Bridge Premium feature should be deployed.
 */}}
-{{- define "reportportal.prime.scim.enabled" -}}
-{{- if and .Values.prime.enabled .Values.prime.scim.enabled -}}
+{{- define "reportportal.premium.scim.enabled" -}}
+{{- if .Values.premium.scim.enabled -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
-Fully qualified name for a Prime component.
-Usage: include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions")
+Fully qualified name for a Premium component.
+Usage: include "reportportal.premium.fullname" (dict "root" . "suffix" "test-executions")
 */}}
-{{- define "reportportal.prime.fullname" -}}
+{{- define "reportportal.premium.fullname" -}}
 {{- $suffixLen := add (len .suffix) 1 -}}
 {{- $maxRootLen := sub 63 $suffixLen | int -}}
 {{- printf "%s-%s" (include "reportportal.fullname" .root | trunc $maxRootLen | trimSuffix "-") .suffix -}}
 {{- end -}}
 
 {{/*
-Image reference for a Prime component (nested under .Values.prime.<componentKey>).
-Usage: include "reportportal.prime.image" (dict "root" . "componentKey" "testExecutions")
+Image reference for a Premium component (nested under .Values.premium.<componentKey>).
+Usage: include "reportportal.premium.image" (dict "root" . "componentKey" "testExecutions")
 Fails when repository or tag is empty and the component is enabled.
 */}}
-{{- define "reportportal.prime.image" -}}
+{{- define "reportportal.premium.image" -}}
 {{- $root := .root -}}
-{{- $comp := index $root.Values.prime .componentKey -}}
-{{- $repo := required (printf "prime.%s.image.repository is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.repository -}}
-{{- $tag := required (printf "prime.%s.image.tag is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.tag -}}
+{{- $comp := index $root.Values.premium .componentKey -}}
+{{- $repo := required (printf "premium.%s.image.repository is required when Premium %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.repository -}}
+{{- $tag := required (printf "premium.%s.image.tag is required when Premium %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.tag -}}
 {{- $globalRegistry := $root.Values.global.imageRegistry -}}
 {{- if $globalRegistry -}}
 {{- printf "%s/%s:%s" $globalRegistry $repo $tag -}}
@@ -283,12 +283,12 @@ Fails when repository or tag is empty and the component is enabled.
 {{- end -}}
 
 {{/*
-Merged imagePullSecrets for a Prime component (global + component-level).
-Usage: include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKey" "testExecutions")
+Merged imagePullSecrets for a Premium component (global + component-level).
+Usage: include "reportportal.premium.imagePullSecrets" (dict "root" . "componentKey" "testExecutions")
 */}}
-{{- define "reportportal.prime.imagePullSecrets" -}}
+{{- define "reportportal.premium.imagePullSecrets" -}}
 {{- $root := .root -}}
-{{- $comp := index $root.Values.prime .componentKey -}}
+{{- $comp := index $root.Values.premium .componentKey -}}
 {{- $secrets := concat ($root.Values.global.imagePullSecrets | default list) ($comp.image.pullSecrets | default list) -}}
 {{- if $secrets -}}
 {{- toYaml $secrets -}}
@@ -298,9 +298,9 @@ Usage: include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKe
 {{/*
 SCIM health-check path (base path + healthPath).
 */}}
-{{- define "reportportal.prime.scim.healthUrlPath" -}}
-{{- $base := .Values.prime.scim.path | default "/scim/v2" | trimSuffix "/" -}}
-{{- $health := .Values.prime.scim.healthPath | default "/ServiceProviderConfig" -}}
+{{- define "reportportal.premium.scim.healthUrlPath" -}}
+{{- $base := .Values.premium.scim.path | default "/scim/v2" | trimSuffix "/" -}}
+{{- $health := .Values.premium.scim.healthPath | default "/ServiceProviderConfig" -}}
 {{- if not (hasPrefix "/" $health) -}}
 {{- $health = printf "/%s" $health -}}
 {{- end -}}

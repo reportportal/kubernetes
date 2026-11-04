@@ -2021,12 +2021,9 @@
         }
       ]
     },
-    "prime": {
+    "premium": {
       "type": "object",
       "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
         "testExecutions": {
           "type": "object",
           "properties": {
