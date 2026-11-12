@@ -1628,28 +1628,15 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @section External Dependencies Configuration - SeaweedFS
-##
-## Official SeaweedFS Helm chart (https://seaweedfs.github.io/seaweedfs/helm).
-##
-## DEMO / EVALUATION SETUP ONLY: a single-node, single-replica SeaweedFS
-## (all-in-one pod: master + volume + filer + S3 gateway, one PVC, no replication,
-## no HA). It gives storage.type=s3-compatible something to talk to out of the box.
-##
-## Anything beyond that (replicas, HA topology, replication, resources, ingress,
-## metrics, storage class, TLS, ...) is the user's responsibility: set any upstream
-## chart value under this key (passthrough), or set seaweedfs.install=false and point
-## storage.endpoint at your own S3-compatible service / use storage.type=aws-s3.
-##
-## When using storage.secretName instead of inline credentials, point
-## seaweedfs.s3.credentials.admin.existingSecret at the same secret and set
-## accessKeyKey / secretKeyKey to storage.accesskeyName / storage.secretkeyName.
+## @param seaweedfs Official SeaweedFS chart, values pass through (https://seaweedfs.github.io/seaweedfs/helm)
+## Demo only: one all-in-one pod and one PVC. Set install to false for your own S3 endpoint or aws-s3.
+## With storage.secretName, set s3.credentials.admin.existingSecret, accessKeyKey, and secretKeyKey.
 ##
 seaweedfs:
-  ## @param seaweedfs.install Install the bundled demo SeaweedFS (single node) as a dependency
+  ## @param seaweedfs.install Install SeaweedFS. Set to false for an external S3 endpoint or aws-s3
   ##
   install: true
-  ## Multi-component topology is disabled; allInOne runs everything in one pod.
+  ## Standalone master, volume, and filer stay off. allInOne runs them in one pod.
   ##
   master:
     enabled: false
@@ -1657,7 +1644,7 @@ seaweedfs:
     enabled: false
   filer:
     enabled: false
-  ## S3 gateway credentials (read by the chart from the top-level s3 key, not allInOne.s3).
+  ## S3 admin keys. The chart reads s3.credentials, not allInOne.s3.
   ##
   s3:
     enableAuth: true
@@ -1667,7 +1654,7 @@ seaweedfs:
         secretKey: *storageSecretKey
   allInOne:
     enabled: true
-    ## Single replica; Recreate avoids two pods sharing one ReadWriteOnce volume.
+    ## One replica. Recreate so two pods never share the ReadWriteOnce volume.
     ##
     replicas: 1
     updateStrategy:
