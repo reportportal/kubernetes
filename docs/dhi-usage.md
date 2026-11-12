@@ -37,7 +37,7 @@ Important differences when switching to DHI:
 - PostgreSQL may need `image.useHardenedImage: true` and empty `args: []` so the subchart uses hardened-compatible data paths and startup.
 - RabbitMQ DHI does not ship a `-management` tag the same way as Docker Official Images; enable plugins via `rabbitmq.additionalPlugins` (already required by ReportPortal).
 
-OpenSearch and MinIO are unchanged by this guide.
+OpenSearch and SeaweedFS are unchanged by this guide.
 
 ---
 

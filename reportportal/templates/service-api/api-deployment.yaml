@@ -172,41 +172,17 @@ spec:
           {{- else }}
               value: "{{ .Values.database.password }}"
           {{- end }}
-        # Storage settings
+            # Storage settings
             {{- $storageType := include "reportportal.storageType" . }}
+        {{- if eq $storageType "filesystem" }}
             - name: DATASTORE_TYPE
               value: "{{ include "reportportal.datastoreType" . }}"
-        {{- if eq $storageType "filesystem" }}
             - name: DATASTORE_PATH
               value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" }}"
         {{- end }}
-        # Minio/S3 settings
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
-          {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
-            - name: DATASTORE_ENDPOINT
-              value: "{{ include "reportportal.storageEndpoint" . }}"
-          {{- end }}
-          {{- if .Values.storage.region }}
-            - name: DATASTORE_REGION
-              value: "{{ .Values.storage.region }}"
-          {{- end }}
-          {{- if .Values.storage.secretName }}
-            - name: DATASTORE_ACCESSKEY
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.storage.secretName }}"
-                  key: "{{ .Values.storage.accesskeyName }}"
-            - name: DATASTORE_SECRETKEY
-              valueFrom:
-                secretKeyRef:
-                  name: "{{ .Values.storage.secretName }}"
-                  key: "{{ .Values.storage.secretkeyName }}"
-          {{- else }}
-            - name: DATASTORE_ACCESSKEY
-              value: "{{ .Values.storage.accesskey }}"
-            - name: DATASTORE_SECRETKEY
-              value: "{{ .Values.storage.secretkey }}"
-          {{- end }}
+            # S3 / S3-compatible settings (OpenDAL)
+        {{- if or (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+            {{- include "reportportal.datastoreEnv" . | nindent 12 }}
           {{- if eq .Values.storage.bucket.type "single" }}
             - name: RP_FEATURE_FLAGS
               value: "singleBucket"

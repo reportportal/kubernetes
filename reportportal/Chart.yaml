@@ -49,8 +49,8 @@ dependencies:
     version: 3.9.0
     repository: https://opensearch-project.github.io/helm-charts/
     condition: opensearch.install
-  # MinIO dependency - update minio.image.tag in values.yaml when changing this version
-  - name: minio
-    version: 17.0.21
-    repository: https://charts.bitnami.com/bitnami
-    condition: minio.install
+  # SeaweedFS dependency - official chart; bump version here and re-run helm dependency update
+  - name: seaweedfs
+    version: 4.53.0
+    repository: https://seaweedfs.github.io/seaweedfs/helm
+    condition: seaweedfs.install

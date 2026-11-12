@@ -85,7 +85,7 @@ The following table lists the configurable parameters of the chart and their def
 |`postgresql.install`|Allow PostgreSQL Helm Chart (CloudPirates) to be installed as a dependency|`true`|
 |`rabbitmq.install`|Allow RabbitMQ Helm Chart (CloudPirates) to be installed as a dependency|`true`|
 |`opensearch.install`|Allow Open Search Helm Chart to be installed as a dependency|`true`|
-|`minio.install`|Allow MinIO Helm Chart to be installed as a dependency (chart default)|`true`|
+|`seaweedfs.install`|Allow official SeaweedFS Helm Chart to be installed as a dependency (default S3-compatible store)|`true`|
 
 These dependencies are integrated into the distribution by default. To deactivate them, specify each parameter using the --set key=value[,key=value] argument to helm install. For example:
 
@@ -107,31 +107,31 @@ All configuration variables are presented in the [values.yaml](https://github.co
 
 ### Storage Configuration
 
-ReportPortal supports three storage types: **minio**, **s3**, and **filesystem**. Choose the storage type that best fits your environment:
+ReportPortal stores binaries via Apache OpenDAL. Choose the storage type that best fits your environment:
 
 | Storage Type | Use Case | Pros | Cons |
 |--------------|----------|------|------|
-| **minio** | Chart default, development, testing | Simple setup, built-in | AGPL license |
-| **s3** | Production, cloud | Scalable, reliable, supports IAM | Requires cloud provider |
-| **filesystem** | Production, on-premise | Simple, works with existing storage | Less scalable than object storage |
+| **s3-compatible** | Chart default (bundled SeaweedFS); any S3 API server | Tested with SeaweedFS and MinIO. Other gateways are supported but not tested | Self-hosted capacity planning |
+| **aws-s3** | Production Amazon S3 | Scalable; IRSA / IAM | Requires AWS |
+| **filesystem** | Production, on-premise PVC | Simple, works with existing storage | Less scalable than object storage |
 
 #### Quick Storage Setup Examples:
 
-**Default (MinIO):**
+**Default (bundled SeaweedFS / s3-compatible):**
 ```bash
 helm install my-release \
   --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   reportportal/reportportal
 ```
 
-**For Production with AWS S3:**
+**For Production with Amazon S3:**
 ```bash
 helm install my-release \
   --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
-  --set storage.type=s3 \
+  --set storage.type=aws-s3 \
   --set storage.region=us-east-1 \
   --set storage.bucket.bucketDefaultName=my-reportportal-bucket \
-  --set minio.install=false \
+  --set seaweedfs.install=false \
   reportportal/reportportal
 ```
 
@@ -141,11 +141,11 @@ helm install my-release \
   --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   --set storage.type=filesystem \
   --set storage.volume.capacity=100Gi \
-  --set minio.install=false \
+  --set seaweedfs.install=false \
   reportportal/reportportal
 ```
 
-> **Storage guides:** See [S3 and Filesystem Storage on EKS](../docs/s3-storage-eks.md) and [Filesystem Storage on a Single-Node Cluster](../docs/filesystem-one-node.md) for detailed configuration examples including AWS S3 with IAM roles and on-premise filesystem storage.
+> **Storage guides:** See [S3-Compatible Object Storage](../docs/s3-compatible-storage.md), [S3 Storage on EKS](../docs/s3-storage-eks.md), and [Filesystem Storage on a Single-Node Cluster](../docs/filesystem-one-node.md).
 
 ### Configure Pod Disruption Budgets and Resource Quotas
 
@@ -247,4 +247,4 @@ This chart includes the following dependencies with their respective licenses:
 - **PostgreSQL** - [PostgreSQL License](https://www.postgresql.org/about/licence/)
 - **RabbitMQ** - [Mozilla Public License 2.0](https://www.rabbitmq.com/mpl.html)
 - **OpenSearch** - [Apache License 2.0](https://github.com/opensearch-project/OpenSearch/blob/main/LICENSE.txt)
-- **MinIO** - [GNU Affero General Public License v3.0](https://github.com/minio/minio/blob/master/LICENSE) (chart default object storage)
+- **SeaweedFS** - [Apache License 2.0](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE) (chart default S3-compatible object storage)

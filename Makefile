@@ -1,6 +1,6 @@
 APP_NAME=reportportal
 SUPERADMIN_PASSWORD=superadmin
-STORAGE_TYPE=minio
+STORAGE_TYPE=s3-compatible
 MINIKUBE_CPUS=4
 MINIKUBE_MEMORY=8192
 MINIKUBE_DISK_SIZE=50g
@@ -9,10 +9,10 @@ CHART_NAME=$(shell yq e '.name' reportportal/Chart.yaml)
 CHART_VERSION=$(shell yq e '.version' reportportal/Chart.yaml)
 HELM_PACKAGE=${CHART_NAME}-${CHART_VERSION}.tgz
 
-ifeq ($(STORAGE_TYPE), minio)
-	MINIO_INSTALL=true
+ifeq ($(STORAGE_TYPE), s3-compatible)
+	SEAWEEDFS_INSTALL=true
 else
-	MINIO_INSTALL=false
+	SEAWEEDFS_INSTALL=false
 endif
 
 default: package
@@ -35,7 +35,7 @@ install-source: deps-update deps-build repo-add repo-update
 		./reportportal \
 		--set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
 		--set storage.type=${STORAGE_TYPE} \
-		--set minio.install=${MINIO_INSTALL}
+		--set seaweedfs.install=${SEAWEEDFS_INSTALL}
 
 install-repo: repo-add repo-update
 	@ echo "Installing ReportPortal as ${APP_NAME} from repository."
@@ -44,7 +44,7 @@ install-repo: repo-add repo-update
 		reportportal/reportportal \
 		--set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
 		--set storage.type=${STORAGE_TYPE} \
-		--set minio.install=${MINIO_INSTALL}
+		--set seaweedfs.install=${SEAWEEDFS_INSTALL}
 
 test:
 	@ echo "Testing ReportPortal as ${APP_NAME}"
@@ -69,14 +69,14 @@ deps-build:
 repo-add:
 	@ echo "Adding Helm repository"
 	@ helm repo add reportportal https://k8s.reportportal.io
-	@ helm repo add bitnami https://charts.bitnami.com/bitnami
 	@ helm repo add opensearch https://opensearch-project.github.io/helm-charts
+	@ helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helm
 
 repo-update:
 	@ echo "Updating ReportPortal repository"
 	@ helm repo update reportportal
-	@ helm repo update bitnami
 	@ helm repo update opensearch
+	@ helm repo update seaweedfs
 
 # Chart versioning
 chart-info:

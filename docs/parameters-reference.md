@@ -491,23 +491,23 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `storage.type` | Storage type: `minio`, `s3`, `s3-compatible`, `aws-s3`, `filesystem` | `s3-compatible` |
+| `storage.type` | Storage type: `s3-compatible`, `aws-s3`, `filesystem` | `s3-compatible` |
 | `storage.secretName` | Storage secret name | `""` |
 | `storage.accesskeyName` | Access key name | `access-key` |
 | `storage.secretkeyName` | Secret key name | `secret-key` |
-| `storage.accesskey` | Access key | `rpuser` |
-| `storage.secretkey` | Secret key | `miniopassword` |
-| `storage.endpoint` | Storage endpoint (empty = internal service for MinIO) | `""` |
-| `storage.ssl` | SSL connection | `false` |
-| `storage.port` | Storage port (empty = auto: minio→9000) | `""` |
-| `storage.region` | AWS region | `""` |
-| `storage.bucket.type` | Bucket type (single, multi) | `multi` |
+| `storage.accesskey` | Access key (empty for aws-s3 IRSA) | `rpuser` |
+| `storage.secretkey` | Secret key (empty for aws-s3 IRSA) | `rppassword` |
+| `storage.endpoint` | S3-compatible host name without scheme or port (empty = bundled SeaweedFS) | `""` |
+| `storage.ssl` | `true` = https, `false` = http | `false` |
+| `storage.port` | Port (empty = scheme default for external hosts, 8333 for bundled SeaweedFS) | `""` |
+| `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`) | `""` |
+| `storage.bucket.type` | Bucket type (`single`, `multi`) | `single` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
 | `storage.bucket.bucketMultiPrefix` | Multi bucket prefix | `prj-` |
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
-| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/jobs use | `"analyzer"` |
+| `storage.volume.analyzerPath` | Relative analyzer-private subpath (not a mount path): directory under `defaultPath` for `filesystem`, key prefix inside `bucketDefaultName` for S3 types. Slashes at the ends are ignored; empty falls back to `analyzer` | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
@@ -628,13 +628,19 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
 | `opensearch.extraEnvs` | OpenSearch extra env vars | Various settings |
-| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using external S3) | `true` |
-| `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
-| `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |
-| `minio.auth.rootUser` | MinIO root user | `rpuser` |
-| `minio.auth.rootPassword` | MinIO root password | `miniopassword` |
-| `minio.persistence.annotations` | MinIO persistence annotations | `{"helm.sh/resource-policy": "keep"}` |
-| `minio.console.enabled` | MinIO console enabled | `false` |
+| `seaweedfs.install` | Install the bundled demo SeaweedFS (single node, single replica, no HA); set `false` for external / aws-s3 | `true` |
+| `seaweedfs.master.enabled` | Deploy SeaweedFS master component (disabled when using all-in-one) | `false` |
+| `seaweedfs.volume.enabled` | Deploy SeaweedFS volume component (disabled when using all-in-one) | `false` |
+| `seaweedfs.filer.enabled` | Deploy SeaweedFS filer component (disabled when using all-in-one) | `false` |
+| `seaweedfs.s3.enableAuth` | Enable SeaweedFS S3 authentication | `true` |
+| `seaweedfs.s3.credentials.admin.accessKey` | SeaweedFS S3 admin access key (aligned with `storage.accesskey`) | `rpuser` |
+| `seaweedfs.s3.credentials.admin.secretKey` | SeaweedFS S3 admin secret key (aligned with `storage.secretkey`) | `rppassword` |
+| `seaweedfs.allInOne.enabled` | Run SeaweedFS as a single all-in-one Deployment | `true` |
+| `seaweedfs.allInOne.replicas` | All-in-one replicas (demo setup: keep `1`; anything else is user-managed) | `1` |
+| `seaweedfs.allInOne.updateStrategy.type` | All-in-one update strategy (`Recreate` for the single RWO volume) | `Recreate` |
+| `seaweedfs.allInOne.s3.enabled` | Enable S3 gateway on the all-in-one pod | `true` |
+| `seaweedfs.allInOne.data.type` | All-in-one data volume type | `persistentVolumeClaim` |
+| `seaweedfs.allInOne.data.size` | All-in-one PVC size | `10Gi` |
 
 ## Additional Configuration
 

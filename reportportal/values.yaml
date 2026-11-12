@@ -1140,112 +1140,85 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports three storage types: minio, s3, and filesystem
-## Choose the storage type that best fits your environment and requirements
-##
-## Quick Start Presets:
-##   - For local development: use "minio" (default)
-##   - For production with cloud storage: use "s3"
-##   - For production with shared filesystem: use "filesystem"
-##
-## Storage Type Comparison:
-##   - minio: Self-hosted S3-compatible (chart default for backward compatibility)
-##   - s3: Cloud object storage (production, IAM)
-##   - s3-compatible: Custom S3-compatible endpoint (e.g., Ceph, MinIO at custom URL)
-##   - aws-s3: AWS S3 with bucket path style access
-##   - filesystem: Shared filesystem (production, on-premise)
+## Binary data (attachments, analyzer models) via Apache OpenDAL.
+## s3-compatible (default, bundled SeaweedFS), aws-s3, or filesystem.
+## See docs/s3-compatible-storage.md and docs/s3-storage-eks.md.
 ##
 storage:
-  ## @param storage.type Storage type to use for ReportPortal data
-  ## Options: minio, s3, s3-compatible, aws-s3, filesystem
-  ## Default: s3-compatible (recommended for development)
+  ## @param storage.type Storage type: s3-compatible, aws-s3, filesystem
   ##
   type: s3-compatible
 
-  ## @param storage.secretName Kubernetes secret containing storage credentials
-  ## Leave empty to use inline credentials below
-  ## Recommended for production: create a secret and reference it here
+  ## @param storage.secretName Secret with storage credentials. Empty uses accesskey and secretkey
   ##
   secretName: ""
 
-  ## @param storage.accesskeyName and @param storage.secretkeyName
-  ## Secret key names when using storage.secretName
-  ## These map to the keys in your Kubernetes secret
+  ## @param storage.accesskeyName Key in storage.secretName for the access key
   ##
   accesskeyName: "access-key"
+  ## @param storage.secretkeyName Key in storage.secretName for the secret key
+  ##
   secretkeyName: "secret-key"
 
-  ## @param storage.accesskey and @param storage.secretkey
-  ## Inline storage credentials (not recommended for production)
-  ## For S3 with IAM roles, leave these empty
+  ## @param storage.accesskey Inline access key. Leave empty for aws-s3 with IRSA
   ##
   accesskey: &storageAccessKey rpuser
-  secretkey: &storageSecretKey miniopassword
+  ## @param storage.secretkey Inline secret key. Leave empty for aws-s3 with IRSA
+  ##
+  secretkey: &storageSecretKey rppassword
 
-  ## @param storage.endpoint Storage service endpoint
-  ## For MinIO: leave empty to use internal service
-  ## For S3: leave empty to use AWS default endpoints
-  ## For custom S3-compatible: specify endpoint URL (without protocol/port)
+  ## @param storage.endpoint S3-compatible host name, without scheme or port
+  ## Empty uses bundled SeaweedFS. Required when seaweedfs.install=false. Ignored for aws-s3.
   ##
   endpoint: ""
-  ## true = HTTPS, false = HTTP
+  ## @param storage.ssl true = https, false = http
   ##
   ssl: false
 
-  ## @param storage.port Storage service port
-  ## Leave empty to auto-select based on storage type:
-  ##   minio → 9000 (MinIO API default)
-  ## Set explicitly to override the auto-selected default.
+  ## @param storage.port Port. Empty uses 80/443 for an external host, or 8333 for bundled SeaweedFS
   ##
   port: ""
 
-  ## @param storage.region AWS region for S3 storage
-  ## Required for S3 storage type
-  ## Examples: us-east-1, eu-west-1, ap-southeast-1
+  ## @param storage.region SigV4 region. Required for aws-s3; s3-compatible defaults to us-east-1
   ##
   region: ""
 
-  ## @param storage.bucket Bucket configuration for object storage (minio/s3)
+  ## @param storage.bucket Bucket settings for s3-compatible and aws-s3
   ##
   bucket:
-    ## @param storage.bucket.type Bucket organization strategy
-    ## Options: single, multi
-    ##   single: One bucket for all data with subdirectories (recommended for production)
-    ##   multi: Separate bucket for each project (not recommended - creates many buckets)
+    ## @param storage.bucket.type single (one bucket, prefixes) or multi (one bucket per project)
+    ## multi creates a bucket per project and is not recommended. The analyzer always uses one bucket.
     ##
-    ## IMPORTANT: Multi-bucket strategy is NOT recommended for production S3 deployments
-    ## because ReportPortal will create a separate S3 bucket for each project in the portal
-    ## Use single bucket strategy which creates one bucket with subdirectories for better management.
-    ##
-    type: multi
+    type: single
 
-    ## @param storage.bucket.bucketDefaultName Default bucket name
-    ## For single bucket mode: this is the main bucket name
-    ## For multi bucket mode: this is the plugins bucket name
+    ## @param storage.bucket.bucketDefaultName Bucket name. single: data bucket. multi: plugins bucket
+    ## Must already exist, unless the bundled SeaweedFS hook creates it.
     ##
-    bucketDefaultName: "rp-bucket"
+    bucketDefaultName: &storageBucketDefaultName "rp-bucket"
 
-    ## @param storage.bucket.bucketMultiPrefix Prefix for project buckets (multi mode only)
-    ## Project buckets will be named: {prefix}{project-id}{postfix}
+    ## @param storage.bucket.bucketMultiPrefix Project bucket prefix in multi mode ({prefix}{id}{postfix})
+    ## Also used as the analyzer key prefix in every mode.
     ##
     bucketMultiPrefix: "prj-"
 
-    ## @param storage.bucket.bucketMultiPostfix Suffix for project buckets (multi mode only)
+    ## @param storage.bucket.bucketMultiPostfix Project bucket suffix in multi mode
     ##
     bucketMultiPostfix: ""
 
-    ## @param storage.bucket.bucketMultiSaltName Salt storage location (multi mode only)
+    ## @param storage.bucket.bucketMultiSaltName Salt object name in multi mode
     ##
     bucketMultiSaltName: "keystore"
 
-  ## @param storage.volume Filesystem storage configuration (when type=filesystem)
+  ## @param storage.volume Filesystem settings, used when type=filesystem
   ##
   volume:
-    ## @param storage.volume.defaultPath Default mount path inside containers
+    ## @param storage.volume.defaultPath Mount path inside containers
     ##
     defaultPath: "/data/storage"
 
-    ## @param storage.volume.analyzerPath Default mount path inside containers for analyzer
+    ## @param storage.volume.analyzerPath Relative subpath that isolates analyzer data
+    ## filesystem: <defaultPath>/<analyzerPath>/...   s3: key <analyzerPath>/<bucketMultiPrefix><id>
+    ## Slashes at the ends are ignored. Empty falls back to analyzer.
     ##
     analyzerPath: "analyzer"
 
@@ -1655,19 +1628,58 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param minio External MinIO Helm Chart (chart default for backward compatibility)
-## Set minio.install to false when using external S3.
+## @section External Dependencies Configuration - SeaweedFS
 ##
-minio:
+## Official SeaweedFS Helm chart (https://seaweedfs.github.io/seaweedfs/helm).
+##
+## DEMO / EVALUATION SETUP ONLY: a single-node, single-replica SeaweedFS
+## (all-in-one pod: master + volume + filer + S3 gateway, one PVC, no replication,
+## no HA). It gives storage.type=s3-compatible something to talk to out of the box.
+##
+## Anything beyond that (replicas, HA topology, replication, resources, ingress,
+## metrics, storage class, TLS, ...) is the user's responsibility: set any upstream
+## chart value under this key (passthrough), or set seaweedfs.install=false and point
+## storage.endpoint at your own S3-compatible service / use storage.type=aws-s3.
+##
+## When using storage.secretName instead of inline credentials, point
+## seaweedfs.s3.credentials.admin.existingSecret at the same secret and set
+## accessKeyKey / secretKeyKey to storage.accesskeyName / storage.secretkeyName.
+##
+seaweedfs:
+  ## @param seaweedfs.install Install the bundled demo SeaweedFS (single node) as a dependency
+  ##
   install: true
-  image:
-    repository: bitnamilegacy/minio
-    tag: 2025.7.23-debian-12-r0
-  auth:
-    rootUser: *storageAccessKey
-    rootPassword: *storageSecretKey
-  persistence:
-    annotations:
-      "helm.sh/resource-policy": "keep"
-  console:
+  ## Multi-component topology is disabled; allInOne runs everything in one pod.
+  ##
+  master:
     enabled: false
+  volume:
+    enabled: false
+  filer:
+    enabled: false
+  ## S3 gateway credentials (read by the chart from the top-level s3 key, not allInOne.s3).
+  ##
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: *storageAccessKey
+        secretKey: *storageSecretKey
+  allInOne:
+    enabled: true
+    ## Single replica; Recreate avoids two pods sharing one ReadWriteOnce volume.
+    ##
+    replicas: 1
+    updateStrategy:
+      type: Recreate
+    s3:
+      enabled: true
+      enableAuth: true
+      createBuckets:
+        - name: *storageBucketDefaultName
+          anonymousRead: false
+    data:
+      type: persistentVolumeClaim
+      size: 10Gi
+      annotations:
+        "helm.sh/resource-policy": "keep"

@@ -1,9 +1,11 @@
 # S3-Based Storage Using IAM Role for Amazon EKS-based ReportPortal
 
-This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 using the AWS SDK for Java ([software.amazon.awssdk:aws-core:2.31.23](https://sdk.amazonaws.com/java/api/latest/software/amazon/awssdk/auth/credentials/DefaultCredentialsProvider.html)) in two deployment scenarios:
+This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 via Apache OpenDAL (`storage.type: aws-s3`) using the AWS default credential chain (IRSA on EKS, instance profile on EC2) in two deployment scenarios:
 
 1. **Kubernetes on EKS** (IAM Roles for Service Accounts) — covered in this guide.
 2. **Docker on an EC2 instance** (Instance Profile) — see [S3 Storage on EC2 Docker](s3-storage-ec2-docker.md).
+
+For non-Amazon S3 API servers, see [S3-Compatible Object Storage](s3-compatible-storage.md). Bundled SeaweedFS and external MinIO are tested; other gateways are supported but not tested.
 
 ## Table of Contents
 
@@ -145,21 +147,18 @@ global:
       eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/my-rp-s3-role"
 
 storage:
-  # Ref.: https://reportportal.io/docs/installation-steps-advanced/file-storage-options/S3CloudStorage
-  type: s3
-  # Leave accesskey and secretkey empty for IAM role-based access
+  # OpenDAL Amazon S3 backend (path-style / SigV4 via AWS default credential chain)
+  type: aws-s3
+  # Leave accesskey and secretkey empty for IAM role-based access (IRSA)
   accesskey: ""
   secretkey: ""
-  # AWS region (e.g. us-east-1). Some apps also accept "us-standard" for us-east-1.
+  # AWS region (e.g. us-east-1). Legacy "us-standard" is mapped to us-east-1.
   region: "us-east-1"
   bucket:
     type: single
     bucketDefaultName: "my-rp-bucket"  # Bucket created in step 1
 
-# Do not install MinIO or SeaweedFS when using S3
-minio:
-  install: false
-
+# Do not install the bundled SeaweedFS when using Amazon S3
 seaweedfs:
   install: false
 ```
@@ -174,4 +173,4 @@ helm install my-release ./reportportal \
   -f values-s3.yaml
 ```
 
-This configuration uses Amazon S3 for storage with IAM role-based access (IRSA) and disables the MinIO subchart.
+This configuration uses Amazon S3 for storage with IAM role-based access (IRSA) and disables the SeaweedFS subchart.

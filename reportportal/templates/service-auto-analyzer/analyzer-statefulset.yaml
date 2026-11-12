@@ -94,48 +94,23 @@ spec:
         {{- toYaml .Values.serviceanalyzer.extraEnvs | nindent 8 }}
         {{- end }}
         {{- $storageType := include "reportportal.storageType" . }}
-        - name: DATASTORE_TYPE
-          value: "{{ include "reportportal.analyzerDatastoreType" . }}"
         {{- if eq $storageType "filesystem" }}
+        - name: DATASTORE_TYPE
+          value: "{{ include "reportportal.datastoreType" . }}"
         - name: FILESYSTEM_DEFAULT_PATH
           value: "{{ .Values.storage.volume.defaultPath | default "/data/storage" | trimSuffix "/" }}/{{ include "reportportal.analyzerSubpath" . }}"
         {{- end }}
-        {{- if or (eq $storageType "minio") (eq $storageType "s3") (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
-        {{- if or (eq $storageType "minio") (eq $storageType "s3-compatible") }}
-        - name: DATASTORE_ENDPOINT
-          value: "{{ include "reportportal.storageEndpoint" . }}"
-        {{- else if or (eq $storageType "aws-s3") (eq $storageType "s3") }}
-        - name: DATASTORE_REGION
-          {{- $region := .Values.storage.region }}
-          {{- if eq $region "us-standard" }}
-          value: "us-east-1"
-          {{- else }}
-          value: "{{ $region }}"
-          {{- end }}
-        {{- end }}
-        {{- if .Values.storage.secretName }}
-        - name: DATASTORE_ACCESSKEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.storage.secretName }}"
-              key: "{{ .Values.storage.accesskeyName }}"
-        - name: DATASTORE_SECRETKEY
-          valueFrom:
-            secretKeyRef:
-              name: "{{ .Values.storage.secretName }}"
-              key: "{{ .Values.storage.secretkeyName }}"
-        {{- else }}
-        - name: DATASTORE_ACCESSKEY
-          value: "{{ .Values.storage.accesskey }}"
-        - name: DATASTORE_SECRETKEY
-          value: "{{ .Values.storage.secretkey }}"
-        {{- end }}
+        # S3 / S3-compatible settings (OpenDAL)
+        {{- if or (eq $storageType "s3-compatible") (eq $storageType "aws-s3") }}
+        {{- include "reportportal.datastoreEnv" . | nindent 8 }}
+        # Analyzer always uses a single bucket; project data lives under
+        # <analyzerSubpath>/<bucketMultiPrefix><id>/ inside that bucket.
         - name: DATASTORE_BUCKETPREFIX
-          value: "{{ .Values.storage.bucket.bucketMultiPrefix }}"
+          value: "{{ include "reportportal.analyzerSubpath" . }}/{{ .Values.storage.bucket.bucketMultiPrefix }}"
         - name: DATASTORE_BUCKETPOSTFIX
           value: "{{ .Values.storage.bucket.bucketMultiPostfix | default "" }}"
         - name: DATASTORE_DEFAULTBUCKETNAME
-          value: "{{ .Values.storage.bucket.bucketDefaultName }}/{{ include "reportportal.analyzerSubpath" . }}"
+          value: "{{ .Values.storage.bucket.bucketDefaultName }}"
         {{- end }}
         - name: RP_AMQP_PASS
         {{- if .Values.msgbroker.secretName }}
