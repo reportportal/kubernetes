@@ -1,105 +1,81 @@
 # S3-Compatible Object Storage
 
-ReportPortal stores binary data (attachments, analyzer models) through
-[Apache OpenDAL](https://opendal.apache.org/). `storage.type: s3-compatible`
-speaks the S3 API.
+ReportPortal stores binary data (test attachments, user avatars, plugins, integration secrets, and machine-learning analyzer models) in object storage.
 
-Tested with this chart: the bundled SeaweedFS (default) and an external MinIO.
-The same values also target other S3 API servers (external SeaweedFS, Rook Ceph
-RGW, Garage, Cloudflare R2, and similar gateways). Those are supported and have
-not been tested.
+`service-api`, `service-jobs`, and `service-auto-analyzer` interact with storage through [Apache OpenDAL](https://opendal.apache.org/) using its S3 backend. This allows ReportPortal to work seamlessly with solutions implementing the Amazon S3 API.
 
-For Amazon S3 specifically, use `storage.type: aws-s3` — see
-[S3 Storage on EKS](s3-storage-eks.md).
+## Supported Storage Providers
+
+| Provider | Status | Notes |
+|----------|--------|-------|
+| **SeaweedFS** | Officially supported & default | Deployed automatically with the chart as a lightweight, high-performance embedded S3 gateway. |
+| **MinIO** | Supported | Connect an existing or external MinIO deployment via `storage.type: s3-compatible`. |
+| **Amazon S3** | Officially supported | Dedicated AWS integration via `storage.type: aws-s3`. See [S3 Storage on EKS](s3-storage-eks.md). |
+| **Other S3-Compatible Providers** | Potentially compatible via OpenDAL | Systems like Rook Ceph RGW, Garage, Cloudflare R2, and other S3-compliant gateways. |
+
+### Note on Other S3-Compatible Storage Solutions
+
+Because ReportPortal uses Apache OpenDAL's S3 backend, a wide range of S3-compliant object storage systems can be used.
+
+Compatibility depends on each provider's implementation of the S3 API and its specific configuration options. To ensure proper operation with ReportPortal, the target storage provider should support standard AWS Signature Version 4 authentication and path-style bucket addressing. We recommend validating your chosen storage configuration in a test environment prior to production rollout.
 
 ## Table of Contents
 
 - [Storage types](#storage-types)
-- [Values → environment variables → OpenDAL](#values--environment-variables--opendal)
-- [Bundled SeaweedFS (default)](#bundled-seaweedfs-default)
+- [Configuration Reference](#configuration-reference)
+- [Bundled SeaweedFS (Default)](#bundled-seaweedfs-default)
 - [External MinIO](#external-minio)
-- [Other S3-compatible servers](#other-s3-compatible-servers)
-- [Bucket strategy](#bucket-strategy)
-- [Credentials](#credentials)
-- [Upgrade notes](#upgrade-notes)
+- [Other S3-Compatible Storage Solutions](#other-s3-compatible-storage-solutions)
+- [Bucket Strategy](#bucket-strategy)
+- [Analyzer Storage Path](#analyzer-storage-path)
+- [Bucket Creation](#bucket-creation)
+- [Credentials & Security](#credentials--security)
+- [Upgrade Notes](#upgrade-notes)
 - [Troubleshooting](#troubleshooting)
 
 ## Storage types
 
-| `storage.type` | When to use | Endpoint | Credentials |
-|----------------|-------------|----------|-------------|
-| `s3-compatible` | Any S3 API server (default) | `storage.endpoint` or bundled SeaweedFS | Access / secret key (required for most gateways) |
-| `aws-s3` | Amazon S3 | Resolved by region | Access / secret key **or** empty keys + IRSA / instance profile |
-| `filesystem` | Shared PVC | N/A | N/A |
+| `storage.type` | Use Case | Endpoint | Authentication |
+|----------------|----------|----------|----------------|
+| `s3-compatible` (default) | SeaweedFS, MinIO, Ceph RGW, and other S3 gateways | `storage.endpoint` or the bundled SeaweedFS service | Access key and secret key |
+| `aws-s3` | Native Amazon S3 | Resolved automatically from `storage.region` | IAM Roles for Service Accounts (IRSA), node instance profile, or static keys |
+| `filesystem` | Shared PersistentVolumeClaim | N/A | N/A |
 
-Legacy values `minio` and `s3` are rejected by the chart. Use `s3-compatible`
-and `aws-s3` respectively.
+> **Note:** The legacy values `minio` and `s3` have been superseded. If used, the chart will display a helpful error message guiding you to set `storage.type: s3-compatible` or `storage.type: aws-s3`.
 
-## Values → environment variables → OpenDAL
+## Configuration Reference
 
-The chart renders the same `DATASTORE_*` variables for `service-api`,
-`service-jobs`, and `service-auto-analyzer`:
+The chart configures uniform `DATASTORE_*` environment variables for `service-api`, `service-jobs`, and `service-auto-analyzer`:
 
-| Helm value | Env var | OpenDAL `s3` option |
-|------------|---------|---------------------|
-| `storage.type` | `DATASTORE_TYPE` | selects `s3` scheme (`s3-compatible` / `aws-s3`) |
-| `storage.endpoint` (+ `ssl` / `port`) | `DATASTORE_ENDPOINT` | `endpoint` (s3-compatible only) |
-| `storage.region` | `DATASTORE_REGION` | `region` (SigV4 scope) |
-| `storage.accesskey` / secret | `DATASTORE_ACCESSKEY` | `access_key_id` |
-| `storage.secretkey` / secret | `DATASTORE_SECRETKEY` | `secret_access_key` |
-| `storage.bucket.bucketDefaultName` | `DATASTORE_DEFAULTBUCKETNAME` | `bucket` |
+| Helm Value | Environment Variable | OpenDAL S3 Parameter | Description |
+|------------|----------------------|----------------------|-------------|
+| `storage.type` | `DATASTORE_TYPE` | Backend selector | `s3-compatible` or `aws-s3` |
+| `storage.endpoint`, `ssl`, `port` | `DATASTORE_ENDPOINT` | `endpoint` | Constructed URL for `s3-compatible` storage |
+| `storage.region` | `DATASTORE_REGION` | `region` | Signing region for SigV4 (e.g. `us-east-1`) |
+| `storage.accesskey` or Secret | `DATASTORE_ACCESSKEY` | `access_key_id` | S3 access key |
+| `storage.secretkey` or Secret | `DATASTORE_SECRETKEY` | `secret_access_key` | S3 secret key |
+| `storage.bucket.bucketDefaultName` | `DATASTORE_DEFAULTBUCKETNAME` | `bucket` | Target bucket name |
 
-OpenDAL defaults to path-style addressing and AWS Signature Version 4, which
-matches the tested SeaweedFS and MinIO gateways. Providers that require
-virtual-host style only can pass extra OpenDAL options to the analyzer via
-`serviceanalyzer.extraEnvs`:
+### Endpoint Configuration (`s3-compatible`)
 
-```yaml
-serviceanalyzer:
-  extraEnvs:
-    - name: DATASTORE_OPENDAL_OPTIONS
-      value: '{"enable_virtual_host_style": "true"}'
-```
+`storage.endpoint` accepts a **host name only** (do not include `http://`, `https://`, or port numbers):
 
-(`service-api` / `service-jobs` do not expose a generic OpenDAL options map;
-prefer path-style endpoints for those services.)
+| Parameter | Description | Result |
+|-----------|-------------|--------|
+| `storage.endpoint` | Host or service name | `<host>` |
+| `storage.ssl` | Protocol selection (`true` for HTTPS, `false` for HTTP) | `https://` or `http://` |
+| `storage.port` | Custom port number (leave empty for standard 80/443) | `:<port>` |
 
-### Endpoint (`s3-compatible`)
+When `storage.endpoint` is omitted and `seaweedfs.install` is set to `true`, ReportPortal automatically connects to the internal SeaweedFS cluster service (`<release>-seaweedfs-all-in-one.<namespace>.svc:8333`).
 
-`storage.endpoint` is a **host name only** — no `http(s)://` and no port. The
-final URL is built from three values:
+## Bundled SeaweedFS (Default)
 
-| Value | Meaning | Result |
-|-------|---------|--------|
-| `storage.endpoint` | Host name | `<host>` |
-| `storage.ssl` | `false` = http, `true` = https | `http://` / `https://` |
-| `storage.port` | Optional; empty = scheme default (80 / 443) | `:<port>` |
-
-If `storage.endpoint` is empty, the chart uses the bundled SeaweedFS gateway
-(only valid when `seaweedfs.install: true`). Passing a value that starts with
-`http://` or `https://` fails with an explicit error, so `ssl` can never
-contradict the endpoint.
-
-## Bundled SeaweedFS (default)
-
-The chart depends on the
-[official SeaweedFS Helm chart](https://seaweedfs.github.io/seaweedfs/helm).
-Defaults install an all-in-one Deployment (master + volume + filer + S3) with a
-PVC and create `storage.bucket.bucketDefaultName` via the SeaweedFS post-install
-hook.
-
-> **Demo / evaluation setup only.** The bundled SeaweedFS is a single node:
-> one replica (`Recreate` strategy), one `ReadWriteOnce` PVC (`10Gi`), no
-> replication and no high availability. For anything else — more replicas, HA or
-> replicated topology, resources, storage class, ingress, metrics, TLS — either
-> override the upstream chart values under the `seaweedfs:` key (they are passed
-> through unchanged and are **your** responsibility), or set
-> `seaweedfs.install: false` and use your own S3-compatible service or
-> `storage.type: aws-s3`.
+ReportPortal packages the [official SeaweedFS Helm chart](https://seaweedfs.github.io/seaweedfs/helm) as its default storage provider. The default values deploy an all-in-one instance (master, volume, filer, and S3 gateway) with persistent storage.
 
 ```yaml
 storage:
   type: s3-compatible
+  region: ""
   accesskey: rpuser
   secretkey: rppassword
   bucket:
@@ -110,13 +86,35 @@ seaweedfs:
   install: true
 ```
 
-ReportPortal services do **not** create buckets. The bundled chart creates the
-default bucket; for an external gateway you must create it yourself.
+> **Evaluation and Production Considerations:**
+> The default bundled SeaweedFS deployment runs as a single replica with a 10Gi `ReadWriteOnce` persistent volume, ideal for evaluation, development, and standard workloads.
+>
+> For high-availability, distributed clustering, or specialized storage classes, you can customize the SeaweedFS configuration under the `seaweedfs:` values section, or connect ReportPortal to an external enterprise storage cluster by setting `seaweedfs.install: false`.
+
+### Customizing Credentials with Bundled SeaweedFS
+
+If you customize the default access key and secret key, update both the `storage.*` values and the bundled SeaweedFS admin credentials so they remain aligned:
+
+```yaml
+storage:
+  accesskey: myuser
+  secretkey: mypassword
+  bucket:
+    bucketDefaultName: my-bucket
+
+seaweedfs:
+  s3:
+    credentials:
+      admin:
+        accessKey: myuser
+        secretKey: mypassword
+```
+
+The SeaweedFS PVC includes the `helm.sh/resource-policy: keep` annotation, safeguarding your data from accidental deletion during Helm upgrades or uninstalls.
 
 ## External MinIO
 
-Tested. Set `storage.endpoint` and disable the bundled chart. Create
-`bucketDefaultName` on MinIO before installing ReportPortal.
+MinIO is fully supported by ReportPortal. To connect to an existing MinIO instance, specify your endpoint details, credentials, and disable the bundled SeaweedFS chart:
 
 ```yaml
 storage:
@@ -124,6 +122,7 @@ storage:
   endpoint: "minio.minio.svc"
   ssl: false
   port: 9000
+  region: ""
   accesskey: "minio"
   secretkey: "minio123"
   bucket:
@@ -134,31 +133,78 @@ seaweedfs:
   install: false
 ```
 
-## Other S3-compatible servers
+Ensure the target bucket (e.g. `rp-bucket`) is created in MinIO prior to deploying ReportPortal.
 
-Supported with the same fields as MinIO (`endpoint` host, `ssl`, `port`,
-credentials, `seaweedfs.install: false`, and a bucket that already exists).
-Not tested: external SeaweedFS, Rook Ceph RGW, Garage, Cloudflare R2, and
-similar gateways.
+## Other S3-Compatible Storage Solutions
 
-## Bucket strategy
+ReportPortal can connect to external S3-compatible object storage solutions—including external SeaweedFS clusters, Ceph Object Gateway (RGW), Garage, Cloudflare R2, and other compliant services.
 
-| `storage.bucket.type` | Behaviour |
-|-----------------------|-----------|
-| `single` (default) | One bucket (`bucketDefaultName`); projects are prefixes. Sets `RP_FEATURE_FLAGS=singleBucket` on api/jobs. |
-| `multi` | One bucket per project (`bucketMultiPrefix` + project id). Not recommended for cloud S3. |
+Use the standard `s3-compatible` configuration parameters:
 
-The analyzer always writes into the single default bucket under
-`<analyzerPath>/<bucketMultiPrefix><projectId>/` (for example
-`analyzer/prj-2/...`), regardless of `bucket.type`.
+```yaml
+storage:
+  type: s3-compatible
+  endpoint: "s3.example.internal"
+  ssl: true
+  port: 443
+  region: "YOUR_REGION"
+  accesskey: "YOUR_ACCESS_KEY"
+  secretkey: "YOUR_SECRET_KEY"
+  bucket:
+    type: single
+    bucketDefaultName: "reportportal-data"
 
-**Buckets must already exist** for OpenDAL clients. The bundled SeaweedFS
-`createBuckets` hook covers the default install; external providers need a
-pre-created bucket.
+seaweedfs:
+  install: false
+```
 
-## Credentials
+Ensure the target bucket is created and your credentials have full read, write, and delete permissions on it.
 
-Prefer a Kubernetes Secret in production:
+## Bucket Strategy
+
+Starting with ReportPortal 26.1, the **single-bucket strategy** is the standard configuration:
+
+| Strategy | `storage.bucket.type` | Object Layout |
+|----------|-----------------------|---------------|
+| **Single-bucket** (Standard, default) | `single` | All data is stored in `bucketDefaultName`. Projects are cleanly isolated by prefix (`project-data/<projectId>/...`). |
+| **Multi-bucket** (Legacy) | `multi` | Retained for backward compatibility with older deployments. |
+
+In single-bucket mode, the object hierarchy within `bucketDefaultName` is structured as:
+
+- `project-data/<projectId>/...`: Launch and test item attachments
+- `plugins/...`: Installed plugin packages
+- `integration-secrets/...`: Integration credentials and encryption material
+- `user-data/...`: User profile assets
+
+Changing `storage.bucket.type` on an existing deployment does not automatically relocate objects. When transitioning between strategies, existing data should be migrated accordingly (see [Upgrade Notes](#upgrade-notes)).
+
+## Analyzer Storage Path
+
+The auto-analyzer stores its machine-learning binary models in `bucketDefaultName` under a dedicated folder path:
+
+```text
+<bucketDefaultName>/<analyzerPath>/<bucketMultiPrefix><projectId>/...
+# Default layout: rp-bucket/analyzer/prj-<projectId>/...
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `storage.volume.analyzerPath` | `analyzer` | Relative subfolder in the bucket for analyzer models. |
+| `storage.bucket.bucketMultiPrefix` | `prj-` | Prefix applied to project model directories. |
+
+## Bucket Creation
+
+| Environment | Bucket Provisioning |
+|-------------|---------------------|
+| **Bundled SeaweedFS** (`single` mode) | Handled automatically. ReportPortal initializes the default bucket upon saving initial system assets during startup. |
+| **External MinIO & S3-Compatible Storage** | Pre-create the bucket specified in `storage.bucket.bucketDefaultName` before installing ReportPortal. |
+| **Amazon S3** (`aws-s3`) | Pre-create the bucket via AWS Console, CLI, or Terraform before deployment. |
+
+The configured storage user or IAM role requires read, write, list, and delete permissions on the target bucket.
+
+## Credentials & Security
+
+For production deployments, we strongly recommend referencing credentials from a Kubernetes Secret rather than placing them in plain text:
 
 ```yaml
 storage:
@@ -167,8 +213,7 @@ storage:
   secretkeyName: secret-key
 ```
 
-When using the bundled SeaweedFS with a shared secret, also point the SeaweedFS
-S3 admin identity at it:
+When using the bundled SeaweedFS with a shared Kubernetes Secret, configure the SeaweedFS admin credentials to reference the same Secret:
 
 ```yaml
 seaweedfs:
@@ -181,26 +226,55 @@ seaweedfs:
         secretKeyKey: secret-key
 ```
 
-## Upgrade notes
+When deploying on AWS EKS with `storage.type: aws-s3`, you can omit static keys and use IAM Roles for Service Accounts (IRSA) directly.
 
-1. **`storage.bucket.type` default is now `single`.** To keep per-project
-   buckets, set `storage.bucket.type: multi` explicitly.
-2. **Bundled MinIO is removed.** The chart installs SeaweedFS instead. MinIO PVC
-   data is **not** migrated automatically. Options:
-   - Keep an external MinIO and set `storage.endpoint` + `seaweedfs.install: false`.
-   - Copy objects with `mc mirror` / `rclone` into the new SeaweedFS (or other)
-     bucket, then switch the chart.
-3. **Legacy `storage.type` values `minio` and `s3` fail** at template time.
-   Replace them with `s3-compatible` and `aws-s3`.
+## Upgrade Notes
+
+The Helm chart manages application deployment and configuration; it does not automatically move or migrate existing object storage files between different storage backends or bucket layouts.
+
+### Key Changes in ReportPortal 26.x
+
+1. **SeaweedFS is the new default bundled storage:** The embedded MinIO sub-chart has been replaced by SeaweedFS. Existing installations upgrading with default values will deploy a fresh SeaweedFS instance. If you wish to retain your existing MinIO data, configure MinIO as an external service (`seaweedfs.install: false`).
+2. **Single-bucket strategy is standard:** The chart now defaults to `storage.bucket.type: single`. If upgrading an existing deployment that used multi-bucket storage, either set `storage.bucket.type: multi` to preserve the previous configuration or plan a data migration to single-bucket format.
+3. **Storage type naming:** Legacy values `minio` and `s3` are replaced by `s3-compatible` and `aws-s3`.
+4. **Default credentials:** The default demo secret key is now `rppassword` (replacing `miniopassword`).
+
+### Recommended Pre-Upgrade Checklist
+
+1. **Back up your data:** Create a backup of your existing storage bucket or PVC and the PostgreSQL database.
+2. **Review your storage target:**
+   - To keep MinIO: Deploy or retain MinIO externally and set `storage.endpoint`, `port`, `ssl`, and credentials in your values file.
+   - To migrate to SeaweedFS or cloud storage: Synchronize existing bucket objects to the target location using standard tools like `rclone` or `mc mirror`.
+3. **Preserve the integration encryption salt:**
+   - Single-bucket mode stores the salt at `integration-secrets/secret-integration-salt`.
+   - Multi-bucket mode stores the salt at `keystore/secret-integration-salt`.
+   - Ensuring this file is preserved allows ReportPortal to decrypt existing third-party integration settings without re-entering credentials.
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| `storage.type "minio" is no longer supported` | Old overlay | Set `storage.type: s3-compatible` |
-| `storage.endpoint must be a host name without scheme` | Endpoint set as `http(s)://...` | Use host only and set `storage.ssl` / `storage.port` |
-| `storage.endpoint is required` | External S3-compatible without endpoint | Set `storage.endpoint` or `seaweedfs.install: true` |
-| `storage.region is required` | `aws-s3` without region | Set `storage.region` (e.g. `eu-central-1`) |
-| Analyzer / API: invalid bucket / NoSuchBucket | Bucket missing or wrong name | Create `bucketDefaultName` on the gateway; check the SeaweedFS bucket hook |
-| SignatureDoesNotMatch / AccessDenied | Wrong keys or region | Align `accesskey`/`secretkey`/`region` with the gateway config |
-| Connection refused to `…-minio:9000` | Overlay still points at MinIO | Update endpoint or enable SeaweedFS (`…-seaweedfs-all-in-one:8333`) |
+| Symptom | Probable Cause | Recommended Action |
+|---------|----------------|--------------------|
+| `storage.type "minio" is no longer supported` | Previous version values file in use | Update your values to use `storage.type: s3-compatible`. |
+| `storage.endpoint must be a host name without scheme` | URL scheme included in endpoint | Provide host name only (e.g. `minio.example.com`) and configure protocol with `storage.ssl`. |
+| `storage.endpoint is required when storage.type is s3-compatible and seaweedfs.install is false` | External storage chosen without providing endpoint | Set `storage.endpoint` to point to your S3 service. |
+| `storage.region is required when storage.type is aws-s3` | Missing AWS region | Specify the appropriate region in `storage.region` (e.g. `us-east-1`). |
+| `NoSuchBucket` / Bucket not found | Target bucket has not been created | Create the bucket in your storage service, or verify the bucket name matches `storage.bucket.bucketDefaultName`. |
+| `SignatureDoesNotMatch` / `AccessDenied` | Credential or region mismatch | Verify access/secret keys and ensure `storage.region` matches the region configured on your storage gateway. |
+| Connection refused to `...-minio:9000` | Values still reference removed internal MinIO | Update the endpoint to your new storage service or enable bundled SeaweedFS. |
+
+### Inspecting Bundled SeaweedFS
+
+You can inspect the bundled SeaweedFS instance using the command line:
+
+```bash
+# List all buckets
+kubectl -n <namespace> exec deploy/<release>-seaweedfs-all-in-one -- \
+  sh -c "echo 's3.bucket.list' | weed shell"
+
+# List files within the bucket
+kubectl -n <namespace> exec deploy/<release>-seaweedfs-all-in-one -- \
+  sh -c "echo 'fs.ls /buckets/rp-bucket' | weed shell"
+
+# View SeaweedFS logs
+kubectl -n <namespace> logs deploy/<release>-seaweedfs-all-in-one
+```

@@ -500,7 +500,7 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `storage.endpoint` | S3-compatible host name without scheme or port (empty = bundled SeaweedFS) | `""` |
 | `storage.ssl` | `true` = https, `false` = http | `false` |
 | `storage.port` | Port (empty = scheme default for external hosts, 8333 for bundled SeaweedFS) | `""` |
-| `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`) | `""` |
+| `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`, recommended for `s3-compatible`) | `""` |
 | `storage.bucket.type` | Bucket type (`single`, `multi`) | `single` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
 | `storage.bucket.bucketMultiPrefix` | Multi bucket prefix | `prj-` |

@@ -1179,7 +1179,7 @@ storage:
   ##
   port: ""
 
-  ## @param storage.region SigV4 region. Required for aws-s3; s3-compatible defaults to us-east-1
+  ## @param storage.region SigV4 region. Required for aws-s3; recommended for s3-compatible (services' defaults differ)
   ##
   region: ""
 
@@ -1662,9 +1662,6 @@ seaweedfs:
     s3:
       enabled: true
       enableAuth: true
-      createBuckets:
-        - name: *storageBucketDefaultName
-          anonymousRead: false
     data:
       type: persistentVolumeClaim
       size: 10Gi

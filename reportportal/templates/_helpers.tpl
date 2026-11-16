@@ -212,7 +212,7 @@ Rules:
 {{/*
 Returns the storage region for DATASTORE_REGION.
 Maps legacy "us-standard" to "us-east-1".
-Required for aws-s3; optional for s3-compatible (services default to us-east-1).
+Required for aws-s3; optional for s3-compatible (when empty, each service uses its own default).
 */}}
 {{- define "reportportal.storageRegion" -}}
 {{- $storageType := include "reportportal.storageType" . -}}
