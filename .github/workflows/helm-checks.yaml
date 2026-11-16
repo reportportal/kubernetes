@@ -52,4 +52,4 @@ jobs:
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \
-            --set minio.install=true > /dev/null
+            --set seaweedfs.install=true > /dev/null

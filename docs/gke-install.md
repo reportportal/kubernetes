@@ -131,7 +131,7 @@ the Kubernetes with infrastructure dependencies.
 We recommend using `custom-4-6144` machine type with 4 vCPU and 6 GB memory
 as a minimal configuration.
 
-If you want avoid using MinIO or Google Cloud Storage, you can use a filesystem storage type
+If you want avoid using SeaweedFS (S3-compatible) or Google Cloud Storage, you can use a filesystem storage type
 and Google Filestore as a storage class.
 
 For this, you need to enable the `Google Filestore CSI driver` when creating a cluster:
@@ -232,7 +232,7 @@ By default, ReportPortal Helm chart install with infrastructure dependencies in 
 - PostgreSQL
 - OpenSearch
 - RabbitMQ
-- MinIO
+- SeaweedFS
 
 You can disable an installation of some components via Helm chart values, but you have to provide
 new credentials for your standalone components.
@@ -257,9 +257,9 @@ helm install ${RELEASE_NAME} \
   --version ${VERSION}
 ```
 
-If you want to use Google Filestore instead of MinIO, you need to set
+If you want to use Google Filestore instead of SeaweedFS, you need to set
 the `storage.type` to `filesystem`, `storage.volume.storageClassName`
-to `standard-rwx`, and disable MinIO installation:
+to `standard-rwx`, and disable SeaweedFS installation:
 
 ```bash
 helm install \
@@ -272,7 +272,7 @@ helm install \
   --set serviceanalyzer.resources.requests.memory=1Gi \
   --set storage.type=filesystem \
   --set storage.volume.storageClassName=standard-rwx \
-  --set minio.install=false \
+  --set seaweedfs.install=false \
   --version ${VERSION}
 ```
 
@@ -295,9 +295,9 @@ helm install ${RELEASE_NAME} \
   --version ${VERSION}
 ```
 
-If you want to use Google Filestore instead of MinIO, you need to set
+If you want to use Google Filestore instead of SeaweedFS, you need to set
 the `storage.type` to `filesystem`, `storage.volume.storageClassName`
-to `standard-rwx` and disable MinIO installation:
+to `standard-rwx` and disable SeaweedFS installation:
 
 ```bash
 helm install ${RELEASE_NAME} \
@@ -306,7 +306,7 @@ helm install ${RELEASE_NAME} \
   --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
   --set storage.volume.storageClassName=standard-rwx \
-  --set minio.install=false \
+  --set seaweedfs.install=false \
   --version ${VERSION}
 ```
 

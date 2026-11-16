@@ -579,7 +579,7 @@
         }
       }
     },
-    "minio": {
+    "seaweedfs": {
       "type": "object",
       "additionalProperties": true,
       "properties": {
@@ -2818,7 +2818,11 @@
               "type": "string"
             },
             "type": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "single",
+                "multi"
+              ]
             }
           }
         },
@@ -2826,7 +2830,14 @@
           "type": "string"
         },
         "port": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         },
         "region": {
           "type": "string"
@@ -2844,7 +2855,12 @@
           "type": "boolean"
         },
         "type": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "s3-compatible",
+            "aws-s3",
+            "filesystem"
+          ]
         },
         "volume": {
           "type": "object",

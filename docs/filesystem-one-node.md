@@ -26,11 +26,11 @@ ReportPortal supports three storage backends:
 
 | Type | Best for |
 |---|---|
-| `minio` | Chart default; bundled S3-compatible storage |
-| `s3` | Production cloud object storage |
+| `s3-compatible` | Chart default (bundled SeaweedFS). External MinIO is tested; other S3 API servers are supported but not tested |
+| `aws-s3` | Production Amazon S3 |
 | `filesystem` | Shared directory on a PersistentVolume |
 
-Filesystem storage avoids running MinIO and stores attachments on a single shared PVC. All services — `api`, `jobs`, and `analyzer` — mount the **same PVC** at `/data/storage`. The analyzer writes exclusively to its own **`/data/storage/analyzer/`** subdirectory so it never contends with per-project attachment directories created by the other services.
+Filesystem storage avoids running SeaweedFS and stores attachments on a single shared PVC. All services — `api`, `jobs`, and `analyzer` — mount the **same PVC** at `/data/storage`. The analyzer writes exclusively to its own **`/data/storage/analyzer/`** subdirectory so it never contends with per-project attachment directories created by the other services.
 
 **How it works:**
 
@@ -78,7 +78,7 @@ The chart defaults to **ReadWriteMany**, which `local-path` does not support. Ov
 Create `values-fs.yaml`:
 
 ```yaml
-minio:
+seaweedfs:
   install: false
 
 storage:
@@ -112,7 +112,7 @@ Use this when you need **ReadWriteMany** access — for example a multi-node clu
 See [storageclass.info/drivers](https://storageclass.info/drivers) for a full catalogue filtered by access mode and capabilities.
 
 ```yaml
-minio:
+seaweedfs:
   install: false
 
 storage:
@@ -160,7 +160,7 @@ helm install reportportal reportportal/reportportal \
   --set storage.type=filesystem \
   --set storage.volume.storageClassName=local-path \
   --set storage.volume.accessModes[0]=ReadWriteOnce \
-  --set minio.install=false \
+  --set seaweedfs.install=false \
   --set serviceapi.auth.superadminInitPasswd.password="ChangeMe123"
 ```
 
@@ -250,7 +250,7 @@ kubectl exec -n reportportal -it reportportal-analyzer-0 -- ls -la /data/storage
 # drwxr-x--x  root:root   prj-keystore/
 ```
 
-> **Important — `storage.volume.analyzerPath`:** if you customise `storage.volume.defaultPath`, keep `analyzerPath` set to a non-empty subpath (default `analyzer`) so the analyzer's storage remains isolated. Setting `analyzerPath: ""` would point the analyzer at the same root as the other services and will cause `PermissionError` when running a non-root image.
+> **Important — `storage.volume.analyzerPath`:** if you customise `storage.volume.defaultPath`, keep `analyzerPath` set to a non-empty subpath (default `analyzer`) so the analyzer's storage remains isolated. An empty value (or just `/`) is not honoured: the chart falls back to `analyzer`, so the analyzer can never share the root with the other services (which would cause `PermissionError` with a non-root image).
 
 **`fix-volume-permissions` init container:** even with path isolation, a `PermissionError` can still occur when first deploying a DHI image on top of an existing PVC where `/data/storage/analyzer/` was previously created as `root:root` (for example, after an in-place image upgrade from a non-hardened build). To handle this bootstrap case, the chart adds a `fix-volume-permissions` init container to the analyzer StatefulSet whenever `storage.type: filesystem` and `serviceanalyzer.fixVolumePermissions.enabled: true` (default). It runs as root and executes:
 

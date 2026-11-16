@@ -13,8 +13,9 @@ This directory contains installation and configuration guides for ReportPortal o
 
 ## Storage Configuration
 
+- [S3-Compatible Object Storage](s3-compatible-storage.md) — OpenDAL S3 storage. Tested: bundled SeaweedFS and external MinIO. Other S3 API servers are supported but not tested
+- [S3 Storage on EKS](s3-storage-eks.md) — Configure Amazon S3 with IRSA (`storage.type: aws-s3`) for EKS deployments
 - [Filesystem Storage on a Single-Node Cluster](filesystem-one-node.md) — Use filesystem storage with local-path or hostPath on Rancher Desktop, Minikube, or one-node k3s
-- [S3 and Filesystem Storage on EKS](s3-storage-eks.md) — Configure Amazon S3 (with IRSA) or shared filesystem (PVC) storage for EKS deployments
 
 ## Installation Guides
 
