@@ -5,6 +5,58 @@ entries:
       artifacthub.io/category: integration-delivery
       artifacthub.io/license: Apache-2.0
     apiVersion: v2
+    appVersion: "26.1"
+    created: "2026-11-18T13:36:33.204991715Z"
+    dependencies:
+    - alias: postgresql
+      condition: postgresql.install
+      name: postgres
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.21.2
+    - condition: rabbitmq.install
+      name: rabbitmq
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.21.32
+    - condition: opensearch.install
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts/
+      version: 3.9.0
+    - condition: seaweedfs.install
+      name: seaweedfs
+      repository: https://seaweedfs.github.io/seaweedfs/helm
+      version: 4.53.0
+    description: 'ReportPortal.io is a TestOps service, that provides increased capabilities
+      to speed up results analysis and reporting through the use of built-in analytic
+      features. '
+    digest: 082bdb28239a4db1ade92e4ed356eb667a3be8b6c1e276cc502ed4c6fc2dac3b
+    home: https://reportportal.io
+    icon: https://raw.githubusercontent.com/reportportal/branding/a4e0ac59ff51e1081d4fa754f1a06f22ea6dcfe7/logo/Logo_Symbol_Large_Ogriginal.svg
+    keywords:
+    - reportportal
+    - report portal
+    - test results reporting service
+    - test report dashboard
+    - test automation reporting tools
+    - test automation results dashboard
+    - qa automation dashboard
+    - qa metrics dashboard
+    - automation test report
+    - test execution dashboard
+    kubeVersion: '>=1.30.0-0'
+    maintainers:
+    - email: support@reportportal.io
+      name: reportportal
+    name: reportportal
+    sources:
+    - https://github.com/reportportal/kubernetes/tree/master/reportportal
+    type: application
+    urls:
+    - https://github.com/reportportal/kubernetes/releases/download/reportportal-26.11.18/reportportal-26.11.18.tgz
+    version: 26.11.18
+  - annotations:
+      artifacthub.io/category: integration-delivery
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
     appVersion: 26.0.7
     created: "2026-10-26T16:21:54.255424637Z"
     dependencies:
@@ -2421,4 +2473,4 @@ entries:
     urls:
     - https://github.com/reportportal/kubernetes/releases/download/reportportal-1.0.0/reportportal-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-18T12:56:01.839349567Z"
+generated: "2026-11-18T13:36:33.205182041Z"
