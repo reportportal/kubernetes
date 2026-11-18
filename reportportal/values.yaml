@@ -72,97 +72,6 @@ global:
     ##
     maxUnavailable: "1"
 
-## @param serviceindex Core ReportPortal service for the indexing
-##
-serviceindex:
-  name: index
-  image:
-    repository: reportportal/service-index
-    tag: 5.15.2
-  pullPolicy: Always
-  resources:
-    requests:
-      cpu: 150m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
-
-  ## @param serviceindex.extraInitContainers init containers
-  ##
-  extraInitContainers: []
-    # - name: init-container
-    #   image: busybox
-    #   command: ['sh', '-c', 'echo "Hello, World!"']
-    #   resources:
-    #     requests:
-    #       cpu: 10m
-    #       memory: 10Mi
-    #     limits:
-    #       cpu: 100m
-    #       memory: 100Mi
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  serviceAccountName: ""
-  ## @param serviceindex.startupProbe configure startup probe
-  ##
-  startupProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 3
-    failureThreshold: 12
-  ## @param serviceindex.readinessProbe configure readiness probe
-  ##
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 5
-    timeoutSeconds: 3
-    failureThreshold: 3
-    successThreshold: 1
-  ## @param serviceindex.livenessProbe configure liveness probe
-  ##
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 20
-    timeoutSeconds: 5
-    failureThreshold: 3
-  ## @param serviceindex.nodeSelector define which Nodes the Pods are scheduled on.
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ## Use disktype: "ssd" for specific disk type.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  ## @param serviceindex.tolerations Service-specific tolerations for the index service
-  tolerations: []
-  ## @param serviceindex.strategy Deployment strategy for the index service
-  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  ##
-  strategy: {}
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 1
-    #   maxUnavailable: 0
-  ## @param serviceindex.pdb Service-specific pod disruption budget for the index service
-  pdb:
-    create: false
-    minAvailable: ""
-    maxUnavailable: ""
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
-    ## @param serviceindex.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
-    ##
-    labels: {}
-
 ## @param serviceui Core ReportPortal service
 ##
 serviceui:
@@ -294,7 +203,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.6
+    tag: 6.0.0
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -368,6 +277,27 @@ serviceapi:
   ## @param serviceapi.allowDeleteAccount enable or disable "Delete Account" button in UI
   ##
   allowDeleteAccount: true
+  ## @param serviceapi.auth Authentication and session settings for the API service
+  ## (formerly provided by the standalone UAT / service-authorization component)
+  ##
+  auth:
+    ## @param serviceapi.auth.sessionLiveTime UI/OAuth session lifetime in seconds (maps to RP_SESSION_LIVE)
+    ##
+    sessionLiveTime: 86400
+    ## @param serviceapi.auth.samlSessionLiveTime SAML session lifetime in seconds (maps to RP_SAML_SESSION-LIVE)
+    ##
+    samlSessionLiveTime: 4320
+    ## @param serviceapi.auth.superadminInitPasswd Initial superadmin password used only on first launch.
+    ## Changing this value on redeployments does not update an already-created superadmin password.
+    ## Prefer referencing an existing Secret via secretName instead of setting password in plain text.
+    ## @param serviceapi.auth.superadminInitPasswd.secretName Existing Secret that holds the superadmin password (skips chart-managed Secret)
+    ## @param serviceapi.auth.superadminInitPasswd.passwordKeyName Key inside the Secret that stores the password
+    ## @param serviceapi.auth.superadminInitPasswd.password Plain-text initial password when secretName is empty
+    ##
+    superadminInitPasswd:
+      secretName: ""
+      passwordKeyName: "superadmin-password"
+      password: ""
   ## @param serviceapi.cronJobs define the configuration for the cron jobs
   ##
   cronJobs:
@@ -475,145 +405,13 @@ serviceapi:
     #     - "foo.remote"
     #     - "bar.remote"
 
-## @param serviceapi Core ReportPortal service for the authorization
-##
-uat:
-  name: uat
-  image:
-    repository: reportportal/service-authorization
-    tag: 5.15.2
-  pullPolicy: Always
-  replicaCount: 1
-  ## @param uat.startupProbe configure startup probe
-  ##
-  startupProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 24
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 3
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 20
-    timeoutSeconds: 5
-    failureThreshold: 3
-  resources:
-    requests:
-      cpu: 100m
-      memory: 512Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
-  sessionLiveTime: 86400
-  samlSessionLiveTime: 4320
-  ## @param uat.extraInitContainers init containers
-  ##
-  extraInitContainers: []
-  ## @param uat.initContainerResources Resources for the migrations-waiting-init container. Overrides global.initContainerResources when non-empty.
-  ##
-  initContainerResources: {}
-  ## @param uat.extraVolumes define the extra volumes
-  ##
-  extraVolumes: []
-  ## @param uat.extraVolumeMounts define the extra volume mounts
-  ##
-  extraVolumeMounts: []
-  ## @param uat.superadminInitPasswd define the initial password of the superadmin user for the first launch. This value can't change the password on redeployments
-  ## @param uat.superadminInitPasswd.secretName define the secret name for the superadmin password
-  ##
-  superadminInitPasswd:
-    secretName: ""
-    passwordKeyName: "superadmin-password"
-    password: ""
-  ## @param uat.javaArgs define the configuration for the JVM.
-  ## For custom java keystore add parameter: -Djavax.net.ssl.trustStore=/etc/secret-volume/custom-pki.jks
-  ##
-  jvmArgs: "-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"
-  ## @param uat.extraEnvs define the extra environment variables
-  ##
-  extraEnvs: []
-    # - name: EXTRA_ENV
-    #   value: "TRUE"
-    # - name: EXTRA_ENV_SECRET
-    #   valueFrom:
-    #     secretKeyRef:
-    #       name: "additional-credentials"
-    #       key: username
-  podLabels: {}
-  podAnnotations: {}
-  securityContext: {}
-  ## @param uat.nodeSelector define which Nodes the Pods are scheduled on
-  ## You can choose compute classes for GKE Autopilot Pods https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-compute-classes
-  ## Use cloud.google.com/compute-class: "COMPUTE_CLASS" for specific GKE Autopilot compute class.
-  ## Use kubernetes.io/arch: "ARCHITECTURE" for specific GKE Autopilot CPU architecture.
-  ##
-  nodeSelector: {}
-  affinity: {}
-  serviceAccountName: ""
-  ## @param uat.tolerations Service-specific tolerations for the authorization service
-  tolerations: []
-  ## @param uat.strategy Deployment strategy for the authorization service
-  ## Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  ##
-  strategy: {}
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 1
-    #   maxUnavailable: 0
-  ## @param uat.pdb Service-specific pod disruption budget for the authorization service
-  pdb:
-    create: false
-    minAvailable: ""
-    maxUnavailable: ""
-  ## @param uat.secret define the secret configuration
-  ## e.g. provide a custom java keystore used in jvmArgs:
-  ## keytool -genkeypair -storetype jks -alias todelete -keypass changeit -storepass changeit -keystore custom-pki.jks -dname "CN=Developer, OU=Department, O=Company, L=City, ST=State, C=CA"
-  ## keytool -delete -alias todelete -storepass changeit -keystore custom-pki.jks
-  ## keytool -list -keystore custom-pki.jks -storepass changeit
-  ## Generate base64 data and paste it in your values.yaml:
-  ## cat custom-pki.jks | base64 -w
-  ##
-  secret:
-    enabled: false
-    mountPath: /etc/secret-volume
-    readOnly: true
-    data: {}
-      # custom-pki.jks: <base64-data>
-  service:
-    type: ""
-    portName: ""
-    nodePort: ""
-    extraPorts: []
-    annotations: {}
-    ## @param uat.service.labels Custom labels for the Service (e.g., for Prometheus ServiceMonitor)
-    ##
-    labels: {}
-  ## @param uat.hostAliases define the hosts and IP addresses for the Pod's /etc/hosts file.
-  ##
-  hostAliases: []
-    # - ip: "127.0.0.1"
-    #   hostnames:
-    #     - "foo.local"
-    #     - "bar.local"
-    # - ip: "10.1.2.3"
-    #   hostnames:
-    #     - "foo.remote"
-    #     - "bar.remote"
-
-## @param serviceapi Core ReportPortal service for the CRON jobs to clean the database and storage
+## @param servicejobs Core ReportPortal service for the CRON jobs to clean the database and storage
 ##
 servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.15.3
+    tag: 6.0.0
   pullPolicy: Always
   ## @param servicejobs.startupProbe configure startup probe
   ##
@@ -719,6 +517,9 @@ servicejobs:
     maxUnavailable: ""
   service:
     type: ""
+    ## @param servicejobs.service.port Service port for the jobs service
+    ##
+    port: 8686
     portName: ""
     nodePort: ""
     extraPorts: []
@@ -733,9 +534,9 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.15.6
+    tag: 6.0.0
   pullPolicy: Always
-  uwsgiWorkers: 1
+  uwsgiWorkers: 2
   resources:
     requests:
       cpu: 500m
@@ -763,7 +564,7 @@ serviceanalyzer:
     group: 65532
     image:
       repository: busybox
-      tag: "1.38"
+      tag: latest
       ## @param serviceanalyzer.fixVolumePermissions.image.pullSecrets Image pull secrets for the
       ## fix-volume-permissions init container. Merged with global.imagePullSecrets at the pod level.
       ## Use when busybox is pulled from a private registry that requires separate credentials.
@@ -820,6 +621,9 @@ serviceanalyzer:
     maxUnavailable: ""
   service:
     type: ""
+    ## @param serviceanalyzer.service.port Service port for the analyzer
+    ##
+    port: 5001
     portName: ""
     nodePort: ""
     extraPorts: []
@@ -857,7 +661,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.6
+    tag: 6.0.0
   resources:
     requests:
       cpu: 100m
@@ -897,7 +701,7 @@ mcp:
   name: mcp
   image:
     repository: reportportal/mcp-server
-    tag: 1.4.0
+    tag: 2.0.0
   pullPolicy: IfNotPresent
   ## @param mcp.analyticsOff Disable anonymous MCP usage analytics
   ##
@@ -1336,108 +1140,86 @@ searchengine:
 
 ## @section Storage Configuration
 ##
-## ReportPortal supports three storage types: minio, s3, and filesystem
-## Choose the storage type that best fits your environment and requirements
-##
-## Quick Start Presets:
-##   - For local development: use "minio" (default)
-##   - For production with cloud storage: use "s3"
-##   - For production with shared filesystem: use "filesystem"
-##
-## Storage Type Comparison:
-##   - minio: Self-hosted S3-compatible (chart default for backward compatibility)
-##   - s3: Cloud object storage (production, IAM)
-##   - filesystem: Shared filesystem (production, on-premise)
+## Binary data (attachments, analyzer models) via Apache OpenDAL.
+## s3-compatible (default, bundled SeaweedFS), aws-s3, or filesystem.
+## See docs/s3-compatible-storage.md and docs/s3-storage-eks.md.
 ##
 storage:
-  ## @param storage.type Storage type: minio, s3, filesystem
+  ## @param storage.type Storage type: s3-compatible, aws-s3, filesystem
   ##
-  type: minio
+  type: s3-compatible
 
-  ## @param storage.secretName Kubernetes secret containing storage credentials
-  ## Leave empty to use inline credentials below
-  ## Recommended for production: create a secret and reference it here
+  ## @param storage.secretName Secret with storage credentials. Empty uses accesskey and secretkey
   ##
   secretName: ""
 
-  ## @param storage.accesskeyName and @param storage.secretkeyName
-  ## Secret key names when using storage.secretName
-  ## These map to the keys in your Kubernetes secret
+  ## @param storage.accesskeyName Key in storage.secretName for the access key
   ##
   accesskeyName: "access-key"
+  ## @param storage.secretkeyName Key in storage.secretName for the secret key
+  ##
   secretkeyName: "secret-key"
 
-  ## @param storage.accesskey and @param storage.secretkey
-  ## Inline storage credentials (not recommended for production)
-  ## For S3 with IAM roles, leave these empty
+  ## @param storage.accesskey Inline access key. Leave empty for aws-s3 with IRSA
   ##
   accesskey: &storageAccessKey rpuser
-  secretkey: &storageSecretKey miniopassword
+  ## @param storage.secretkey Inline secret key. Leave empty for aws-s3 with IRSA
+  ##
+  secretkey: &storageSecretKey rppassword
 
-  ## @param storage.endpoint Storage service endpoint
-  ## For MinIO: leave empty to use internal service
-  ## For S3: leave empty to use AWS default endpoints
-  ## For custom S3-compatible: specify endpoint URL (without protocol/port)
+  ## @param storage.endpoint S3-compatible host name, without scheme or port
+  ## Empty uses bundled SeaweedFS. Required when seaweedfs.install=false. Ignored for aws-s3.
   ##
   endpoint: ""
-  ## true = HTTPS, false = HTTP
+  ## @param storage.ssl true = https, false = http
   ##
   ssl: false
 
-  ## @param storage.port Storage service port
-  ## Leave empty to auto-select based on storage type:
-  ##   minio → 9000 (MinIO API default)
-  ## Set explicitly to override the auto-selected default.
+  ## @param storage.port Port. Empty uses 80/443 for an external host, or 8333 for bundled SeaweedFS
   ##
   port: ""
 
-  ## @param storage.region AWS region for S3 storage
-  ## Required for S3 storage type
-  ## Examples: us-east-1, eu-west-1, ap-southeast-1
+  ## @param storage.region SigV4 region. Required for aws-s3; recommended for s3-compatible (services' defaults differ)
   ##
   region: ""
 
-  ## @param storage.bucket Bucket configuration for object storage (minio/s3)
+  ## @param storage.bucket Bucket settings for s3-compatible and aws-s3
   ##
   bucket:
-    ## @param storage.bucket.type Bucket organization strategy
-    ## Options: single, multi
-    ##   single: One bucket for all data with subdirectories (recommended for production)
-    ##   multi: Separate bucket for each project (not recommended - creates many buckets)
-    ##
-    ## IMPORTANT: Multi-bucket strategy is NOT recommended for production S3 deployments
-    ## because ReportPortal will create a separate S3 bucket for each project in the portal
-    ## Use single bucket strategy which creates one bucket with subdirectories for better management.
+    ## @param storage.bucket.type multi (project folders prefixed with bucketMultiPrefix) or single (project-data/<id> prefixes)
+    ## Both layouts live inside the one bucket bucketDefaultName. The analyzer always uses one bucket.
+    ## multi matches the paths that 26.0 stored in the database, so 26.0 data needs no SQL changes.
     ##
     type: multi
 
-    ## @param storage.bucket.bucketDefaultName Default bucket name
-    ## For single bucket mode: this is the main bucket name
-    ## For multi bucket mode: this is the plugins bucket name
+    ## @param storage.bucket.bucketDefaultName Bucket name. Holds all data: project folders, plugins and the integration salt
+    ## Must already exist, unless the bundled SeaweedFS hook creates it.
     ##
-    bucketDefaultName: "rp-bucket"
+    bucketDefaultName: &storageBucketDefaultName "rp-bucket"
 
-    ## @param storage.bucket.bucketMultiPrefix Prefix for project buckets (multi mode only)
-    ## Project buckets will be named: {prefix}{project-id}{postfix}
+    ## @param storage.bucket.bucketMultiPrefix Project bucket prefix in multi mode ({prefix}{id}{postfix})
+    ## Also used as the analyzer key prefix in every mode.
     ##
     bucketMultiPrefix: "prj-"
 
-    ## @param storage.bucket.bucketMultiPostfix Suffix for project buckets (multi mode only)
+    ## @param storage.bucket.bucketMultiPostfix Project bucket suffix in multi mode
     ##
     bucketMultiPostfix: ""
 
-    ## @param storage.bucket.bucketMultiSaltName Salt storage location (multi mode only)
+    ## @param storage.bucket.bucketMultiSaltName Salt object name in multi mode
     ##
     bucketMultiSaltName: "keystore"
 
-  ## @param storage.volume Filesystem storage configuration (when type=filesystem)
+  ## @param storage.volume Filesystem settings, used when type=filesystem
   ##
   volume:
-    ## @param storage.volume.defaultPath Default mount path inside containers
+    ## @param storage.volume.defaultPath Mount path inside containers
     ##
     defaultPath: "/data/storage"
 
-    ## @param storage.volume.analyzerPath Default mount path inside containers for analyzer
+    ## @param storage.volume.analyzerPath Relative subpath that isolates analyzer data
+    ## filesystem: <defaultPath>/<analyzerPath>/...   s3: key <analyzerPath>/<bucketMultiPrefix><id>
+    ## Slashes at the ends are ignored. Empty falls back to analyzer.
     ##
     analyzerPath: "analyzer"
 
@@ -1451,12 +1233,6 @@ storage:
     ## For GKE with Filestore: use "standard-rwx"
     ##
     storageClassName: "standard"
-
-    ## @param storage.volume.accessModes Kubernetes access modes for the PersistentVolume and PersistentVolumeClaim
-    ## Use ReadWriteOnce for single-node local-path storage; use ReadWriteMany for shared filesystem storage.
-    ##
-    accessModes:
-      - ReadWriteMany
 
     ## @param storage.volume.reclaimPolicy PersistentVolume reclaim policy when chart provisions a PV
     ## Options: Retain, Delete
@@ -1546,9 +1322,9 @@ ingress:
   path: ""
   class: nginx
   ## @param ingress.extraPaths additional ingress paths, rendered before the built-in ones
-  ## Each entry is a raw Ingress HTTPIngressPath. Rendered ahead of the `/`, `/ui`,
-  ## `/uat` and `/api` rules so that ALB action paths such as `ssl-redirect`, which
-  ## must be evaluated first, can be declared here.
+  ## Each entry is a raw Ingress HTTPIngressPath. Rendered ahead of the built-in `/api`
+  ## and `/` rules so that ALB action paths such as `ssl-redirect`, which must be
+  ## evaluated first, can be declared here.
   ##
   extraPaths: []
     # - path: /grafana/
@@ -1710,7 +1486,7 @@ gatewayAPI:
 ## ref: https://kubernetes.io/docs/admin/authorization/rbac/
 ##
 rbac:
-  ## @param rbac is required for service-index in order to collect status/info over all services
+  ## @param rbac.create Create RBAC Role and RoleBinding (used by the pre-upgrade cleanup hook)
   ##
   create: true
   ## @param rbac.rules define the rules for ReportPortal
@@ -1732,7 +1508,7 @@ k8sWaitFor:
 kubectl:
   image:
     repository: rancher/kubectl
-    tag: v1.36.2
+    tag: v1.35.6
 
 ## Networking between pods
 ## Set @param k8s.networking.ssl to `true` if SSL enabled between pods inside Kubernetes cluster
@@ -1830,11 +1606,6 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  ## RabbitMQ 4.4 denies queue_master_locator by default; ReportPortal API needs it
-  ##
-  config:
-    extraConfiguration: |
-      deprecated_features.permit.queue_master_locator = true
 
 ## @param opensearch External OpenSearch Helm Chart as dependency
 ## Set @param opensearch.install to `false` if using a Cloud/On-Premise managed OpenSearch
@@ -1858,19 +1629,42 @@ opensearch:
     - name: DISABLE_SECURITY_PLUGIN
       value: "true"
 
-## @param minio External MinIO Helm Chart (chart default for backward compatibility)
-## Set minio.install to false when using external S3.
+## @param seaweedfs Official SeaweedFS chart, values pass through (https://seaweedfs.github.io/seaweedfs/helm)
+## Demo only: one all-in-one pod and one PVC. Set install to false for your own S3 endpoint or aws-s3.
+## With storage.secretName, set s3.credentials.admin.existingSecret, accessKeyKey, and secretKeyKey.
 ##
-minio:
+seaweedfs:
+  ## @param seaweedfs.install Install SeaweedFS. Set to false for an external S3 endpoint or aws-s3
+  ##
   install: true
-  image:
-    repository: bitnamilegacy/minio
-    tag: 2025.7.23-debian-12-r0
-  auth:
-    rootUser: *storageAccessKey
-    rootPassword: *storageSecretKey
-  persistence:
-    annotations:
-      "helm.sh/resource-policy": "keep"
-  console:
+  ## Standalone master, volume, and filer stay off. allInOne runs them in one pod.
+  ##
+  master:
     enabled: false
+  volume:
+    enabled: false
+  filer:
+    enabled: false
+  ## S3 admin keys. The chart reads s3.credentials, not allInOne.s3.
+  ##
+  s3:
+    enableAuth: true
+    credentials:
+      admin:
+        accessKey: *storageAccessKey
+        secretKey: *storageSecretKey
+  allInOne:
+    enabled: true
+    ## One replica. Recreate so two pods never share the ReadWriteOnce volume.
+    ##
+    replicas: 1
+    updateStrategy:
+      type: Recreate
+    s3:
+      enabled: true
+      enableAuth: true
+    data:
+      type: persistentVolumeClaim
+      size: 10Gi
+      annotations:
+        "helm.sh/resource-policy": "keep"

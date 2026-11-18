@@ -28,53 +28,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.pdb.minAvailable` | Minimum number/percentage of pods that should remain scheduled | `""` |
 | `global.pdb.maxUnavailable` | Maximum number/percentage of pods that may be made unavailable | `"1"` |
 
-## Service Index Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `serviceindex.name` | Service name | `index` |
-| `serviceindex.image.repository` | Image repository | `reportportal/service-index` |
-| `serviceindex.image.tag` | Image tag | `5.15.2` |
-| `serviceindex.pullPolicy` | Image pull policy | `Always` |
-| `serviceindex.resources.requests.cpu` | CPU requests | `150m` |
-| `serviceindex.resources.requests.memory` | Memory requests | `128Mi` |
-| `serviceindex.resources.limits.cpu` | CPU limits | `200m` |
-| `serviceindex.resources.limits.memory` | Memory limits | `256Mi` |
-| `serviceindex.extraInitContainers` | Init containers | `{}` |
-| `serviceindex.podLabels` | Pod labels | `{}` |
-| `serviceindex.podAnnotations` | Pod annotations | `{}` |
-| `serviceindex.securityContext` | Security context | `{}` |
-| `serviceindex.serviceAccountName` | Service account name | `""` |
-| `serviceindex.startupProbe.enabled` | Enable startup probe | `true` |
-| `serviceindex.startupProbe.initialDelaySeconds` | Initial delay | `5` |
-| `serviceindex.startupProbe.periodSeconds` | Period | `5` |
-| `serviceindex.startupProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.startupProbe.failureThreshold` | Failure threshold | `12` |
-| `serviceindex.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceindex.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.readinessProbe.periodSeconds` | Period | `5` |
-| `serviceindex.readinessProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.readinessProbe.successThreshold` | Success threshold | `1` |
-| `serviceindex.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceindex.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.livenessProbe.periodSeconds` | Period | `20` |
-| `serviceindex.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `serviceindex.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.nodeSelector` | Node selector | `{}` |
-| `serviceindex.affinity` | Affinity rules | `{}` |
-| `serviceindex.tolerations` | Tolerations | `[]` |
-| `serviceindex.strategy` | Deployment strategy | `{}` |
-| `serviceindex.pdb.create` | Create PDB | `false` |
-| `serviceindex.pdb.minAvailable` | PDB min available | `""` |
-| `serviceindex.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `serviceindex.service.type` | Service type | `""` |
-| `serviceindex.service.portName` | Port name | `""` |
-| `serviceindex.service.nodePort` | Node port | `""` |
-| `serviceindex.service.extraPorts` | Extra ports | `[]` |
-| `serviceindex.service.annotations` | Service annotations | `{}` |
-| `serviceindex.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-
 ## Service UI Configuration
 
 | Parameter | Description | Default |
@@ -135,7 +88,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.6` |
+| `serviceapi.image.tag` | Image tag | `6.0.0` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
 | `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
@@ -165,6 +118,11 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.auditLogs.enable` | Enable audit logs | `false` |
 | `serviceapi.auditLogs.loglevel` | Audit log level | `info` |
 | `serviceapi.allowDeleteAccount` | Allow delete account | `true` |
+| `serviceapi.auth.sessionLiveTime` | UI/OAuth session lifetime in seconds (`RP_SESSION_LIVE`) | `86400` |
+| `serviceapi.auth.samlSessionLiveTime` | SAML session lifetime in seconds (`RP_SAML_SESSION-LIVE`) | `4320` |
+| `serviceapi.auth.superadminInitPasswd.secretName` | Existing Secret with the initial superadmin password | `""` |
+| `serviceapi.auth.superadminInitPasswd.passwordKeyName` | Key in that Secret holding the password | `superadmin-password` |
+| `serviceapi.auth.superadminInitPasswd.password` | Plain-text initial superadmin password (first launch only) | `""` |
 | `serviceapi.cronJobs.interruptBrockenLaunches` | Interrupt broken launches duration | `PT1H` |
 | `serviceapi.cronJobs.loadPlugins` | Load plugins duration | `PT10S` |
 | `serviceapi.patternAnalysis.batchSize` | Pattern analysis batch size | `100` |
@@ -198,75 +156,13 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.secret.data` | Secret data | `{}` |
 | `serviceapi.hostAliases` | Host aliases | `[]` |
 
-## UAT (Authorization) Service Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `uat.name` | Service name | `uat` |
-| `uat.image.repository` | Image repository | `reportportal/service-authorization` |
-| `uat.image.tag` | Image tag | `5.15.2` |
-| `uat.pullPolicy` | Image pull policy | `Always` |
-| `uat.replicaCount` | Number of replicas | `1` |
-| `uat.startupProbe.enabled` | Enable startup probe | `true` |
-| `uat.startupProbe.initialDelaySeconds` | Initial delay | `10` |
-| `uat.startupProbe.periodSeconds` | Period | `10` |
-| `uat.startupProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.startupProbe.failureThreshold` | Failure threshold | `24` |
-| `uat.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `uat.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.readinessProbe.periodSeconds` | Period | `10` |
-| `uat.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `uat.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.livenessProbe.periodSeconds` | Period | `20` |
-| `uat.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.resources.requests.cpu` | CPU requests | `100m` |
-| `uat.resources.requests.memory` | Memory requests | `512Mi` |
-| `uat.resources.limits.cpu` | CPU limits | `500m` |
-| `uat.resources.limits.memory` | Memory limits | `1Gi` |
-| `uat.sessionLiveTime` | Session live time | `86400` |
-| `uat.samlSessionLiveTime` | SAML session live time | `4320` |
-| `uat.extraInitContainers` | Init containers | `{}` |
-| `uat.initContainerResources` | Migrations-waiting init container resources; overrides global when non-empty | `{}` |
-| `uat.extraVolumes` | Extra volumes | `[]` |
-| `uat.extraVolumeMounts` | Extra volume mounts | `[]` |
-| `uat.superadminInitPasswd.secretName` | Superadmin password secret name | `""` |
-| `uat.superadminInitPasswd.passwordKeyName` | Superadmin password key name | `superadmin-password` |
-| `uat.superadminInitPasswd.password` | Superadmin password | `""` |
-| `uat.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"` |
-| `uat.extraEnvs` | Extra environment variables | `[]` |
-| `uat.podLabels` | Pod labels | `{}` |
-| `uat.podAnnotations` | Pod annotations | `{}` |
-| `uat.securityContext` | Security context | `{}` |
-| `uat.nodeSelector` | Node selector | `{}` |
-| `uat.affinity` | Affinity rules | `{}` |
-| `uat.serviceAccountName` | Service account name | `""` |
-| `uat.tolerations` | Tolerations | `[]` |
-| `uat.strategy` | Deployment strategy | `{}` |
-| `uat.pdb.create` | Create PDB | `false` |
-| `uat.pdb.minAvailable` | PDB min available | `""` |
-| `uat.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `uat.secret.enabled` | Enable secret | `false` |
-| `uat.secret.mountPath` | Secret mount path | `/etc/secret-volume` |
-| `uat.secret.readOnly` | Secret read only | `true` |
-| `uat.secret.data` | Secret data | `{}` |
-| `uat.service.type` | Service type | `""` |
-| `uat.service.portName` | Port name | `""` |
-| `uat.service.nodePort` | Node port | `""` |
-| `uat.service.extraPorts` | Extra ports | `[]` |
-| `uat.service.annotations` | Service annotations | `{}` |
-| `uat.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-| `uat.hostAliases` | Host aliases | `[]` |
-
 ## Service Jobs Configuration
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.3` |
+| `servicejobs.image.tag` | Image tag | `6.0.0` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
 | `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
 | `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
@@ -314,6 +210,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.pdb.minAvailable` | PDB min available | `""` |
 | `servicejobs.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `servicejobs.service.type` | Service type | `""` |
+| `servicejobs.service.port` | Service port for the jobs service | `8686` |
 | `servicejobs.service.portName` | Port name | `""` |
 | `servicejobs.service.nodePort` | Node port | `""` |
 | `servicejobs.service.extraPorts` | Extra ports | `[]` |
@@ -326,7 +223,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.6` |
+| `serviceanalyzer.image.tag` | Image tag | `6.0.0` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -339,7 +236,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
-| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.38` |
+| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
 | `serviceanalyzer.fixVolumePermissions.image.pullSecrets` | Image pull secrets for the init container image; merged with `global.imagePullSecrets` at the pod level | `[]` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.cpu` | Fix-volume-permissions init container CPU requests | `50m` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.memory` | Fix-volume-permissions init container memory requests | `50Mi` |
@@ -360,6 +257,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.pdb.minAvailable` | PDB min available | `""` |
 | `serviceanalyzer.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `serviceanalyzer.service.type` | Service type | `""` |
+| `serviceanalyzer.service.port` | Service port for the analyzer | `5001` |
 | `serviceanalyzer.service.portName` | Port name | `""` |
 | `serviceanalyzer.service.nodePort` | Node port | `""` |
 | `serviceanalyzer.service.extraPorts` | Extra ports | `[]` |
@@ -388,7 +286,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.6` |
+| `migrations.image.tag` | Image tag | `6.0.0` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |
@@ -593,26 +491,25 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `storage.type` | Storage type: `minio`, `s3`, `filesystem` | `minio` |
+| `storage.type` | Storage type: `s3-compatible`, `aws-s3`, `filesystem` | `s3-compatible` |
 | `storage.secretName` | Storage secret name | `""` |
 | `storage.accesskeyName` | Access key name | `access-key` |
 | `storage.secretkeyName` | Secret key name | `secret-key` |
-| `storage.accesskey` | Access key | `rpuser` |
-| `storage.secretkey` | Secret key | `miniopassword` |
-| `storage.endpoint` | Storage endpoint (empty = internal service for MinIO) | `""` |
-| `storage.ssl` | SSL connection | `false` |
-| `storage.port` | Storage port (empty = auto: minio→9000) | `""` |
-| `storage.region` | AWS region | `""` |
-| `storage.bucket.type` | Bucket type (single, multi) | `multi` |
+| `storage.accesskey` | Access key (empty for aws-s3 IRSA) | `rpuser` |
+| `storage.secretkey` | Secret key (empty for aws-s3 IRSA) | `rppassword` |
+| `storage.endpoint` | S3-compatible host name without scheme or port (empty = bundled SeaweedFS) | `""` |
+| `storage.ssl` | `true` = https, `false` = http | `false` |
+| `storage.port` | Port (empty = scheme default for external hosts, 8333 for bundled SeaweedFS) | `""` |
+| `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`, recommended for `s3-compatible`) | `""` |
+| `storage.bucket.type` | Bucket layout inside `bucketDefaultName` (`multi`, `single`) | `multi` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
 | `storage.bucket.bucketMultiPrefix` | Multi bucket prefix | `prj-` |
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
-| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"analyzer"` |
+| `storage.volume.analyzerPath` | Relative analyzer-private subpath (not a mount path): directory under `defaultPath` for `filesystem`, key prefix inside `bucketDefaultName` for S3 types. Slashes at the ends are ignored; empty falls back to `analyzer` | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
-| `storage.volume.accessModes` | Kubernetes access modes for the PersistentVolume and PersistentVolumeClaim | `["ReadWriteMany"]` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
 | `storage.volume.annotations` | Volume annotations | `{}` |
 | `storage.volume.volumeConfig.type` | Volume config type | `""` |
@@ -631,8 +528,8 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `ingress.enable` | Enable ingress | `true` |
 | `ingress.hosts` | Ingress hosts | `null` |
 | `ingress.path` | Ingress path | `""` |
+| `ingress.extraPaths` | Additional Ingress HTTP paths rendered before built-in rules | `[]` |
 | `ingress.class` | Ingress class (`nginx`, `traefik`, `gce`, `alb`, or other; maps to `spec.ingressClassName`) | `nginx` |
-| `ingress.extraPaths` | Additional raw Ingress paths, rendered before the built-in `/`, `/ui`, `/uat` and `/api` rules | `[]` |
 | `ingress.annotations` | Ingress annotations (key-value map) | `{}` |
 | `ingress.tls.certificates` | TLS certificates | `null` |
 | `ingress.tls.certificate.gcpManaged` | GCP managed certificate | `false` |
@@ -668,7 +565,7 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `rbac.create` | Create RBAC resources | `true` |
+| `rbac.create` | Create RBAC Role and RoleBinding (used by the pre-upgrade cleanup hook) | `true` |
 | `rbac.rules` | RBAC rules | `[]` |
 
 ## Hooks Configuration
@@ -731,13 +628,19 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
 | `opensearch.extraEnvs` | OpenSearch extra env vars | Various settings |
-| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using external S3) | `true` |
-| `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
-| `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |
-| `minio.auth.rootUser` | MinIO root user | `rpuser` |
-| `minio.auth.rootPassword` | MinIO root password | `miniopassword` |
-| `minio.persistence.annotations` | MinIO persistence annotations | `{"helm.sh/resource-policy": "keep"}` |
-| `minio.console.enabled` | MinIO console enabled | `false` |
+| `seaweedfs.install` | Install the bundled demo SeaweedFS (single node, single replica, no HA); set `false` for external / aws-s3 | `true` |
+| `seaweedfs.master.enabled` | Deploy SeaweedFS master component (disabled when using all-in-one) | `false` |
+| `seaweedfs.volume.enabled` | Deploy SeaweedFS volume component (disabled when using all-in-one) | `false` |
+| `seaweedfs.filer.enabled` | Deploy SeaweedFS filer component (disabled when using all-in-one) | `false` |
+| `seaweedfs.s3.enableAuth` | Enable SeaweedFS S3 authentication | `true` |
+| `seaweedfs.s3.credentials.admin.accessKey` | SeaweedFS S3 admin access key (aligned with `storage.accesskey`) | `rpuser` |
+| `seaweedfs.s3.credentials.admin.secretKey` | SeaweedFS S3 admin secret key (aligned with `storage.secretkey`) | `rppassword` |
+| `seaweedfs.allInOne.enabled` | Run SeaweedFS as a single all-in-one Deployment | `true` |
+| `seaweedfs.allInOne.replicas` | All-in-one replicas (demo setup: keep `1`; anything else is user-managed) | `1` |
+| `seaweedfs.allInOne.updateStrategy.type` | All-in-one update strategy (`Recreate` for the single RWO volume) | `Recreate` |
+| `seaweedfs.allInOne.s3.enabled` | Enable S3 gateway on the all-in-one pod | `true` |
+| `seaweedfs.allInOne.data.type` | All-in-one data volume type | `persistentVolumeClaim` |
+| `seaweedfs.allInOne.data.size` | All-in-one PVC size | `10Gi` |
 
 ## Additional Configuration
 
@@ -756,7 +659,7 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `mcp.enabled` | Enable the ReportPortal MCP server | `false` |
 | `mcp.name` | Service name | `mcp` |
 | `mcp.image.repository` | Image repository | `reportportal/mcp-server` |
-| `mcp.image.tag` | Image tag | `1.4.0` |
+| `mcp.image.tag` | Image tag | `2.0.0` |
 | `mcp.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
 | `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |

@@ -46,30 +46,6 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    # Route for UI service
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/ui
-      backendRefs:
-        - name: {{ $fullName }}-ui
-          port: {{ .Values.serviceui.service.port | default 8080 }}
-    # Route for UAT (authorization) service
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/uat
-      backendRefs:
-        - name: {{ $fullName }}-uat
-          port: {{ .Values.uat.service.port | default 9999 }}
-    # Route for API service
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/api
-      backendRefs:
-        - name: {{ $fullName }}-api
-          port: {{ .Values.serviceapi.service.port | default 8585 }}
     {{- if .Values.mcp.enabled }}
     # Route for the optional MCP server
     - matches:
@@ -106,14 +82,22 @@ spec:
         - name: {{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}
           port: {{ .Values.premium.scim.service.port | default 8080 }}
     {{- end }}
-    # Route for index service (root catch-all; must stay after more specific prefixes)
+    # More specific /api before the / catch-all
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/api
+      backendRefs:
+        - name: {{ $fullName }}-api
+          port: {{ .Values.serviceapi.service.port | default 8585 }}
+    # Default / (covers /ui) → UI
     - matches:
         - path:
             type: PathPrefix
             value: {{ $basePath | default "/" }}
       backendRefs:
-        - name: {{ $fullName }}-index
-          port: {{ .Values.serviceindex.service.port | default 8080 }}
+        - name: {{ $fullName }}-ui
+          port: {{ .Values.serviceui.service.port | default 8080 }}
           {{- if .Values.gatewayAPI.httpRoute.backendRefs.weight }}
           weight: {{ .Values.gatewayAPI.httpRoute.backendRefs.weight }}
           {{- end }}
@@ -121,4 +105,3 @@ spec:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 {{- end }}
-

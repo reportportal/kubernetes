@@ -69,10 +69,8 @@ The ALB routes incoming requests by path to the following ReportPortal services:
 
 | URL path | Service | Port |
 |---|---|---|
-| `/` | `service-index` | 8080 |
-| `/ui` | `service-ui` | 8080 |
-| `/uat` | `service-authorization` | 9999 |
 | `/api` | `service-api` | 8585 |
+| `/` | `service-ui` | 8080 |
 
 ### ALB Deployment Steps
 

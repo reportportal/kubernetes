@@ -15,10 +15,8 @@ spec:
     args:
     - >
       for url in \
-        "http://{{ include "reportportal.fullname" . }}-index:8080/health" \
         "http://{{ include "reportportal.fullname" . }}-ui:8080/ui/health" \
         "http://{{ include "reportportal.fullname" . }}-api:8585/api/health" \
-        "http://{{ include "reportportal.fullname" . }}-uat:9999/uat/health" \
         {{- if .Values.mcp.enabled }}
         "http://{{ include "reportportal.fullname" . }}-mcp:8080/health" \
         {{- end }}
@@ -28,7 +26,7 @@ spec:
         {{- if include "reportportal.premium.scim.enabled" . }}
         "http://{{ include "reportportal.premium.fullname" (dict "root" . "suffix" "scim") }}:{{ .Values.premium.scim.service.port | default 8080 }}{{ include "reportportal.premium.scim.healthUrlPath" . }}" \
         {{- end }}
-        "http://{{ include "reportportal.fullname" . }}-jobs:8686/jobs/health"
+        "http://{{ include "reportportal.fullname" . }}-jobs:{{ .Values.servicejobs.service.port | default 8686 }}/jobs/health"
       do
         echo "Checking $url";
         response=$(curl --write-out "%{http_code}" --silent --output /dev/null $url);

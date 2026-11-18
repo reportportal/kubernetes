@@ -33,7 +33,7 @@ Install a new ReportPortal release:
 helm install reportportal reportportal/reportportal \
   --namespace reportportal \
   --create-namespace \
-  --set uat.superadminInitPasswd.password="ChangeMe" \
+  --set serviceapi.auth.superadminInitPasswd.password="ChangeMe" \
   --set mcp.enabled=true
 ```
 
