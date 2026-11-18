@@ -88,7 +88,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.6` |
+| `serviceapi.image.tag` | Image tag | `6.0.0` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
 | `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
@@ -162,7 +162,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.3` |
+| `servicejobs.image.tag` | Image tag | `6.0.0` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
 | `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
 | `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
@@ -223,7 +223,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.6` |
+| `serviceanalyzer.image.tag` | Image tag | `6.0.0` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -286,7 +286,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.6` |
+| `migrations.image.tag` | Image tag | `6.0.0` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |
@@ -501,7 +501,7 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `storage.ssl` | `true` = https, `false` = http | `false` |
 | `storage.port` | Port (empty = scheme default for external hosts, 8333 for bundled SeaweedFS) | `""` |
 | `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`, recommended for `s3-compatible`) | `""` |
-| `storage.bucket.type` | Bucket type (`single`, `multi`) | `single` |
+| `storage.bucket.type` | Bucket layout inside `bucketDefaultName` (`multi`, `single`) | `multi` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
 | `storage.bucket.bucketMultiPrefix` | Multi bucket prefix | `prj-` |
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
@@ -659,7 +659,7 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `mcp.enabled` | Enable the ReportPortal MCP server | `false` |
 | `mcp.name` | Service name | `mcp` |
 | `mcp.image.repository` | Image repository | `reportportal/mcp-server` |
-| `mcp.image.tag` | Image tag | `1.4.0` |
+| `mcp.image.tag` | Image tag | `2.0.0` |
 | `mcp.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
 | `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |

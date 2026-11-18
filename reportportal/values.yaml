@@ -203,7 +203,7 @@ serviceapi:
   name: api
   image:
     repository: reportportal/service-api
-    tag: 5.15.6
+    tag: 6.0.0
   pullPolicy: Always
   replicaCount: 1
   ## @param serviceapi.startupProbe configure startup probe
@@ -411,7 +411,7 @@ servicejobs:
   name: jobs
   image:
     repository: reportportal/service-jobs
-    tag: 5.15.3
+    tag: 6.0.0
   pullPolicy: Always
   ## @param servicejobs.startupProbe configure startup probe
   ##
@@ -534,7 +534,7 @@ serviceanalyzer:
   name: analyzer
   image:
     repository: reportportal/service-auto-analyzer
-    tag: 5.15.6
+    tag: 6.0.0
   pullPolicy: Always
   uwsgiWorkers: 2
   resources:
@@ -661,7 +661,7 @@ serviceanalyzer:
 migrations:
   image:
     repository: reportportal/migrations
-    tag: 5.15.6
+    tag: 6.0.0
   resources:
     requests:
       cpu: 100m
@@ -701,7 +701,7 @@ mcp:
   name: mcp
   image:
     repository: reportportal/mcp-server
-    tag: 1.4.0
+    tag: 2.0.0
   pullPolicy: IfNotPresent
   ## @param mcp.analyticsOff Disable anonymous MCP usage analytics
   ##
@@ -1186,12 +1186,13 @@ storage:
   ## @param storage.bucket Bucket settings for s3-compatible and aws-s3
   ##
   bucket:
-    ## @param storage.bucket.type single (one bucket, prefixes) or multi (one bucket per project)
-    ## multi creates a bucket per project and is not recommended. The analyzer always uses one bucket.
+    ## @param storage.bucket.type multi (project folders prefixed with bucketMultiPrefix) or single (project-data/<id> prefixes)
+    ## Both layouts live inside the one bucket bucketDefaultName. The analyzer always uses one bucket.
+    ## multi matches the paths that 26.0 stored in the database, so 26.0 data needs no SQL changes.
     ##
-    type: single
+    type: multi
 
-    ## @param storage.bucket.bucketDefaultName Bucket name. single: data bucket. multi: plugins bucket
+    ## @param storage.bucket.bucketDefaultName Bucket name. Holds all data: project folders, plugins and the integration salt
     ## Must already exist, unless the bundled SeaweedFS hook creates it.
     ##
     bucketDefaultName: &storageBucketDefaultName "rp-bucket"

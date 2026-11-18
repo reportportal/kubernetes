@@ -162,19 +162,28 @@ Ensure the target bucket is created and your credentials have full read, write, 
 
 ## Bucket Strategy
 
-Starting with ReportPortal 26.1, the **single-bucket strategy** is the standard configuration:
+Both strategies store everything inside one bucket, `bucketDefaultName`. The default is `multi`.
 
 | Strategy | `storage.bucket.type` | Object Layout |
 |----------|-----------------------|---------------|
-| **Single-bucket** (Standard, default) | `single` | All data is stored in `bucketDefaultName`. Projects are cleanly isolated by prefix (`project-data/<projectId>/...`). |
-| **Multi-bucket** (Legacy) | `multi` | Retained for backward compatibility with older deployments. |
+| **Multi** (default) | `multi` | Each project is a folder named `<bucketMultiPrefix><projectId><bucketMultiPostfix>` (for example `prj-1/...`). Plugins are under `<bucketDefaultName>/` and the integration salt is in `<bucketMultiPrefix><bucketMultiSaltName>/`. 26.0 stored each project in its own bucket, so 26.0 data must be copied once. See the [migration guide](migration-26.0-to-26.1.md). |
+| **Single** | `single` | Projects are isolated by prefix (`project-data/<projectId>/...`). |
 
-In single-bucket mode, the object hierarchy within `bucketDefaultName` is structured as:
+In `multi` mode, the object hierarchy within `bucketDefaultName` is structured as:
+
+- `<bucketMultiPrefix><projectId>/...`: Launch and test item attachments (for example `prj-1/...`)
+- `<bucketMultiPrefix>users/...`: User profile assets
+- `<bucketMultiPrefix><bucketMultiSaltName>/secret-integration-salt`: Integration encryption salt
+- `<bucketDefaultName>/...`: Installed plugin packages (a folder named like the bucket, for example `rp-bucket/rp-bucket/<plugin>.jar`)
+
+In `single` mode, the object hierarchy within `bucketDefaultName` is structured as:
 
 - `project-data/<projectId>/...`: Launch and test item attachments
 - `plugins/...`: Installed plugin packages
 - `integration-secrets/...`: Integration credentials and encryption material
 - `user-data/...`: User profile assets
+
+The database stores the same relative path in both releases (for example `1/2026-11/...` in `multi`, `project-data/1/...` in `single`). The bucket is never stored in the database.
 
 Changing `storage.bucket.type` on an existing deployment does not automatically relocate objects. When transitioning between strategies, existing data should be migrated accordingly (see [Upgrade Notes](#upgrade-notes)).
 
@@ -196,7 +205,7 @@ The auto-analyzer stores its machine-learning binary models in `bucketDefaultNam
 
 | Environment | Bucket Provisioning |
 |-------------|---------------------|
-| **Bundled SeaweedFS** (`single` mode) | Handled automatically. ReportPortal initializes the default bucket upon saving initial system assets during startup. |
+| **Bundled SeaweedFS** | Handled automatically. ReportPortal initializes the default bucket upon saving initial system assets during startup. |
 | **External MinIO & S3-Compatible Storage** | Pre-create the bucket specified in `storage.bucket.bucketDefaultName` before installing ReportPortal. |
 | **Amazon S3** (`aws-s3`) | Pre-create the bucket via AWS Console, CLI, or Terraform before deployment. |
 
@@ -234,8 +243,8 @@ The Helm chart manages application deployment and configuration; it does not aut
 
 ### Key Changes in ReportPortal 26.x
 
-1. **SeaweedFS is the new default bundled storage:** The embedded MinIO sub-chart has been replaced by SeaweedFS. Existing installations upgrading with default values will deploy a fresh SeaweedFS instance. If you wish to retain your existing MinIO data, configure MinIO as an external service (`seaweedfs.install: false`).
-2. **Single-bucket strategy is standard:** The chart now defaults to `storage.bucket.type: single`. If upgrading an existing deployment that used multi-bucket storage, either set `storage.bucket.type: multi` to preserve the previous configuration or plan a data migration to single-bucket format.
+1. **SeaweedFS is the new default bundled storage:** The embedded MinIO sub-chart has been replaced by SeaweedFS. `helm upgrade` removes the MinIO Deployment, Service, and Secret of the release (the volume is kept). Upgrading with default values deploys a fresh, empty SeaweedFS instance. To move your MinIO data to SeaweedFS, follow the [migration guide](migration-26.0-to-26.1.md).
+2. **Multi layout inside one bucket:** The chart defaults to `storage.bucket.type: multi`. In 26.1, `multi` projects are folders inside `bucketDefaultName` instead of separate buckets as in 26.0. Setting `multi` alone does not make 26.0 data readable. Copy it as described in the [migration guide](migration-26.0-to-26.1.md). Keep `bucketMultiPrefix`, `bucketMultiPostfix` and `bucketMultiSaltName` unchanged.
 3. **Storage type naming:** Legacy values `minio` and `s3` are replaced by `s3-compatible` and `aws-s3`.
 4. **Default credentials:** The default demo secret key is now `rppassword` (replacing `miniopassword`).
 
@@ -243,11 +252,11 @@ The Helm chart manages application deployment and configuration; it does not aut
 
 1. **Back up your data:** Create a backup of your existing storage bucket or PVC and the PostgreSQL database.
 2. **Review your storage target:**
-   - To keep MinIO: Deploy or retain MinIO externally and set `storage.endpoint`, `port`, `ssl`, and credentials in your values file.
-   - To migrate to SeaweedFS or cloud storage: Synchronize existing bucket objects to the target location using standard tools like `rclone` or `mc mirror`.
+   - To use the bundled SeaweedFS, follow the [migration guide](migration-26.0-to-26.1.md). It runs MinIO from the kept volume as the copy source and copies the objects with `mc mirror`.
+   - For other targets, the 26.1 `multi` layout applies (projects as folders in `bucketDefaultName`). Copy the objects the same way.
 3. **Preserve the integration encryption salt:**
    - Single-bucket mode stores the salt at `integration-secrets/secret-integration-salt`.
-   - Multi-bucket mode stores the salt at `keystore/secret-integration-salt`.
+   - Multi-bucket mode stores the salt at `<bucketMultiPrefix><bucketMultiSaltName>/secret-integration-salt` (default `prj-keystore/secret-integration-salt`) inside `bucketDefaultName`.
    - Ensuring this file is preserved allows ReportPortal to decrypt existing third-party integration settings without re-entering credentials.
 
 ## Troubleshooting
