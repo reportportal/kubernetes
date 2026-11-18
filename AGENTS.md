@@ -50,13 +50,12 @@
 | Section | Covers |
 |---------|--------|
 | Global Configuration | `global.*` |
-| Service Index Configuration | `serviceindex.*` |
 | Service UI Configuration | `serviceui.*` |
 | Service API Configuration | `serviceapi.*` |
-| UAT (Authorization) Service Configuration | `uat.*` |
 | Service Jobs Configuration | `servicejobs.*` |
 | Service Analyzer Configuration | `serviceanalyzer.*` |
 | Migrations Configuration | `migrations.*` |
+| Premium Features Configuration | `premium.*` |
 | MCP Server Configuration | `mcp.*` |
 | Database Configuration | `database.*` |
 | Message Broker Configuration | `msgbroker.*` |
@@ -67,7 +66,7 @@
 | RBAC Configuration | `rbac.*` |
 | Hooks Configuration | `hooks.*` |
 | Resource Quota Configuration | `resourceQuota.*` |
-| External Dependencies Configuration | `postgresql.*`, `rabbitmq.*`, `opensearch.*`, `minio.*` |
+| External Dependencies Configuration | `postgresql.*`, `rabbitmq.*`, `opensearch.*`, `seaweedfs.*` |
 | Additional Configuration | `k8sWaitFor.*`, `kubectl.*`, `k8s.*` |
 
 ---
@@ -125,7 +124,7 @@ Restore these after every `helm schema` run; the generator emits string-only / c
    }
    ```
 
-3. **External dependencies** — keep `postgresql`, `rabbitmq`, `opensearch`, and `minio` as open passthrough objects so users can set any upstream chart values (ingress, resources, persistence, etc.). Do not regenerate a closed subset of dependency keys. Preferred shape:
+3. **External dependencies** — keep `postgresql`, `rabbitmq`, `opensearch`, and `seaweedfs` as open passthrough objects so users can set any upstream chart values (ingress, resources, persistence, etc.). Do not regenerate a closed subset of dependency keys. Preferred shape:
 
    ```json
    "postgresql": {
@@ -150,7 +149,7 @@ Restore these after every `helm schema` run; the generator emits string-only / c
    }
    ```
 
-   Apply the same pattern to `rabbitmq`, `opensearch`, and `minio`.
+   Apply the same pattern to `rabbitmq`, `opensearch`, and `seaweedfs`.
 
 ### Default-value rules
 

@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@v5.0.1
+        uses: azure/setup-helm@v5.1.0
         with:
           version: v4.1.0
 
@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@v5.0.1
+        uses: azure/setup-helm@v5.1.0
         with:
           version: v4.1.0
 
@@ -48,8 +48,8 @@ jobs:
       - name: Template validation
         run: |
           helm template reportportal-test ./reportportal \
-            --set uat.superadminInitPasswd.password="testpassword123" \
+            --set serviceapi.auth.superadminInitPasswd.password="testpassword123" \
             --set postgresql.install=true \
             --set rabbitmq.install=true \
             --set opensearch.install=true \
-            --set minio.install=true > /dev/null
+            --set seaweedfs.install=true > /dev/null

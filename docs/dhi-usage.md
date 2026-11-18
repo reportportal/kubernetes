@@ -2,7 +2,7 @@
 
 This guide explains how to run the ReportPortal Helm chart dependencies **PostgreSQL** and **RabbitMQ** with [Docker Hardened Images](https://www.docker.com/products/hardened-images/) from the `dhi.io` registry.
 
-The chart uses CloudPirates subcharts for these dependencies. DHI images differ from Docker Official Images (entrypoints, UIDs, and data paths), so a few values overrides are required.
+The chart uses [CloudPirates](https://github.com/CloudPirates-io/helm-charts) subcharts for these dependencies. DHI images differ from Docker Official Images (entrypoints, UIDs, and data paths), so a few values overrides are required.
 
 ## Table of Contents
 
@@ -37,7 +37,7 @@ Important differences when switching to DHI:
 - PostgreSQL may need `image.useHardenedImage: true` and empty `args: []` so the subchart uses hardened-compatible data paths and startup.
 - RabbitMQ DHI does not ship a `-management` tag the same way as Docker Official Images; enable plugins via `rabbitmq.additionalPlugins` (already required by ReportPortal).
 
-OpenSearch and MinIO are unchanged by this guide.
+OpenSearch and SeaweedFS are unchanged by this guide.
 
 ---
 
@@ -121,7 +121,7 @@ Catalog: [dhi.io/postgres](https://hub.docker.com/hardened-images/catalog/dhi/po
 
 ## Step 4: Configure RabbitMQ for DHI
 
-Override the RabbitMQ image and security context. Keep ReportPortal-required plugins and the `queue_master_locator` permit.
+Override the RabbitMQ image and security context. Keep the ReportPortal-required plugins.
 
 ```yaml
 rabbitmq:
@@ -138,6 +138,13 @@ rabbitmq:
     runAsNonRoot: true
   podSecurityContext:
     fsGroup: 65532
+  auth:
+    enabled: true
+  additionalPlugins:
+    - rabbitmq_management
+    - rabbitmq_consistent_hash_exchange
+    - rabbitmq_shovel
+    - rabbitmq_shovel_management
 ```
 
 Catalog / guides: [dhi.io/rabbitmq](https://hub.docker.com/hardened-images/catalog/dhi/rabbitmq/guides).
@@ -182,6 +189,11 @@ rabbitmq:
     runAsNonRoot: true
   podSecurityContext:
     fsGroup: 65532
+  additionalPlugins:
+    - rabbitmq_management
+    - rabbitmq_consistent_hash_exchange
+    - rabbitmq_shovel
+    - rabbitmq_shovel_management
 ```
 
 ---
@@ -193,7 +205,7 @@ helm upgrade --install reportportal ./reportportal \
   --namespace reportportal \
   --create-namespace \
   -f dhi-values.yaml \
-  --set uat.superadminInitPasswd.password='<strong-password>'
+  --set serviceapi.auth.superadminInitPasswd.password='<strong-password>'
 ```
 
 If you already have a values file for storage, ingress, or other settings, pass multiple `-f` flags; later files override earlier ones.

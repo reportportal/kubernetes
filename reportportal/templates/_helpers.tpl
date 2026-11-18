@@ -122,13 +122,21 @@ Name of the ConfigMap holding the additional Nginx snippets for the UI service.
 {{- end -}}
 
 {{/*
-Get storage type with default "minio" and validation.
-Returns: minio, s3, or filesystem
+Get storage type with default "s3-compatible" and validation.
+Returns: s3-compatible, aws-s3, or filesystem.
+
+Legacy values "minio" and "s3" are rejected — OpenDAL-based services
+(service-api, service-jobs, service-auto-analyzer) only accept the types above.
+Use "s3-compatible" for any S3 API server (SeaweedFS, MinIO, Ceph RGW, ...)
+and "aws-s3" for Amazon S3.
 */}}
 {{- define "reportportal.storageType" -}}
-{{- $storageType := .Values.storage.type | default "minio" -}}
-{{- if not (has $storageType (list "minio" "s3" "filesystem")) -}}
-{{- fail "storage.type must be one of: minio, s3, filesystem" -}}
+{{- $storageType := .Values.storage.type | default "s3-compatible" -}}
+{{- if or (eq $storageType "minio") (eq $storageType "s3") -}}
+{{- fail (printf "storage.type %q is no longer supported; use \"s3-compatible\" (SeaweedFS, MinIO, Ceph RGW, ...) or \"aws-s3\" (Amazon S3)" $storageType) -}}
+{{- end -}}
+{{- if not (has $storageType (list "s3-compatible" "aws-s3" "filesystem")) -}}
+{{- fail "storage.type must be one of: s3-compatible, aws-s3, filesystem" -}}
 {{- end -}}
 {{- $storageType -}}
 {{- end -}}
@@ -139,30 +147,123 @@ Accepts both "analyzer" and "/analyzer" style values so that overrides from
 older chart versions (which shipped with a leading slash) continue to work.
 */}}
 {{- define "reportportal.analyzerSubpath" -}}
-{{- .Values.storage.volume.analyzerPath | default "analyzer" | trimPrefix "/" | trimSuffix "/" -}}
+{{- .Values.storage.volume.analyzerPath | default "analyzer" | replace "\\" "/" | trimAll "/" | default "analyzer" -}}
 {{- end -}}
 
 {{/*
-Returns the value for the DATASTORE_TYPE environment variable consumed by ReportPortal services.
+Returns the value for the DATASTORE_TYPE environment variable consumed by
+ReportPortal services (api, jobs, analyzer). Passes storage.type through unchanged.
 */}}
 {{- define "reportportal.datastoreType" -}}
 {{- include "reportportal.storageType" . -}}
 {{- end -}}
 
 {{/*
-Returns the full S3 endpoint URL for minio storage type.
-Port is auto-selected based on storage type when storage.port is empty:
-  minio → 9000 (MinIO API default)
-Override storage.endpoint to point at an external or custom service.
+Fully qualified name of the bundled SeaweedFS release (mirrors seaweedfs.fullname
+when the chart is installed as a subchart named "seaweedfs").
+*/}}
+{{- define "reportportal.seaweedfs.fullname" -}}
+{{- if (.Values.seaweedfs).fullnameOverride -}}
+{{- .Values.seaweedfs.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "seaweedfs" (.Values.seaweedfs).nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Returns the full S3 endpoint URL for storage.type=s3-compatible.
+
+Rules:
+  1. storage.endpoint is a host name only (no scheme, no port). The scheme comes
+     from storage.ssl; :storage.port is appended only when storage.port is set.
+     A value starting with http:// or https:// is rejected to avoid conflicting
+     with storage.ssl.
+  2. When storage.endpoint is empty and seaweedfs.install=true, point at the
+     bundled single-node SeaweedFS (all-in-one service, port 8333).
+  3. Otherwise fail — an endpoint is required for external S3-compatible storage.
 */}}
 {{- define "reportportal.storageEndpoint" -}}
-{{- $storageType := include "reportportal.storageType" . -}}
+{{- $endpoint := .Values.storage.endpoint | default "" | toString -}}
+{{- if or (hasPrefix "http://" $endpoint) (hasPrefix "https://" $endpoint) -}}
+{{- fail (printf "storage.endpoint must be a host name without scheme (got %q); use storage.ssl for http/https and storage.port for the port" $endpoint) -}}
+{{- else if $endpoint -}}
 {{- $scheme := ternary "https" "http" .Values.storage.ssl -}}
-{{- if eq $storageType "minio" -}}
-  {{- $port := .Values.storage.port | default 9000 -}}
-  {{- $host := .Values.storage.endpoint | default (printf "%s-minio.%s.svc.%s" .Release.Name .Release.Namespace .Values.global.clusterDomain) -}}
-  {{- printf "%s://%s:%v" $scheme $host $port -}}
+{{- if .Values.storage.port -}}
+{{- printf "%s://%s:%v" $scheme $endpoint .Values.storage.port -}}
+{{- else -}}
+{{- printf "%s://%s" $scheme $endpoint -}}
 {{- end -}}
+{{- else if (.Values.seaweedfs).install -}}
+{{- $scheme := ternary "https" "http" .Values.storage.ssl -}}
+{{- $fullname := include "reportportal.seaweedfs.fullname" . -}}
+{{- $allInOne := (.Values.seaweedfs).allInOne | default dict -}}
+{{- $port := .Values.storage.port | default (($allInOne.s3).port) | default 8333 -}}
+{{- printf "%s://%s-all-in-one.%s.svc.%s:%v" $scheme $fullname .Release.Namespace .Values.global.clusterDomain $port -}}
+{{- else -}}
+{{- fail "storage.endpoint is required when storage.type is s3-compatible and seaweedfs.install is false" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Returns the storage region for DATASTORE_REGION.
+Maps legacy "us-standard" to "us-east-1".
+Required for aws-s3; optional for s3-compatible (when empty, each service uses its own default).
+*/}}
+{{- define "reportportal.storageRegion" -}}
+{{- $storageType := include "reportportal.storageType" . -}}
+{{- $region := .Values.storage.region | default "" | toString -}}
+{{- if eq $region "us-standard" -}}
+{{- $region = "us-east-1" -}}
+{{- end -}}
+{{- if and (eq $storageType "aws-s3") (eq $region "") -}}
+{{- fail "storage.region is required when storage.type is aws-s3" -}}
+{{- end -}}
+{{- $region -}}
+{{- end -}}
+
+{{/*
+Shared DATASTORE_* environment variables for object storage
+(s3-compatible and aws-s3). Render with | nindent N in service templates.
+
+Emits: DATASTORE_TYPE, DATASTORE_ENDPOINT (s3-compatible only),
+DATASTORE_REGION (when set), DATASTORE_ACCESSKEY, DATASTORE_SECRETKEY.
+Bucket / feature-flag env vars are service-specific and stay in the templates.
+*/}}
+{{- define "reportportal.datastoreEnv" -}}
+{{- $storageType := include "reportportal.storageType" . -}}
+- name: DATASTORE_TYPE
+  value: "{{ include "reportportal.datastoreType" . }}"
+{{- if eq $storageType "s3-compatible" }}
+- name: DATASTORE_ENDPOINT
+  value: "{{ include "reportportal.storageEndpoint" . }}"
+{{- end }}
+{{- $region := include "reportportal.storageRegion" . -}}
+{{- if $region }}
+- name: DATASTORE_REGION
+  value: "{{ $region }}"
+{{- end }}
+{{- if .Values.storage.secretName }}
+- name: DATASTORE_ACCESSKEY
+  valueFrom:
+    secretKeyRef:
+      name: "{{ .Values.storage.secretName }}"
+      key: "{{ .Values.storage.accesskeyName }}"
+- name: DATASTORE_SECRETKEY
+  valueFrom:
+    secretKeyRef:
+      name: "{{ .Values.storage.secretName }}"
+      key: "{{ .Values.storage.secretkeyName }}"
+{{- else }}
+- name: DATASTORE_ACCESSKEY
+  value: "{{ .Values.storage.accesskey }}"
+- name: DATASTORE_SECRETKEY
+  value: "{{ .Values.storage.secretkey }}"
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -218,43 +319,43 @@ Priority:
 {{- end -}}
 
 {{/*
-Return true when the Test Executions Prime feature should be deployed.
+Return true when the Test Executions Premium feature should be deployed.
 */}}
-{{- define "reportportal.prime.testExecutions.enabled" -}}
-{{- if and .Values.prime.enabled .Values.prime.testExecutions.enabled -}}
+{{- define "reportportal.premium.testExecutions.enabled" -}}
+{{- if .Values.premium.testExecutions.enabled -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return true when the SCIM Bridge Prime feature should be deployed.
+Return true when the SCIM Bridge Premium feature should be deployed.
 */}}
-{{- define "reportportal.prime.scim.enabled" -}}
-{{- if and .Values.prime.enabled .Values.prime.scim.enabled -}}
+{{- define "reportportal.premium.scim.enabled" -}}
+{{- if .Values.premium.scim.enabled -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
-Fully qualified name for a Prime component.
-Usage: include "reportportal.prime.fullname" (dict "root" . "suffix" "test-executions")
+Fully qualified name for a Premium component.
+Usage: include "reportportal.premium.fullname" (dict "root" . "suffix" "test-executions")
 */}}
-{{- define "reportportal.prime.fullname" -}}
+{{- define "reportportal.premium.fullname" -}}
 {{- $suffixLen := add (len .suffix) 1 -}}
 {{- $maxRootLen := sub 63 $suffixLen | int -}}
 {{- printf "%s-%s" (include "reportportal.fullname" .root | trunc $maxRootLen | trimSuffix "-") .suffix -}}
 {{- end -}}
 
 {{/*
-Image reference for a Prime component (nested under .Values.prime.<componentKey>).
-Usage: include "reportportal.prime.image" (dict "root" . "componentKey" "testExecutions")
+Image reference for a Premium component (nested under .Values.premium.<componentKey>).
+Usage: include "reportportal.premium.image" (dict "root" . "componentKey" "testExecutions")
 Fails when repository or tag is empty and the component is enabled.
 */}}
-{{- define "reportportal.prime.image" -}}
+{{- define "reportportal.premium.image" -}}
 {{- $root := .root -}}
-{{- $comp := index $root.Values.prime .componentKey -}}
-{{- $repo := required (printf "prime.%s.image.repository is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.repository -}}
-{{- $tag := required (printf "prime.%s.image.tag is required when Prime %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.tag -}}
+{{- $comp := index $root.Values.premium .componentKey -}}
+{{- $repo := required (printf "premium.%s.image.repository is required when Premium %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.repository -}}
+{{- $tag := required (printf "premium.%s.image.tag is required when Premium %s is enabled (paid subscriber image)" .componentKey .componentKey) $comp.image.tag -}}
 {{- $globalRegistry := $root.Values.global.imageRegistry -}}
 {{- if $globalRegistry -}}
 {{- printf "%s/%s:%s" $globalRegistry $repo $tag -}}
@@ -264,12 +365,12 @@ Fails when repository or tag is empty and the component is enabled.
 {{- end -}}
 
 {{/*
-Merged imagePullSecrets for a Prime component (global + component-level).
-Usage: include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKey" "testExecutions")
+Merged imagePullSecrets for a Premium component (global + component-level).
+Usage: include "reportportal.premium.imagePullSecrets" (dict "root" . "componentKey" "testExecutions")
 */}}
-{{- define "reportportal.prime.imagePullSecrets" -}}
+{{- define "reportportal.premium.imagePullSecrets" -}}
 {{- $root := .root -}}
-{{- $comp := index $root.Values.prime .componentKey -}}
+{{- $comp := index $root.Values.premium .componentKey -}}
 {{- $secrets := concat ($root.Values.global.imagePullSecrets | default list) ($comp.image.pullSecrets | default list) -}}
 {{- if $secrets -}}
 {{- toYaml $secrets -}}
@@ -279,9 +380,9 @@ Usage: include "reportportal.prime.imagePullSecrets" (dict "root" . "componentKe
 {{/*
 SCIM health-check path (base path + healthPath).
 */}}
-{{- define "reportportal.prime.scim.healthUrlPath" -}}
-{{- $base := .Values.prime.scim.path | default "/scim/v2" | trimSuffix "/" -}}
-{{- $health := .Values.prime.scim.healthPath | default "/ServiceProviderConfig" -}}
+{{- define "reportportal.premium.scim.healthUrlPath" -}}
+{{- $base := .Values.premium.scim.path | default "/scim/v2" | trimSuffix "/" -}}
+{{- $health := .Values.premium.scim.healthPath | default "/ServiceProviderConfig" -}}
 {{- if not (hasPrefix "/" $health) -}}
 {{- $health = printf "/%s" $health -}}
 {{- end -}}

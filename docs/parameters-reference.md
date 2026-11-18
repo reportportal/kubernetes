@@ -28,53 +28,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `global.pdb.minAvailable` | Minimum number/percentage of pods that should remain scheduled | `""` |
 | `global.pdb.maxUnavailable` | Maximum number/percentage of pods that may be made unavailable | `"1"` |
 
-## Service Index Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `serviceindex.name` | Service name | `index` |
-| `serviceindex.image.repository` | Image repository | `reportportal/service-index` |
-| `serviceindex.image.tag` | Image tag | `5.15.2` |
-| `serviceindex.pullPolicy` | Image pull policy | `Always` |
-| `serviceindex.resources.requests.cpu` | CPU requests | `150m` |
-| `serviceindex.resources.requests.memory` | Memory requests | `128Mi` |
-| `serviceindex.resources.limits.cpu` | CPU limits | `200m` |
-| `serviceindex.resources.limits.memory` | Memory limits | `256Mi` |
-| `serviceindex.extraInitContainers` | Init containers | `{}` |
-| `serviceindex.podLabels` | Pod labels | `{}` |
-| `serviceindex.podAnnotations` | Pod annotations | `{}` |
-| `serviceindex.securityContext` | Security context | `{}` |
-| `serviceindex.serviceAccountName` | Service account name | `""` |
-| `serviceindex.startupProbe.enabled` | Enable startup probe | `true` |
-| `serviceindex.startupProbe.initialDelaySeconds` | Initial delay | `5` |
-| `serviceindex.startupProbe.periodSeconds` | Period | `5` |
-| `serviceindex.startupProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.startupProbe.failureThreshold` | Failure threshold | `12` |
-| `serviceindex.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `serviceindex.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.readinessProbe.periodSeconds` | Period | `5` |
-| `serviceindex.readinessProbe.timeoutSeconds` | Timeout | `3` |
-| `serviceindex.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.readinessProbe.successThreshold` | Success threshold | `1` |
-| `serviceindex.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `serviceindex.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `serviceindex.livenessProbe.periodSeconds` | Period | `20` |
-| `serviceindex.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `serviceindex.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `serviceindex.nodeSelector` | Node selector | `{}` |
-| `serviceindex.affinity` | Affinity rules | `{}` |
-| `serviceindex.tolerations` | Tolerations | `[]` |
-| `serviceindex.strategy` | Deployment strategy | `{}` |
-| `serviceindex.pdb.create` | Create PDB | `false` |
-| `serviceindex.pdb.minAvailable` | PDB min available | `""` |
-| `serviceindex.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `serviceindex.service.type` | Service type | `""` |
-| `serviceindex.service.portName` | Port name | `""` |
-| `serviceindex.service.nodePort` | Node port | `""` |
-| `serviceindex.service.extraPorts` | Extra ports | `[]` |
-| `serviceindex.service.annotations` | Service annotations | `{}` |
-| `serviceindex.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-
 ## Service UI Configuration
 
 | Parameter | Description | Default |
@@ -135,7 +88,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceapi.name` | Service name | `api` |
 | `serviceapi.image.repository` | Image repository | `reportportal/service-api` |
-| `serviceapi.image.tag` | Image tag | `5.15.6` |
+| `serviceapi.image.tag` | Image tag | `6.0.0` |
 | `serviceapi.pullPolicy` | Image pull policy | `Always` |
 | `serviceapi.replicaCount` | Number of replicas | `1` |
 | `serviceapi.startupProbe.enabled` | Enable startup probe | `true` |
@@ -165,6 +118,11 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.auditLogs.enable` | Enable audit logs | `false` |
 | `serviceapi.auditLogs.loglevel` | Audit log level | `info` |
 | `serviceapi.allowDeleteAccount` | Allow delete account | `true` |
+| `serviceapi.auth.sessionLiveTime` | UI/OAuth session lifetime in seconds (`RP_SESSION_LIVE`) | `86400` |
+| `serviceapi.auth.samlSessionLiveTime` | SAML session lifetime in seconds (`RP_SAML_SESSION-LIVE`) | `4320` |
+| `serviceapi.auth.superadminInitPasswd.secretName` | Existing Secret with the initial password of the superadmin (`admin@reportportal.internal`) | `""` |
+| `serviceapi.auth.superadminInitPasswd.passwordKeyName` | Key in that Secret holding the password | `superadmin-password` |
+| `serviceapi.auth.superadminInitPasswd.password` | Plain-text initial superadmin password (first launch only) | `""` |
 | `serviceapi.cronJobs.interruptBrockenLaunches` | Interrupt broken launches duration | `PT1H` |
 | `serviceapi.cronJobs.loadPlugins` | Load plugins duration | `PT10S` |
 | `serviceapi.patternAnalysis.batchSize` | Pattern analysis batch size | `100` |
@@ -198,75 +156,13 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.secret.data` | Secret data | `{}` |
 | `serviceapi.hostAliases` | Host aliases | `[]` |
 
-## UAT (Authorization) Service Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `uat.name` | Service name | `uat` |
-| `uat.image.repository` | Image repository | `reportportal/service-authorization` |
-| `uat.image.tag` | Image tag | `5.15.2` |
-| `uat.pullPolicy` | Image pull policy | `Always` |
-| `uat.replicaCount` | Number of replicas | `1` |
-| `uat.startupProbe.enabled` | Enable startup probe | `true` |
-| `uat.startupProbe.initialDelaySeconds` | Initial delay | `10` |
-| `uat.startupProbe.periodSeconds` | Period | `10` |
-| `uat.startupProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.startupProbe.failureThreshold` | Failure threshold | `24` |
-| `uat.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `uat.readinessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.readinessProbe.periodSeconds` | Period | `10` |
-| `uat.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `uat.livenessProbe.initialDelaySeconds` | Initial delay | `0` |
-| `uat.livenessProbe.periodSeconds` | Period | `20` |
-| `uat.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `uat.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `uat.resources.requests.cpu` | CPU requests | `100m` |
-| `uat.resources.requests.memory` | Memory requests | `512Mi` |
-| `uat.resources.limits.cpu` | CPU limits | `500m` |
-| `uat.resources.limits.memory` | Memory limits | `1Gi` |
-| `uat.sessionLiveTime` | Session live time | `86400` |
-| `uat.samlSessionLiveTime` | SAML session live time | `4320` |
-| `uat.extraInitContainers` | Init containers | `{}` |
-| `uat.initContainerResources` | Migrations-waiting init container resources; overrides global when non-empty | `{}` |
-| `uat.extraVolumes` | Extra volumes | `[]` |
-| `uat.extraVolumeMounts` | Extra volume mounts | `[]` |
-| `uat.superadminInitPasswd.secretName` | Superadmin password secret name | `""` |
-| `uat.superadminInitPasswd.passwordKeyName` | Superadmin password key name | `superadmin-password` |
-| `uat.superadminInitPasswd.password` | Superadmin password | `""` |
-| `uat.jvmArgs` | JVM arguments | `"-Djava.security.egd=file:/dev/./urandom -XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=90.0 --add-opens=java.base/java.lang=ALL-UNNAMED"` |
-| `uat.extraEnvs` | Extra environment variables | `[]` |
-| `uat.podLabels` | Pod labels | `{}` |
-| `uat.podAnnotations` | Pod annotations | `{}` |
-| `uat.securityContext` | Security context | `{}` |
-| `uat.nodeSelector` | Node selector | `{}` |
-| `uat.affinity` | Affinity rules | `{}` |
-| `uat.serviceAccountName` | Service account name | `""` |
-| `uat.tolerations` | Tolerations | `[]` |
-| `uat.strategy` | Deployment strategy | `{}` |
-| `uat.pdb.create` | Create PDB | `false` |
-| `uat.pdb.minAvailable` | PDB min available | `""` |
-| `uat.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `uat.secret.enabled` | Enable secret | `false` |
-| `uat.secret.mountPath` | Secret mount path | `/etc/secret-volume` |
-| `uat.secret.readOnly` | Secret read only | `true` |
-| `uat.secret.data` | Secret data | `{}` |
-| `uat.service.type` | Service type | `""` |
-| `uat.service.portName` | Port name | `""` |
-| `uat.service.nodePort` | Node port | `""` |
-| `uat.service.extraPorts` | Extra ports | `[]` |
-| `uat.service.annotations` | Service annotations | `{}` |
-| `uat.service.labels` | Custom labels for the Service (e.g., for Prometheus ServiceMonitor) | `{}` |
-| `uat.hostAliases` | Host aliases | `[]` |
-
 ## Service Jobs Configuration
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `servicejobs.name` | Service name | `jobs` |
 | `servicejobs.image.repository` | Image repository | `reportportal/service-jobs` |
-| `servicejobs.image.tag` | Image tag | `5.15.3` |
+| `servicejobs.image.tag` | Image tag | `6.0.0` |
 | `servicejobs.pullPolicy` | Image pull policy | `Always` |
 | `servicejobs.startupProbe.enabled` | Enable startup probe | `true` |
 | `servicejobs.startupProbe.initialDelaySeconds` | Initial delay | `10` |
@@ -314,6 +210,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `servicejobs.pdb.minAvailable` | PDB min available | `""` |
 | `servicejobs.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `servicejobs.service.type` | Service type | `""` |
+| `servicejobs.service.port` | Service port for the jobs service | `8686` |
 | `servicejobs.service.portName` | Port name | `""` |
 | `servicejobs.service.nodePort` | Node port | `""` |
 | `servicejobs.service.extraPorts` | Extra ports | `[]` |
@@ -326,7 +223,7 @@ This document provides a comprehensive reference of all configurable parameters 
 |-----------|-------------|---------|
 | `serviceanalyzer.name` | Service name | `analyzer` |
 | `serviceanalyzer.image.repository` | Image repository | `reportportal/service-auto-analyzer` |
-| `serviceanalyzer.image.tag` | Image tag | `5.15.6` |
+| `serviceanalyzer.image.tag` | Image tag | `6.0.0` |
 | `serviceanalyzer.pullPolicy` | Image pull policy | `Always` |
 | `serviceanalyzer.uwsgiWorkers` | UWSGI workers | `2` |
 | `serviceanalyzer.resources.requests.cpu` | CPU requests | `500m` |
@@ -339,7 +236,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.fixVolumePermissions.user` | Owner UID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.group` | Owner GID for the analyzer filesystem subtree | `65532` |
 | `serviceanalyzer.fixVolumePermissions.image.repository` | Fix-volume-permissions init container image repository | `busybox` |
-| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.38` |
+| `serviceanalyzer.fixVolumePermissions.image.tag` | Fix-volume-permissions init container image tag | `1.36` |
 | `serviceanalyzer.fixVolumePermissions.image.pullSecrets` | Image pull secrets for the init container image; merged with `global.imagePullSecrets` at the pod level | `[]` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.cpu` | Fix-volume-permissions init container CPU requests | `50m` |
 | `serviceanalyzer.fixVolumePermissions.resources.requests.memory` | Fix-volume-permissions init container memory requests | `50Mi` |
@@ -360,6 +257,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceanalyzer.pdb.minAvailable` | PDB min available | `""` |
 | `serviceanalyzer.pdb.maxUnavailable` | PDB max unavailable | `""` |
 | `serviceanalyzer.service.type` | Service type | `""` |
+| `serviceanalyzer.service.port` | Service port for the analyzer | `5001` |
 | `serviceanalyzer.service.portName` | Port name | `""` |
 | `serviceanalyzer.service.nodePort` | Node port | `""` |
 | `serviceanalyzer.service.extraPorts` | Extra ports | `[]` |
@@ -388,7 +286,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `migrations.image.repository` | Image repository | `reportportal/migrations` |
-| `migrations.image.tag` | Image tag | `5.15.6` |
+| `migrations.image.tag` | Image tag | `6.0.0` |
 | `migrations.resources.requests.cpu` | CPU requests | `100m` |
 | `migrations.resources.requests.memory` | Memory requests | `128Mi` |
 | `migrations.resources.limits.cpu` | CPU limits | `100m` |
@@ -405,146 +303,147 @@ This document provides a comprehensive reference of all configurable parameters 
 | `migrations.pdb.minAvailable` | PDB min available | `""` |
 | `migrations.pdb.maxUnavailable` | PDB max unavailable | `""` |
 
-## Prime Features Configuration
+## Premium Features Configuration
+
+Optional paid Premium features. See [Premium Features](https://reportportal.io/docs/terms-and-conditions/PremiumFeatures/).
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `prime.enabled` | Master switch for all Prime features | `false` |
-| `prime.testExecutions.enabled` | Enable Test Executions when prime.enabled is true | `true` |
-| `prime.testExecutions.name` | Service name | `test-executions` |
-| `prime.testExecutions.image.repository` | Private Test Executions image repository. Required when enabled. | `""` |
-| `prime.testExecutions.image.tag` | Private image tag. Required when enabled. | `""` |
-| `prime.testExecutions.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
-| `prime.testExecutions.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `prime.testExecutions.replicaCount` | Number of replicas | `1` |
-| `prime.testExecutions.javaOpts` | JVM options passed via LS_JAVA_OPTS | `"-Xms512m -Xmx1536m -XX:+UseG1GC"` |
-| `prime.testExecutions.scheduleCron` | Cron for JDBC polling of test items | `"*/2 * * * * *"` |
-| `prime.testExecutions.sqlLimit` | Max rows per JDBC query (test items) | `"1000"` |
-| `prime.testExecutions.scheduleCronLaunches` | Cron for the dedicated launches pipeline | `"*/3 * * * * *"` |
-| `prime.testExecutions.sqlLimitLaunches` | Max rows per JDBC query (launches) | `"20"` |
-| `prime.testExecutions.index.name` | OpenSearch index name for Test Executions | `"test_executions"` |
-| `prime.testExecutions.index.shards` | OpenSearch index shards | `"1"` |
-| `prime.testExecutions.index.replicas` | OpenSearch index replicas | `"1"` |
-| `prime.testExecutions.cleanup.cron` | Cron for cleaning deleted test items (Jobs) | `"0 0 * * * *"` |
-| `prime.testExecutions.cleanup.retentionPeriod` | Retention period for deleted test items | `"1"` |
-| `prime.testExecutions.log4j2.enabled` | Enable custom Log4j2 configuration | `false` |
-| `prime.testExecutions.log4j2.properties` | Custom Log4j2 configuration | `""` |
-| `prime.testExecutions.resources.requests.cpu` | CPU requests | `500m` |
-| `prime.testExecutions.resources.requests.memory` | Memory requests | `512Mi` |
-| `prime.testExecutions.resources.limits.cpu` | CPU limits | `1000m` |
-| `prime.testExecutions.resources.limits.memory` | Memory limits | `2Gi` |
-| `prime.testExecutions.startupProbe.enabled` | Enable startup probe | `true` |
-| `prime.testExecutions.startupProbe.initialDelaySeconds` | Initial delay | `10` |
-| `prime.testExecutions.startupProbe.periodSeconds` | Period | `10` |
-| `prime.testExecutions.startupProbe.timeoutSeconds` | Timeout | `5` |
-| `prime.testExecutions.startupProbe.failureThreshold` | Failure threshold | `30` |
-| `prime.testExecutions.startupProbe.successThreshold` | Success threshold | `1` |
-| `prime.testExecutions.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `prime.testExecutions.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
-| `prime.testExecutions.readinessProbe.periodSeconds` | Period | `10` |
-| `prime.testExecutions.readinessProbe.timeoutSeconds` | Timeout | `5` |
-| `prime.testExecutions.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `prime.testExecutions.readinessProbe.successThreshold` | Success threshold | `1` |
-| `prime.testExecutions.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `prime.testExecutions.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
-| `prime.testExecutions.livenessProbe.periodSeconds` | Period | `30` |
-| `prime.testExecutions.livenessProbe.timeoutSeconds` | Timeout | `10` |
-| `prime.testExecutions.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `prime.testExecutions.livenessProbe.successThreshold` | Success threshold | `1` |
-| `prime.testExecutions.securityContext` | Security context | `{}` |
-| `prime.testExecutions.containerSecurityContext` | Container security context | `{}` |
-| `prime.testExecutions.extraEnvs` | Extra environment variables | `[]` |
-| `prime.testExecutions.extraInitContainers` | Extra init containers | `[]` |
-| `prime.testExecutions.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
-| `prime.testExecutions.extraContainers` | Extra containers | `[]` |
-| `prime.testExecutions.extraVolumes` | Extra volumes | `[]` |
-| `prime.testExecutions.extraVolumeMounts` | Extra volume mounts | `[]` |
-| `prime.testExecutions.podLabels` | Pod labels | `{}` |
-| `prime.testExecutions.podAnnotations` | Pod annotations | `{}` |
-| `prime.testExecutions.serviceAccountName` | Service account name | `""` |
-| `prime.testExecutions.nodeSelector` | Node selector | `{}` |
-| `prime.testExecutions.affinity` | Affinity rules | `{}` |
-| `prime.testExecutions.tolerations` | Tolerations | `[]` |
-| `prime.testExecutions.strategy` | Deployment strategy | `{}` |
-| `prime.testExecutions.pdb.create` | Create PDB | `false` |
-| `prime.testExecutions.pdb.minAvailable` | PDB min available | `""` |
-| `prime.testExecutions.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `prime.testExecutions.service.type` | Service type | `""` |
-| `prime.testExecutions.service.port` | Service port | `5000` |
-| `prime.testExecutions.service.monitoringPort` | Monitoring port | `9600` |
-| `prime.testExecutions.service.portName` | Port name | `""` |
-| `prime.testExecutions.service.nodePort` | Node port | `""` |
-| `prime.testExecutions.service.extraPorts` | Extra ports | `[]` |
-| `prime.testExecutions.service.annotations` | Service annotations | `{}` |
-| `prime.testExecutions.service.labels` | Service labels | `{}` |
-| `prime.scim.enabled` | Enable SCIM Bridge when prime.enabled is true | `true` |
-| `prime.scim.name` | Service name | `scim` |
-| `prime.scim.image.repository` | Private SCIM Bridge image repository. Required when enabled. | `""` |
-| `prime.scim.image.tag` | Private image tag. Required when enabled. | `""` |
-| `prime.scim.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
-| `prime.scim.pullPolicy` | Image pull policy | `IfNotPresent` |
-| `prime.scim.replicaCount` | Number of replicas | `1` |
-| `prime.scim.host` | Bind address for the SCIM server | `0.0.0.0` |
-| `prime.scim.path` | Base path for the SCIM service (also used for Ingress / Gateway API) | `/scim/v2` |
-| `prime.scim.documentationUri` | Documentation URI advertised by the SCIM service | `https://reportportal.io/doc` |
-| `prime.scim.logLevel` | Log level (DEBUG, INFO, WARN, ERROR) | `INFO` |
-| `prime.scim.maxResults` | Maximum results per SCIM response | `100` |
-| `prime.scim.groupProjectPattern` | Regex for mapping IdP groups to ReportPortal projects | `"^rp-(?P<projectName>[^-]+)(?:-(?P<projectRole>[^-]+))?$"` |
-| `prime.scim.groupExceptionPattern` | Regex to exclude groups. Use "none" to disable. | `"none"` |
-| `prime.scim.groupDefaultProjectRole` | Default project role for group assignments | `"member"` |
-| `prime.scim.configMap.enabled` | Load group patterns from an existing ConfigMap | `false` |
-| `prime.scim.configMap.name` | ConfigMap name | `""` |
-| `prime.scim.healthPath` | Health check path appended to scim.path | `/ServiceProviderConfig` |
-| `prime.scim.resources.requests.cpu` | CPU requests | `100m` |
-| `prime.scim.resources.requests.memory` | Memory requests | `128Mi` |
-| `prime.scim.resources.limits.cpu` | CPU limits | `500m` |
-| `prime.scim.resources.limits.memory` | Memory limits | `512Mi` |
-| `prime.scim.startupProbe.enabled` | Enable startup probe | `true` |
-| `prime.scim.startupProbe.initialDelaySeconds` | Initial delay | `0` |
-| `prime.scim.startupProbe.periodSeconds` | Period | `10` |
-| `prime.scim.startupProbe.timeoutSeconds` | Timeout | `5` |
-| `prime.scim.startupProbe.failureThreshold` | Failure threshold | `30` |
-| `prime.scim.readinessProbe.enabled` | Enable readiness probe | `true` |
-| `prime.scim.readinessProbe.initialDelaySeconds` | Initial delay | `5` |
-| `prime.scim.readinessProbe.periodSeconds` | Period | `5` |
-| `prime.scim.readinessProbe.timeoutSeconds` | Timeout | `3` |
-| `prime.scim.readinessProbe.failureThreshold` | Failure threshold | `3` |
-| `prime.scim.readinessProbe.successThreshold` | Success threshold | `1` |
-| `prime.scim.livenessProbe.enabled` | Enable liveness probe | `true` |
-| `prime.scim.livenessProbe.initialDelaySeconds` | Initial delay | `30` |
-| `prime.scim.livenessProbe.periodSeconds` | Period | `10` |
-| `prime.scim.livenessProbe.timeoutSeconds` | Timeout | `5` |
-| `prime.scim.livenessProbe.failureThreshold` | Failure threshold | `3` |
-| `prime.scim.securityContext` | Security context | `{}` |
-| `prime.scim.containerSecurityContext` | Container security context | `{}` |
-| `prime.scim.autoscaling.enabled` | Enable autoscaling | `false` |
-| `prime.scim.autoscaling.minReplicas` | Minimum replicas | `1` |
-| `prime.scim.autoscaling.maxReplicas` | Maximum replicas | `100` |
-| `prime.scim.autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization percentage | `80` |
-| `prime.scim.autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage | `""` |
-| `prime.scim.extraEnvs` | Extra environment variables | `[]` |
-| `prime.scim.extraInitContainers` | Extra init containers | `[]` |
-| `prime.scim.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
-| `prime.scim.extraContainers` | Extra containers | `[]` |
-| `prime.scim.extraVolumes` | Extra volumes | `[]` |
-| `prime.scim.extraVolumeMounts` | Extra volume mounts | `[]` |
-| `prime.scim.podLabels` | Pod labels | `{}` |
-| `prime.scim.podAnnotations` | Pod annotations | `{}` |
-| `prime.scim.serviceAccountName` | Service account name | `""` |
-| `prime.scim.nodeSelector` | Node selector | `{}` |
-| `prime.scim.affinity` | Affinity rules | `{}` |
-| `prime.scim.tolerations` | Tolerations | `[]` |
-| `prime.scim.strategy` | Deployment strategy | `{}` |
-| `prime.scim.pdb.create` | Create PDB | `false` |
-| `prime.scim.pdb.minAvailable` | PDB min available | `""` |
-| `prime.scim.pdb.maxUnavailable` | PDB max unavailable | `""` |
-| `prime.scim.service.type` | Service type | `""` |
-| `prime.scim.service.port` | Service port | `8080` |
-| `prime.scim.service.portName` | Port name | `""` |
-| `prime.scim.service.nodePort` | Node port | `""` |
-| `prime.scim.service.extraPorts` | Extra ports | `[]` |
-| `prime.scim.service.annotations` | Service annotations | `{}` |
-| `prime.scim.service.labels` | Service labels | `{}` |
+| `premium.testExecutions.enabled` | Enable Test Executions | `false` |
+| `premium.testExecutions.name` | Service name | `test-executions` |
+| `premium.testExecutions.image.repository` | Private Test Executions image repository. Required when enabled. | `""` |
+| `premium.testExecutions.image.tag` | Private image tag. Required when enabled. | `""` |
+| `premium.testExecutions.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
+| `premium.testExecutions.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `premium.testExecutions.replicaCount` | Number of replicas | `1` |
+| `premium.testExecutions.javaOpts` | JVM options passed via LS_JAVA_OPTS | `"-Xms512m -Xmx1536m -XX:+UseG1GC"` |
+| `premium.testExecutions.scheduleCron` | Cron for JDBC polling of test items | `"*/2 * * * * *"` |
+| `premium.testExecutions.sqlLimit` | Max rows per JDBC query (test items) | `"1000"` |
+| `premium.testExecutions.scheduleCronLaunches` | Cron for the dedicated launches pipeline | `"*/3 * * * * *"` |
+| `premium.testExecutions.sqlLimitLaunches` | Max rows per JDBC query (launches) | `"20"` |
+| `premium.testExecutions.index.name` | OpenSearch index name for Test Executions | `"test_executions"` |
+| `premium.testExecutions.index.shards` | OpenSearch index shards | `"1"` |
+| `premium.testExecutions.index.replicas` | OpenSearch index replicas | `"1"` |
+| `premium.testExecutions.cleanup.cron` | Cron for cleaning deleted test items (Jobs) | `"0 0 * * * *"` |
+| `premium.testExecutions.cleanup.retentionPeriod` | Retention period for deleted test items | `"1"` |
+| `premium.testExecutions.log4j2.enabled` | Enable custom Log4j2 configuration | `false` |
+| `premium.testExecutions.log4j2.properties` | Custom Log4j2 configuration | `""` |
+| `premium.testExecutions.resources.requests.cpu` | CPU requests | `500m` |
+| `premium.testExecutions.resources.requests.memory` | Memory requests | `512Mi` |
+| `premium.testExecutions.resources.limits.cpu` | CPU limits | `1000m` |
+| `premium.testExecutions.resources.limits.memory` | Memory limits | `2Gi` |
+| `premium.testExecutions.startupProbe.enabled` | Enable startup probe | `true` |
+| `premium.testExecutions.startupProbe.initialDelaySeconds` | Initial delay | `10` |
+| `premium.testExecutions.startupProbe.periodSeconds` | Period | `10` |
+| `premium.testExecutions.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `premium.testExecutions.startupProbe.failureThreshold` | Failure threshold | `30` |
+| `premium.testExecutions.startupProbe.successThreshold` | Success threshold | `1` |
+| `premium.testExecutions.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `premium.testExecutions.readinessProbe.initialDelaySeconds` | Initial delay | `30` |
+| `premium.testExecutions.readinessProbe.periodSeconds` | Period | `10` |
+| `premium.testExecutions.readinessProbe.timeoutSeconds` | Timeout | `5` |
+| `premium.testExecutions.readinessProbe.failureThreshold` | Failure threshold | `3` |
+| `premium.testExecutions.readinessProbe.successThreshold` | Success threshold | `1` |
+| `premium.testExecutions.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `premium.testExecutions.livenessProbe.initialDelaySeconds` | Initial delay | `60` |
+| `premium.testExecutions.livenessProbe.periodSeconds` | Period | `30` |
+| `premium.testExecutions.livenessProbe.timeoutSeconds` | Timeout | `10` |
+| `premium.testExecutions.livenessProbe.failureThreshold` | Failure threshold | `3` |
+| `premium.testExecutions.livenessProbe.successThreshold` | Success threshold | `1` |
+| `premium.testExecutions.securityContext` | Security context | `{}` |
+| `premium.testExecutions.containerSecurityContext` | Container security context | `{}` |
+| `premium.testExecutions.extraEnvs` | Extra environment variables | `[]` |
+| `premium.testExecutions.extraInitContainers` | Extra init containers | `[]` |
+| `premium.testExecutions.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
+| `premium.testExecutions.extraContainers` | Extra containers | `[]` |
+| `premium.testExecutions.extraVolumes` | Extra volumes | `[]` |
+| `premium.testExecutions.extraVolumeMounts` | Extra volume mounts | `[]` |
+| `premium.testExecutions.podLabels` | Pod labels | `{}` |
+| `premium.testExecutions.podAnnotations` | Pod annotations | `{}` |
+| `premium.testExecutions.serviceAccountName` | Service account name | `""` |
+| `premium.testExecutions.nodeSelector` | Node selector | `{}` |
+| `premium.testExecutions.affinity` | Affinity rules | `{}` |
+| `premium.testExecutions.tolerations` | Tolerations | `[]` |
+| `premium.testExecutions.strategy` | Deployment strategy | `{}` |
+| `premium.testExecutions.pdb.create` | Create PDB | `false` |
+| `premium.testExecutions.pdb.minAvailable` | PDB min available | `""` |
+| `premium.testExecutions.pdb.maxUnavailable` | PDB max unavailable | `""` |
+| `premium.testExecutions.service.type` | Service type | `""` |
+| `premium.testExecutions.service.port` | Service port | `5000` |
+| `premium.testExecutions.service.monitoringPort` | Monitoring port | `9600` |
+| `premium.testExecutions.service.portName` | Port name | `""` |
+| `premium.testExecutions.service.nodePort` | Node port | `""` |
+| `premium.testExecutions.service.extraPorts` | Extra ports | `[]` |
+| `premium.testExecutions.service.annotations` | Service annotations | `{}` |
+| `premium.testExecutions.service.labels` | Service labels | `{}` |
+| `premium.scim.enabled` | Enable SCIM Bridge | `false` |
+| `premium.scim.name` | Service name | `scim` |
+| `premium.scim.image.repository` | Private SCIM Bridge image repository. Required when enabled. | `""` |
+| `premium.scim.image.tag` | Private image tag. Required when enabled. | `""` |
+| `premium.scim.image.pullSecrets` | Component-specific image pull secrets (merged with global.imagePullSecrets) | `[]` |
+| `premium.scim.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `premium.scim.replicaCount` | Number of replicas | `1` |
+| `premium.scim.host` | Bind address for the SCIM server | `0.0.0.0` |
+| `premium.scim.path` | Base path for the SCIM service (also used for Ingress / Gateway API) | `/scim/v2` |
+| `premium.scim.documentationUri` | Documentation URI advertised by the SCIM service | `https://reportportal.io/doc` |
+| `premium.scim.logLevel` | Log level (DEBUG, INFO, WARN, ERROR) | `INFO` |
+| `premium.scim.maxResults` | Maximum results per SCIM response | `100` |
+| `premium.scim.groupProjectPattern` | Regex for mapping IdP groups to ReportPortal projects | `"^rp-(?P<projectName>[^-]+)(?:-(?P<projectRole>[^-]+))?$"` |
+| `premium.scim.groupExceptionPattern` | Regex to exclude groups. Use "none" to disable. | `"none"` |
+| `premium.scim.groupDefaultProjectRole` | Default project role for group assignments | `"member"` |
+| `premium.scim.configMap.enabled` | Load group patterns from an existing ConfigMap | `false` |
+| `premium.scim.configMap.name` | ConfigMap name | `""` |
+| `premium.scim.healthPath` | Health check path appended to scim.path | `/ServiceProviderConfig` |
+| `premium.scim.resources.requests.cpu` | CPU requests | `100m` |
+| `premium.scim.resources.requests.memory` | Memory requests | `128Mi` |
+| `premium.scim.resources.limits.cpu` | CPU limits | `500m` |
+| `premium.scim.resources.limits.memory` | Memory limits | `512Mi` |
+| `premium.scim.startupProbe.enabled` | Enable startup probe | `true` |
+| `premium.scim.startupProbe.initialDelaySeconds` | Initial delay | `0` |
+| `premium.scim.startupProbe.periodSeconds` | Period | `10` |
+| `premium.scim.startupProbe.timeoutSeconds` | Timeout | `5` |
+| `premium.scim.startupProbe.failureThreshold` | Failure threshold | `30` |
+| `premium.scim.readinessProbe.enabled` | Enable readiness probe | `true` |
+| `premium.scim.readinessProbe.initialDelaySeconds` | Initial delay | `5` |
+| `premium.scim.readinessProbe.periodSeconds` | Period | `5` |
+| `premium.scim.readinessProbe.timeoutSeconds` | Timeout | `3` |
+| `premium.scim.readinessProbe.failureThreshold` | Failure threshold | `3` |
+| `premium.scim.readinessProbe.successThreshold` | Success threshold | `1` |
+| `premium.scim.livenessProbe.enabled` | Enable liveness probe | `true` |
+| `premium.scim.livenessProbe.initialDelaySeconds` | Initial delay | `30` |
+| `premium.scim.livenessProbe.periodSeconds` | Period | `10` |
+| `premium.scim.livenessProbe.timeoutSeconds` | Timeout | `5` |
+| `premium.scim.livenessProbe.failureThreshold` | Failure threshold | `3` |
+| `premium.scim.securityContext` | Security context | `{}` |
+| `premium.scim.containerSecurityContext` | Container security context | `{}` |
+| `premium.scim.autoscaling.enabled` | Enable autoscaling | `false` |
+| `premium.scim.autoscaling.minReplicas` | Minimum replicas | `1` |
+| `premium.scim.autoscaling.maxReplicas` | Maximum replicas | `100` |
+| `premium.scim.autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization percentage | `80` |
+| `premium.scim.autoscaling.targetMemoryUtilizationPercentage` | Target memory utilization percentage | `""` |
+| `premium.scim.extraEnvs` | Extra environment variables | `[]` |
+| `premium.scim.extraInitContainers` | Extra init containers | `[]` |
+| `premium.scim.initContainerResources` | Resources for the API waiting init container. Overrides global.initContainerResources when non-empty. | `{}` |
+| `premium.scim.extraContainers` | Extra containers | `[]` |
+| `premium.scim.extraVolumes` | Extra volumes | `[]` |
+| `premium.scim.extraVolumeMounts` | Extra volume mounts | `[]` |
+| `premium.scim.podLabels` | Pod labels | `{}` |
+| `premium.scim.podAnnotations` | Pod annotations | `{}` |
+| `premium.scim.serviceAccountName` | Service account name | `""` |
+| `premium.scim.nodeSelector` | Node selector | `{}` |
+| `premium.scim.affinity` | Affinity rules | `{}` |
+| `premium.scim.tolerations` | Tolerations | `[]` |
+| `premium.scim.strategy` | Deployment strategy | `{}` |
+| `premium.scim.pdb.create` | Create PDB | `false` |
+| `premium.scim.pdb.minAvailable` | PDB min available | `""` |
+| `premium.scim.pdb.maxUnavailable` | PDB max unavailable | `""` |
+| `premium.scim.service.type` | Service type | `""` |
+| `premium.scim.service.port` | Service port | `8080` |
+| `premium.scim.service.portName` | Port name | `""` |
+| `premium.scim.service.nodePort` | Node port | `""` |
+| `premium.scim.service.extraPorts` | Extra ports | `[]` |
+| `premium.scim.service.annotations` | Service annotations | `{}` |
+| `premium.scim.service.labels` | Service labels | `{}` |
 
 ## Database Configuration
 
@@ -592,26 +491,25 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `storage.type` | Storage type: `minio`, `s3`, `filesystem` | `minio` |
+| `storage.type` | Storage type: `s3-compatible`, `aws-s3`, `filesystem` | `s3-compatible` |
 | `storage.secretName` | Storage secret name | `""` |
 | `storage.accesskeyName` | Access key name | `access-key` |
 | `storage.secretkeyName` | Secret key name | `secret-key` |
-| `storage.accesskey` | Access key | `rpuser` |
-| `storage.secretkey` | Secret key | `miniopassword` |
-| `storage.endpoint` | Storage endpoint (empty = internal service for MinIO) | `""` |
-| `storage.ssl` | SSL connection | `false` |
-| `storage.port` | Storage port (empty = auto: minio→9000) | `""` |
-| `storage.region` | AWS region | `""` |
-| `storage.bucket.type` | Bucket type (single, multi) | `multi` |
+| `storage.accesskey` | Access key (empty for aws-s3 IRSA) | `rpuser` |
+| `storage.secretkey` | Secret key (empty for aws-s3 IRSA) | `rppassword` |
+| `storage.endpoint` | S3-compatible host name without scheme or port (empty = bundled SeaweedFS) | `""` |
+| `storage.ssl` | `true` = https, `false` = http | `false` |
+| `storage.port` | Port (empty = scheme default for external hosts, 8333 for bundled SeaweedFS) | `""` |
+| `storage.region` | Region for SigV4 / Amazon S3 (required for `aws-s3`, recommended for `s3-compatible`) | `""` |
+| `storage.bucket.type` | Bucket layout inside `bucketDefaultName` (`multi`, `single`) | `multi` |
 | `storage.bucket.bucketDefaultName` | Default bucket name | `rp-bucket` |
 | `storage.bucket.bucketMultiPrefix` | Multi bucket prefix | `prj-` |
 | `storage.bucket.bucketMultiPostfix` | Multi bucket postfix | `""` |
 | `storage.bucket.bucketMultiSaltName` | Multi bucket salt name | `keystore` |
 | `storage.volume.defaultPath` | Default mount path inside containers (filesystem storage) | `"/data/storage"` |
-| `storage.volume.analyzerPath` | Subpath under `defaultPath` where the analyzer stores its own data (ML models, indices), isolated from the per-project directories api/uat/jobs use | `"analyzer"` |
+| `storage.volume.analyzerPath` | Relative analyzer-private subpath (not a mount path): directory under `defaultPath` for `filesystem`, key prefix inside `bucketDefaultName` for S3 types. Slashes at the ends are ignored; empty falls back to `analyzer` | `"analyzer"` |
 | `storage.volume.capacity` | Volume capacity | `5Gi` |
 | `storage.volume.storageClassName` | Storage class name | `standard` |
-| `storage.volume.accessModes` | Kubernetes access modes for the PersistentVolume and PersistentVolumeClaim | `["ReadWriteMany"]` |
 | `storage.volume.reclaimPolicy` | PersistentVolume reclaim policy when chart provisions a PV | `Retain` |
 | `storage.volume.annotations` | Volume annotations | `{}` |
 | `storage.volume.volumeConfig.type` | Volume config type | `""` |
@@ -630,8 +528,8 @@ This document provides a comprehensive reference of all configurable parameters 
 | `ingress.enable` | Enable ingress | `true` |
 | `ingress.hosts` | Ingress hosts | `null` |
 | `ingress.path` | Ingress path | `""` |
+| `ingress.extraPaths` | Additional Ingress HTTP paths rendered before built-in rules | `[]` |
 | `ingress.class` | Ingress class (`nginx`, `traefik`, `gce`, `alb`, or other; maps to `spec.ingressClassName`) | `nginx` |
-| `ingress.extraPaths` | Additional raw Ingress paths, rendered before the built-in `/`, `/ui`, `/uat` and `/api` rules | `[]` |
 | `ingress.annotations` | Ingress annotations (key-value map) | `{}` |
 | `ingress.tls.certificates` | TLS certificates | `null` |
 | `ingress.tls.certificate.gcpManaged` | GCP managed certificate | `false` |
@@ -667,7 +565,7 @@ This document provides a comprehensive reference of all configurable parameters 
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `rbac.create` | Create RBAC resources | `true` |
+| `rbac.create` | Create RBAC Role and RoleBinding (used by the pre-upgrade cleanup hook) | `true` |
 | `rbac.rules` | RBAC rules | `[]` |
 
 ## Hooks Configuration
@@ -722,7 +620,6 @@ This document provides a comprehensive reference of all configurable parameters 
 | `rabbitmq.service.amqpPort` | RabbitMQ AMQP port | `5672` |
 | `rabbitmq.service.managementPort` | RabbitMQ management port | `15672` |
 | `rabbitmq.additionalPlugins` | Extra RabbitMQ plugins (`consistent-hash` + shovel required) | `[rabbitmq_consistent_hash_exchange, rabbitmq_shovel, rabbitmq_shovel_management]` |
-| `rabbitmq.config.extraConfiguration` | Extra RabbitMQ config (permits RabbitMQ 4.3 `queue_master_locator` used by ReportPortal) | `deprecated_features.permit.queue_master_locator = true` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
 | `opensearch.image.tag` | OpenSearch image tag | `3.9.0` |
@@ -730,13 +627,19 @@ This document provides a comprehensive reference of all configurable parameters 
 | `opensearch.httpPort` | OpenSearch HTTP port | `9200` |
 | `opensearch.startupProbe.initialDelaySeconds` | Startup probe delay | `30` |
 | `opensearch.extraEnvs` | OpenSearch extra env vars | Various settings |
-| `minio.install` | Install MinIO (chart default for backward compatibility; set `false` when using external S3) | `true` |
-| `minio.image.repository` | MinIO image repository | `bitnamilegacy/minio` |
-| `minio.image.tag` | MinIO image tag | `2025.7.23-debian-12-r0` |
-| `minio.auth.rootUser` | MinIO root user | `rpuser` |
-| `minio.auth.rootPassword` | MinIO root password | `miniopassword` |
-| `minio.persistence.annotations` | MinIO persistence annotations | `{"helm.sh/resource-policy": "keep"}` |
-| `minio.console.enabled` | MinIO console enabled | `false` |
+| `seaweedfs.install` | Install the bundled demo SeaweedFS (single node, single replica, no HA); set `false` for external / aws-s3 | `true` |
+| `seaweedfs.master.enabled` | Deploy SeaweedFS master component (disabled when using all-in-one) | `false` |
+| `seaweedfs.volume.enabled` | Deploy SeaweedFS volume component (disabled when using all-in-one) | `false` |
+| `seaweedfs.filer.enabled` | Deploy SeaweedFS filer component (disabled when using all-in-one) | `false` |
+| `seaweedfs.s3.enableAuth` | Enable SeaweedFS S3 authentication | `true` |
+| `seaweedfs.s3.credentials.admin.accessKey` | SeaweedFS S3 admin access key (aligned with `storage.accesskey`) | `rpuser` |
+| `seaweedfs.s3.credentials.admin.secretKey` | SeaweedFS S3 admin secret key (aligned with `storage.secretkey`) | `rppassword` |
+| `seaweedfs.allInOne.enabled` | Run SeaweedFS as a single all-in-one Deployment | `true` |
+| `seaweedfs.allInOne.replicas` | All-in-one replicas (demo setup: keep `1`; anything else is user-managed) | `1` |
+| `seaweedfs.allInOne.updateStrategy.type` | All-in-one update strategy (`Recreate` for the single RWO volume) | `Recreate` |
+| `seaweedfs.allInOne.s3.enabled` | Enable S3 gateway on the all-in-one pod | `true` |
+| `seaweedfs.allInOne.data.type` | All-in-one data volume type | `persistentVolumeClaim` |
+| `seaweedfs.allInOne.data.size` | All-in-one PVC size | `10Gi` |
 
 ## Additional Configuration
 
@@ -755,7 +658,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `mcp.enabled` | Enable the ReportPortal MCP server | `false` |
 | `mcp.name` | Service name | `mcp` |
 | `mcp.image.repository` | Image repository | `reportportal/mcp-server` |
-| `mcp.image.tag` | Image tag | `1.4.0` |
+| `mcp.image.tag` | Image tag | `2.0.0` |
 | `mcp.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `mcp.analyticsOff` | Disable anonymous MCP usage analytics | `true` |
 | `mcp.maxWorkers` | Maximum concurrent HTTP requests; zero uses the application default | `0` |

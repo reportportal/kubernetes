@@ -29,7 +29,7 @@ ReportPortal's services and the following dependencies:
 - OpenSearch
 - RabbitMQ
 
-Instead of Minio, we will use a Persistent Volume as a filesystem storage.
+Instead of the bundled SeaweedFS (S3-compatible) store, we will use a Persistent Volume as filesystem storage.
 
 ### Start Minikube
 
@@ -58,19 +58,19 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
-  --set minio.install=false
+  --set seaweedfs.install=false
 ```
 
-If you want to use Minio as a storage:
+If you want to use the default S3-compatible store (bundled SeaweedFS):
 
 ```bash
 export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   reportportal/reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 #### Install from GitHub repo
@@ -89,22 +89,22 @@ export SUPERADMIN_PASSWORD=superadmin
 
 helm install reportportal \
   ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD} \
   --set storage.type=filesystem \
-  --set minio.install=false
+  --set seaweedfs.install=false
 ```
 
-If you want to use Minio as a storage:
+If you want to use the default S3-compatible store (bundled SeaweedFS):
 
 ```bash
 helm install reportportal \
   ./reportportal \
-  --set uat.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
+  --set serviceapi.auth.superadminInitPasswd.password=${SUPERADMIN_PASSWORD}
 ```
 
 ### Access ReportPortal
 
-Open your browser and navigate to [http://reportportal.local](http://minikube.local).
+Open your browser and navigate to [http://reportportal.local](http://minikube.local). Sign in as `admin@reportportal.internal` with the password you set in `SUPERADMIN_PASSWORD`.
 
 ## Clean up
 

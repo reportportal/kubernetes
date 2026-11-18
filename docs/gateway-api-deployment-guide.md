@@ -22,7 +22,7 @@ This guide provides comprehensive instructions for deploying ReportPortal using 
 
 Gateway API is the next-generation Kubernetes API for managing external access to services. It provides more expressive, extensible, and role-oriented interfaces compared to the legacy Ingress API.
 
-The latest version ([v1.4.1](https://github.com/kubernetes-sigs/gateway-api)) includes GA support for:
+This guide uses Gateway API [v1.5.0](https://github.com/kubernetes-sigs/gateway-api/releases/tag/v1.5.0), released on February 27, 2026. It includes GA support for:
 - `v1.GatewayClass`
 - `v1.Gateway`
 - `v1.HTTPRoute`
@@ -43,7 +43,7 @@ The latest version ([v1.4.1](https://github.com/kubernetes-sigs/gateway-api)) in
 ## Prerequisites
 
 ### 1. Kubernetes Cluster
-- Kubernetes 1.35+ (Gateway API v1.4.1)
+- Kubernetes 1.31+ (Gateway API v1.5.0). The v1.5.0 `TLSRoute` CRD uses CEL validation that needs Kubernetes 1.31, so installing the standard CRDs fails on 1.30. The ReportPortal chart itself supports Kubernetes 1.30+ when you use Ingress instead of Gateway API
 - kubectl configured with cluster access
 
 ### 2. Gateway API CRDs
@@ -51,7 +51,7 @@ The latest version ([v1.4.1](https://github.com/kubernetes-sigs/gateway-api)) in
 Install the Gateway API Custom Resource Definitions:
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
 ```
 
 Verify installation:
@@ -92,15 +92,15 @@ You need a Gateway controller implementation. See [Gateway Controller: Envoy Gat
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                        HTTPRoute                             │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
-│  │   /     │ │  /ui    │ │  /uat   │ │  /api   │           │
-│  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘           │
-└───────┼──────────┼──────────┼──────────┼────────────────────┘
-        ▼          ▼          ▼          ▼
-   ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
-   │ Index  │ │   UI   │ │  UAT   │ │  API   │
-   │Service │ │Service │ │Service │ │Service │
-   └────────┘ └────────┘ └────────┘ └────────┘
+│           ┌─────────┐ ┌─────────┐                           │
+│           │  /api   │ │    /    │                           │
+│           └────┬────┘ └────┬────┘                           │
+└────────────────┼──────────┼──────────────────────────────────┘
+                 ▼          ▼
+            ┌────────┐ ┌────────┐
+            │  API   │ │   UI   │
+            │Service │ │Service │
+            └────────┘ └────────┘
 ```
 
 ## Deployment Steps
@@ -142,7 +142,7 @@ helm install reportportal reportportal/reportportal \
   --namespace reportportal \
   --create-namespace \
   --values values-gateway-api.yaml \
-  --set uat.superadminInitPasswd.password="YourSecurePassword"
+  --set serviceapi.auth.superadminInitPasswd.password="YourSecurePassword"
 ```
 
 ### Step 3: Verify Deployment
@@ -420,10 +420,8 @@ gatewayAPI:
 ```
 
 This creates routes:
-- `/reportportal` → Index service
-- `/reportportal/ui` → UI service
-- `/reportportal/uat` → UAT service
 - `/reportportal/api` → API service
+- `/reportportal` → UI service (covers `/reportportal/ui`)
 
 ### Example 4: Multiple Hostnames
 

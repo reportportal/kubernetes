@@ -13,15 +13,20 @@ This directory contains installation and configuration guides for ReportPortal o
 
 ## Storage Configuration
 
+- [S3-Compatible Object Storage](s3-compatible-storage.md) — OpenDAL S3 storage. Tested: bundled SeaweedFS and external MinIO. Other S3 API servers are supported but not tested
+- [S3 Storage on EKS](s3-storage-eks.md) — Configure Amazon S3 with IRSA (`storage.type: aws-s3`) for EKS deployments
 - [Filesystem Storage on a Single-Node Cluster](filesystem-one-node.md) — Use filesystem storage with local-path or hostPath on Rancher Desktop, Minikube, or one-node k3s
-- [S3 and Filesystem Storage on EKS](s3-storage-eks.md) — Configure Amazon S3 (with IRSA) or shared filesystem (PVC) storage for EKS deployments
+
+## Upgrade
+
+- [Migration from 26.0 to 26.1](migration-26.0-to-26.1.md) — Storage layout, SeaweedFS, and sign-in changes, with three migration paths (bundled MinIO, Amazon S3, other S3-compatible storage)
+- [Helm Pre-upgrade Guide](helm-pre-upgrade.md) — Required steps before upgrading the Helm chart
 
 ## Installation Guides
 
 - [Install ReportPortal on GKE](gke-install.md) — Full installation guide for Google Kubernetes Engine
 - [Install ReportPortal on Minikube](minikube-install.md) — Local development setup with Minikube
 - [ReportPortal MCP Server Deployment Guide](mcp-server.md) — Enable the MCP service and configure authentication, AI clients, TLS, and networking
-- [Helm Pre-upgrade Guide](helm-pre-upgrade.md) — Required steps before upgrading the Helm chart
 - [Parameters Reference](parameters-reference.md) — Complete reference for all Helm chart values
 - [Docker Hardened Images (DHI) Usage](dhi-usage.md) — Configure PostgreSQL and RabbitMQ with Docker Hardened Images
 - [Audit Logs and Log Collection](audit-logs.md) — Enable audit logging and ship logs to external backends
