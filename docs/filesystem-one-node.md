@@ -93,8 +93,6 @@ storage:
       type: ""   # empty = dynamic provisioning by local-path
 ```
 
-A ready-to-use example is in [`test/fs-values.yaml`](../test/fs-values.yaml) in this repository.
-
 ---
 
 ## Option B: Shared Volume via CSI Driver
@@ -138,13 +136,13 @@ storage:
 
 ## Install ReportPortal
 
-From the repository root:
+Save the values from Option A or B as `values-fs.yaml` in the repository root, then run:
 
 ```bash
 helm install reportportal ./reportportal \
   --namespace reportportal \
   --create-namespace \
-  -f test/fs-values.yaml \
+  -f values-fs.yaml \
   --set serviceapi.auth.superadminInitPasswd.password="ChangeMe123"
 ```
 
@@ -185,7 +183,7 @@ Expected PVC name: `<release-name>-shared-volume-claim` (e.g. `reportportal-shar
 
 ## Access ReportPortal
 
-**Rancher Desktop** (Traefik ingress, default in `test/fs-values.yaml`):
+**Rancher Desktop** (Traefik ingress):
 
 ```bash
 kubectl get ingress -n reportportal
@@ -200,7 +198,7 @@ minikube tunnel   # in a separate terminal, if using LoadBalancer
 kubectl get ingress -n reportportal
 ```
 
-Default credentials: `superadmin` / the password you set with `serviceapi.auth.superadminInitPasswd.password`.
+Sign in as `admin@reportportal.internal` with the password you set in `serviceapi.auth.superadminInitPasswd.password`.
 
 ---
 

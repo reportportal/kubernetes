@@ -1,9 +1,6 @@
 # S3-Based Storage Using IAM Role for Amazon EKS-based ReportPortal
 
-This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 via Apache OpenDAL (`storage.type: aws-s3`) using the AWS default credential chain (IRSA on EKS, instance profile on EC2) in two deployment scenarios:
-
-1. **Kubernetes on EKS** (IAM Roles for Service Accounts) — covered in this guide.
-2. **Docker on an EC2 instance** (Instance Profile) — see [S3 Storage on EC2 Docker](s3-storage-ec2-docker.md).
+This document outlines the requirements and configuration steps to enable read/write access to Amazon S3 via Apache OpenDAL (`storage.type: aws-s3`) using the AWS default credential chain. This guide covers **Kubernetes on EKS** with IAM Roles for Service Accounts (IRSA).
 
 For non-Amazon S3 API servers, see [S3-Compatible Object Storage](s3-compatible-storage.md). Bundled SeaweedFS and external MinIO are tested; other gateways are supported but not tested.
 

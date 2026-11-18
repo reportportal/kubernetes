@@ -104,7 +104,7 @@ helm install reportportal \
 
 ### Access ReportPortal
 
-Open your browser and navigate to [http://reportportal.local](http://minikube.local).
+Open your browser and navigate to [http://reportportal.local](http://minikube.local). Sign in as `admin@reportportal.internal` with the password you set in `SUPERADMIN_PASSWORD`.
 
 ## Clean up
 

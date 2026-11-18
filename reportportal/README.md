@@ -31,7 +31,11 @@ Install the chart:
 helm install my-release --set serviceapi.auth.superadminInitPasswd.password="MyPassword" reportportal/reportportal
 ```
 
-> **Note:** Upon the initial installation and the first login of the SuperAdmin, they will be required to create a unique initial password, distinct from the default password provided in the ReportPortal installation documentation. Failure to do so will result in the API service not starting
+> **Note:** The built-in superadmin account is `admin@reportportal.internal`. Its password is the value of `serviceapi.auth.superadminInitPasswd.password`, or the Secret named in `serviceapi.auth.superadminInitPasswd.secretName`. The API reads it only when it creates the account on the first start, so changing the value later does not change the password.
+
+## Upgrading from 26.0
+
+26.1 replaces the bundled MinIO with SeaweedFS, changes the object layout of the `multi` bucket mode, and renames the built-in superadmin login. Do not run a plain `helm upgrade`. Follow the [26.0 to 26.1 migration guide](../docs/migration-26.0-to-26.1.md).
 
 ## Uninstalling the Chart
 
@@ -212,7 +216,7 @@ To install a specific version of a chart, use:
 helm install my-release \
   --set serviceapi.auth.superadminInitPasswd.password="MyPassword" \
   reportportal/reportportal \
-  --version 23.2
+  --version 26.11.18
 ```
 
 ## Documentation
@@ -225,6 +229,7 @@ helm install my-release \
 
 * [S3 and Filesystem Storage on EKS](../docs/s3-storage-eks.md) - AWS S3 with IAM roles and shared filesystem storage
 * [Filesystem Storage on a Single-Node Cluster](../docs/filesystem-one-node.md) - Local filesystem storage for development and single-node clusters
+* [Migration from 26.0 to 26.1](../docs/migration-26.0-to-26.1.md) - Storage, authentication, and chart changes in 26.1
 
 ## Community / Support
 

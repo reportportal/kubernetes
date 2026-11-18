@@ -120,7 +120,7 @@ This document provides a comprehensive reference of all configurable parameters 
 | `serviceapi.allowDeleteAccount` | Allow delete account | `true` |
 | `serviceapi.auth.sessionLiveTime` | UI/OAuth session lifetime in seconds (`RP_SESSION_LIVE`) | `86400` |
 | `serviceapi.auth.samlSessionLiveTime` | SAML session lifetime in seconds (`RP_SAML_SESSION-LIVE`) | `4320` |
-| `serviceapi.auth.superadminInitPasswd.secretName` | Existing Secret with the initial superadmin password | `""` |
+| `serviceapi.auth.superadminInitPasswd.secretName` | Existing Secret with the initial password of the superadmin (`admin@reportportal.internal`) | `""` |
 | `serviceapi.auth.superadminInitPasswd.passwordKeyName` | Key in that Secret holding the password | `superadmin-password` |
 | `serviceapi.auth.superadminInitPasswd.password` | Plain-text initial superadmin password (first launch only) | `""` |
 | `serviceapi.cronJobs.interruptBrockenLaunches` | Interrupt broken launches duration | `PT1H` |

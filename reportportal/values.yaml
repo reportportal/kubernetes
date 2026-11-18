@@ -278,7 +278,6 @@ serviceapi:
   ##
   allowDeleteAccount: true
   ## @param serviceapi.auth Authentication and session settings for the API service
-  ## (formerly provided by the standalone UAT / service-authorization component)
   ##
   auth:
     ## @param serviceapi.auth.sessionLiveTime UI/OAuth session lifetime in seconds (maps to RP_SESSION_LIVE)
@@ -287,7 +286,7 @@ serviceapi:
     ## @param serviceapi.auth.samlSessionLiveTime SAML session lifetime in seconds (maps to RP_SAML_SESSION-LIVE)
     ##
     samlSessionLiveTime: 4320
-    ## @param serviceapi.auth.superadminInitPasswd Initial superadmin password used only on first launch.
+    ## @param serviceapi.auth.superadminInitPasswd Initial password of the built-in superadmin (login `admin@reportportal.internal`), used only on first launch.
     ## Changing this value on redeployments does not update an already-created superadmin password.
     ## Prefer referencing an existing Secret via secretName instead of setting password in plain text.
     ## @param serviceapi.auth.superadminInitPasswd.secretName Existing Secret that holds the superadmin password (skips chart-managed Secret)
