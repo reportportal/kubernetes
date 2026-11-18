@@ -166,7 +166,7 @@ Both strategies store everything inside one bucket, `bucketDefaultName`. The def
 
 | Strategy | `storage.bucket.type` | Object Layout |
 |----------|-----------------------|---------------|
-| **Multi** (default) | `multi` | Each project is a folder named `<bucketMultiPrefix><projectId><bucketMultiPostfix>` (for example `prj-1/...`). Plugins are under `<bucketDefaultName>/` and the integration salt is in `<bucketMultiPrefix><bucketMultiSaltName>/`. 26.0 stored each project in its own bucket, so 26.0 data must be copied once. See the [migration guide](migration-26.0-to-26.1.md). |
+| **Multi** (default) | `multi` | Each project is a folder named `<bucketMultiPrefix><projectId><bucketMultiPostfix>` (for example `prj-1/...`). Plugins are under `<bucketDefaultName>/` and the integration salt is in `<bucketMultiPrefix><bucketMultiSaltName>/`. 26.0 stored each project in its own bucket, so 26.0 data must be copied once. |
 | **Single** | `single` | Projects are isolated by prefix (`project-data/<projectId>/...`). |
 
 In `multi` mode, the object hierarchy within `bucketDefaultName` is structured as:
@@ -243,8 +243,8 @@ The Helm chart manages application deployment and configuration; it does not aut
 
 ### Key Changes in ReportPortal 26.x
 
-1. **SeaweedFS is the new default bundled storage:** The embedded MinIO sub-chart has been replaced by SeaweedFS. `helm upgrade` removes the MinIO Deployment, Service, and Secret of the release (the volume is kept). Upgrading with default values deploys a fresh, empty SeaweedFS instance. To move your MinIO data to SeaweedFS, follow the [migration guide](migration-26.0-to-26.1.md).
-2. **Multi layout inside one bucket:** The chart defaults to `storage.bucket.type: multi`. In 26.1, `multi` projects are folders inside `bucketDefaultName` instead of separate buckets as in 26.0. Setting `multi` alone does not make 26.0 data readable. Copy it as described in the [migration guide](migration-26.0-to-26.1.md). Keep `bucketMultiPrefix`, `bucketMultiPostfix` and `bucketMultiSaltName` unchanged.
+1. **SeaweedFS is the new default bundled storage:** The embedded MinIO sub-chart has been replaced by SeaweedFS. `helm upgrade` removes the MinIO Deployment, Service, and Secret of the release (the volume is kept). Upgrading with default values deploys a fresh, empty SeaweedFS instance. To move your MinIO data to SeaweedFS, copy the objects over before you use the new storage.
+2. **Multi layout inside one bucket:** The chart defaults to `storage.bucket.type: multi`. In 26.1, `multi` projects are folders inside `bucketDefaultName` instead of separate buckets as in 26.0. Setting `multi` alone does not make 26.0 data readable, so the data must be copied. Keep `bucketMultiPrefix`, `bucketMultiPostfix` and `bucketMultiSaltName` unchanged.
 3. **Storage type naming:** Legacy values `minio` and `s3` are replaced by `s3-compatible` and `aws-s3`.
 4. **Default credentials:** The default demo secret key is now `rppassword` (replacing `miniopassword`).
 
@@ -252,7 +252,7 @@ The Helm chart manages application deployment and configuration; it does not aut
 
 1. **Back up your data:** Create a backup of your existing storage bucket or PVC and the PostgreSQL database.
 2. **Review your storage target:**
-   - To use the bundled SeaweedFS, follow the [migration guide](migration-26.0-to-26.1.md). It runs MinIO from the kept volume as the copy source and copies the objects with `mc mirror`.
+   - To use the bundled SeaweedFS, copy the objects from the old MinIO volume into it, for example with `mc mirror`.
    - For other targets, the 26.1 `multi` layout applies (projects as folders in `bucketDefaultName`). Copy the objects the same way.
 3. **Preserve the integration encryption salt:**
    - Single-bucket mode stores the salt at `integration-secrets/secret-integration-salt`.
