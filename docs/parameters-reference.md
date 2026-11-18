@@ -620,7 +620,6 @@ Optional paid Premium features. See [Premium Features](https://reportportal.io/d
 | `rabbitmq.service.amqpPort` | RabbitMQ AMQP port | `5672` |
 | `rabbitmq.service.managementPort` | RabbitMQ management port | `15672` |
 | `rabbitmq.additionalPlugins` | Extra RabbitMQ plugins (`consistent-hash` + shovel required) | `[rabbitmq_consistent_hash_exchange, rabbitmq_shovel, rabbitmq_shovel_management]` |
-| `rabbitmq.config.extraConfiguration` | Extra RabbitMQ config (permits RabbitMQ 4.3 `queue_master_locator` used by ReportPortal) | `deprecated_features.permit.queue_master_locator = true` |
 | `opensearch.install` | Install OpenSearch | `true` |
 | `opensearch.image.repository` | OpenSearch image repository | `opensearchproject/opensearch` |
 | `opensearch.image.tag` | OpenSearch image tag | `3.9.0` |

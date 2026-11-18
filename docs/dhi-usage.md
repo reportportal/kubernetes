@@ -121,7 +121,7 @@ Catalog: [dhi.io/postgres](https://hub.docker.com/hardened-images/catalog/dhi/po
 
 ## Step 4: Configure RabbitMQ for DHI
 
-Override the RabbitMQ image and security context. Keep ReportPortal-required plugins and the `queue_master_locator` permit.
+Override the RabbitMQ image and security context. Keep the ReportPortal-required plugins.
 
 ```yaml
 rabbitmq:
@@ -145,9 +145,6 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  config:
-    extraConfiguration: |
-      deprecated_features.permit.queue_master_locator = true
 ```
 
 Catalog / guides: [dhi.io/rabbitmq](https://hub.docker.com/hardened-images/catalog/dhi/rabbitmq/guides).
@@ -197,9 +194,6 @@ rabbitmq:
     - rabbitmq_consistent_hash_exchange
     - rabbitmq_shovel
     - rabbitmq_shovel_management
-  config:
-    extraConfiguration: |
-      deprecated_features.permit.queue_master_locator = true
 ```
 
 ---

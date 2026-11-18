@@ -19,7 +19,7 @@ This guide explains how to deploy ReportPortal on Amazon EKS using the AWS Appli
 
 ### 1. AWS EKS Cluster
 
-- Amazon EKS cluster (Kubernetes v1.20+)
+- Amazon EKS cluster (Kubernetes v1.30+)
 - [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html) installed in the cluster
 - IAM permissions that allow the controller to create and manage load balancers
 
