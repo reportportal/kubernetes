@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  # Allows releasing backports from a release branch without merging to master.
+  workflow_dispatch:
 
 jobs:
   release:
