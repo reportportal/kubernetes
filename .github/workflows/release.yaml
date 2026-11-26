@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - master
-  # Allows releasing backports from a release branch without merging to master.
+      # Releases backports from a release branch without merging to master.
+      # workflow_dispatch is not usable here: GitHub only offers it when the
+      # trigger is present on the default branch.
+      - 'release-**'
   workflow_dispatch:
 
 jobs:
